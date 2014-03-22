@@ -1,31 +1,11 @@
 % !Rnw weave = knitr
 
-% place *.rnw inside mizer/vignettes
-% RCMD build mizer
-% To make the tar ball which includes the compiled pdf
-% RCMD INSTALL --build mizer.tar.gz****
-% To make the windows binary from the tarball. This binary zip file contains the vignette in pdf form
-% In R, load the library then
-% vignette("mizer_vignette") to open the vignette
-
-
-% For checking the latex works OK
-% setwd("~/Work/size_based_modelling/mizer/vignettes")
-% Sweave("mizer_vignette.Rnw", syntax="SweaveSyntaxNoweb")
-% shell("pdflatex mizer_vignette.tex")
-%
-% shell("bibtex mizer_vignette")
-
-% \SweaveOpts{width = 7, height = 10}
-% Or use the width and height option in the <<>>= bit
-% Whar is the difference and how to make them universal?
-	
-%The Sweave options width and height influence the dimensions of the PDF file but not the size of the figures in the document. Put something like
-%\setkeys{Gin}{width=0.4\textwidth}
-%after begin{document} to get smaller plots.
-
-
 \documentclass{article}
+
+%\VignetteIndexEntry{Introduction to mizer}
+%\VignettePackage{mizer}
+%\VignetteEngine{knitr::knitr}
+
 \setlength{\parindent}{0pt}	% Eliminate the indent at the beginning of a new paragraph
 %\setcounter{secnumdepth}{0}	% Elimate the section numbering starting from a specific depth (see WikiBook)
 \setcounter{secnumdepth}{3}	% Elimate the section numbering starting from a specific depth (see WikiBook)
@@ -64,9 +44,6 @@
 
 % ---------------------------------------------------------------------------------------------------------------------------------------
 
-%\VignetteIndexEntry{Introduction to mizer}
-%\VignettePackage{mizer}
-%\documentclass{amsart}
 \newcommand{\code}[1]{{\texttt{#1}}}
 \newcommand{\pkg}[1]{{\texttt{#1}}}
 \newcommand{\class}[1]{{\textit{#1}}}
@@ -76,6 +53,7 @@
 \begin{document}
 
 <<include=FALSE, cache=FALSE>>=
+library(knitr)
 opts_chunk$set(concordance=TRUE, cache=TRUE)
 @
 
@@ -90,19 +68,6 @@ opts_chunk$set(concordance=TRUE, cache=TRUE)
 opts_chunk$set(width = 7)
 @
 
-
-% This stuff came from abc vignette
-% <<label=R options,echo=FALSE>>=
-% options(width = 60)
-% options(SweaveHooks = list(fig = function() par(mar=c(3,3,1,0.5),mgp = c(2,1,0))))
-% @
-
-%\SweaveOpts{prefix.string=fig,include=F,keep.source=T,eps=FALSE}
-
-% <<echo=false>>=
-% options(continue="  ")
-% @
-% %@% TO ELIMINATE THE "+" IN CONSECUTIVE SCRIPT LINES
 
 \title{Multispecies, trait-based and community size spectrum ecological modelling in \R (\pkg{mizer})}
 %\author{F. Scott, J. L. Blanchard, K. H. Andersen}
