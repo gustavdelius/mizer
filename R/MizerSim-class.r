@@ -96,23 +96,18 @@ valid_MizerSim <- function(object){
 # Soundtrack: Yob - Quantum Mystic
 #' MizerSim
 #' 
-#' A class that holds the results of projecting a \code{\link{MizerParams}} object through time.
+#' A class that holds the results of projecting a \linkS4class{MizerParams} object through time.
 #'
-#' \code{MizerSim} objects are created by using the \code{\link{project}} method on an object of type \code{MizerParams}.
+#' \code{MizerSim} objects are created by using the \code{\link{project}} method on an object of type \linkS4class{MizerParams}.
 #'
 #' There are several plotting methods available to explore the contents of a \code{MizerSim} object. See the package vignette for more details.
 #' 
-#' @section Slots:
-#' \describe{
-#'     \item{\code{params}:}{An object of type \code{MizerParams}.}
-#'     \item{\code{n}:}{Array that stores the projected community population abundances by time, species and size}
-#'     \item{\code{effort}:}{Array that stores the fishing effort through time by time and gear.}
-#'     \item{\code{n_pp}:}{Array that stores the projected background population by time and size}
-#' }
-#' @name MizerSim-class
-#' @rdname MizerSim-class
-#' @docType class
-#' @seealso \code{\link{project}} \code{\link{MizerParams}}
+#' @slot params An object of type \linkS4class{MizerParams}. 
+#' @slot n Array that stores the projected community population abundances by time, species and size
+#' @slot effort Array that stores the fishing effort through time by time and gear
+#' @slot n_pp Array that stores the projected background population by time and size
+#'
+#' @seealso \code{\link{project}} \linkS4class{MizerParams}
 #' @export
 setClass("MizerSim",
     representation(
@@ -151,11 +146,8 @@ remove(valid_MizerSim)
 #' }
 #'
 #' @return An object of type \code{MizerSim}
-#' @seealso \code{\link{project}} \code{\link{MizerParams}} \code{\link{MizerSim-class}}
+#' @seealso \code{\link{project}} \linkS4class{MizerParams} \linkS4class{MizerSim}
 #' @export
-#' @docType methods
-#' @rdname MizerSim-methods
-#' @aliases MizerSim-method
 #' @examples
 #' \dontrun{
 #' data(NS_species_params_gears)
@@ -167,8 +159,7 @@ remove(valid_MizerSim)
 setGeneric('MizerSim', function(object, ...)
     standardGeneric('MizerSim'))
 
-#' @rdname MizerSim-methods
-#' @aliases MizerSim,MizerParams-method
+#' @rdname MizerSim
 setMethod('MizerSim', signature(object='MizerParams'),
     function(object, t_dimnames = NA, t_max = 100, t_save=1, ...){
         # If the dimnames for the time dimension not passed in, calculate them from t_max and t_save 

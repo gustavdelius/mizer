@@ -10,35 +10,31 @@
 #' project method for the size based modelling
 #'
 #' Runs the size-based model simulation and projects the size based model through time.
-#' \code{project} is called using an object of type \code{MizerParams} and an object that contains the effort of the fishing gears through time. 
-#' The method returns an object of type \code{\link{MizerSim}} which can then be explored with a range of summary and plotting methods.
+#' \code{project} is called using an object of type \linkS4class{MizerParams} and an object that contains the effort of the fishing gears through time. 
+#' The method returns an object of type \linkS4class{MizerSim} which can then be explored with a range of summary and plotting methods.
 #'
-#' @param object A \code{MizerParams} object
+#' @param object A \linkS4class{MizerParams} object
 #' @param effort The effort of each fishing gear through time. See notes below. 
 #' @param t_max The maximum time the projection runs for. The default value is 100. However, this argument is not needed if an array is used for the \code{effort} argument, in which case this argument is ignored. See notes below.
 #' @param dt Time step of the solver. The default value is 0.1.
 #' @param t_save The frequency with which the output is stored. The default value is 1.
 #' @param initial_n The initial populations of the species. See the notes below.
-#' @param initial_n_pp The initial population of the background spectrum. It should be a numeric vector of the same length as the \code{w_full} slot of the \code{MizerParams} argument. By default the \code{cc_pp} slot of the \code{\link{MizerParams}} argument is used.
+#' @param initial_n_pp The initial population of the background spectrum. It should be a numeric vector of the same length as the \code{w_full} slot of the \linkS4class{MizerParams} argument. By default the \code{cc_pp} slot of the \linkS4class{MizerParams} argument is used.
 #'
-#' @return An object of type of \code{MizerSim}
+#' @return An object of type \linkS4class{MizerSim}
 #' @note 
 #' The \code{effort} argument specifies the level of fishing effort during the simulation. It can be specified in three different ways:
 #' \itemize{
 #' \item A single numeric value. This specifies the effort of all fishing gears which is constant through time (i.e. all the gears have the same constant effort).
-#' \item A numerical vector which has the same length as the number of fishing gears. The vector must be named and the names must correspond to the gear names in the \code{MizerParams} object. The values in the vector specify the constant fishing effort of each of the fishing gears, i.e. the effort is constant through time but each gear may have a different fishing effort.
-#' \item A numerical array with dimensions time step x gear. This specifies the fishing effort of each gear at each time step.  The first dimension, time, must be named numerically and contiguously. The second dimension of the array must be named and the names must correspond to the gear names in the \code{MizerParams} argument.
-#'}
+#' \item A numerical vector which has the same length as the number of fishing gears. The vector must be named and the names must correspond to the gear names in the \linkS4class{MizerParams} object. The values in the vector specify the constant fishing effort of each of the fishing gears, i.e. the effort is constant through time but each gear may have a different fishing effort.
+#' \item A numerical array with dimensions time step x gear. This specifies the fishing effort of each gear at each time step.  The first dimension, time, must be named numerically and contiguously. The second dimension of the array must be named and the names must correspond to the gear names in the \linkS4class{MizerParams} argument.
+#' }
 #'
 #' If effort is specified as an array then the \code{t_max} argument is ignored and the maximum simulation time is the taken from the dimension names. 
 #'
-#' The \code{initial_n} argument is a matrix with dimensions species x size. The order of species must be the same as in the \code{MizerParams} argument. If the initial population is not specified, the argument is set by default by the \code{get_initial_n} function which is set up for a North Sea model.
-#' @return An object of type \code{MizerSim}.
+#' The \code{initial_n} argument is a matrix with dimensions species x size. The order of species must be the same as in the \linkS4class{MizerParams} argument. If the initial population is not specified, the argument is set by default by the \code{\link{get_initial_n}} function which is set up for a North Sea model.
 #' @export
-#' @docType methods
-#' @seealso \code{\link{MizerParams}}
-#' @rdname project-methods
-#' @aliases project-method
+#' @seealso \linkS4class{MizerParams}
 #' @examples
 #' \dontrun{
 #' # Data set with different fishing gears
@@ -67,16 +63,14 @@ setGeneric('project', function(object, effort, ...)
 # No effort is specified - default is to set an effort of 1
 # All other arguments passed as ...
 
-#' @rdname project-methods
-#' @aliases project,MizerParams,missing-method
+#' @rdname project
 setMethod('project', signature(object='MizerParams', effort='missing'),
     function(object, ...){
 	res <- project(object, effort=0, ...)
 	return(res)
 })
 
-#' @rdname project-methods
-#' @aliases project,MizerParams,numeric-method
+#' @rdname project
 setMethod('project', signature(object='MizerParams', effort='numeric'),
     function(object, effort,  t_max = 100, dt = 0.1, ...){
     #if (!all.equal(t_max %% dt, 0))
@@ -103,8 +97,7 @@ setMethod('project', signature(object='MizerParams', effort='numeric'),
 	return(res)
 })
 
-#' @rdname project-methods
-#' @aliases project,MizerParams,array-method
+#' @rdname project
 setMethod('project', signature(object='MizerParams', effort='array'),
     function(object, effort, t_save=1, dt=0.1, initial_n=get_initial_n(object), initial_n_pp=object@cc_pp,  ...){
         validObject(object)
@@ -230,7 +223,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
 #' These initial abundances should be reasonable guesses at the equilibrium values.
 #' The returned population can be passed to the \code{project} method.
 #'
-#' @param params The model parameters. An object of type \code{MizerParams}.
+#' @param params The model parameters. An object of type \linkS4class{MizerParams}.
 #' @param a A parameter with a default value of 0.35.
 #' @param n0_mult Multiplier for the abundance at size 0. Default value is kappa / 1000.
 #' @export
