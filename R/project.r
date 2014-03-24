@@ -150,20 +150,21 @@ setMethod('project', signature(object='MizerParams', effort='array'),
         sim@n_pp[1,] <- initial_n_pp
 
         # Handy things
-        no_sp <- nrow(sim@params@species_params)
-        no_w <- length(sim@params@w)
+        no_sp <- nrow(sim@params@species_params) # number of species
+        no_w <- length(sim@params@w) # number of fish size bins
         idx <- 2:no_w
         # If no w_min_idx column in species_params, add one
         if (!("w_min_idx" %in% names(sim@params@species_params)))
             sim@params@species_params$w_min_idx <- 1
         # Hacky shortcut to access the correct element of a 2D array using 1D notation
+        # This references the egg size bracket for all species, so for example
+        # n[w_minidx_array_ref] = n[,w_min_idx]
         w_min_idx_array_ref <- (sim@params@species_params$w_min_idx-1) * no_sp + (1:no_sp)
 
         # sex ratio - DO SOMETHING LATER WITH THIS
         sex_ratio <- 0.5
 
         # Matrices for solver
-        # Dynamics of background spectrum uses a semi-chemostat model (de Roos - ask Ken)
         A <- matrix(0,nrow=no_sp,ncol=no_w)
         B <- matrix(0,nrow=no_sp,ncol=no_w)
         S <- matrix(0,nrow=no_sp,ncol=no_w)
@@ -184,14 +185,20 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             m2_background <- getM2Background(sim@params, n=n, n_pp=n_pp, pred_rate=pred_rate)
             e <- getEReproAndGrowth(sim@params, n=n, n_pp=n_pp, feeding_level=feeding_level)
             e_spawning <- getESpawning(sim@params, n=n, n_pp=n_pp, e=e)
+            # g_i(w)
             e_growth <- getEGrowth(sim@params, n=n, n_pp=n_pp, e_spawning=e_spawning, e=e)
+            # R_{p,i}
             rdi <- getRDI(sim@params, n=n, n_pp=n_pp, e_spawning=e_spawning, sex_ratio=sex_ratio)
+            # R_i
             rdd <- getRDD(sim@params, n=n, n_pp=n_pp, rdi=rdi, sex_ratio=sex_ratio)
 
             # Iterate species one time step forward:
             # See Ken's PDF
+            # A_{ij} = g_i(w_{j-1})/dw_j dt
             A[,idx] <- sweep(-e_growth[,idx-1,drop=FALSE]*dt, 2, sim@params@dw[idx], "/")
+            # B_{ij} = 1 + g_i(w_j)/dw_j dt +\mu_i(w_j) dt
             B[,idx] <- 1 + sweep(e_growth[,idx,drop=FALSE]*dt,2,sim@params@dw[idx],"/") + z[,idx,drop=FALSE]*dt
+            # S_{ij} <- N_i(w_j)
             S[,idx] <- n[,idx,drop=FALSE]
             # Boundary condition upstream end (recruitment)
             B[w_min_idx_array_ref] <- 1+e_growth[w_min_idx_array_ref]*dt/sim@params@dw[sim@params@species_params$w_min_idx]+z[w_min_idx_array_ref]*dt
@@ -205,6 +212,8 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             # Dynamics of background spectrum uses a semi-chemostat model (de Roos - ask Ken)
             tmp <- (sim@params@rr_pp * sim@params@cc_pp / (sim@params@rr_pp + m2_background))
             n_pp <- tmp - (tmp - n_pp) * exp(-(sim@params@rr_pp+m2_background)*dt)
+
+            # Store results only every t_step steps.
             store <- t_dimnames_index %in% i_time
             if (any(store)){
                 sim@n[which(store)+1,,] <- n 

@@ -235,7 +235,7 @@ valid_MizerParams <- function(object) {
 #' @slot pred_kernel An array (species x predator size x prey size) that holds the predation coefficient of each predator at size on each prey size
 #' @slot rr_pp A vector the same length as the w_full slot. The size specific growth rate of the background spectrum
 #' @slot cc_pp A vector the same length as the w_full slot. The size specific carrying capacity of the background spectrum
-#' @slot species_params A data.frame to hold the species specific parameters (see Details)
+#' @slot species_params A data.frame to hold the species specific parameters (see the mizer vignette, Table 2, for details)
 #' @slot interaction The species specific interaction matrix.
 #' @slot srr Function to calculate the realised (density dependent) recruitment. Has two arguments which are rdi and species_params
 #' @slot selectivity An array (gear x species x w) that holds the selectivity of each species by gear and species size
