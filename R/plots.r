@@ -247,6 +247,7 @@ setMethod('plotFeedingLevel', signature(object='MizerSim'),
 #' }
 setGeneric('plotM2', function(object, ...)
     standardGeneric('plotM2'))
+#' @rdname plotM2
 setMethod('plotM2', signature(object='MizerSim'),
     function(object, time_range = max(as.numeric(dimnames(object@n)$time)), print_it = TRUE, ...){
 	m2_time <- getM2(object, time_range=time_range, drop=FALSE, ...)

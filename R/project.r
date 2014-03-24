@@ -150,8 +150,8 @@ setMethod('project', signature(object='MizerParams', effort='array'),
         sim@n_pp[1,] <- initial_n_pp
 
         # Handy things
-        no_sp <- nrow(sim@params@species_params)
-        no_w <- length(sim@params@w)
+        no_sp <- nrow(sim@params@species_params) # number of species
+        no_w <- length(sim@params@w) # number of fish size bins
         idx <- 2:no_w
         # If no w_min_idx column in species_params, add one
         if (!("w_min_idx" %in% names(sim@params@species_params)))
@@ -163,7 +163,6 @@ setMethod('project', signature(object='MizerParams', effort='array'),
         sex_ratio <- 0.5
 
         # Matrices for solver
-        # Dynamics of background spectrum uses a semi-chemostat model (de Roos - ask Ken)
         A <- matrix(0,nrow=no_sp,ncol=no_w)
         B <- matrix(0,nrow=no_sp,ncol=no_w)
         S <- matrix(0,nrow=no_sp,ncol=no_w)
@@ -184,8 +183,11 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             m2_background <- getM2Background(sim@params, n=n, n_pp=n_pp, pred_rate=pred_rate)
             e <- getEReproAndGrowth(sim@params, n=n, n_pp=n_pp, feeding_level=feeding_level)
             e_spawning <- getESpawning(sim@params, n=n, n_pp=n_pp, e=e)
+            # g_i(w)
             e_growth <- getEGrowth(sim@params, n=n, n_pp=n_pp, e_spawning=e_spawning, e=e)
+            # R_{p,i}
             rdi <- getRDI(sim@params, n=n, n_pp=n_pp, e_spawning=e_spawning, sex_ratio=sex_ratio)
+            # R_i
             rdd <- getRDD(sim@params, n=n, n_pp=n_pp, rdi=rdi, sex_ratio=sex_ratio)
 
             # Iterate species one time step forward:
@@ -205,6 +207,8 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             # Dynamics of background spectrum uses a semi-chemostat model (de Roos - ask Ken)
             tmp <- (sim@params@rr_pp * sim@params@cc_pp / (sim@params@rr_pp + m2_background))
             n_pp <- tmp - (tmp - n_pp) * exp(-(sim@params@rr_pp+m2_background)*dt)
+
+            # Store results only every t_step steps.
             store <- t_dimnames_index %in% i_time
             if (any(store)){
                 sim@n[which(store)+1,,] <- n 

@@ -133,19 +133,15 @@ remove(valid_MizerSim)
 
 #' Constructor for the \code{MizerSim} class
 #'
-#' A constructor for the \code{MizerSim} class. This is used by the \code{project} method to create \code{MizerSim} objects of the right dimensions.
+#' A constructor for the \linkS4class{MizerSim} class. This is used by the \code{\link{project}} method to create \code{MizerSim} objects of the right dimensions.
 #' It is not necessary for users to use this constructor.
 #' 
-#' @param object a MizerParams object 
-#' @param ... other arguments including:
-#' 
-#' \itemize{
-#'     \item{\code{t_dimnames} Numeric vector that is used for the time dimensions of the slots. Default = NA.}
-#'     \item{\code{t_max} The maximum time step of the simulation. Only used if t_dimnames = NA. Default value = 100.}
-#'     \item{\code{t_save} How often should the results of the simulation be stored. Only used if t_dimnames = NA. Default value = 1.}
-#' }
+#' @param object a \linkS4class{MizerParams} object 
+#' @param t_dimnames Numeric vector that is used for the time dimensions of the slots. Default = NA.
+#' @param t_max The maximum time step of the simulation. Only used if t_dimnames = NA. Default value = 100.
+#' @param t_save How often should the results of the simulation be stored. Only used if t_dimnames = NA. Default value = 1.
 #'
-#' @return An object of type \code{MizerSim}
+#' @return An object of type \linkS4class{MizerSim}
 #' @seealso \code{\link{project}} \linkS4class{MizerParams} \linkS4class{MizerSim}
 #' @export
 #' @examples
@@ -155,13 +151,12 @@ remove(valid_MizerSim)
 #' params <- MizerParams(NS_species_params_gears, inter)
 #' sim <- project(params)
 #' }
-
 setGeneric('MizerSim', function(object, ...)
     standardGeneric('MizerSim'))
 
 #' @rdname MizerSim
 setMethod('MizerSim', signature(object='MizerParams'),
-    function(object, t_dimnames = NA, t_max = 100, t_save=1, ...){
+    function(object, t_dimnames = NA, t_max = 100, t_save=1){
         # If the dimnames for the time dimension not passed in, calculate them from t_max and t_save 
         if (any(is.na(t_dimnames))){
             if((t_max %% t_save) != 0)
