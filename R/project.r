@@ -194,9 +194,9 @@ setMethod('project', signature(object='MizerParams', effort='array'),
 
             # Iterate species one time step forward:
             # See Ken's PDF
-            # A_{ij} = g_i(w_{j-1})/dw_j dt
+            # A_{ij} = - g_i(w_{j-1}) / dw_j dt
             A[,idx] <- sweep(-e_growth[,idx-1,drop=FALSE]*dt, 2, sim@params@dw[idx], "/")
-            # B_{ij} = 1 + g_i(w_j)/dw_j dt +\mu_i(w_j) dt
+            # B_{ij} = 1 + g_i(w_j) / dw_j dt + \mu_i(w_j) dt
             B[,idx] <- 1 + sweep(e_growth[,idx,drop=FALSE]*dt,2,sim@params@dw[idx],"/") + z[,idx,drop=FALSE]*dt
             # S_{ij} <- N_i(w_j)
             S[,idx] <- n[,idx,drop=FALSE]
@@ -204,12 +204,13 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             B[w_min_idx_array_ref] <- 1+e_growth[w_min_idx_array_ref]*dt/sim@params@dw[sim@params@species_params$w_min_idx]+z[w_min_idx_array_ref]*dt
             # Update first size group of n
             n[w_min_idx_array_ref] <- (n[w_min_idx_array_ref] + rdd*dt/sim@params@dw[sim@params@species_params$w_min_idx]) / B[w_min_idx_array_ref]
-            # Invert matrix
-            for (i in 1:no_sp)
+            # Update n
+            for (i in 1:no_sp) # number of species assumed small, so no need to vectorize this loop over species
                 for (j in (sim@params@species_params$w_min_idx[i]+1):no_w)
                     n[i,j] <- (S[i,j] - A[i,j]*n[i,j-1]) / B[i,j]
 
             # Dynamics of background spectrum uses a semi-chemostat model (de Roos - ask Ken)
+            # We use the exact solution under the assumption of constant mortality during timestep
             tmp <- (sim@params@rr_pp * sim@params@cc_pp / (sim@params@rr_pp + m2_background))
             n_pp <- tmp - (tmp - n_pp) * exp(-(sim@params@rr_pp+m2_background)*dt)
 
