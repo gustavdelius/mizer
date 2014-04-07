@@ -1019,7 +1019,7 @@ A multispecies model can take more effort to set up.
 For example, each species will have different life-history parameters; there may be multiple gear types with different selectivities targeting different groups of species; the fishing effort of each gear may change with time instead of just being constant (which has been the case in the simulations we have looked at so far); the interactions between the species needs to be considered.
 
 For the remainder of this vignette we build up a multispecies model for the North Sea.
-To effectively use \pkg{mizer} for a multispecies model we are going to have take a closer look at the \class{MizerParams} class and the \code{project()} method.
+To effectively use \pkg{mizer} for a multispecies model we are going to have to take a closer look at the \class{MizerParams} class and the \code{project()} method.
 This will all be done in the context of examples so hopefully everything will be clear.
 
 We also take a closer look at some of the summary plots and analyses that can be performed, for example, calculating a range of size-based indicators.
@@ -1069,13 +1069,13 @@ For each species in the model community there are certain parameters that are es
 There are also some essential parameters that have default values, such as the selectivity function parameters, and some that are calculated internally using default relationships if not explicitly provided. These defaults are used if the parameters are not found in the data.frame.
 A description of the columns of the species parameter data.frame and any default values can be seen Table~\ref{tab:species_params}.
 
-The essential columns of the species parameters data.frame that have no default values are: \args{species}, the names of the species in the community; \args{w\_inf}, the asymptotic mass of the species; \args{w\_mat}, the mass at maturation; \args{beta} and \args{sigma}, the predator-prey mass ratio parameters $\beta$ and $\sigma$ (see Equation XXX at top); stock-recruitment parameters (by default, the stock-recruitment function is a Beverton-Holt type and so, unless a different SRR function is used, a \args{r\_max} column must be provided - see Section~\ref{sec:srr} for more details).
+The essential columns of the species parameters data.frame that have no default values are: \args{species}, the names of the species in the community; \args{w\_inf}, the asymptotic mass $W$ of the species; \args{w\_mat}, the mass $w_m$ at maturation (see eq.\eqref{eq:psi}); \args{beta} and \args{sigma}, the predator-prey mass ratio parameters $\beta$ and $\sigma$ (see eq.\eqref{eq:4}); stock-recruitment parameters (by default, the stock-recruitment function is a Beverton-Holt type and so, unless a different SRR function is used, a \args{r\_max} column must be provided - see Section~\ref{sec:srr} for more details).
 
-Essential columns that have default values are: \args{k}, the activity coefficient (default = 0); \args{alpha}, the assimilation efficiency (default = 0.6); \args{erepro}, the reproductive efficiency (default value = 1); \args{w\_min}, the size of recruits (default value is the smallest size of the community size spectrum); \args{sel\_func}, the name of the fishing selectivity function (default value = "knife\_edge"); \args{gear}, the name of the fishing gear that catches the species (default value is the name of the species in the \args{species} column); \args{catchability}, the catchability of the fishing gear on that species (default value = 1). Additionally, columns that contain the selectivity function parameters are needed. As mentioned, the default selectivity function is a ``knife\_edge'' function. This has an argument \args{knife\_edge\_size} that determines the knife-edge position and has a default value of \args{w\_min}.
+Essential columns that have default values are: \args{k}, the activity coefficient (default = 0); \args{alpha}, the assimilation efficiency $\alpha$ (default = 0.6); \args{erepro}, the reproductive efficiency $\epsilon£ (default value = 1); \args{w\_min}, the size $w_0$ of recruits (default value is the smallest size of the community size spectrum); \args{sel\_func}, the name of the fishing selectivity function (default value = "knife\_edge"); \args{gear}, the name of the fishing gear that catches the species (default value is the name of the species in the \args{species} column); \args{catchability}, the catchability of the fishing gear on that species (default value = 1). Additionally, columns that contain the selectivity function parameters are needed. As mentioned, the default selectivity function is a ``knife\_edge'' function. This has an argument \args{knife\_edge\_size} that determines the knife-edge position and has a default value of \args{w\_min}.
 If any of these columns are not included in the species parameter data.frame, the default values are used.
 
 As mentioned above, there are some columns that are essential but if they are not provided, values for them are estimated using the values in the other columns. These columns are:
-\args{h}, the maximum food intake; \args{gamma}, the volumetric search rate; \args{ks}, the coefficient for standard metabolism; \args{z0}, the mortality from other sources ($\mu_{b,i}$ in Equation~\ref{eq:mu_b}). These parameters can be included as columns in the species parameters \class{data.frame} if they are available. If they are not provided then the \code{MizerParams()} construction method will try to calculate them.
+\args{h}, the maximum food intake; \args{gamma}, the volumetric search rate $\gamma$; \args{ks}, the coefficient $k_s$ for standard metabolism; \args{z0}, the mortality from other sources ($\mu_{b,i}$ in Equation~\ref{eq:mu_b}). These parameters can be included as columns in the species parameters \class{data.frame} if they are available. If they are not provided then the \code{MizerParams()} construction method will try to calculate them.
 
 The \args{h} column is calculated as:
 
@@ -1092,7 +1092,7 @@ This calculation requires that the \args{h} column is available, either included
 The \args{z0} column (mortality from other sources) is calculated using Equation~\ref{eq:mu_b}. \args{z0pre} (equivalent to $\mu_0$) and \args{z0exp} (the power that $W_\infty$ is raised to) can be passed as arguments to the \code{MizerParams()} constructor and have default values of 0.6 and \args{n}-1 (\args{n} has a default value of 2/3 - see below) respectively.
 
 The \args{ks} column is calculated as 20\% of \args{h}, i.e. the standard metabolism coefficient is 20\% of the maximum consumption.
-Standard metabolism is used in calculation of the growth of individuals as $ks * w_i^p$ (see Section~\ref{sec:growth}).
+Standard metabolism is used in calculation of the growth of individuals as $k_{s,i} w^p$ (see Section~\ref{sec:growth}).
 
 %\begin{sidewaystable}[ht]
 \begin{table}[ht]
@@ -1106,29 +1106,29 @@ Standard metabolism is used in calculation of the growth of individuals as $ks *
 	    \hline
 	    \multicolumn{3}{c}{Life history parameters} \\
 	    \hline
-	    species & Name of the species & Compulsory (no default)\\
-	    w\_inf & The asymptotic mass of the species & Compulsory (no default)\\
-	    w\_mat & Maturation mass. Used to calculate values for $\psi$. WHAT IS WMAT IN TERMS OF BIOLOGY? Is it the mass at first maturity? & Compulsory (no default)\\
-	    beta & Preferred predator prey mass ratio & Compulsory (no default)\\
-	    sigma & Width of prey size preference & Compulsory (no default)\\
-        h & Maximum food intake rate. If this is not provided, it is calculated using the \args{k\_vb} column. Therefore, either \args{h} or \args{k\_vb} must be provided. & Optional (no default) \\
-        k\_vb & The von Bertalanffy $K$ parameter. Only used to calculate \args{h} if that column is not provided & Optional (no default)\\
-	    gamma & Volumetric search rate. If this is not provided, it is calculated using the \args{h} column and other parameters. & Optional (no default)\\
-        ks & Standard metabolism coefficient & \args{h} * 0.2\\
-        z0 & Background mortality (constant for all sizes). If this is not provided then \args{z0} is calculated as $z0pre * w_{\infty} ^{z0exp}$. \args{z0pre} and \args{z0exp} have default values of 0.6 and -1/3 respectively.  & Optional (no default)\\
-	    k & Activity coefficient & 0.0\\
-	    alpha & Assimilation efficiency & 0.6 \\
-	    erepro & Reproductive efficiency & 1 \\
-	    w\_min & The size class that recruits are placed in. & smallest size class of the species size spectrum \\
+	    \args{species} & Name of the species & Compulsory (no default)\\
+	    \args{w\_inf} & The asymptotic mass of the species $W$ & Compulsory (no default)\\
+	    \args{w\_mat} & Maturation mass $w_m$. Used to calculate values for $\psi$. & Compulsory (no default)\\
+	    \args{beta} & Preferred predator prey mass ratio $\beta$ & Compulsory (no default)\\
+	    \args{sigma} & Width of prey size preference $\sigma$ & Compulsory (no default)\\
+        \args{h} & Maximum food intake rate $h$. & Optional. If not provided, it is calculated using the \args{k\_vb} column. \\
+        \args{k\_vb} & The von Bertalanffy $K$ parameter. Only used to calculate \args{h} if that column is not provided & Optional (no default) but either \args{h} or \args{k\_vb} must be provided.\\
+	    \args{gamma} & Volumetric search rate $\gamma$.  & Optional. If not provided, it is calculated using the \args{h} column and other parameters.\\
+        \args{ks} & Standard metabolism coefficient $k_s$ & \args{h} * 0.2\\
+        \args{z0} & Background mortality $\mu_b$ (constant for all sizes).   & Optional. If not provided then \args{z0} is calculated as \code{z0pre * w\_inf \^{} z0exp}. \args{z0pre} and \args{z0exp} have default values of 0.6 and -1/3 respectively.\\
+	    \args{k} & Activity coefficient & 0.0\\
+	    \args{alpha} & Assimilation efficiency $\alpha$ & 0.6 \\
+	    \args{erepro} & Reproductive efficiency $\epsilon$ & 1 \\
+	    \args{w\_min} & The size class $w_0$ that recruits are placed in. & smallest size class of the species size spectrum \\
 	    \hline
 	    \multicolumn{3}{c}{Fishing gear parameters (see Section~\ref{sec:fishing_gear} for more details).} \\
 	    \hline
-	    sel\_func & The name of the selectivity function to be used.  & "knife\_edge".\\
-	    gear & The name of the fishing gear that selects the species. At the moment a species can only be selected by one gear. & Name of the species \\
-	    catchability & The catchability of the fishing gear. & 1\\
+	    \args{sel\_func} & The name of the selectivity function to be used.  & "knife\_edge".\\
+	    \args{gear} & The name of the fishing gear that selects the species. At the moment a species can only be selected by one gear. & Name of the species \\
+	    \args{catchability} & The catchability of the fishing gear. & 1\\
 	    %a & Length-weight conversion coefficient & Only necessary if length-weight conversion is used (e.g. if specifying length ranges when calculating indicators, or in the fishing selectivity function) \\
 	    %b & Length-weight conversion power & See notes for column $a$\\
-	    other columns & Other parameters used by the selectivity function. For example, if the default "knife\_edge" function is used then the parameters "knife\_edge\_size" must also be specified as columns (see Section~\ref{sec:fishing_gear}). & \\ 
+	    other columns & Other parameters used by the selectivity function.  &  The default "knife\_edge" selectivity function uses a column "knife\_edge\_size" for which the default is \args{w\_mat} (see Section~\ref{sec:fishing_gear}).\\
 	    \hline
 	    \multicolumn{3}{c}{Stock recruitment parameters (see Section~\ref{sec:srr} for more details).} \\
 	    \hline
@@ -1188,7 +1188,7 @@ functions are included in the package. New functions can be defined by the user.
 Each gear has the same selectivity function for all the species it selects, but the parameter
 values for each species may be different, e.g. the lengths of species that a gear selects may be different.
 
-The name of the selectivity function is given by the $sel\_func$ column in the species parameters data.frame.
+The name of the selectivity function is given by the \args{sel\_func} column in the species parameters data.frame.
 Each selectivity function has a range of arguments. Values for these arguments
 must be included as columns in the species parameters data.frame. The names of the columns must exactly
 match the names of the arguments. 
@@ -1268,21 +1268,21 @@ The arguments can be seen in Table~\ref{tab:other_params}.
 	\hline
 	Argument & Description & Default value \\
 	\hline
-	min\_w & The smallest size of the species community size spectrum. Note that this a different w\_min to the one in the species parameter data.frame. & 0.001 \\
-	max\_w & The largest size of the species size spectrum. & The largest w\_inf in the species parameters data.frame * 1.1 \\
-	no\_w & The number of size bins in the species size spectrum. & 100 \\
-	min\_w\_pp & The smallest size of the background size spectrum. & 1e-10 \\
-	no\_w\_pp & The number of size bins in the background size spectrum. & round(no\_w) * 0.3 \\
-	n & The scaling of intake. & 2/3 \\
-	p & The scaling of standard metabolism. & 0.7 \\
-	q & The search volume exponent. & 0.8 \\
-	r\_pp & The growth rate of the primary productivity (the background spectrum). & 10 \\
-	kappa & The carrying capacity of the background spectrum. & 1e11 \\
-	lambda & The exponent of the background spectrum. & 2+q-n \\
-	w\_pp\_cutoff & The cut off size of the background spectrum. & 10 \\
-    f0 & The feeding level of small individuals feeding mainly on the background resource. Used to calculate \args{h} and \args{gamma} if they are not provided in the species parameter data.frame. & 0.6\\
-    z0pre & If \args{z0}, the mortality from other sources, is not a column in the species data.frame, it is calculated as $z0pre * w_\infty ^{z0exp}$. & 0.6 \\
-    z0exp & See z0pre & n - 1\\
+	\args{min\_w} & The smallest size of the species community size spectrum. Note that this can be different from \args{w\_min} in the species parameter data.frame. & 0.001 \\
+	\args{max\_w} & The largest size of the species size spectrum. & The largest \args{w\_inf} in the species parameters data.frame * 1.1 \\
+	\args{no\_w} & The number of size bins in the species size spectrum. & 100 \\
+	\args{min\_w\_pp} & The smallest size of the background size spectrum. & 1e-10 \\
+	\args{no\_w\_pp} & The number of size bins in the background size spectrum. & \args{round(no\_w)} * 0.3 \\
+	\args{n} & The scaling of intake. & 2/3 \\
+	\args{p} & The scaling of standard metabolism. & 0.7 \\
+	\args{q} & The search volume exponent. & 0.8 \\
+	\args{r\_pp} & The growth rate $r_0$ of the resource (the background spectrum). & 10 \\
+	\args{kappa} & The carrying capacity $\kappa_R$ of the background spectrum. & 1e11 \\
+	\args{lambda} & The exponent $\lambda$ of the background spectrum. & 2+\args{q}-\args{n} \\
+	\args{w\_pp\_cutoff} & The cut off size of the background spectrum. & 10 \\
+    \args{f0} & The feeding level $f_0$ of small individuals feeding mainly on the background resource. Used to calculate \args{h} and \args{gamma} if they are not provided in the species parameter data.frame. & 0.6\\
+    \args{z0pre} & If \args{z0}, the mortality from other sources, is not a column in the species data.frame, it is calculated as \code{z0pre*w\_inf\^{}z0exp}. & 0.6 \\
+    \args{z0exp} & See \args{z0pre} & \args{n} - 1\\
 	\end{tabularx}
 	\caption{Other parameters to the \code{MizerParams()} constructor}
 	\label{tab:other_params}
@@ -1308,7 +1308,7 @@ help(MizerParams)
 This shows that the constructor takes the following arguments:
 \begin{description}
     \item[object] The species parameter data.frame (see Section~\ref{sec:species_parameters_dataframe}). This is compulsory with no default value.
-    \item[inter] The interaction matrix (see Section~\ref{sec:interaction_matrix}). The default is a matrix of 1s.
+    \item[interaction] The interaction matrix (see Section~\ref{sec:interaction_matrix}). The default is a matrix of 1s.
     \item[...] Other model parameters (see Section~\ref{sec:other_mizerparams_arguments}).
 \end{description}
 
