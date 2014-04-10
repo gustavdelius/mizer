@@ -177,15 +177,23 @@ setMethod('project', signature(object='MizerParams', effort='array'),
         t_steps <- dim(effort_dt)[1]
         for (i_time in 1:t_steps){
             # Do it piece by piece to save repeatedly calling methods
+            # Calculate amount E_{a,i}(w) of available food
             phi_prey <- getPhiPrey(sim@params, n=n, n_pp=n_pp)
+            # Calculate amount f_i(w) of food consumed
             feeding_level <- getFeedingLevel(sim@params, n=n, n_pp=n_pp, phi_prey=phi_prey)
+            # Calculate the predation rate
             pred_rate <- getPredRate(sim@params, n=n, n_pp=n_pp, feeding_level=feeding_level)
+            # Calculate predation mortality on fish \mu_{p,i}(w)
             m2 <- getM2(sim@params, n=n, n_pp=n_pp, pred_rate=pred_rate)
+            # Calculate total mortality \mu_i(w)
             z <- getZ(sim@params, n=n, n_pp=n_pp, effort=effort_dt[i_time,], m2=m2)
+            # Calculate predation mortality on the background spectrum
             m2_background <- getM2Background(sim@params, n=n, n_pp=n_pp, pred_rate=pred_rate)
+            # Calculate the resources available for reproduction and growth
             e <- getEReproAndGrowth(sim@params, n=n, n_pp=n_pp, feeding_level=feeding_level)
+            # Calculate the resources for reproduction
             e_spawning <- getESpawning(sim@params, n=n, n_pp=n_pp, e=e)
-            # g_i(w)
+            # Calculate the growth rate g_i(w)
             e_growth <- getEGrowth(sim@params, n=n, n_pp=n_pp, e_spawning=e_spawning, e=e)
             # R_{p,i}
             rdi <- getRDI(sim@params, n=n, n_pp=n_pp, e_spawning=e_spawning, sex_ratio=sex_ratio)
