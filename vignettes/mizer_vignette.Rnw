@@ -212,9 +212,9 @@ The second central assumption is that the preference of food is determined by in
 
 \begin{equation}
   \label{eq:4}
-  \phi(w_p/w) = \exp \left[ \frac{-(\ln(w/(w_p \beta_i)))^2}{2\sigma_i^2} \right],
+  \phi_i(w_p/w) = \exp \left[ \frac{-(\ln(w/(w_p \beta_i)))^2}{2\sigma_i^2} \right],
 \end{equation}
-where $\beta_i$ is the preferred predator-prey mass ratio and $\sigma_i$ the width of the weight selection function.
+where $\beta_i$ is the preferred predator-prey mass ratio and $\sigma_i$ the width of the weight selection function for predators of species $i$.
 
 The rest of the formulation of the model rests on a number of ``standard'' assumptions from ecology and fisheries science about how encounters between predators and prey leads to growth $g_i(w)$ and recruitment $R_i$ of the predators, and mortality of the prey $\mu_i(w)$.
 The remainder of this section looks in detail at these assumptions.
@@ -227,7 +227,7 @@ The available food (mass per volume) for a predator of weight $w$ is determined 
 
 \begin{equation}
   \label{eq:1}
-  E_{a.i}(w) = \int \left( N_R(w) + \sum_{j} \theta_{ij} N_j(w) \right) \phi(w_p/w) w_p \, dw_p.
+  E_{a.i}(w) = \int \left( N_R(w_p) + \sum_{j} \theta_{ij} N_j(w_p) \right) \phi_i(w_p/w) w_p \, dw_p.
 \end{equation}
 
 where $\theta_{ij}$ is the preference of species $i$ for species $j$. The food actually encountered $E_{e.i}$ (mass per time) depends on the search rate (volume per time) which is assumed to scale with individual weight as $\gamma_i w^q$:
@@ -249,7 +249,7 @@ where $h_i w^n$ is the maximum consumption rate.
 
 \subsection{Growth}
 \label{sec:growth}
-The consumed food $f_i(w) h_i w^n$ is assimilated by an efficiency $\alpha$ and used to fuel the needs for standard metabolism and activity $k_{s.i} w^p$. The remaining available energy, $\alpha f_i(w) h_i w^n - k_{s.i} w^p$, is divided between growth and reproduction by a function of weight changing between zero around the weight of maturation to one at the asymptotic weight where all available energy is used for reproduction:
+The consumed food $f_i(w) h_i w^n$ is assimilated by an efficiency $\alpha$ and used to fuel the needs for standard metabolism and activity $k_{s.i} w^p$. The remaining available energy, $\alpha f_i(w) h_i w^n - k_{s.i} w^p$, is divided between growth and reproduction by a function of weight that grows rapidly from near zero to near one at around the weight of maturation:
 
 \begin{equation}
   \label{eq:psi}
@@ -320,7 +320,7 @@ The mortality rate of an individual $\mu_i(w)$ has three sources: predation mort
 
 \begin{equation}
   \label{eq:mup}
-  \mu_{p.i}(w_p) = \sum_j \int \phi(w_p/w) (1-f_j(w)) \gamma_j w^q \theta_{ji} N_j(w) \, dw.
+  \mu_{p.i}(w_p) = \sum_j \int \phi_j(w_p/w) (1-f_j(w)) \gamma_j w^q \theta_{ji} N_j(w) \, dw.
 \end{equation}
 
 When food supply does not cover metabolic requirements $k_{s.i} w^p$, growth stops, i.e.~there is no negative growth, and the individual is subjected to a starvation mortality.  Starvation mortality is assumed proportional to the energy deficiency $k_{s.i} w^p - \alpha f_i(w) h_i w^n$, and is inversely proportional to lipid reserves, which are assumed proportional to body weight:
