@@ -156,6 +156,7 @@ setMethod('getFeedingLevel', signature(object='MizerSim', n = 'missing', n_pp='m
 #' getPredRate method for the size based model
 #' 
 #' Calculates the predation rate of each predator species at size on prey size. 
+#' In formulas \deqn{\phi_i(w_p/w) (1-f_i(w)) \gamma_i w^q N_i(w) dw}
 #' This method is used by the \code{\link{project}} method for performing
 #' simulations. In the simulations, it is combined with the interaction matrix
 #' (see \code{\link{MizerParams}}) to calculate the realised predation mortality
@@ -194,7 +195,7 @@ setMethod('getPredRate', signature(object='MizerParams', n = 'matrix', n_pp='num
         if (!all(dim(feeding_level) == c(nrow(object@species_params),length(object@w)))){
             stop("feeding_level argument must have dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),")")
         }
-        n_total_in_size_bins <- sweep(n, 2, object@dw, '*')
+        n_total_in_size_bins <- sweep(n, 2, object@dw, '*') # N_i(w)dw
         pred_rate <- sweep(object@pred_kernel,c(1,2),(1-feeding_level)*object@search_vol*n_total_in_size_bins,"*")
         return(pred_rate)
 })
@@ -202,7 +203,7 @@ setMethod('getPredRate', signature(object='MizerParams', n = 'matrix', n_pp='num
 #' @rdname getPredRate 
 setMethod('getPredRate', signature(object='MizerParams', n = 'matrix', n_pp='numeric', feeding_level = 'missing'),
     function(object, n, n_pp, ...){
-        n_total_in_size_bins <- sweep(n, 2, object@dw, '*')
+        n_total_in_size_bins <- sweep(n, 2, object@dw, '*') # N_i(w)dw
         feeding_level <- getFeedingLevel(object, n=n, n_pp=n_pp)
         #pred_rate <- sweep(object@pred_kernel,c(1,2),(1-f)*object@search_vol*n_total_in_size_bins,"*")
         pred_rate <- getPredRate(object=object, n=n, n_pp=n_pp, feeding_level = feeding_level)
