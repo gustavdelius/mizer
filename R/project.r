@@ -157,9 +157,11 @@ setMethod('project', signature(object='MizerParams', effort='array'),
         if (!("w_min_idx" %in% names(sim@params@species_params)))
             sim@params@species_params$w_min_idx <- 1
         # Hacky shortcut to access the correct element of a 2D array using 1D notation
-        # This references the egg size bracket for all species, so for example
-        # n[w_minidx_array_ref] = n[,w_min_idx]
+        # This references the egg size bracket for all species.
         w_min_idx_array_ref <- (sim@params@species_params$w_min_idx-1) * no_sp + (1:no_sp)
+        # vectors used to construct finite-difference expressions for derivatives
+        dwB <- 1/sim@params@dw^2
+        dwC <- 1/sim@params@dw/sim@params@dw
 
         # sex ratio - DO SOMETHING LATER WITH THIS
         sex_ratio <- 0.5
@@ -167,6 +169,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
         # Matrices for solver
         A <- matrix(0,nrow=no_sp,ncol=no_w)
         B <- matrix(0,nrow=no_sp,ncol=no_w)
+        C <- matrix(0,nrow=no_sp,ncol=no_w)
         S <- matrix(0,nrow=no_sp,ncol=no_w)
 
         # initialise n and nPP
@@ -212,10 +215,20 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             B[w_min_idx_array_ref] <- 1+e_growth[w_min_idx_array_ref]*dt/sim@params@dw[sim@params@species_params$w_min_idx]+z[w_min_idx_array_ref]*dt
             # Update first size group of n
             n[w_min_idx_array_ref] <- (n[w_min_idx_array_ref] + rdd*dt/sim@params@dw[sim@params@species_params$w_min_idx]) / B[w_min_idx_array_ref]
+            
+            if (sim@params@with_diffusion) {
+                A[,idx] <- A[,idx] - 2*sweep(diff[,idx-1,drop=FALSE]*dt, 2, dwA[idx],"*")
+                B[,idx] <- B[,idx] - sweep(diff[,idx,drop=FALSE]*dt, 2, dwB[idx],"*")
+                C[,3:no_w] <- sweep(diff[,1:no_w-2,drop=FALSE]*dt, 2, dwC[3:no_w], "*")
+            }
             # Update n
-            for (i in 1:no_sp) # number of species assumed small, so no need to vectorize this loop over species
-                for (j in (sim@params@species_params$w_min_idx[i]+1):no_w)
-                    n[i,j] <- (S[i,j] - A[i,j]*n[i,j-1]) / B[i,j]
+            for (i in 1:no_sp) { # number of species assumed small, so no need to vectorize this loop over species
+                j <- sim@params@species_params$w_min_idx[i]+1
+                n[i,j] <- (S[i,j] - A[i,j]*n[i,j-1]) / B[i,j]
+                for (j in (sim@params@species_params$w_min_idx[i]+2):no_w) {
+                    n[i,j] <- (S[i,j] - A[i,j]*n[i,j-1]-C[i,j]*n[i,j-2]) / B[i,j]
+                }
+            }
 
             # Dynamics of background spectrum uses a semi-chemostat model (de Roos - ask Ken)
             # We use the exact solution under the assumption of constant mortality during timestep

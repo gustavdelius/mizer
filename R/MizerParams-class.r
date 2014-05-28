@@ -224,9 +224,9 @@ valid_MizerParams <- function(object) {
 #' Dynamic simulations are performed using the \code{\link{project}} method on objects of this class. 
 #'
 #' @slot w A numeric vector of size bins used for the community (i.e. fish) part of the model. These are usually spaced on a log10 scale
-#' @slot dw The absolute difference between the size bins specified in the w slot. A vector the same length as the w slot. The final value is the same as the second to last value
+#' @slot dw The absolute difference between the size bins specified in the w slot. A vector the same length as the w slot. dw[i] = w[i] - w[i-1], except that dw[1] = dw[2]
 #' @slot w_full A numeric vector of size bins used for the whole model (i.e. the community and background spectra) . These are usually spaced on a log10 scale
-#' @slot dw_full The absolute difference between the size bins specified in the w_full slot. A vector the same length as the w_full slot. The final value is the same as the second to last value
+#' @slot dw_full The absolute difference between the size bins specified in the w_full slot. A vector the same length as the w_full slot. dw_full[i] = w_full[i] - w_full[i-1], except that dw_full[1] = dw_full[2]
 #' @slot psi An array (species x size) that holds the allocation to reproduction for each species at size
 #' @slot intake_max An array (species x size) that holds the maximum intake for each species at size
 #' @slot search_vol An array (species x size) that holds the search volume for each species at size
@@ -240,6 +240,7 @@ valid_MizerParams <- function(object) {
 #' @slot srr Function to calculate the realised (density dependent) recruitment. Has two arguments which are rdi and species_params
 #' @slot selectivity An array (gear x species x w) that holds the selectivity of each species by gear and species size
 #' @slot catchability An array (gear x species) that holds the catchability of each species by each gear
+#' @slot with_diffusion Boolean indicating whether to include the diffusion term
 #'
 #' @note The \code{MizerParams} class is fairly complex with a large number of slots, many of which are multidimensional arrays. The dimensions of these arrays is strictly enforced so that \code{MizerParams} objects are consistent in terms of number of species and number of size classes.
 #'
@@ -268,6 +269,7 @@ setClass("MizerParams",
 	srr  = "function",
 	selectivity = "array",
 	catchability = "array"
+    with_diffusion = "logical"
     ),
     prototype = prototype(
 	w = NA_real_,
@@ -287,6 +289,7 @@ setClass("MizerParams",
 	interaction = array(NA,dim=c(1,1), dimnames=list(predator=NULL, prey=NULL)), # which dimension is prey and which is prey?
 	selectivity = array(NA, dim=c(1,1,1), dimnames = list(gear=NULL, sp=NULL, w=NULL)),
 	catchability = array(NA, dim=c(1,1), dimnames = list(gear=NULL, sp=NULL))
+    with_diffusion = FALSE
     ),
     validity = valid_MizerParams
 )
@@ -317,6 +320,7 @@ setClass("MizerParams",
 #'     \item{\code{f0} Average feeding level. Used to calculated \code{h} and \code{gamma} if those are not columns in the species data frame. Also requires \code{k_vb} (the von Bertalanffy K parameter) to be a column in the species data frame. If \code{h} and \code{gamma} are supplied then this argument is ignored. Default is 0.6.}
 #'     \item{\code{z0pre} If \code{z0}, the mortality from other sources, is not a column in the species data frame, it is calculated as z0pre * w_inf ^ z0exp. Default value is 0.6.}
 #'     \item{\code{z0exp} If \code{z0}, the mortality from other sources, is not a column in the species data frame, it is calculated as z0pre * w_inf ^ z0exp. Default value is n-1.}
+#'     \item{\code{with_diffusion} If TRUE, the equation with diffusion term is used. Default value is FALSE}
 #' }
 #'
 #' @return An object of type \code{MizerParams}
@@ -340,7 +344,9 @@ setGeneric('MizerParams', function(object, interaction, ...)
 # Only really used to make MizerParams of the right size and shouldn't be used by user
 #' @rdname MizerParams
 setMethod('MizerParams', signature(object='numeric', interaction='missing'),
-    function(object, min_w = 0.001, max_w = 1000, no_w = 100,  min_w_pp = 1e-10, no_w_pp = round(no_w)*0.3, species_names=1:object, gear_names=species_names){
+    function(object, min_w = 0.001, max_w = 1000, no_w = 100,  min_w_pp = 1e-10, 
+             no_w_pp = round(no_w)*0.3, species_names=1:object, 
+             gear_names=species_names, with_diffusion=FALSE){
 	#args <- list(...)
 
 	# Some checks
@@ -350,8 +356,9 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	# Set up grids:
 	# Community grid
 	w <- 10^(seq(from=log10(min_w),to=log10(max_w),length.out=no_w))
-	dw <- diff(w)
-	dw[no_w] <- dw[no_w-1] # Set final dw as same as one before
+    # dw[i] = w[i]-w[i-1] as appropriate for our upwind difference scheme
+	dw[2:no_w] <- diff(w)
+	dw[1] <- dw[2] 
 
 	# Set up full grid - background + community
 	# ERROR if dw > w, nw must be at least... depends on minw, maxw and nw
@@ -359,8 +366,8 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	    stop("Your size bins are too close together. You should consider increasing the number of bins, or changing the size range")
 	w_full <- c(10^seq(from=log10(min_w_pp), to =  log10(w[1]-dw[1]),length.out=no_w_pp),w)
 	no_w_full <- length(w_full)
-	dw_full <- diff(w_full)
-	dw_full[no_w_full] <- dw_full[no_w_full-1]
+	dw_full[2:no_w_full] <- diff(w_full)
+	dw_full[1] <- dw_full[2]
 
 	# Basic arrays for templates
 	mat1 <- array(NA, dim=c(object,no_w), dimnames = list(sp=species_names,w=signif(w,3)))
@@ -390,7 +397,7 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	    psi = mat1, intake_max = mat1, search_vol = mat1, activity = mat1, std_metab = mat1, pred_kernel = mat2,
 	    selectivity=selectivity, catchability=catchability,
 	    rr_pp = vec1, cc_pp = vec1, species_params = species_params,
-	    interaction = interaction, srr = srr) 
+	    interaction = interaction, srr = srr, with_diffusion = with_diffusion) 
 	return(res)
     }
 )
@@ -399,7 +406,9 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 
 #' @rdname MizerParams
 setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
-    function(object, interaction,  n = 2/3, p = 0.7, q = 0.8, r_pp = 10, kappa = 1e11, lambda = (2+q-n), w_pp_cutoff = 10, max_w = max(object$w_inf)*1.1, f0 = 0.6, z0pre = 0.6, z0exp = n-1, ...){
+    function(object, interaction,  n = 2/3, p = 0.7, q = 0.8, r_pp = 10, 
+             kappa = 1e11, lambda = (2+q-n), w_pp_cutoff = 10, 
+             max_w = max(object$w_inf)*1.1, f0 = 0.6, z0pre = 0.6, z0exp = n-1, ...){
 
 	# Set default values for column values if missing
 	# If no gear_name column in object, then named after species
