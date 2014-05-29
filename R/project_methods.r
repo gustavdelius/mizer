@@ -799,3 +799,31 @@ get_time_elements <- function(sim,time_range,slot_name="n"){
     return(time_elements)
 }
 
+#' getDiff method for the size based model
+#' 
+#' Calculates the diffusion rate d_i(w) 
+#' @param object A \code{MizerParams} object.
+#' @param n A matrix of species abundance (species x size).
+#' @param n_pp A vector of the background abundance by size.
+#' @param feeding_level The current feeding level(species x size).
+#'   
+#' @return A two dimensional array (species x size), 
+#'   where the size runs over the community size range only.
+#' @export
+getDiff <- function(object, n, n_pp, feeding_level){
+    
+    # The following code is taken from getPhiPrey, just modified to include a factor
+    #  of w^2 instead off w
+    n_eff_prey <- sweep(object@interaction %*% n, 2, object@w^2 * object@dw, "*") 
+    # Quick reference to just the fish part of the size spectrum
+    idx_sp <- (length(object@w_full) - length(object@w) + 1):length(object@w_full)
+    # pred_kernel is predator x predator size x prey size
+    # So multiply 3rd dimension of pred_kernel by the prey abundance
+    # Then sum over 3rd dimension to get total eaten by each predator by predator size
+    phi_prey <- rowSums(sweep(object@pred_kernel[,,idx_sp,drop=FALSE],c(1,3),n_eff_prey,"*"),dims=2)
+    # Add contribution from background
+    phi_prey <- phi_prey + rowSums(sweep(object@pred_kernel,3,object@dw_full*object@w_full^2*n_pp,"*"),dims=2)
+    
+    diff <- sweep(phi_prey * (1-feeding_level) * object@search_vol, 1, object@species_params$alpha/2, "*")
+    return(diff)
+}
