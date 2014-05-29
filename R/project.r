@@ -218,9 +218,9 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             
             if (sim@params@with_diffusion) {
                 diff <- getDiff(sim@params, n, n_pp, feeding_level)
-                A[,idx] <- A[,idx] - 2*sweep(diff[,idx-1,drop=FALSE]*dt, 2, dwA[idx],"*")
+                A[,idx] <- A[,idx] - 2*sweep(diff[,idx-1,drop=FALSE]*dt, 2, dwB[idx]+dwC[idx],"*")
                 B[,idx] <- B[,idx] - sweep(diff[,idx,drop=FALSE]*dt, 2, dwB[idx],"*")
-                C[,3:no_w] <- sweep(diff[,1:no_w-2,drop=FALSE]*dt, 2, dwC[3:no_w], "*")
+                C[,3:no_w] <- sweep(diff[,1:(no_w-2),drop=FALSE]*dt, 2, dwC[3:no_w], "*")
             }
             # Update n
             for (i in 1:no_sp) { # number of species assumed small, so no need to vectorize this loop over species

@@ -268,7 +268,7 @@ setClass("MizerParams",
 	interaction = "array",
 	srr  = "function",
 	selectivity = "array",
-	catchability = "array"
+	catchability = "array",
     with_diffusion = "logical"
     ),
     prototype = prototype(
@@ -288,7 +288,7 @@ setClass("MizerParams",
 	#speciesParams = data.frame(),
 	interaction = array(NA,dim=c(1,1), dimnames=list(predator=NULL, prey=NULL)), # which dimension is prey and which is prey?
 	selectivity = array(NA, dim=c(1,1,1), dimnames = list(gear=NULL, sp=NULL, w=NULL)),
-	catchability = array(NA, dim=c(1,1), dimnames = list(gear=NULL, sp=NULL))
+	catchability = array(NA, dim=c(1,1), dimnames = list(gear=NULL, sp=NULL)),
     with_diffusion = FALSE
     ),
     validity = valid_MizerParams
@@ -357,7 +357,8 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	# Community grid
 	w <- 10^(seq(from=log10(min_w),to=log10(max_w),length.out=no_w))
     # dw[i] = w[i]-w[i-1] as appropriate for our upwind difference scheme
-	dw[2:no_w] <- diff(w)
+	dw <- numeric(no_w)
+    dw[2:no_w] <- diff(w)
 	dw[1] <- dw[2] 
 
 	# Set up full grid - background + community
@@ -366,6 +367,7 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	    stop("Your size bins are too close together. You should consider increasing the number of bins, or changing the size range")
 	w_full <- c(10^seq(from=log10(min_w_pp), to =  log10(w[1]-dw[1]),length.out=no_w_pp),w)
 	no_w_full <- length(w_full)
+    dw_full <- numeric(no_w_full)
 	dw_full[2:no_w_full] <- diff(w_full)
 	dw_full[1] <- dw_full[2]
 
