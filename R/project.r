@@ -218,7 +218,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             
             if (sim@params@with_diffusion) {
                 diff <- getDiff(sim@params, n, n_pp, feeding_level)
-                A[,idx] <- A[,idx] - 2*sweep(diff[,idx-1,drop=FALSE]*dt, 2, dwB[idx]+dwC[idx],"*")
+                A[,idx] <- A[,idx] + sweep(diff[,idx-1,drop=FALSE]*dt, 2, dwB[idx]+dwC[idx],"*")
                 B[,idx] <- B[,idx] - sweep(diff[,idx,drop=FALSE]*dt, 2, dwB[idx],"*")
                 C[,3:no_w] <- sweep(diff[,1:(no_w-2),drop=FALSE]*dt, 2, dwC[3:no_w], "*")
             }
@@ -227,7 +227,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
                 j <- sim@params@species_params$w_min_idx[i]+1
                 n[i,j] <- (S[i,j] - A[i,j]*n[i,j-1]) / B[i,j]
                 for (j in (sim@params@species_params$w_min_idx[i]+2):no_w) {
-                    n[i,j] <- (S[i,j] - A[i,j]*n[i,j-1]-C[i,j]*n[i,j-2]) / B[i,j]
+                    n[i,j] <- (S[i,j] - A[i,j]*n[i,j-1]+C[i,j]*n[i,j-2]) / B[i,j]
                 }
             }
 
