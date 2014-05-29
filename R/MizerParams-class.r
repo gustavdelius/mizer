@@ -489,17 +489,17 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 
 	# Now fill up the slots using default formulations:
 	# psi - allocation to reproduction - from original Setup() function
-	res@psi <- outer(object$w_inf, res@w, "/")^(n-1)/(1+outer(object$w_mat, res@w, "/")^10)
-    # For reasons of efficiency we next set all very small values to 0 
+	res@psi[] <- unlist(tapply(res@w,1:length(res@w),function(wx,w_inf,w_mat,n){
+	    ((1 + (wx/(w_mat))^-10)^-1) * (wx/w_inf)^(1-n)},w_inf=object$w_inf,w_mat=object$w_mat,n=n))
 	# Set w < 10% of w_mat to 0
-	res@psi[outer(object$w_mat*0.1, res@w, ">")] <- 0
+	res@psi[unlist(tapply(res@w,1:length(res@w),function(wx,w_mat)wx<(w_mat*0.1)  ,w_mat=object$w_mat))] <- 0
 	# Set all w > w_inf to 1 # Check this is right...
-	res@psi[outer(object$w_inf, res@w, "<")] <- 1
+	res@psi[unlist(tapply(res@w,1:length(res@w),function(wx,w_inf)(wx/w_inf)>1,w_inf=object$w_inf))] <- 1
 
-	res@intake_max <- outer(object$h, res@w^n)
-	res@search_vol <- outer(object$gamma, res@w^q)
-	res@activity <-  outer(object$k, res@w)
-	res@std_metab <-  outer(object$ks, res@w^p)
+	res@intake_max[] <- unlist(tapply(res@w,1:length(res@w),function(wx,h,n)h * wx^n,h=object$h,n=n))
+	res@search_vol[] <- unlist(tapply(res@w,1:length(res@w),function(wx,gamma,q)gamma * wx^q, gamma=object$gamma, q=q))
+	res@activity[] <-  unlist(tapply(res@w,1:length(res@w),function(wx,k)k * wx,k=object$k))
+	res@std_metab[] <-  unlist(tapply(res@w,1:length(res@w),function(wx,ks,p)ks * wx^p, ks=object$ks,p=p))
 	# Could maybe improve this. Pretty ugly at the moment
 	res@pred_kernel[] <- object$beta
 	res@pred_kernel <- exp(-0.5*sweep(log(sweep(sweep(res@pred_kernel,3,res@w_full,"*")^-1,2,res@w,"*")),1,object$sigma,"/")^2)
