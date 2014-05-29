@@ -560,7 +560,7 @@ m2[51,]
 If you plot this predation mortality on a log-log scale you can see how the predation mortality declines to almost zero for the largest sizes (Figure~\ref{fig:plot_comm_m2}).
 
 \begin{figure}
-<<label=print_plot_comm_m2, echo=FALSE, fig.height=4>>=
+<<label=print_plot_comm_m2, echo=FALSE, warning=FALSE, fig.height=4>>=
 plot(x = sim@params@w, y = m2[51,], log="xy", type="l", xlab = "Size", ylab = "Predation mortality")
 @
 \caption{Predation mortality without fishing in the community model (note the log scales for both axes).}
