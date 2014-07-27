@@ -14,8 +14,6 @@
 #'
 #' @return An array containing the SSB (time x species)
 #' @export
-#' @docType methods
-#' @rdname getSSB-methods
 #' @examples
 #' \dontrun{
 #' data(NS_species_params_gears)
@@ -28,7 +26,7 @@
 setGeneric('getSSB', function(object)
     standardGeneric('getSSB'))
 
-#' @rdname getSSB-methods
+#' @rdname getSSB
 setMethod('getSSB', signature(object='MizerSim'),
     function(object){
 	ssb <- apply(sweep(sweep(object@n, c(2,3), object@params@psi,"*"), 3, object@params@w * object@params@dw, "*"),c(1,2),sum) 
@@ -46,8 +44,6 @@ setMethod('getSSB', signature(object='MizerSim'),
 #'
 #' @return An array containing the biomass (time x species)
 #' @export
-#' @docType methods
-#' @rdname getBiomass-methods
 #' @examples
 #' \dontrun{
 #' data(NS_species_params_gears)
@@ -61,7 +57,7 @@ setMethod('getSSB', signature(object='MizerSim'),
 setGeneric('getBiomass', function(object, ...)
     standardGeneric('getBiomass'))
 
-#' @rdname getBiomass-methods
+#' @rdname getBiomass
 setMethod('getBiomass', signature(object='MizerSim'),
     function(object, ...){
         size_range <- get_size_range_array(object@params,...)
@@ -80,8 +76,6 @@ setMethod('getBiomass', signature(object='MizerSim'),
 #'
 #' @return An array containing the total numbers (time x species)
 #' @export
-#' @docType methods
-#' @rdname getN-methods
 #' @examples
 #' \dontrun{
 #' data(NS_species_params_gears)
@@ -95,7 +89,7 @@ setMethod('getBiomass', signature(object='MizerSim'),
 setGeneric('getN', function(object, ...)
     standardGeneric('getN'))
 
-#' @rdname getN-methods
+#' @rdname getN
 setMethod('getN', signature(object='MizerSim'),
     function(object, ...){
 	size_range <- get_size_range_array(object@params,...)
@@ -113,8 +107,6 @@ setMethod('getN', signature(object='MizerSim'),
 #'
 #' @return An array containing the total yield (time x gear x species)
 #' @export
-#' @docType methods
-#' @rdname getYieldGear-methods
 #' @seealso \code{\link{getYield}}
 #' @examples
 #' \dontrun{
@@ -128,7 +120,7 @@ setMethod('getN', signature(object='MizerSim'),
 setGeneric('getYieldGear', function(object)
     standardGeneric('getYieldGear'))
 
-#' @rdname getYieldGear-methods
+#' @rdname getYieldGear
 setMethod('getYieldGear', signature(object='MizerSim'),
     function(object){
         # biomass less the first time step
@@ -147,8 +139,6 @@ setMethod('getYieldGear', signature(object='MizerSim'),
 #'
 #' @return An array containing the total yield (time x species)
 #' @export
-#' @docType methods
-#' @rdname getYield-methods
 #' @seealso \code{\link{getYieldGear}}
 #' @examples
 #' \dontrun{
@@ -160,7 +150,8 @@ setMethod('getYieldGear', signature(object='MizerSim'),
 #' }
 setGeneric('getYield', function(object)
     standardGeneric('getYield'))
-#' @rdname getYield-methods
+
+#' @rdname getYield
 setMethod('getYield', signature(object='MizerSim'),
     function(object){
 	# biomass less the first time step
@@ -201,8 +192,7 @@ get_size_range_array <- function(params, min_w = min(params@w), max_w = max(para
 #' Outputs a general summary of the structure and content of the object
 #'
 #' @export
-#' @docType methods
-#' @rdname summary-methods
+#' @rdname summary
 #'
 #' @examples
 #' \dontrun{
@@ -281,8 +271,6 @@ setMethod("summary", signature(object="MizerSim"),
 #'
 #' @return An array containing the proportion of large fish through time
 #' @export
-#' @docType methods
-#' @rdname getProportionOfLargeFish-methods
 #' @examples
 #' \dontrun{
 #' data(NS_species_params_gears)
@@ -299,7 +287,7 @@ setMethod("summary", signature(object="MizerSim"),
 setGeneric('getProportionOfLargeFish', function(object, ...)
     standardGeneric('getProportionOfLargeFish'))
 
-#' @rdname getProportionOfLargeFish-methods
+#' @rdname getProportionOfLargeFish
 setMethod('getProportionOfLargeFish', signature(object='MizerSim'),
     function(object, species = 1:nrow(object@params@species_params), threshold_w = 100, threshold_l = NULL, biomass_proportion=TRUE, ...){
 	check_species(object,species)
@@ -348,6 +336,7 @@ setMethod('getProportionOfLargeFish', signature(object='MizerSim'),
 #' }
 setGeneric('getMeanWeight', function(object, ...)
     standardGeneric('getMeanWeight'))
+
 #' @rdname getMeanWeight
 setMethod('getMeanWeight', signature(object='MizerSim'),
     function(object, species = 1:nrow(object@params@species_params),...){
@@ -389,6 +378,7 @@ setMethod('getMeanWeight', signature(object='MizerSim'),
 #' }
 setGeneric('getMeanMaxWeight', function(object, ...)
     standardGeneric('getMeanMaxWeight'))
+
 #' @rdname getMeanMaxWeight
 setMethod('getMeanMaxWeight', signature(object='MizerSim'),
     function(object, species = 1:nrow(object@params@species_params), measure = "both",...){
@@ -443,10 +433,13 @@ setMethod('getMeanMaxWeight', signature(object='MizerSim'),
 #' }
 setGeneric('getCommunitySlope', function(object, ...)
     standardGeneric('getCommunitySlope'))
+
 #' @rdname getCommunitySlope
 setMethod('getCommunitySlope', signature(object='MizerSim'),
-    function(object, species = 1:nrow(object@params@species_params), 
-	     biomass = TRUE, ...){
+    function(object, species = 1:nrow(object@params@species_params),
+             biomass = TRUE, 
+             min_w = min(object@params@w), max_w = max(object@params@w), 
+             min_l = NULL, max_l = NULL){
         check_species(object,species)
         size_range <- get_size_range_array(object@params,...)
         total_n <- apply(sweep(object@n,c(2,3),size_range,"*")[,species,,drop=FALSE],c(1,3),sum)

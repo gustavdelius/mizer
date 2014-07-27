@@ -154,7 +154,6 @@ remove(valid_MizerSim)
 setGeneric('MizerSim', function(object, ...)
     standardGeneric('MizerSim'))
 
-#' @rdname MizerSim
 setMethod('MizerSim', signature(object='MizerParams'),
     function(object, t_dimnames = NA, t_max = 100, t_save=1){
         # If the dimnames for the time dimension not passed in, calculate them from t_max and t_save 

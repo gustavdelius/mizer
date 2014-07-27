@@ -63,14 +63,14 @@ setGeneric('project', function(object, effort, ...)
 # No effort is specified - default is to set an effort of 1
 # All other arguments passed as ...
 
-#' @rdname project
+#'@rdname  project
 setMethod('project', signature(object='MizerParams', effort='missing'),
     function(object, ...){
 	res <- project(object, effort=0, ...)
 	return(res)
 })
 
-#' @rdname project
+#'@rdname project
 setMethod('project', signature(object='MizerParams', effort='numeric'),
     function(object, effort,  t_max = 100, dt = 0.1, ...){
     #if (!all.equal(t_max %% dt, 0))
@@ -97,7 +97,7 @@ setMethod('project', signature(object='MizerParams', effort='numeric'),
 	return(res)
 })
 
-#' @rdname project
+#'@rdname project
 setMethod('project', signature(object='MizerParams', effort='array'),
     function(object, effort, t_save=1, dt=0.1, initial_n=get_initial_n(object), initial_n_pp=object@cc_pp,  ...){
         validObject(object)

@@ -5,7 +5,6 @@
 #' The data frames contain all the necessary information to be used by the \linkS4class{MizerParams} constructor.
 #' The data set without a fishing gear column will set up a model in which each species is fished by a separate gear.
 #'  
-#' @rdname NS_species_params
 #' @name NS_species_params
 #' @seealso \linkS4class{MizerParams}
 #' @aliases NS_species_params_gears

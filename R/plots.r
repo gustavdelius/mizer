@@ -34,7 +34,8 @@
 #' }
 setGeneric('plotBiomass', function(object, ...)
     standardGeneric('plotBiomass'))
-#' @rdname plotBiomass
+
+#'@rdname plotBiomass
 setMethod('plotBiomass', signature(object='MizerSim'),
     function(object, print_it=TRUE, start_time=as.numeric(dimnames(object@n)[[1]][1]), end_time = as.numeric(dimnames(object@n)[[1]][dim(object@n)[1]]), ...){
         b <- getBiomass(object, ...)
@@ -80,7 +81,8 @@ setMethod('plotBiomass', signature(object='MizerSim'),
 #' }
 setGeneric('plotYield', function(object, ...)
     standardGeneric('plotYield'))
-#' @rdname plotYield
+
+#'@rdname plotYield
 setMethod('plotYield', signature(object='MizerSim'),
     function(object, print_it = TRUE, ...){
 	y <- getYield(object, ...)
@@ -117,7 +119,8 @@ setMethod('plotYield', signature(object='MizerSim'),
 #' }
 setGeneric('plotYieldGear', function(object, ...)
     standardGeneric('plotYieldGear'))
-#' @rdname plotYieldGear
+
+#'@rdname plotYieldGear
 setMethod('plotYieldGear', signature(object='MizerSim'),
     function(object, print_it=TRUE, ...){
 	y <- getYieldGear(object, ...)
@@ -159,7 +162,8 @@ setMethod('plotYieldGear', signature(object='MizerSim'),
 #' }
 setGeneric('plotSpectra', function(object, ...)
     standardGeneric('plotSpectra'))
-#' @rdname plotSpectra
+
+#'@rdname plotSpectra
 setMethod('plotSpectra', signature(object='MizerSim'),
     function(object, time_range = max(as.numeric(dimnames(object@n)$time)), min_w =min(object@params@w)/100, biomass = TRUE, print_it = TRUE, ...){
         time_elements <- get_time_elements(object,time_range)
@@ -209,7 +213,8 @@ setMethod('plotSpectra', signature(object='MizerSim'),
 #' }
 setGeneric('plotFeedingLevel', function(object, ...)
     standardGeneric('plotFeedingLevel'))
-#' @rdname plotFeedingLevel
+
+#'@rdname plotFeedingLevel
 setMethod('plotFeedingLevel', signature(object='MizerSim'),
     function(object, time_range = max(as.numeric(dimnames(object@n)$time)), print_it = TRUE, ...){
         feed_time <- getFeedingLevel(object=object, time_range=time_range, drop=FALSE, ...)
@@ -247,7 +252,8 @@ setMethod('plotFeedingLevel', signature(object='MizerSim'),
 #' }
 setGeneric('plotM2', function(object, ...)
     standardGeneric('plotM2'))
-#' @rdname plotM2
+
+#'@rdname plotM2
 setMethod('plotM2', signature(object='MizerSim'),
     function(object, time_range = max(as.numeric(dimnames(object@n)$time)), print_it = TRUE, ...){
 	m2_time <- getM2(object, time_range=time_range, drop=FALSE, ...)
@@ -285,7 +291,8 @@ setMethod('plotM2', signature(object='MizerSim'),
 #' }
 setGeneric('plotFMort', function(object, ...)
     standardGeneric('plotFMort'))
-#' @rdname plotFMort
+
+#'@rdname plotFMort
 setMethod('plotFMort', signature(object='MizerSim'),
     function(object, time_range = max(as.numeric(dimnames(object@n)$time)), print_it = TRUE, ...){
 	f_time <- getFMort(object, time_range=time_range, drop=FALSE, ...)
@@ -313,6 +320,7 @@ setMethod('plotFMort', signature(object='MizerSim'),
 #' @param object An object of class \linkS4class{MizerSim}
 #' @param ...  For additional arguments see the documentation for \code{\link{plotBiomass}}, \code{\link{plotFeedingLevel}},\code{\link{plotSpectra}},\code{\link{plotM2}} and \code{\link{plotFMort}}.
 #' @return A viewport object
+#' @rdname MizerSim-class
 #' @export
 #' @examples
 #' \dontrun{
