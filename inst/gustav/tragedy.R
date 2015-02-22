@@ -155,3 +155,49 @@ params_tragedy<- set_tragedy_model(z0 = 0.1, recruitment = 4e7,
                                   n_fishers = 5, tragedy_size = 100)
 sim_tragedy <- project(params_tragedy, effort = 0.5, t_max = 50)
 plot(sim_tragedy)
+
+# Plot the yield
+y <- data.frame(t=1:50,c=getYield(sim),e=getYield(sim_tragedy))
+ym <- melt(y, id.vars="t")
+qplot(t, value, data=ym, color=variable,geom="line")
+
+# Not reached steady state yet, so run for longer
+sim <- project(params_knife, effort = 0.5, t_max = 50, initial_n = sim@n[51,,])
+sim_tragedy <- project(params_tragedy, effort = 0.5, t_max = 50, initial_n = sim_tragedy@n[51,,])
+
+# Plot the yield
+y <- data.frame(t=1:50,c=getYield(sim),e=getYield(sim_tragedy))
+ym <- melt(y, id.vars="t")
+qplot(t, value, data=ym, color=variable,geom="line")
+
+# After running the above two sections until steady state, now change the
+# mesh size
+params_knife <- set_community_model(z0 = 0.1, recruitment = 4e7,
+                                    alpha = 0.2, f0 = 0.7, knife_edge_size = 100)
+params_tragedy<- set_tragedy_model(z0 = 0.1, recruitment = 4e7,
+                                   alpha = 0.2, f0 = 0.7, knife_edge_size = 100,
+                                   n_fishers = 5, tragedy_size = 50)
+sim <- project(params_knife, effort = 0.5, t_max = 50, initial_n = sim@n[51,,])
+sim_tragedy <- project(params_tragedy, effort = 0.5, t_max = 50, initial_n = sim_tragedy@n[51,,])
+
+# Plot the yield
+y <- data.frame(t=1:50,c=getYield(sim),e=getYield(sim_tragedy))
+ym <- melt(y, id.vars="t")
+qplot(t, value, data=ym, color=variable,geom="line")
+
+# After running the above two sections until steady state, now change the
+# mesh size
+params_knife <- set_community_model(z0 = 0.1, recruitment = 4e7,
+                                    alpha = 0.2, f0 = 0.7, knife_edge_size = 0.01)
+params_tragedy<- set_tragedy_model(z0 = 0.1, recruitment = 4e7,
+                                   alpha = 0.2, f0 = 0.7, knife_edge_size = 0.01,
+                                   n_fishers = 5, tragedy_size = 0.005)
+sim <- project(params_knife, effort = 0.5, t_max = 50, initial_n = sim@n[51,,])
+sim_tragedy <- project(params_tragedy, effort = 0.5, t_max = 50, initial_n = sim_tragedy@n[51,,])
+
+# Plot the yield
+y <- data.frame(t=1:50,c=getYield(sim),e=getYield(sim_tragedy))
+ym <- melt(y, id.vars="t")
+qplot(t, value, data=ym, color=variable,geom="line")
+
+
