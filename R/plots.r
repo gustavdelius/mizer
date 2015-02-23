@@ -88,6 +88,7 @@ setMethod('plotYield', signature(object='MizerSim'),
 	y <- getYield(object, ...)
 	names(dimnames(y))[names(dimnames(y))=="sp"] <- "Species"
 	ym <- melt(y)
+    ym[,"Species"] <- as.factor(ym[,"Species"])
 	p <- ggplot(ym) + geom_line(aes(x=time,y=value, colour=Species, linetype=Species)) + scale_y_continuous(trans="log10", name="Yield") + scale_x_continuous(name="Time") 
     if (nrow(object@params@species_params)>12){
         p <- ggplot(ym) + geom_line(aes(x=time,y=value, group=Species)) + scale_y_continuous(trans="log10", name="Yield") + scale_x_continuous(name="Time") 
