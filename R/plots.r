@@ -179,7 +179,7 @@ setMethod('plotSpectra', signature(object='MizerSim'),
         plot_dat <- data.frame(value = c(spec_n), Species = dimnames(spec_n)[[1]], w = rep(object@params@w, each=nrow(object@params@species_params)))
         plot_dat <- rbind(plot_dat, data.frame(value = c(background_n), Species = "Background", w = object@params@w_full))
         # lop off 0s in background and apply min_w
-        plot_dat <- plot_dat[(plot_dat$value > 0) & (plot_dat$w >= min_w),]
+        plot_dat <- plot_dat[(plot_dat$value > 10^(-14)) & (plot_dat$w >= min_w),]
         p <- ggplot(plot_dat) + geom_line(aes(x=w, y = value, colour = Species, linetype=Species)) + scale_x_continuous(name = "Size", trans="log10") + scale_y_continuous(name = y_axis_name, trans="log10")
         if (nrow(object@params@species_params)>12){
             p <- ggplot(plot_dat) + geom_line(aes(x=w, y = value, group = Species)) + scale_x_continuous(name = "Size", trans="log10") + scale_y_continuous(name = y_axis_name, trans="log10")
