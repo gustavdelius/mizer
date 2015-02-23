@@ -128,44 +128,62 @@ set_tragedy_model <- function(no_sp = 10,
   return(trait_params)
 }
 
-
-#' Plot the yield
-ploty <- function(sim, sim_tragedy) {
-  y <- data.frame(time=1:50,equal=rowSums(getYield(sim)),exploiting=rowSums(getYield(sim_tragedy)))
-  ym <- melt(y[20:50, ], id.vars="time")
-  qplot(time, value, data=ym, color=variable, geom="line")
+#' Plot yield per fisher
+plot_yield <- function (sim){
+    if (sim@params@species_params$sel_func[1] == "tragedy_edge") {
+        size <- sim@params@species_params$tragedy_size
+    } else {
+        size <- sim@params@species_params$knife_edge_size
+    }
+    n_total <- apply(sim@n, c(1,3), sum)
+    biomass_total <- sweep(n_total,2,sim@params@w * sim@params@dw, "*")
+    yield_total <- rowSums(biomass_total[ ,sim@params@w > size]) * effort
+    plot(yield_total, type="l")
+    return(yield_total[length(yield_total)])
 }
 
-params_knife <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5, knife_edge_size = 1000)
-sim <- project(params_knife, effort = 0.5, t_max = 50)
+# Run the trait_based model
+knife_edge_size <- 1000
+effort <- 0.5
+t_max <- 50
+params_knife <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5, knife_edge_size = knife_edge_size)
+sim <- project(params_knife, effort = effort, t_max = t_max)
 plot(sim)
+# Plot yield
+plot_yield(sim, knife_edge_size)
+
+# Rerun with different knife_edge_size to find that size that optimises the yield
+knife_edge_size <- 0.13
+t_max <- 20
+params_knife <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5, knife_edge_size = knife_edge_size)
+sim <- project(params_knife, effort = effort, t_max = t_max, initial_n = sim@n[dim(sim@n)[1],,])
+plot_yield(sim)
+
+plotSpectra(sim)
 
 # Simulation with exploiting fisher
-params_tragedy<- set_tragedy_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5, knife_edge_size = 1000,
-                                  n_fishers = 5, tragedy_size = 100)
-sim_tragedy <- project(params_tragedy, effort = 0.5, t_max = 50)
-plot(sim_tragedy)
+tragedy_size <- 0.9*knife_edge_size
+n_fishers <- 5
+params_tragedy<- set_tragedy_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5, knife_edge_size = knife_edge_size,
+                                  n_fishers = n_fishers, tragedy_size = tragedy_size)
+sim_tragedy <- project(params_tragedy, effort = effort, t_max = t_max, initial_n = sim@n[dim(sim@n)[1],,])
+plot_yield(sim_tragedy)
 
-# Plot the yield
-ploty(sim, sim_tragedy)
+# Yield if all fishers lower their mesh size
+knife_edge_size <- tragedy_size
+params_knife <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5, knife_edge_size = knife_edge_size)
+sim <- project(params_knife, effort = effort, t_max = t_max, initial_n = sim@n[dim(sim@n)[1],,])
+plot_yield(sim)
 
-# Not reached steady state yet, so run for longer
-sim <- project(params_knife, effort = 0.5, t_max = 50, initial_n = sim@n[51,,])
-sim_tragedy <- project(params_tragedy, effort = 0.5, t_max = 50, initial_n = sim_tragedy@n[51,,])
-ploty(sim, sim_tragedy)
+# Rerun with different tragedy_size to find that size that optimises the yield
+t_max <- 10
+tragedy_size <- 0.9*knife_edge_size
+params_tragedy<- set_tragedy_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5, knife_edge_size = knife_edge_size,
+                                   n_fishers = n_fishers, tragedy_size = tragedy_size)
+sim_tragedy <- project(params_tragedy, effort = effort, t_max = t_max, initial_n = sim_tragedy@n[dim(sim@n)[1],,])
+plot_yield(sim_tragedy)
 
-# After running the above two sections until steady state, now change the
-# mesh size
-params_knife <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5, knife_edge_size = 0.13)
-params_tragedy<- set_tragedy_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5, knife_edge_size = 0.13,
-                                   n_fishers = 5, tragedy_size = 0.12)
-sim <- project(params_knife, effort = 0.5, t_max = 50, initial_n = sim@n[51,,])
-sim_tragedy <- project(params_tragedy, effort = 0.5, t_max = 50, initial_n = sim_tragedy@n[51,,])
-ploty(sim, sim_tragedy)
-
-
-
-params_knife <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5, knife_edge_size = 0.12)
-sim <- project(params_knife, effort = 0.5, t_max = 50, initial_n = sim@n[51,,])
-ys <- rowSums(getYield(sim))
-ys[50]
+knife_edge_size <- tragedy_size
+params_knife <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5, knife_edge_size = knife_edge_size)
+sim <- project(params_knife, effort = effort, t_max = t_max, initial_n = sim@n[dim(sim@n)[1],,])
+plot_yield(sim)
