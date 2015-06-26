@@ -55,7 +55,8 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='matr
 	# Then sum over 3rd dimension to get total eaten by each predator by predator size
 	phi_prey_species <- rowSums(sweep(object@pred_kernel[,,idx_sp,drop=FALSE],c(1,3),n_eff_prey,"*"),dims=2)
 	# Eating the background
-	phi_prey_background <- rowSums(sweep(object@pred_kernel,3,object@dw_full*object@w_full*n_pp,"*"),dims=2)
+	n_eff_background <- sweep(object@interaction_pp %*% n_pp, 2, object@w_full * object@dw_full, "*") 
+	phi_prey_background <- rowSums(sweep(object@pred_kernel,c(1,3),n_eff_prey,"*"),dims=2)
 	return(phi_prey_species+phi_prey_background)
 })
 
@@ -72,7 +73,7 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='matr
 #' @param object A \code{MizerParams} or \code{MizerSim} object
 #' @param n A matrix of species abundance (species x size). Only used if 
 #'   \code{object} argument is of type \code{MizerParams}.
-#' @param n_pp A vector of the background abundance by size. Only used if 
+#' @param n_pp A matrix of the background abundances (resource x size). Only used if 
 #'   \code{object} argument is of type \code{MizerParams}.
 #' @param phi_prey The PhiPrey matrix (optional) of dimension no. species x no. 
 #'   size bins. If not passed in, it is calculated internally using the 
@@ -103,7 +104,7 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='matr
 #' sim <- project(params, t_max = 20, effort = 0.5)
 #' # Get the feeding level at one time step
 #' n <- sim@@n[21,,]
-#' n_pp <- sim@@n_pp[21,]
+#' n_pp <- sim@@n_pp[21,,]
 #' fl <- getFeedingLevel(params,n,n_pp)
 #' # Get the feeding level at all saved time steps
 #' fl <- getFeedingLevel(sim)
@@ -114,7 +115,8 @@ setGeneric('getFeedingLevel', function(object, n, n_pp, phi_prey, ...)
     standardGeneric('getFeedingLevel'))
 
 #' @describeIn getFeedingLevel
-setMethod('getFeedingLevel', signature(object='MizerParams', n = 'matrix', n_pp='numeric', phi_prey='matrix'),
+setMethod('getFeedingLevel', signature(object='MizerParams', n = 'matrix', 
+                                       n_pp='matrix', phi_prey='matrix'),
     function(object, n, n_pp, phi_prey, ...){
     # Check dims of phi_prey
         if (!all(dim(phi_prey) == c(nrow(object@species_params),length(object@w)))){
@@ -130,7 +132,7 @@ setMethod('getFeedingLevel', signature(object='MizerParams', n = 'matrix', n_pp=
 
 #' @describeIn getFeedingLevel
 setMethod('getFeedingLevel', signature(object='MizerParams', n = 'matrix', 
-                                       n_pp='numeric', phi_prey='missing'),
+                                       n_pp='matrix', phi_prey='missing'),
     function(object, n, n_pp, ...){
 	phi_prey <- getPhiPrey(object, n=n, n_pp=n_pp)
 	# encountered food = available food * search volume

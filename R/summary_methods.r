@@ -213,7 +213,7 @@ get_size_range_array <- function(params, min_w = min(params@w), max_w = max(para
 #' summary(params)
 #' }
 setMethod("summary", signature(object="MizerParams"),
-    function(object, ...){
+    function(object){
 	#cat("An object of class \"", as.character(class(object)), "\" with:\n", sep="")
 	cat("An object of class \"", as.character(class(object)), "\" \n", sep="")
 	cat("Community size spectrum:\n")
@@ -221,7 +221,8 @@ setMethod("summary", signature(object="MizerParams"),
 	cat("\tmaximum size:\t", signif(max(object@w)), "\n", sep="")
 	cat("\tno. size bins:\t", length(object@w), "\n", sep="")
 	# Length of background? 
-	cat("Background size spectrum:\n")
+	cat("Background size spectra:\n")
+	cat("\tnumber of resources:\t", ncol(object@interaction_pp), "\n", sep="")
 	cat("\tminimum size:\t", signif(min(object@w_full)), "\n", sep="")
 	cat("\tmaximum size:\t", signif(max(object@w_full)), "\n", sep="")
 	cat("\tno. size bins:\t", length(object@w_full), "\n", sep="")

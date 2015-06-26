@@ -200,7 +200,7 @@ The first central assumption is that an individual can be characterized by its w
   \frac{\partial N_i(w)}{\partial t} + \frac{\partial g_i(w) N_i(w)}{\partial w} = -\mu_i(w) N_i(w)
 \end{equation}
 
-where individual growth $g_i(w)$ and mortality $\mu_i(w)$ are both determined by the availability of food from the other species plus a background resource, $N_R(w)$, and predation by the other species. The conservation equation is supplemented by a boundary condition at the boundary at weight $w_0$ where the flux of individuals (numbers per time) $g_i(w_0) N_i(w_0)$ is determined by the reproduction of offspring by mature individuals in the population $R_i$:
+where individual growth $g_i(w)$ and mortality $\mu_i(w)$ are both determined by the availability of food from the other species and from background resources, $N^R_a(w)$, and predation by the other species. The conservation equation is supplemented by a boundary condition at the boundary at weight $w_0$ where the flux of individuals (numbers per time) $g_i(w_0) N_i(w_0)$ is determined by the reproduction of offspring by mature individuals in the population $R_i$:
 
 \begin{equation}
   \label{eq:3}
@@ -222,14 +222,15 @@ The remainder of this section looks in detail at these assumptions.
 \label{sec:encounter}
 The encounter of food is based on the ``Andersen-Ursin'' encounter model which was developed as part of a North-Sea ecosystem model \citep[see also][]{andersen_multispecies_1977, andersen_asymptotic_2006}.  
 
-The available food (mass per volume) for a predator of weight $w$ is determined by integrating over all species and the background resource weighted by the size selection function (Equation~\ref{eq:4}): 
+The available food (mass per volume) for a predator of weight $w$ is determined by integrating over all species and the background resources weighted by the size selection function (Equation~\ref{eq:4}): 
 
 \begin{equation}
   \label{eq:1}
-  E_{a.i}(w) = \int \left( N_R(w) + \sum_{j} \theta_{ij} N_j(w) \right) \phi(w_p/w) w_p \, dw_p.
+  E_{a.i}(w) = \int \left( \sum_{j} \theta_{ij} N_j(w_p) +\sum_a \theta^R_{ia}N^R_a(w_p) \right) \phi(w_p/w) w_p \, dw_p.
 \end{equation}
 
-where $\theta_{ij}$ is the preference of species $i$ for species $j$. The food actually encountered $E_{e.i}$ (mass per time) depends on the search rate (volume per time) which is assumed to scale with individual weight as $\gamma_i w^q$:
+where $\theta_{ij}$ is the preference of species $i$ for species $j$ and $\theta^R_{ia}$ the
+preference of species $i$ for resource $a$. The food actually encountered $E_{e.i}$ (mass per time) depends on the search rate (volume per time) which is assumed to scale with individual weight as $\gamma_i w^q$:
 
 \begin{equation}
   \label{eq:Ee}
@@ -340,12 +341,13 @@ Mortality from sources other than predation and starvation is assumed to be cons
 \end{equation}
 
 \subsection{Resource dynamics}
-The background resource spectrum $N_R(w)$ represents food items for the smallest individuals (smaller than $\beta w_0$). The temporal evolution of each size group in the resource spectrum is described using semi-chemostatic growth:
+The background resource spectra $N^R_a(w)$ represents food items for the smallest individuals (smaller than $\beta w_0$). The temporal evolution of each size group in the resource spectra is described using semi-chemostatic growth:
 \begin{equation}
   \label{eq:nb}
-  \frac{\partial N_R(w,t)}{\partial t} = r_0 w^{p-1} \Big[ \kappa_R w^{-\lambda} - N_R(w,t) \Big] - \mu_p(w) N_R(w,t),
+  \frac{\partial N^R_a(w,t)}{\partial t} = r_0 w^{p-1} \Big[ \kappa_R w^{-\lambda} - N^R_a(w,t) \Big] - \mu_p(w) N^R_a(w,t),
 \end{equation}
-where $r_0 w^{p-1}$ is the population regeneration rate \citep{fenchel_intrinsic_1974,savage_effects_2004} and $\kappa w^{-\lambda} = \kappa w^{-2-q+n}$ the carrying capacity.
+where $r_0 w^{p-1}$ is the population regeneration rate \citep{fenchel_intrinsic_1974,savage_effects_2004} and $\kappa w^{-\lambda} = \kappa w^{-2-q+n}$ the carrying capacity. In the current version of
+mizer the regeneration rate and the carrying capacity are identical for all resource spectra.
 
 \subsection{Parameters}
 \label{sec:parameters}
@@ -435,7 +437,7 @@ Finally we look at the most complex type of model, the multispecies model.
 The simplest version of the size spectrum model is the community model, originally introduced by \citep{benoit_continuous_2004}.
 %The community model can be derived as a simplification of the trait-based model \citep{zhang_trait_2013}.
 In this model only one ``species'' is resolved. Reproduction is not considered, so $\psi(w)=0$ and the recruitment flux $R$ is set to be constant.
-The resource spectrum only extends to the start of the community spectrum.
+The single resource spectrum only extends to the start of the community spectrum.
 Standard metabolism is turned off by setting $k_{s}$ to 0. 
 Growth is therefore given by the simpler equation:
 \begin{equation}
