@@ -257,6 +257,7 @@ valid_MizerParams <- function(object) {
 #' @slot species_params A data.frame to hold the species specific parameters
 #'   (see the mizer vignette, Table 2, for details)
 #' @slot interaction The species specific interaction matrix.
+#' @slot interaction_pp The species specific interaction matrix for resources
 #' @slot srr Function to calculate the realised (density dependent) recruitment.
 #'   Has two arguments which are rdi and species_params
 #' @slot selectivity An array (gear x species x w) that holds the selectivity of
@@ -295,6 +296,7 @@ setClass(
 	cc_pp = "numeric", # was NinPP, carrying capacity of background
 	species_params = "data.frame",
 	interaction = "array",
+	interaction_pp = "array",
 	srr  = "function",
 	selectivity = "array",
 	catchability = "array"
@@ -321,6 +323,9 @@ setClass(
         interaction = array(
             NA,dim = c(1,1), dimnames = list(predator = NULL, prey = NULL)
         ), # which dimension is prey and which is prey?
+	interaction_pp = array(
+	    NA,dim = c(1,1), dimnames = list(predator = NULL, pp = NULL)
+	),
         selectivity = array(
             NA, dim = c(1,1,1), dimnames = list(gear = NULL, sp = NULL, w = NULL)
         ),
@@ -351,6 +356,9 @@ setClass(
 #'   This means that the order of the columns and rows of the interaction matrix
 #'   argument should be the same as the species name in the
 #'   \code{species_params} slot.
+#' @param interaction_pp Optional argument to specify the interaction matrix
+#'   between species and resource. If missing a default interaction is used 
+#'   where all entries are set to 1.
 #' @param ... Additional arguments used to specify the dimensions and sizes of
 #'   the model. These include:
 #' \itemize{
@@ -409,7 +417,7 @@ setClass(
 #' data(NS_species_params_gears)
 #' data(inter)
 #' params <- MizerParams(NS_species_params_gears, inter)
-setGeneric('MizerParams', function(object, interaction, ...)
+setGeneric('MizerParams', function(object, interaction, interaction_pp, ...)
     standardGeneric('MizerParams'))
 
 #' Basic constructor with only the number of species as dispatching argument
@@ -417,8 +425,11 @@ setGeneric('MizerParams', function(object, interaction, ...)
 #' Only really used to make MizerParams of the right size and shouldn't be used
 #' by user
 #' @describeIn MizerParams
-setMethod('MizerParams', signature(object='numeric', interaction='missing'),
-    function(object, min_w = 0.001, max_w = 1000, no_w = 100,  min_w_pp = 1e-10, no_w_pp = round(no_w)*0.3, species_names=1:object, gear_names=species_names){
+setMethod('MizerParams', signature(object='numeric', interaction='missing', 
+                                   interaction_pp='missing'),
+    function(object, min_w = 0.001, max_w = 1000, no_w = 100,  min_w_pp = 1e-10, 
+             no_w_pp = round(no_w)*0.3, species_names=1:object, 
+             gear_names=species_names){
 	#args <- list(...)
 
 	# Some checks
@@ -446,6 +457,7 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	selectivity <- array(0, dim=c(length(gear_names), object, no_w), dimnames=list(gear=gear_names, sp=species_names, w=signif(w,3)))
 	catchability <- array(0, dim=c(length(gear_names), object), dimnames = list(gear=gear_names, sp=species_names))
 	interaction <- array(1, dim=c(object,object), dimnames = list(predator = species_names, prey = species_names))
+	interaction_pp <- array(1, dim=c(1, 1), dimnames = list(predator = species_names, pp = 1))
 	vec1 <- as.numeric(rep(NA, no_w_full))
 	names(vec1) <- signif(w_full,3)
 	
@@ -468,16 +480,17 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	    psi = mat1, intake_max = mat1, search_vol = mat1, activity = mat1, std_metab = mat1, pred_kernel = mat2,
 	    selectivity=selectivity, catchability=catchability,
 	    rr_pp = vec1, cc_pp = vec1, species_params = species_params,
-	    interaction = interaction, srr = srr) 
+	    interaction = interaction, interaction_pp = interaction_pp, srr = srr) 
 	return(res)
     }
 )
 
 #' Constructor that takes the species_params data.frame and the interaction matrix
 #' @describeIn MizerParams
-setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
-    function(object, interaction,  n = 2/3, p = 0.7, q = 0.8, r_pp = 10, 
-             kappa = 1e11, lambda = (2+q-n), w_pp_cutoff = 10, 
+setMethod('MizerParams', signature(object='data.frame', interaction='matrix',
+                                   interaction_pp='matrix'),
+    function(object, interaction, interaction_pp, n = 2/3, p = 0.7, q = 0.8, 
+             r_pp = 10,  kappa = 1e11, lambda = (2+q-n), w_pp_cutoff = 10, 
              max_w = max(object$w_inf)*1.1, f0 = 0.6, 
              z0pre = 0.6, z0exp = n-1, ...){
 
@@ -570,6 +583,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	
 	    warning("Dimnames of interaction matrix do not match the order of species names in the species data.frame. I am now ignoring your dimnames so your interaction matrix may be in the wrong order.")}
 	res@interaction[] <- interaction
+	res@interaction_pp[] <- interaction_pp
 
 	# Now fill up the slots using default formulations:
 	# psi - allocation to reproduction - from original Setup() function
@@ -632,14 +646,29 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
     }
 )
 
-# If interaction is missing, make one of the right size and fill with 1s
+# If interaction and interaction_pp are missing, make one of the right size and
+# fill with 1s
 #' @describeIn MizerParams
-setMethod('MizerParams', signature(object='data.frame', interaction='missing'),
+setMethod('MizerParams', signature(object='data.frame', interaction='missing', 
+                                   interaction_pp='missing'),
     function(object, ...){
-	interaction <- matrix(1,nrow=nrow(object), ncol=nrow(object))
-	res <- MizerParams(object,interaction, ...)
-	return(res)
-})
+	    interaction <- matrix(1,nrow=nrow(object), ncol=nrow(object))
+	    interaction_pp <- matrix(1,nrow=nrow(object), ncol=1)
+	    res <- MizerParams(object, interaction, interaction_pp, ...)
+	    return(res)
+    }
+)
+
+# If interaction_pp is missing, make one for a single resource
+#' @describeIn MizerParams
+setMethod('MizerParams', signature(object='data.frame', interaction='matrix', 
+                                   interaction_pp='missing'),
+          function(object, ...){
+              interaction_pp <- matrix(1,nrow=nrow(object), ncol=1)
+              res <- MizerParams(object, interaction, interaction_pp, ...)
+              return(res)
+          }
+)
 
 # Check that the species_params dataset is OK
 # internal only

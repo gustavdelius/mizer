@@ -12,7 +12,7 @@
 #' performing simulations.
 #' @param object An \linkS4class{MizerParams} object
 #' @param n A matrix of species abundances (species x size)
-#' @param n_pp A vector of the background abundance by size
+#' @param n_pp A matrix of background abundances (resource by size
 #'   
 #' @return A two dimensional array (predator species x predator size)
 #' @seealso \code{\link{project}}
@@ -25,23 +25,25 @@
 #' # With constant fishing effort for all gears for 20 time steps
 #' sim <- project(params, t_max = 20, effort = 0.5)
 #' n <- sim@@n[21,,]
-#' n_pp <- sim@@n_pp[21,]
+#' n_pp <- sim@@n_pp[21,,]
 #' getPhiPrey(params,n,n_pp)
 #' }
 setGeneric('getPhiPrey', function(object, n, n_pp,...)
     standardGeneric('getPhiPrey'))
 
 #' @describeIn getPhiPrey
-setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='numeric'),
+setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='matrix'),
     function(object, n, n_pp, ...){
 #        cat("In getPhiPrey\n")
 	# Check n dims
 	if(dim(n)[1] != dim(object@interaction)[1])
 	    stop("n does not have the right number of species (first dimension)")
+    if(dim(n_p)[1] != dim(object@interaction_pp)[2])
+        stop("n_pp does not have the right number of resources (first dimension)")
 	if(dim(n)[2] != length(object@w))
 	    stop("n does not have the right number of size groups (second dimension)")
-	if(length(n_pp) != length(object@w_full))
-	    stop("n_pp does not have the right number of size groups")
+	if(dim(n_pp)[2] != length(object@w_full))
+	    stop("n_pp does not have the right number of size groups (second dimension)")
 	# n_eff_prey is the total prey abundance by size exposed to each predator (prey
 	# not broken into species - here we are just working out how much a predator
 	# eats - not which species are being eaten - that is in the mortality calculation

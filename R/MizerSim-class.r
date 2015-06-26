@@ -18,8 +18,8 @@ valid_MizerSim <- function(object){
 	msg <- "effort slot must have two dimensions"
 	errors <- c(errors, msg)
     }
-    if(length(dim(object@n_pp)) != 2){
-	msg <- "n_pp slot must have two dimensions"
+    if(length(dim(object@n_pp)) != 3){
+	msg <- "n_pp slot must have three dimensions"
 	errors <- c(errors, msg)
     }
     # Check time dimension is good - size, dim name, and names
@@ -109,8 +109,8 @@ valid_MizerSim <- function(object){
 #'   time, species and size
 #' @slot effort Array that stores the fishing effort through time by time and
 #'   gear
-#' @slot n_pp Array that stores the projected background population by time and
-#'   size
+#' @slot n_pp Array that stores the projected background population by time,
+#'   resource and size
 #'
 #' @seealso \code{\link{project}} \code{\link{MizerParams}}
 #' @export
@@ -131,7 +131,7 @@ setClass(
             NA,dim = c(1,1), dimnames = list(time = NULL, gear = NULL)
         ),
         n_pp = array(
-            NA,dim = c(1,1), dimnames = list(time = NULL, w = NULL)
+            NA,dim = c(1,1,1), dimnames = list(time = NULL, pp = NULL, w = NULL)
         )
     ),
     validity = valid_MizerSim
@@ -185,6 +185,7 @@ setMethod('MizerSim', signature(object='MizerParams'),
             stop("The t_dimnames argument must be numeric.")
         }
         no_sp <- nrow(object@species_params)
+        no_pp <- ncol(object@interaction_pp)
         species_names <- dimnames(object@psi)$sp
         no_w <- length(object@w)
         w_names <- dimnames(object@psi)$w
@@ -205,9 +206,9 @@ setMethod('MizerSim', signature(object='MizerParams'),
 
         no_w_full <- length(object@w_full)
         w_full_names <- names(object@rr_pp)
-        array_n_pp <- array(NA, dim = c(t_dim_n, no_w_full), 
+        array_n_pp <- array(NA, dim = c(t_dim_n, no_pp, no_w_full), 
                             dimnames = list(time=t_dimnames_n, 
-                                            w = w_full_names))
+                                            pp = 1:no_pp, w = w_full_names))
 
         sim <- new('MizerSim',
                n = array_n, 
@@ -215,6 +216,6 @@ setMethod('MizerSim', signature(object='MizerParams'),
                n_pp = array_n_pp,
                params = object)
         return(sim)
-        }
+    }
 )
 
