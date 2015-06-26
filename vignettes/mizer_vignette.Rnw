@@ -2147,7 +2147,11 @@ sim0 <- project(params, effort=0, dt = 0.5, t_save = 1, t_max = 100)
 Here we look at some of the ways the results of the simulation can be explored.
 %We are going to compare the simulated SSB and yield for each species to the ``official'' values from ICES.
 We calculate the community indicators ``mean maximum weight``, ``mean individual weight``, ``community slope`` and the ''large fish indicator'' (LFI) over the simulation period, and compare them to the unexploited values.
+<<<<<<< HEAD
 We also compare the simulated values of the LFI to a community target based on achieving a high proportion of the unexploited value of the LFI if $0.8 LFI_{F=0}$ \citep{rochet_does_2011}.
+=======
+We also compare the simulated values of the LFI to a community target based on achieving a high proportion of the unexploited value of the LFI of $0.8 LFI_{F=0}$ \citep{rochet_does_2011}.
+>>>>>>> origin/knitr
 
 %Growth curves... (S2)
 

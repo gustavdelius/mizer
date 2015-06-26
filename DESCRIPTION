@@ -20,4 +20,16 @@ Suggests:
     testthat,
     roxygen2,
     knitr
-VignetteBuilder: knitr
+Collate:
+    'MizerParams-class.r'
+    'MizerSim-class.r'
+    'selectivity_funcs.r'
+    'project.r'
+    'help.r'
+    'project_methods.r'
+    'summary_methods.r'
+    'plots.r'
+    'wrapper_functions.R'
+    'NS_species_params-data.R'
+VignetteBuilder: 
+    knitr
