@@ -71,6 +71,14 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='matr
 #' method is used by the \code{\link{project}} method for performing
 #' simulations.
 #' @param object A \code{MizerParams} or \code{MizerSim} object
+#' @param n A matrix of species abundance (species x size). Only used if 
+#'   \code{object} argument is of type \code{MizerParams}.
+#' @param n_pp A matrix of the background abundances (resource x size). Only used if 
+#'   \code{object} argument is of type \code{MizerParams}.
+#' @param phi_prey The PhiPrey matrix (optional) of dimension no. species x no. 
+#'   size bins. If not passed in, it is calculated internally using the 
+#'   \code{\link{getPhiPrey}} method. Only used if \code{object} argument is of type 
+#'   \code{MizerParams}.
 #' @param time_range Subset the returned fishing mortalities by time. The time 
 #'   range is either a vector of values, a vector of min and max time, or a 
 #'   single value. Default is the whole time range. Only used if the 
@@ -85,6 +93,7 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='matr
 #' If a \code{MizerSim} object is passed in, the method returns a three
 #' dimensional array (time step x predator species x predator size) with the
 #' feeding level calculated at every time step in the simulation.
+#' @seealso \code{\link{getPhiPrey}}
 #' @export
 #' @examples
 #' \dontrun{
@@ -102,12 +111,17 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='matr
 #' # Get the feeding level for time 15 - 20
 #' fl <- getFeedingLevel(sim, time_range = c(15,20))
 #' }
-setGeneric('getFeedingLevel', function(object, ...)
+setGeneric('getFeedingLevel', function(object, n, n_pp, phi_prey, ...)
     standardGeneric('getFeedingLevel'))
 
 #' @describeIn getFeedingLevel
-setMethod('getFeedingLevel', signature(object='MizerParams'),
-    function(object, ...){
+setMethod('getFeedingLevel', signature(object='MizerParams', n = 'matrix', 
+                                       n_pp='matrix', phi_prey='matrix'),
+    function(object, n, n_pp, phi_prey, ...){
+    # Check dims of phi_prey
+        if (!all(dim(phi_prey) == c(nrow(object@species_params),length(object@w)))){
+            stop("phi_prey argument must have dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),")")
+        }
         # encountered food = available food * search volume
         encount <- object@search_vol * phi_prey
         # calculate feeding level
@@ -117,7 +131,22 @@ setMethod('getFeedingLevel', signature(object='MizerParams'),
 )
 
 #' @describeIn getFeedingLevel
-setMethod('getFeedingLevel', signature(object='MizerSim'),
+setMethod('getFeedingLevel', signature(object='MizerParams', n = 'matrix', 
+                                       n_pp='matrix', phi_prey='missing'),
+    function(object, n, n_pp, ...){
+	phi_prey <- getPhiPrey(object, n=n, n_pp=n_pp)
+	# encountered food = available food * search volume
+	#encount <- object@search_vol * phi_prey
+	# calculate feeding level
+	#f <- encount/(encount + object@intake_max)
+    f <- getFeedingLevel(object=object, n=n, n_pp=n_pp, phi_prey=phi_prey)
+	return(f)
+    }
+)
+
+#' @describeIn getFeedingLevel
+setMethod('getFeedingLevel', signature(object='MizerSim', n = 'missing', 
+                                       n_pp='missing', phi_prey='missing'),
     function(object, time_range=dimnames(object@n)$time, drop=FALSE, ...){
         time_elements <- get_time_elements(object,time_range)
         feed_time <- aaply(which(time_elements), 1, function(x){
