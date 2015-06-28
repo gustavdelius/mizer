@@ -63,16 +63,16 @@ valid_MizerSim <- function(object){
 	errors <- c(errors, msg)
     }
     # w dimension of n_pp
-    if(dim(object@n_pp)[2] != length(object@params@w_full)){
-	msg <- "Second dimension of n_pp slot must have same length as w_full in the params slot"
+    if(dim(object@n_pp)[3] != length(object@params@w_full)){
+	msg <- "Third dimension of n_pp slot must have same length as w_full in the params slot"
 	errors <- c(errors, msg)
     }
-    if(names(dimnames(object@n_pp))[2] != "w"){
-	msg <- "Second dimension of n_pp slot must be called 'w'"
+    if(names(dimnames(object@n_pp))[3] != "w"){
+	msg <- "Third dimension of n_pp slot must be called 'w'"
 	errors <- c(errors, msg)
     }
     if(!all(dimnames(object@n_pp)$w == names(object@params@rr_pp))){
-	msg <- "Second dimension of n_pp slot must have same size names as rr_pp in the params slot"
+	msg <- "Third dimension of n_pp slot must have same size names as rr_pp in the params slot"
 	errors <- c(errors, msg)
     }
     # gear dimension of effort

@@ -191,7 +191,7 @@ setMethod('plotSpectra', signature(object='MizerSim'),
     function(object, time_range = max(as.numeric(dimnames(object@n)$time)), min_w =min(object@params@w)/100, biomass = TRUE, print_it = TRUE, ...){
         time_elements <- get_time_elements(object,time_range)
         spec_n <- apply(object@n[time_elements,,,drop=FALSE],c(2,3), mean)
-        background_n <- apply(object@n_pp[time_elements,,drop=FALSE],2,mean)
+        background_n <- apply(object@n_pp[time_elements,,,drop=FALSE],2,mean)
         y_axis_name = "Abundance"
         if (biomass){
             spec_n <- sweep(spec_n,2,object@params@w,"*")

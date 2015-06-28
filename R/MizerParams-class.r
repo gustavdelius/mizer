@@ -457,7 +457,7 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing',
 	selectivity <- array(0, dim=c(length(gear_names), object, no_w), dimnames=list(gear=gear_names, sp=species_names, w=signif(w,3)))
 	catchability <- array(0, dim=c(length(gear_names), object), dimnames = list(gear=gear_names, sp=species_names))
 	interaction <- array(1, dim=c(object,object), dimnames = list(predator = species_names, prey = species_names))
-	interaction_pp <- array(1, dim=c(1, 1), dimnames = list(predator = species_names, pp = 1))
+	interaction_pp <- array(1, dim=c(object, 1), dimnames = list(predator = species_names, pp = 1))
 	vec1 <- as.numeric(rep(NA, no_w_full))
 	names(vec1) <- signif(w_full,3)
 	
@@ -511,11 +511,11 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix',
 	    object$erepro <- 1
 	# If no sel_func column in species_params, set to 'sigmoid_length'
 	if(!("sel_func" %in% colnames(object))){
-        cat("\tNote: No sel_func column in species data frame. Setting selectivity to be 'knife_edge' for all species.\n")
+        message("\tNote: No sel_func column in species data frame. Setting selectivity to be 'knife_edge' for all species.")
 	    object$sel_func <- 'knife_edge'
         # Set default selectivity size
         if(!("knife_edge_size" %in% colnames(object))){
-            cat("Note: \tNo knife_edge_size column in species data frame. Setting knife edge selectivity equal to w_mat.\n")
+            message("Note: \tNo knife_edge_size column in species data frame. Setting knife edge selectivity equal to w_mat.")
             object$knife_edge_size <- object$w_mat
         }
     }
@@ -525,7 +525,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix',
     # Sort out h column If not passed in directly, is calculated from f0 and
     # k_vb if they are also passed in
     if(!("h" %in% colnames(object))){
-        cat("Note: \tNo h column in species data frame so using f0 and k_vb to calculate it.\n")
+        message("Note: \tNo h column in species data frame so using f0 and k_vb to calculate it.")
         if(!("k_vb" %in% colnames(object))){
             stop("\t\tExcept I can't because there is no k_vb column in the species data frame")
         }
@@ -533,18 +533,18 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix',
     }
     # Sorting out gamma column
     if(!("gamma" %in% colnames(object))){
-        cat("Note: \tNo gamma column in species data frame so using f0, h, beta, sigma, lambda and kappa to calculate it.\n")
+        message("Note: \tNo gamma column in species data frame so using f0, h, beta, sigma, lambda and kappa to calculate it.")
         ae <- sqrt(2*pi) * object$sigma * object$beta^(lambda-2) * exp((lambda-2)^2 * object$sigma^2 / 2)
         object$gamma <- (object$h / (kappa * ae)) * (f0 / (1 - f0))
     }
     # Sort out z0 column
     if(!("z0" %in% colnames(object))){
-        cat("Note: \tNo z0 column in species data frame so using z0 = z0pre * w_inf ^ z0exp.\n")
+        message("Note: \tNo z0 column in species data frame so using z0 = z0pre * w_inf ^ z0exp.")
         object$z0 = z0pre*object$w_inf^z0exp    # background natural mortality
     }
     # Sort out ks column
     if(!("ks" %in% colnames(object))){
-        cat("Note: \tNo ks column in species data frame so using ks = h * 0.2.\n")
+        message("Note: \tNo ks column in species data frame so using ks = h * 0.2.")
         object$ks <- object$h * 0.2
     }
 
@@ -663,7 +663,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='missing',
 #' @describeIn MizerParams
 setMethod('MizerParams', signature(object='data.frame', interaction='matrix', 
                                    interaction_pp='missing'),
-          function(object, ...){
+          function(object, interaction, ...){
               interaction_pp <- matrix(1,nrow=nrow(object), ncol=1)
               res <- MizerParams(object, interaction, interaction_pp, ...)
               return(res)

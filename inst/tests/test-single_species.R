@@ -4,14 +4,14 @@ test_that("project methods",{
     data(inter)
     data(NS_species_params_gears)
     # Multiple species params
-    params <- MizerParams(NS_species_params_gears, inter=inter)
+    params <- MizerParams(NS_species_params_gears, inter)
     single_params <- MizerParams(NS_species_params_gears[1,])
     # Multiple species, single effort sim
     sim1 <- project(params, effort = 1, t_max = 10)
     n_mult <- sim1@n[11,,]
     n_single <- matrix(sim1@n[11,1,],nrow=1)
     dimnames(n_single) <- list(sp = "Sprat", w = dimnames(sim1@n)$w)
-    npp <- sim1@n_pp[11,]
+    npp <- matrix(sim1@n_pp[11,,],nrow=1)
     # Multiple species, mult effort sim
     effort <- array(abs(rnorm(40)),dim=c(10,4))
     single_effort <- array(abs(rnorm(10)),dim=c(10,1))
@@ -37,14 +37,14 @@ test_that("summary methods",{
     data(inter)
     data(NS_species_params_gears)
     # Multiple species params
-    params <- MizerParams(NS_species_params_gears, inter=inter)
+    params <- MizerParams(NS_species_params_gears, inter)
     single_params <- MizerParams(NS_species_params_gears[1,])
     # Multiple species, single effort sim
     sim1 <- project(params, effort = 1, t_max = 10)
     n_mult <- sim1@n[11,,]
     n_single <- matrix(sim1@n[11,1,],nrow=1)
     dimnames(n_single) <- list(sp = "Sprat", w = dimnames(sim1@n)$w)
-    npp <- sim1@n_pp[11,]
+    npp <- matrix(sim1@n_pp[11,,],nrow=1)
     sim1s <- project(single_params, effort = 1, t_max = 10)
 
     expect_that(length(dim(get_size_range_array(params))), is_identical_to(length(dim(get_size_range_array(single_params)))))

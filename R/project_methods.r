@@ -12,7 +12,7 @@
 #' performing simulations.
 #' @param object An \linkS4class{MizerParams} object
 #' @param n A matrix of species abundances (species x size)
-#' @param n_pp A matrix of background abundances (resource by size
+#' @param n_pp A matrix of background abundances (resource by size)
 #'   
 #' @return A two dimensional array (predator species x predator size)
 #' @seealso \code{\link{project}}
@@ -38,7 +38,7 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='matr
 	# Check n dims
 	if(dim(n)[1] != dim(object@interaction)[1])
 	    stop("n does not have the right number of species (first dimension)")
-    if(dim(n_p)[1] != dim(object@interaction_pp)[2])
+    if(dim(n_pp)[1] != dim(object@interaction_pp)[2])
         stop("n_pp does not have the right number of resources (first dimension)")
 	if(dim(n)[2] != length(object@w))
 	    stop("n does not have the right number of size groups (second dimension)")
@@ -56,7 +56,7 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='matr
 	phi_prey_species <- rowSums(sweep(object@pred_kernel[,,idx_sp,drop=FALSE],c(1,3),n_eff_prey,"*"),dims=2)
 	# Eating the background
 	n_eff_background <- sweep(object@interaction_pp %*% n_pp, 2, object@w_full * object@dw_full, "*") 
-	phi_prey_background <- rowSums(sweep(object@pred_kernel,c(1,3),n_eff_prey,"*"),dims=2)
+	phi_prey_background <- rowSums(sweep(object@pred_kernel,c(1,3),n_eff_background,"*"),dims=2)
 	return(phi_prey_species+phi_prey_background)
 })
 
@@ -153,7 +153,8 @@ setMethod('getFeedingLevel', signature(object='MizerSim', n = 'missing',
             # Necessary as we only want single time step but may only have 1 species which makes using drop impossible
             n <- array(object@n[x,,],dim=dim(object@n)[2:3])
             dimnames(n) <- dimnames(object@n)[2:3]
-			feed <- getFeedingLevel(object@params, n=n, n_pp = object@n_pp[x,])
+            n_pp <- array(object@n_pp[x,,],dim=dim(object@n_pp)[2:3])
+			feed <- getFeedingLevel(object@params, n=n, n_pp = n_pp)
 			return(feed)}, .drop=drop)
 	return(feed_time)
     }
@@ -172,7 +173,7 @@ setMethod('getFeedingLevel', signature(object='MizerSim', n = 'missing',
 #' (see \code{\link{getM2}}).
 #' @param object A \code{MizerParams} object.
 #' @param n A matrix of species abundance (species x size).
-#' @param n_pp A vector of the background abundance by size.
+#' @param n_pp A matrix of the background abundances (resource x size).
 #' @param feeding_level The current feeding level (optional). A matrix of size
 #'   no. species x no. size bins. If not supplied, is calculated internally
 #'   using the \code{getFeedingLevel()} method.
@@ -199,7 +200,7 @@ setGeneric('getPredRate', function(object, n, n_pp, feeding_level)
 
 #' @describeIn getPredRate
 setMethod('getPredRate', signature(object='MizerParams', n = 'matrix', 
-                                   n_pp='numeric', feeding_level = 'matrix'),
+                                   n_pp='matrix', feeding_level = 'matrix'),
     function(object, n, n_pp, feeding_level){
         if (!all(dim(feeding_level) == c(nrow(object@species_params),length(object@w)))){
             stop("feeding_level argument must have dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),")")
@@ -211,7 +212,7 @@ setMethod('getPredRate', signature(object='MizerParams', n = 'matrix',
 )
 
 #' @describeIn getPredRate
-setMethod('getPredRate', signature(object='MizerParams', n = 'matrix', n_pp='numeric', feeding_level = 'missing'),
+setMethod('getPredRate', signature(object='MizerParams', n = 'matrix', n_pp='matrix', feeding_level = 'missing'),
     function(object, n, n_pp){
         n_total_in_size_bins <- sweep(n, 2, object@dw, '*') # N_i(w)dw
         feeding_level <- getFeedingLevel(object, n=n, n_pp=n_pp)
@@ -234,7 +235,7 @@ setMethod('getPredRate', signature(object='MizerParams', n = 'matrix', n_pp='num
 #' @param object A \code{MizerParams} or \code{MizerSim} object.
 #' @param n A matrix of species abundance (species x size). Only used if
 #'   \code{object} argument is of type \code{MizerParams}.
-#' @param n_pp A vector of the background abundance by size. Only used if
+#' @param n_pp A matrix of the background abundances (resource x size). Only used if
 #'   \code{object} argument is of type \code{MizerParams}.
 #' @param pred_rate An array of predation rates of dimension no. sp x no.
 #'   community size bins x no. of size bins in whole spectra (i.e. community +
@@ -277,7 +278,7 @@ setGeneric('getM2', function(object, n, n_pp, pred_rate,...)
 
 #' @describeIn getM2
 setMethod('getM2', signature(object='MizerParams', n = 'matrix', 
-                             n_pp='numeric', pred_rate = 'array'),
+                             n_pp='matrix', pred_rate = 'array'),
     function(object, n, n_pp, pred_rate){
         if ((!all(dim(pred_rate) == c(nrow(object@species_params),length(object@w),length(object@w_full)))) | (length(dim(pred_rate))!=3)){
             stop("pred_rate argument must have 3 dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),") x no. size bins in community + background (",length(object@w_full),")")
@@ -294,7 +295,7 @@ setMethod('getM2', signature(object='MizerParams', n = 'matrix',
 
 #' @describeIn getM2
 setMethod('getM2', signature(object='MizerParams', n = 'matrix', 
-                             n_pp='numeric', pred_rate = 'missing'),
+                             n_pp='matrix', pred_rate = 'missing'),
     function(object, n, n_pp, pred_rate){
 	pred_rate <- getPredRate(object,n=n,n_pp=n_pp)
     m2 <- getM2(object,n=n,n_pp=n_pp, pred_rate=pred_rate)
@@ -309,7 +310,8 @@ setMethod('getM2', signature(object='MizerSim', n = 'missing', n_pp='missing', p
 		m2_time <- aaply(which(time_elements), 1, function(x){
             n <- array(object@n[x,,],dim=dim(object@n)[2:3])
             dimnames(n) <- dimnames(object@n)[2:3]
-			m2 <- getM2(object@params, n=n, n_pp = object@n_pp[x,])
+            n_pp <- array(object@n_pp[x,,],dim=dim(object@n_pp)[2:3])
+			m2 <- getM2(object@params, n=n, n_pp = n_pp)
 			return(m2)
 		}, .drop=drop)
 	return(m2_time)
@@ -324,7 +326,7 @@ setMethod('getM2', signature(object='MizerSim', n = 'missing', n_pp='missing', p
 #' simulations.
 #' @param object A \code{MizerParams} object.
 #' @param n A matrix of species abundance (species x size).
-#' @param n_pp A vector of the background abundance by size.
+#' @param n_pp A matrix of the background abundances (resource x size).
 #' @param pred_rate An array of predation rates of dimension no. sp x no.
 #'   community size bins x no. of size bins in whole spectra (i.e. community +
 #'   background, the w_full slot). The array is optional. If it is not provided
@@ -350,7 +352,7 @@ setGeneric('getM2Background', function(object, n, n_pp, pred_rate)
 
 #' @describeIn getM2Background
 setMethod('getM2Background', signature(object='MizerParams', n = 'matrix', 
-                                       n_pp='numeric', pred_rate='array'),
+                                       n_pp='matrix', pred_rate='array'),
     function(object, n, n_pp, pred_rate){
         if ((!all(dim(pred_rate) == c(nrow(object@species_params),length(object@w),length(object@w_full)))) | (length(dim(pred_rate))!=3)){
             stop("pred_rate argument must have 3 dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),") x no. size bins in community + background (",length(object@w_full),")")
@@ -362,7 +364,7 @@ setMethod('getM2Background', signature(object='MizerParams', n = 'matrix',
 
 #' @describeIn getM2Background
 setMethod('getM2Background', signature(object='MizerParams', n = 'matrix', 
-                                       n_pp='numeric',  pred_rate='missing'),
+                                       n_pp='matrix',  pred_rate='missing'),
     function(object, n, n_pp, pred_rate){
         pred_rate <- getPredRate(object,n=n,n_pp=n_pp)
         M2background <- getM2Background(object, n=n, n_pp=n_pp, pred_rate=pred_rate)
@@ -577,7 +579,7 @@ setMethod('getFMort', signature(object='MizerSim', effort='missing'),
 #' a single time step.
 #' @param object A \code{MizerParams} object.
 #' @param n A matrix of species abundance (species x size).
-#' @param n_pp A vector of the background abundance by size.
+#' @param n_pp A matrix of the background abundances (resource x size).
 #' @param effort A numeric vector of the effort by gear or a single numeric
 #'   effort value which is used for all gears.
 #' @param m2 A two dimensional array of predation mortality (optional). Has
@@ -603,7 +605,7 @@ setGeneric('getZ', function(object, n, n_pp, effort, m2)
 
 #' @describeIn getZ
 setMethod('getZ', signature(object='MizerParams', n = 'matrix', 
-                            n_pp = 'numeric', effort='numeric', m2 = 'matrix'),
+                            n_pp = 'matrix', effort='numeric', m2 = 'matrix'),
     function(object, n, n_pp, effort, m2){
         if (!all(dim(m2) == c(nrow(object@species_params),length(object@w)))){
             stop("m2 argument must have dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),")")
@@ -616,7 +618,7 @@ setMethod('getZ', signature(object='MizerParams', n = 'matrix',
 
 #' @describeIn getZ
 setMethod('getZ', signature(object='MizerParams', n = 'matrix', 
-                            n_pp = 'numeric', effort='numeric', m2 = 'missing'),
+                            n_pp = 'matrix', effort='numeric', m2 = 'missing'),
     function(object, n, n_pp, effort){
         m2 <- getM2(object, n=n, n_pp=n_pp)
         z <- getZ(object, n=n, n_pp=n_pp, effort=effort, m2=m2)
@@ -633,7 +635,7 @@ setMethod('getZ', signature(object='MizerParams', n = 'matrix',
 #' \code{project} method for performing simulations.
 #' @param object A \code{MizerParams} object.
 #' @param n A matrix of species abundance (species x size).
-#' @param n_pp A vector of the background abundance by size.
+#' @param n_pp A matrix of the background abundances (resource x size).
 #' @param feeding_level The current feeding level (optional). A matrix of size
 #'   no. species x no. size bins. If not supplied, is calculated internally
 #'   using the \code{getFeedingLevel()} method.
@@ -656,7 +658,7 @@ setGeneric('getEReproAndGrowth', function(object, n, n_pp, feeding_level)
 
 #' @describeIn getEReproAndGrowth
 setMethod('getEReproAndGrowth', signature(object='MizerParams', n = 'matrix', 
-                                          n_pp = 'numeric', feeding_level='matrix'),
+                                          n_pp = 'matrix', feeding_level='matrix'),
     function(object, n, n_pp, feeding_level){
         if (!all(dim(feeding_level) == c(nrow(object@species_params),length(object@w)))){
             stop("feeding_level argument must have dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),")")
@@ -672,7 +674,7 @@ setMethod('getEReproAndGrowth', signature(object='MizerParams', n = 'matrix',
 
 #' @describeIn getEReproAndGrowth
 setMethod('getEReproAndGrowth', signature(object='MizerParams', n = 'matrix', 
-                                          n_pp = 'numeric', feeding_level='missing'),
+                                          n_pp = 'matrix', feeding_level='missing'),
     function(object, n, n_pp){
         feeding_level <- getFeedingLevel(object, n=n, n_pp=n_pp)
         e <- getEReproAndGrowth(object, n=n, n_pp=n_pp, feeding_level=feeding_level)
@@ -690,7 +692,7 @@ setMethod('getEReproAndGrowth', signature(object='MizerParams', n = 'matrix',
 #' Used by the \code{project} method for performing simulations.
 #' @param object A \code{MizerParams} object.
 #' @param n A matrix of species abundance (species x size).
-#' @param n_pp A vector of the background abundance by size.
+#' @param n_pp A matrix of the background abundances (resource x size).
 #' @param e The energy available for reproduction and growth (optional). A
 #'   matrix of size no. species x no. size bins. If not supplied, is calculated
 #'   internally using the \code{getEReproAndGrowth()} method.
@@ -713,7 +715,7 @@ setGeneric('getESpawning', function(object, n, n_pp, e)
 
 #' @describeIn getESpawning
 setMethod('getESpawning', signature(object='MizerParams', n = 'matrix', 
-                                    n_pp = 'numeric', e = 'matrix'),
+                                    n_pp = 'matrix', e = 'matrix'),
     function(object, n, n_pp, e){
         if (!all(dim(e) == c(nrow(object@species_params),length(object@w)))){
             stop("e argument must have dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),")")
@@ -725,7 +727,7 @@ setMethod('getESpawning', signature(object='MizerParams', n = 'matrix',
 
 #' @describeIn getESpawning
 setMethod('getESpawning', signature(object='MizerParams', n = 'matrix', 
-                                    n_pp = 'numeric', e = 'missing'),
+                                    n_pp = 'matrix', e = 'missing'),
     function(object, n, n_pp){
 	e <- getEReproAndGrowth(object,n=n,n_pp=n_pp)
 	e_spawning <- getESpawning(object, n=n, n_pp=n_pp, e=e)
@@ -740,7 +742,7 @@ setMethod('getESpawning', signature(object='MizerParams', n = 'matrix',
 #' the \code{\link{project}} method for performing simulations.
 #' @param object A \linkS4class{MizerParams} object.
 #' @param n A matrix of species abundance (species x size).
-#' @param n_pp A vector of the background abundance by size.
+#' @param n_pp A matrix of the background abundances (resource x size).
 #' @param e The energy available for reproduction and growth (optional, although
 #'   if specified, e_spawning must also be specified). A matrix of size no.
 #'   species x no. size bins. If not supplied, is calculated internally using
@@ -768,7 +770,7 @@ setGeneric('getEGrowth', function(object, n, n_pp, e_spawning, e)
 
 #' @describeIn getEGrowth 
 setMethod('getEGrowth', signature(object='MizerParams', n = 'matrix', 
-                                  n_pp = 'numeric', e_spawning='matrix', e='matrix'),
+                                  n_pp = 'matrix', e_spawning='matrix', e='matrix'),
     function(object, n, n_pp, e_spawning, e){
         if (!all(dim(e_spawning) == c(nrow(object@species_params),length(object@w)))){
             stop("e_spawning argument must have dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),")")
@@ -785,7 +787,7 @@ setMethod('getEGrowth', signature(object='MizerParams', n = 'matrix',
 
 #' @describeIn getEGrowth
 setMethod('getEGrowth', signature(object='MizerParams', n = 'matrix', 
-                                  n_pp = 'numeric', e_spawning='missing', e='missing'),
+                                  n_pp = 'matrix', e_spawning='missing', e='missing'),
     function(object, n, n_pp){
         # Assimilated intake less activity and metabolism
         e <- getEReproAndGrowth(object,n=n,n_pp=n_pp)
@@ -803,7 +805,7 @@ setMethod('getEGrowth', signature(object='MizerParams', n = 'matrix',
 #' \code{project} method for performing simulations.
 #' @param object A \code{MizerParams} object.
 #' @param n A matrix of species abundance (species x size).
-#' @param n_pp A vector of the background abundance by size.
+#' @param n_pp A matrix of the background abundances (resource x size).
 #' @param e_spawning The energy available for spawning (optional). A matrix of
 #'   size no. species x no. size bins. If not supplied, is calculated internally
 #'   using the \code{\link{getESpawning}} method.
@@ -828,7 +830,7 @@ setGeneric('getRDI', function(object, n, n_pp, e_spawning, ...)
 
 #' @describeIn getRDI
 setMethod('getRDI', signature(object='MizerParams', n = 'matrix', 
-                              n_pp = 'numeric', e_spawning='matrix'),
+                              n_pp = 'matrix', e_spawning='matrix'),
     function(object, n, n_pp, e_spawning, sex_ratio = 0.5){
         if (!all(dim(e_spawning) == c(nrow(object@species_params),length(object@w)))){
             stop("e_spawning argument must have dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),")")
@@ -844,7 +846,7 @@ setMethod('getRDI', signature(object='MizerParams', n = 'matrix',
 
 #' @describeIn getRDI
 setMethod('getRDI', signature(object='MizerParams', n = 'matrix', 
-                              n_pp = 'numeric', e_spawning='missing'),
+                              n_pp = 'matrix', e_spawning='missing'),
     function(object, n, n_pp, sex_ratio = 0.5){
 	# Should we put this in the class as part of species_params?
 	# Index of the smallest size class for each species
@@ -864,7 +866,7 @@ setMethod('getRDI', signature(object='MizerParams', n = 'matrix',
 #' \code{project} method for performing simulations.
 #' @param object An \code{MizerParams} object
 #' @param n A matrix of species abundance (species x size)
-#' @param n_pp A vector of the background abundance by size
+#' @param n_pp A matrix of the background abundances (resource x size).
 #' @param rdi A matrix of density independent recruitment (optional) with
 #'   dimensions no. sp x 1. If not specified rdi is calculated internally using
 #'   the \code{\link{getRDI}} method.
@@ -888,7 +890,7 @@ setGeneric('getRDD', function(object, n, n_pp, rdi, ...)
 
 #' @describeIn getRDD
 setMethod('getRDD', signature(object='MizerParams', n = 'matrix', 
-                              n_pp = 'numeric', rdi='matrix'),
+                              n_pp = 'matrix', rdi='matrix'),
     function(object, n, n_pp, rdi, sex_ratio = 0.5){
         if (!all(dim(rdi) == c(nrow(object@species_params),1))){
             stop("rdi argument must have dimensions: no. species (",nrow(object@species_params),") x 1")
@@ -898,7 +900,8 @@ setMethod('getRDD', signature(object='MizerParams', n = 'matrix',
 })
 
 #' @describeIn getRDD
-setMethod('getRDD', signature(object='MizerParams', n = 'matrix', n_pp = 'numeric', rdi='missing'),
+setMethod('getRDD', signature(object='MizerParams', n = 'matrix', 
+                              n_pp = 'matrix', rdi='missing'),
     function(object, n, n_pp, sex_ratio = 0.5){
 	rdi <- getRDI(object, n=n, n_pp=n_pp, sex_ratio = sex_ratio)
 	rdd <- getRDD(object, n=n, n_pp=n_pp, rdi=rdi, sex_ratio=sex_ratio)

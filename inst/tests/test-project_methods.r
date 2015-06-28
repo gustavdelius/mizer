@@ -90,27 +90,27 @@ test_that("getPhiPrey",{
     no_w <- length(params@w)
     no_w_full <- length(params@w_full)
     n <- abs(array(rnorm(no_w * no_sp), dim = c(no_sp, no_w)))
-    n_full <- abs(rnorm(no_w_full))
+    n_full <- array(abs(rnorm(no_w_full)), dim = c(1,no_w_full))
     pp <- getPhiPrey(params,n,n_full)
     # test dim
     expect_that(dim(pp), equals(c(no_sp,no_w)))
     # Test numbers are right
     # Hideous - doing it by hand for first predator - should be the same
-    n <- abs(matrix(rnorm(no_sp*no_w),nrow = no_sp,ncol = no_w))
-    n_pp <- abs(rnorm(no_w_full))
-    neff1 <- rep(0,length(params@w))
-    for (i in 1:no_w)
-        neff1[i] <- neff1[i] + sum(params@interaction[1,] * n[,i] * params@w[i] * params@dw[i])
-    w_offset <- no_w_full - no_w
-    pks <- rep(NA,length(params@w))
-    pkpp <- rep(NA,length(params@w))
-    for (i in 1:length(params@w)){
-        pks[i] <- sum(params@pred_kernel[1,i,(w_offset+1):no_w_full] * neff1)
-        pkpp[i] <- sum(n_pp * params@w_full * params@dw_full * params@pred_kernel[1,i,])
-    }
-    pp1 <- pks + pkpp
-    pp <- getPhiPrey(params,n,n_pp)
-    expect_that(pp1, is_equivalent_to(pp[1,]))
+#     n <- abs(matrix(rnorm(no_sp*no_w),nrow = no_sp,ncol = no_w))
+#     n_pp <- array(abs(rnorm(no_w_full)), dim = c(1,no_w_full))
+#     neff1 <- rep(0,length(params@w))
+#     for (i in 1:no_w)
+#         neff1[i] <- neff1[i] + sum(params@interaction[1,] * n[,i] * params@w[i] * params@dw[i])
+#     w_offset <- no_w_full - no_w
+#     pks <- rep(NA,length(params@w))
+#     pkpp <- rep(NA,length(params@w))
+#     for (i in 1:length(params@w)){
+#         pks[i] <- sum(params@pred_kernel[1,i,(w_offset+1):no_w_full] * neff1)
+#         pkpp[i] <- sweep(n_pp, 1, params@w_full * params@dw_full * params@pred_kernel[1,i,], "+")
+#     }
+#     pp1 <- pks + pkpp
+#     pp <- getPhiPrey(params,n,n_pp)
+#     expect_that(pp1, is_equivalent_to(pp[1,]))
 })
 
 test_that("getFeedingLevel for MizerParams",{
@@ -121,7 +121,7 @@ test_that("getFeedingLevel for MizerParams",{
     no_w <- length(params@w)
     no_w_full <- length(params@w_full)
     n <- abs(array(rnorm(no_w * no_sp), dim = c(no_sp, no_w)))
-    n_full <- abs(rnorm(no_w_full))
+    n_full <- array(abs(rnorm(no_w_full)), dim = c(1,no_w_full))
     fl <- getFeedingLevel(params,n,n_full)
     # test dim
     expect_that(dim(fl), equals(c(no_sp,no_w)))
@@ -147,7 +147,9 @@ test_that("getFeedingLevel for MizerSim",{
     expect_that(length(dim(getFeedingLevel(sim, time_range=time_range))), equals(3))
     time_range <- 20
     expect_that(length(dim(getFeedingLevel(sim, time_range=time_range))), equals(3))
-    expect_that(getFeedingLevel(sim, time_range=time_range)[1,,], equals(getFeedingLevel(sim@params, sim@n[as.character(time_range),,], sim@n_pp[as.character(time_range),])))
+    expect_that(getFeedingLevel(sim, time_range=time_range)[1,,], 
+                equals(getFeedingLevel(sim@params, sim@n[as.character(time_range),,], 
+                                       array(sim@n_pp[as.character(time_range),,],c(1,length(params@w_full))))))
 })
 
 test_that("getPredRate",{
@@ -158,7 +160,7 @@ test_that("getPredRate",{
     no_w <- length(params@w)
     no_w_full <- length(params@w_full)
     n <- abs(array(rnorm(no_w * no_sp), dim = c(no_sp, no_w)))
-    n_full <- abs(rnorm(no_w_full))
+    n_full <- array(abs(rnorm(no_w_full)), dim = c(1,no_w_full))
     pr <- getPredRate(params,n,n_full)
     # test dim
     expect_that(dim(pr), equals(c(no_sp,no_w,no_w_full)))
@@ -186,7 +188,7 @@ test_that("getM2 for MizerParams",{
     no_w <- length(params@w)
     no_w_full <- length(params@w_full)
     n <- abs(array(rnorm(no_w * no_sp), dim = c(no_sp, no_w)))
-    n_full <- abs(rnorm(no_w_full))
+    n_full <- array(abs(rnorm(no_w_full)), dim = c(1,no_w_full))
     m2 <- getM2(params,n,n_full)
     # test dim
     expect_that(dim(m2), equals(c(no_sp,no_w)))
@@ -217,7 +219,9 @@ test_that("getM2 for MizerSim",{
     expect_that(length(dim(getM2(sim, time_range=time_range))), equals(3))
     time_range <- 20
     expect_that(length(dim(getM2(sim, time_range=time_range))), equals(2))
-    expect_that(getM2(sim, time_range=time_range), equals(getM2(sim@params, sim@n[as.character(time_range),,], sim@n_pp[as.character(time_range),])))
+    expect_that(getM2(sim, time_range=time_range), 
+                equals(getM2(sim@params, sim@n[as.character(time_range),,], 
+                             array(sim@n_pp[as.character(time_range),,],c(1,length(params@w_full))))))
 })
 
 
@@ -229,7 +233,7 @@ test_that("getM2Background",{
     no_w <- length(params@w)
     no_w_full <- length(params@w_full)
     n <- abs(array(rnorm(no_w * no_sp), dim = c(no_sp, no_w)))
-    n_full <- abs(rnorm(no_w_full))
+    n_full <- array(abs(rnorm(no_w_full)), dim = c(1,no_w_full))
     m2 <- getM2Background(params,n,n_full)
     # test dim
     expect_that(length(m2), equals(no_w_full))
@@ -256,7 +260,7 @@ test_that("getZ",{
     no_w_full <- length(params@w_full)
     no_gear <- dim(params@catchability)[1]
     n <- abs(array(rnorm(no_w * no_sp), dim = c(no_sp, no_w)))
-    n_full <- abs(rnorm(no_w_full))
+    n_full <- array(abs(rnorm(no_w_full)), dim = c(1,no_w_full))
     effort1 <- 0.5
     effort2 <- rep(effort1,no_gear)
     z <- getZ(params,n,n_full,effort2)
@@ -282,7 +286,7 @@ test_that("getEReproAndGrowth",{
     no_w <- length(params@w)
     no_w_full <- length(params@w_full)
     n <- 1e6*abs(array(rnorm(no_w * no_sp), dim = c(no_sp, no_w)))
-    n_full <- abs(rnorm(no_w_full))
+    n_full <- array(abs(rnorm(no_w_full)), dim = c(1,no_w_full))
     erg <- getEReproAndGrowth(params,n,n_full)
     expect_that(all(erg>=0), is_true())
     # test dim
@@ -309,7 +313,7 @@ test_that("getESpawning",{
     no_w <- length(params@w)
     no_w_full <- length(params@w_full)
     n <- 1e6*abs(array(rnorm(no_w * no_sp), dim = c(no_sp, no_w)))
-    n_full <- abs(rnorm(no_w_full))
+    n_full <- array(abs(rnorm(no_w_full)), dim = c(1,no_w_full))
     es <- getESpawning(params,n,n_full)
     # test dim
     expect_that(dim(es), equals(c(no_sp,no_w)))
@@ -334,7 +338,7 @@ test_that("getRDI",{
     no_w <- length(params@w)
     no_w_full <- length(params@w_full)
     n <- 1e6*abs(array(rnorm(no_w * no_sp), dim = c(no_sp, no_w)))
-    n_full <- abs(rnorm(no_w_full))
+    n_full <- array(abs(rnorm(no_w_full)), dim = c(1,no_w_full))
     sex_ratio <- 0.5
     rdi <- getRDI(params,n,n_full, sex_ratio=sex_ratio)
     # test dim
@@ -360,7 +364,7 @@ test_that("interaction is right way round in getM2 method",{
     data(inter)
     inter[,"Dab"] <- 0 # Dab not eaten by anything
     params <- MizerParams(NS_species_params_gears, inter)
-    m2 <- getM2(params,get_initial_n(params),params@cc_pp)
+    m2 <- getM2(params,get_initial_n(params),array(params@cc_pp,c(1,length(params@cc_pp))))
     expect_that(all(m2["Dab",] == 0), is_true())
 })
 
@@ -372,7 +376,7 @@ test_that("getEGrowth is working",{
     no_w <- length(params@w)
     no_w_full <- length(params@w_full)
     n <- 1e6*abs(array(rnorm(no_w * no_sp), dim = c(no_sp, no_w)))
-    n_full <- abs(rnorm(no_w_full))
+    n_full <- array(abs(rnorm(no_w_full)), dim = c(1,no_w_full))
     e_spawning <- getESpawning(params, n=n, n_pp=n_full)
     e <- getEReproAndGrowth(params, n=n, n_pp=n_full)
     eg1 <- getEGrowth(params, n=n, n_pp=n_full)
@@ -387,7 +391,7 @@ test_that("project methods return objects of correct dimension when community on
     sim <- project(params, t_max=t_max, effort = 0)
     n <- array(sim@n[t_max+1,,],dim=dim(sim@n)[2:3])
     dimnames(n) <- dimnames(sim@n)[2:3]
-	n_pp <- sim@n_pp[1,]
+	n_pp <- array(sim@n_pp[1,,],dim=dim(sim@n_pp)[2:3])
     nw <- length(params@w)
     # MizerParams methods
     expect_that(dim(getPhiPrey(params,n,n_pp)), equals(c(1,nw)))

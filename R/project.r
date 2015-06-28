@@ -26,10 +26,11 @@
 #' @param t_save The frequency with which the output is stored. The default
 #'   value is 1.
 #' @param initial_n The initial populations of the species. See the notes below.
-#' @param initial_n_pp The initial population of the background spectrum. It
-#'   should be a numeric vector of the same length as the \code{w_full} slot of
-#'   the \code{MizerParams} argument. By default the \code{cc_pp} slot of the
-#'   \code{\link{MizerParams}} argument is used.
+#' @param initial_n_pp A matrix (resource x size) with the initial population 
+#'   of the background spectra. The second dimension should be the same length 
+#'   as the \code{w_full} slot of the \code{MizerParams} argument. By default 
+#'   the \code{cc_pp} slot of the \code{\link{MizerParams}} argument is used
+#'   to populate a single resource.
 #'
 #' @note The \code{effort} argument specifies the level of fishing effort during
 #' the simulation. It can be specified in three different ways: \itemize{ \item
@@ -120,7 +121,8 @@ setMethod('project', signature(object='MizerParams', effort='numeric'),
 
 #' @describeIn project
 setMethod('project', signature(object='MizerParams', effort='array'),
-    function(object, effort, t_save=1, dt=0.1, initial_n=get_initial_n(object), initial_n_pp=object@cc_pp,  ...){
+    function(object, effort, t_save=1, dt=0.1, initial_n=get_initial_n(object), 
+             initial_n_pp=matrix(object@cc_pp, nrow=1),  ...){
         validObject(object)
         # Check that number and names of gears in effort array is same as in MizerParams object
         no_gears <- dim(object@catchability)[1]
@@ -168,10 +170,11 @@ setMethod('project', signature(object='MizerParams', effort='array'),
 
         # Set initial population
         sim@n[1,,] <- initial_n 
-        sim@n_pp[1,] <- initial_n_pp
+        sim@n_pp[1,,] <- initial_n_pp
 
         # Handy things
         no_sp <- nrow(sim@params@species_params) # number of species
+        no_pp <- nrow(initial_n_pp) # number of resources
         no_w <- length(sim@params@w) # number of fish size bins
         idx <- 2:no_w
         # If no w_min_idx column in species_params, add one
@@ -194,7 +197,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
         # We want the first time step only but cannot use drop as there may only be a single species
         n <- array(sim@n[1,,],dim=dim(sim@n)[2:3])
         dimnames(n) <- dimnames(sim@n)[2:3]
-        n_pp <- sim@n_pp[1,]
+        n_pp <- array(sim@n_pp[1,,],dim=dim(sim@n_pp)[2:3])
         t_steps <- dim(effort_dt)[1]
         for (i_time in 1:t_steps){
             # Do it piece by piece to save repeatedly calling methods
@@ -241,13 +244,16 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             # Dynamics of background spectrum uses a semi-chemostat model (de Roos - ask Ken)
             # We use the exact solution under the assumption of constant mortality during timestep
             tmp <- (sim@params@rr_pp * sim@params@cc_pp / (sim@params@rr_pp + m2_background))
-            n_pp <- tmp - (tmp - n_pp) * exp(-(sim@params@rr_pp+m2_background)*dt)
+            # Vectorise this later
+            for (a in 1:no_pp) {
+                n_pp[a,] <- tmp - (tmp - n_pp[a,]) * exp(-(sim@params@rr_pp+m2_background)*dt)
+            }
 
             # Store results only every t_step steps.
             store <- t_dimnames_index %in% i_time
             if (any(store)){
                 sim@n[which(store)+1,,] <- n 
-                sim@n_pp[which(store)+1,] <- n_pp
+                sim@n_pp[which(store)+1,,] <- n_pp
             }
         }
         # and end
