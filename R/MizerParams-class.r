@@ -267,7 +267,7 @@ valid_MizerParams <- function(object) {
 #'   
 #' @note The \code{MizerParams} class is fairly complex with a large number of
 #'   slots, many of which are multidimensional arrays. The dimensions of these
-#'   arrays is strictly enforced so that \code{MizerParams} objects are
+#'   arrays is strictly enforced so that \linkS4class{MizerParams} objects are
 #'   consistent in terms of number of species and number of size classes.
 #'   
 #'   Although it is possible to build a \code{MizerParams} object by hand it is
@@ -275,8 +275,8 @@ valid_MizerParams <- function(object) {
 #'   
 #'   The \code{MizerParams} class does not hold any dynamic information, e.g.
 #'   abundances or harvest effort through time. These are held in
-#'   \code{\link{MizerSim}} objects.
-#' @seealso \code{\link{project}} \code{\link{MizerSim}}
+#'   \linkS4class{MizerSim} objects.
+#' @seealso \code{\link{project}} \linkS4class{MizerSim}
 #' @export
 setClass(
     "MizerParams",
@@ -420,11 +420,9 @@ setClass(
 setGeneric('MizerParams', function(object, interaction, interaction_pp, ...)
     standardGeneric('MizerParams'))
 
-#' Basic constructor with only the number of species as dispatching argument
-#' 
-#' Only really used to make MizerParams of the right size and shouldn't be used
-#' by user
-#' @describeIn MizerParams
+
+#' @describeIn MizerParams Only really used to make MizerParams of the right
+#'   size and shouldn't be used by user
 setMethod('MizerParams', signature(object='numeric', interaction='missing', 
                                    interaction_pp='missing'),
     function(object, min_w = 0.001, max_w = 1000, no_w = 100,  min_w_pp = 1e-10, 
@@ -485,8 +483,9 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing',
     }
 )
 
-#' Constructor that takes the species_params data.frame and the interaction matrix
-#' @describeIn MizerParams
+
+#' @describeIn MizerParams Constructor that takes the species_params data.frame
+#'   and the interaction matrix
 setMethod('MizerParams', signature(object='data.frame', interaction='matrix',
                                    interaction_pp='matrix'),
     function(object, interaction, interaction_pp, n = 2/3, p = 0.7, q = 0.8, 
@@ -646,9 +645,9 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix',
     }
 )
 
-# If interaction and interaction_pp are missing, make one of the right size and
-# fill with 1s
-#' @describeIn MizerParams
+
+#' @describeIn MizerParams If interaction and interaction_pp are missing, make
+#'   one of the right size and fill with 1s
 setMethod('MizerParams', signature(object='data.frame', interaction='missing', 
                                    interaction_pp='missing'),
     function(object, ...){
@@ -659,8 +658,9 @@ setMethod('MizerParams', signature(object='data.frame', interaction='missing',
     }
 )
 
-# If interaction_pp is missing, make one for a single resource
-#' @describeIn MizerParams
+
+#' @describeIn MizerParams If interaction_pp is missing, make one for a single
+#'   resource
 setMethod('MizerParams', signature(object='data.frame', interaction='matrix', 
                                    interaction_pp='missing'),
           function(object, interaction, ...){
