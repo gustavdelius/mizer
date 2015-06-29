@@ -112,7 +112,7 @@ The results of the simulations can then be explored using a range of plots and s
 The models created can be quite flexible and there are many options for setting up and running simulations.  For example, different stock-recruitment relationships can be implemented and fishing gears with different selectivity patterns can be set up so that different species are caught by different gears.
 However, \pkg{mizer} aims to make setting up the models relatively simple.  For example, easy to use ``wrapper'' functions are provided so users can set up community and trait-based models with the minimum of \R gymnastics. Additionally, most of the methods and functions in the package have default options and assumptions. These can be changed by the user once they are familiar with the models 
 
-This vignette starts by summarising the principles and assumptions of size spectrum models. The \pkg{mizer} package is then introduced by showing how to set up the simplest types of size spectrum models: the community and trait-based model. These sections give a basic overview of the classes and methods used by \pkg{mizer}. Simple examples are given that demonstrate how trophic-cascades can be simulated. There then follows a more detailed description of the \pkg{mizer} classes and methods using a multispecies model of the North Sea as an example. Finally, there is a detailed example of a multispecies size spectrum model of the North Sea, including running projections using historical fishing patterns. 
+This vignette starts by summarising the principles and assumptions of size spectrum models. The \pkg{mizer} package is then introduced by showing how to set up the simplest types of size spectrum models: the community and trait-based model. These sections give a basic overview of the classes and methods used by \pkg{mizer}. Simple examples are given that demonstrate how trophic-cascades can be simulated. There then follows a more detailed description of the \pkg{mizer} classes and methods using a multispecies model of the North Sea as an example, including running projections using historical fishing patterns. 
 
 %-------------------------------------------------------------------------------
 \section{Package installation and getting help}
@@ -193,19 +193,17 @@ Size spectrum models are a subset of physiologically structured models \citep{me
 
 The model framework builds on two central assumption and a number of lesser standard assumption.  
 
-The first central assumption is that an individual can be characterized by its weight $w$ and its species number $i$ only. The aim of the model is to calculate the size- and trait-spectrum ${\cal N}_i(w)$ which is the density of individuals such that ${\cal N}_i(w)dw$ is the number of individuals in the interval $[w:w+dw]$. The dimensions of the size spectrum are numbers per weight per volume.  Scaling from individual-level processes of growth and mortality to the size spectrum of each trait group is achieved by means of the McKendrik-von Foerster equation, which is simply a conservation equation:
+The first central assumption is that an individual can be characterized by its weight $w$ and its species number $i$ only. The aim of the model is to calculate the size- and trait-spectrum $N_i(w)$ which is the density of individuals such that $N_i(w)dw$ is the number of individuals in the interval $[w:w+dw]$. The dimensions of the size spectrum are numbers per weight per volume.  From the individual-level processes of growth and mortality, an evolution equation for the size spectrum of each trait group can be derived \cite{datta_jump-growth_2010},
 
 \begin{equation}
   \label{eq:MvF}
-  \frac{\partial N_i(w)}{\partial t} + \frac{\partial g_i(w) N_i(w)}{\partial w} = -\mu_i(w) N_i(w)
+  \frac{\partial}{\partial t} N_i(w,t) + \frac{\partial }{\partial w} \left(g_i(w) N_i(w)\right)
+   = -\mu_i(w) N_i(w)+\lambda_i(w),
 \end{equation}
 
-where individual growth $g_i(w)$ and mortality $\mu_i(w)$ are both determined by the availability of food from the other species and from background resources, $N^R_a(w)$, and predation by the other species. The conservation equation is supplemented by a boundary condition at the boundary at weight $w_0$ where the flux of individuals (numbers per time) $g_i(w_0) N_i(w_0)$ is determined by the reproduction of offspring by mature individuals in the population $R_i$:
-
-\begin{equation}
-  \label{eq:3}
-  g_i(w_0)N_i(w_0) = R_i.
-\end{equation}
+where individual growth $g_i(w)$ is determined by the availability of food from the other species and from background resources, and mortality $\mu_i(w)$ is determined by predation by the other species. 
+The birth rate $\lambda_i(w)$ is non-zero only in a small size interval corresponding to the size of eggs produced by the mature fish. This equation can be seen to be  generalisation of the McKendrick-von Foerster equation. The equation is supplemented by a boundary condition which sets 
+$N_i(w)=0$ for $w<w_{\text{min}.i}$ where $w_{\text{min}.i}$ is the weight of the smallest individual.
 
 The second central assumption is that the preference of food is determined by individual weight combined with a species preference. The preference for prey weight is described by the log-normal selection model \citep{ursin_prey_1973} which prescribes prey preference in terms of the ratio between the weight of predators $w$ and prey of weight $w_p$:
 
@@ -247,7 +245,7 @@ The encountered food is consumed subjected to a standard Holling functional resp
 
 where $h_i w^n$ is the maximum consumption rate.
 
-\subsection{Growth}
+\subsection{Growth and Reproduction}
 \label{sec:growth}
 The consumed food $f_i(w) h_i w^n$ is assimilated by an efficiency $\alpha$ and used to fuel the needs for standard metabolism and activity $k_{s.i} w^p$. The remaining available energy, $\alpha f_i(w) h_i w^n - k_{s.i} w^p$, is divided between growth and reproduction by a function of weight changing between zero around the weight of maturation to one at the asymptotic weight where all available energy is used for reproduction:
 
@@ -256,7 +254,7 @@ The consumed food $f_i(w) h_i w^n$ is assimilated by an efficiency $\alpha$ and 
   \psi_i(w) = \left[ 1 + \left( \frac{w}{w_{m.i}} \right)^{-10} \right]^{-1} \left( \frac{w}{W_i} \right)^{1-n},
 \end{equation}
 
-where $w_{m.i}$ is the weight at maturation and $W_i$ is the asymptotic (maximum) size.  The term in the square bracket is a function which varies smoothly from 0 to 1 around the weight at maturation.  The last term describes how the relative amount of energy invested in reproduction increases as the weight approaches the asymptotic weight.  The somatic growth function therefore becomes:
+where $w_{\text{mat}.i}$ is the weight at maturation and $W_i$ is the asymptotic (maximum) size.  The term in the square bracket is a function which varies smoothly from 0 to 1 around the weight at maturation.  The last term describes how the relative amount of energy invested in reproduction increases as the weight approaches the asymptotic weight.  The somatic growth function therefore becomes:
 
 \begin{equation}
   \label{eq:growth}
@@ -280,19 +278,18 @@ The form of the allocation function (\ref{eq:psi}) is chosen such that the growt
 
 If $n=p$ (which is the case for the set of default parameters chosen here), $f_c$ is independent of $w$.
 
-\subsection{Reproduction}
-\label{sec:reproduction}
-The total production of eggs $R_{p.i}$ (numbers per time) is found by integrating the energy allocated to reproduction over all individuals:
-
-\begin{equation}
-  \label{eq:Rp}
-  R_{p.i} = \frac{\epsilon}{2 w_0} \int N_i(w)  (\alpha f_i(w) h_i w^n - k_{s.i} w^p) \psi_i(w) \, dw,
-\end{equation}
-
-where $w_0$ is the egg weight, $\epsilon$ is the efficiency of reproduction, and the factor $1/2$ takes into account that only females reproduce.
 
 \subsection{Recruitment}
 \label{sec:recruitment}
+The total production rate of eggs $R_{p.i}$ (number per time) is found by integrating the energy allocated to reproduction over all individuals.
+
+\begin{equation}
+  \label{eq:Rp}
+  R_{p.i} = \frac{\epsilon}{w_{\text{min}.i}} \int N_i(w)  (\alpha f_i(w) h_i w^n - k_{s.i} w^p) \psi_i(w) \, dw,
+\end{equation}
+
+where $w_{\text{min}.i}$ is the egg weight and $\epsilon$ is the efficiency with which energy
+allocated to reproduction is converted to egg biomass. 
 
 \begin{figure}[t]
   \centering
@@ -314,6 +311,8 @@ The default functional form is such that the recruitment flux $R_i$ (numbers per
 where $R_{\max.i}$ is the maximum recruitment flux of each trait class (Figure~\ref{fig:recruitment}). 
 
 The ``Beverton-Holt'' type of SRR is not the only density dependence model that \pkg{mizer} can use. Users are able to write their own model so it is possible to set a range of SRRs, e.g. fixed recruitment (as used in the community-type model) or ``hockey-stick''. This is explored in more detail in Section~\ref{sec:srr}.
+
+The effective egg production rate $R_i$ leads to a positive birth rate $\lambda_i(w)$ (see eq. \eqref{eq:MvF}) in the immediate neighbourhood of $w=w_0$ so that $\int\lambda_i(w)=R_i$ (Putting all eggs in at exactly $w=w_0$ would lead to a mathematical singularity).
 
 \subsection{Mortality}
 The mortality rate of an individual $\mu_i(w)$ has three sources: predation mortality $\mu_{p.i}(w)$ , starvation mortality $\mu_{s.i}(w)$, and a constant background mortality $\mu_{b.i}(w)$. The background mortality is needed to ensure that the largest individuals in the community also experience mortality as they are not predated upon by any individuals from the community spectrum.  Predation mortality is calculated such that all that is eaten translates into corresponding predation mortalities on the ingested prey individuals (see \citet[Appendix~A]{hartvig_food_2011-1} for derivation):
@@ -344,10 +343,12 @@ Mortality from sources other than predation and starvation is assumed to be cons
 The background resource spectra $N^R_a(w)$ represents food items for the smallest individuals (smaller than $\beta w_0$). The temporal evolution of each size group in the resource spectra is described using semi-chemostatic growth:
 \begin{equation}
   \label{eq:nb}
-  \frac{\partial N^R_a(w,t)}{\partial t} = r_0 w^{p-1} \Big[ \kappa_R w^{-\lambda} - N^R_a(w,t) \Big] - \mu_p(w) N^R_a(w,t),
+  \frac{\partial N^R_a(w,t)}{\partial t} = r_0 w^{p-1} \Big[ \kappa_R w^{-\lambda} - N^R_a(w,t) \Big] - \mu_{p.a}(w) N^R_a(w,t),
 \end{equation}
-where $r_0 w^{p-1}$ is the population regeneration rate \citep{fenchel_intrinsic_1974,savage_effects_2004} and $\kappa w^{-\lambda} = \kappa w^{-2-q+n}$ the carrying capacity. In the current version of
-mizer the regeneration rate and the carrying capacity are identical for all resource spectra.
+where $r_0 w^{p-1}$ is the population regeneration rate \citep{fenchel_intrinsic_1974,savage_effects_2004} and $\kappa w^{-\lambda} = \kappa w^{-2-q+n}$ the carrying capacity. The predation death rates
+$\mu_{p.a}$ are given by the same expression as in \eqref{eq:mup} but with $\theta_{ja}^R$ instead
+of $\theta_{ji}$.
+In the current version of mizer the regeneration rate and the carrying capacity are identical for all resource spectra.
 
 \subsection{Parameters}
 \label{sec:parameters}
@@ -408,6 +409,17 @@ However, the depletion of resources makes it difficult to find an analytical app
 \end{table}
 
 
+\subsection{Discretisation}
+
+While size-spectrum models are formulated in continuous time and contiuous size, for implementation
+in the computer, both time and weight need to be discretised. 
+
+We introduce a discrete set of weights $w_\omega$ and a discrete sets of times $t_\tau$, with the indices $\omega$ and $\tau$ being natural numbers. The continuous
+functions $N_i(t,w)$ are then replaced by an array of values $n[\tau,i,\omega]=N_i(t_\tau,w_\omega)$. Similarly the resource abundances $N_a^R(t,w)$ are represented by an array $n_R[\tau,a,\omega]=N_a^R(t_\tau,w_\omega)$.
+
+To be continued...
+
+
 %--------------------------------------------------------------------
 \section{Introducing \pkg{mizer}}
 
@@ -427,6 +439,8 @@ These stages and the accompanying classes and methods are explained in detail in
 It is probably easier to learn the basics of \pkg{mizer} through examples.
 We start by looking at the simplest type of size spectrum model, the community model. We then move on to a more complex type of model, the trait-based model.
 Finally we look at the most complex type of model, the multispecies model.
+
+
 
 %------------------------------------------------------
 \section{Implementing a community-type model}
@@ -1233,27 +1247,37 @@ For example, the default stock-recruitment function has a second argument to it,
 Users are able to write their own stock-recruitment function. The first argument to the function must be \args{rdi}, which is the density independent recruitment, $R_{p.i}$.
 
 
-\subsection{The interaction matrix}
+\subsection{The interaction matrices}
 \label{sec:interaction_matrix}
 
-The interaction matrix describes the interaction of each pair of species
-in the model. This can be viewed as a proxy for spatial interaction
+The interaction matrices $\theta_{ij}$ and $\theta_{ia}^R$ were introduced in equation \eqref{eq:1} 
+and describe the strenght of interaction between predators and prey or resources respectively.
+This can be viewed as a proxy for spatial interaction
 e.g. to model predator-prey interaction that is not size based.
-The values in the interaction matrix are used to scale the encountered food and predation mortality (see Section~\ref{sec:encounter}).
-The matrix is square with every element being the interaction between a pair of species. The dimensions, nrows and ncolumns, therefore equal the number of species.
+
+The predator-prey interaction matrix $\theta_{ij}$ also enters the expression \eqref{eq:mup} for the 
+mortality due to predation.
+
+The matrix is square with every element being the interaction between a pair of species. The dimensions of the matrix therefore equal the number of species.
 The values are between 0 (species do not overlap and therefore do not interact with each other) to 1 (species overlap perfectly).
 If all the values in the interaction matrix are set to 1 then predator-prey interactions are determined entirely by size-preference.
 
-The interaction matrix must be of type \class{array} or \class{matrix}. 
+The predator-resource interaction matrix $\theta^R_{ia}$ only enters the expression \eqref{eq:1}
+for the amount of available food. It is a rectangular matrix. It has as many rows as there are
+species and as many columns as there are resources. 
+
+The interaction matrices must be of type \class{array} or \class{matrix}. 
 One way of creating your own is to enter the data using a spreadsheet (such as LibreOffice) and saving it as a .csv file. 
 The data can be read into \R using the command \code{read.csv()}. This reads in the data as a data.frame. We then need
 to convert this to a matrix using the \code{as()} function. An example of how to do this is given in Section~\ref{sec:params_example}.
 
-It should be noted that the order of species in the interaction matrix has to be the same as the order in the species parameters data.frame.
-Although you can specify the dimnames of the interaction matrix, these names are overwritten by the species names from the species parameters data.frame
+It should be noted that the order of species in the interaction matrices has to be the same as the order in the species parameters data.frame.
+Although you can specify the dimnames of the predator-prey interaction matrix, these names are overwritten by the species names from the species parameters data.frame
 inside the \class{MizerParams} constructor.
 
-If an interaction matrix is not specified to the \code{MizerParams()} constructor the default iteration matrix is used. This has all values set to 1. 
+If an interaction matrix is not specified to the \code{MizerParams()} constructor,
+a default is used in which all entries are set to $1$. Furthermore in this case it is assumed that
+there is only one resource.
 
 \subsection{The other \code{MizerParams()} arguments}
 \label{sec:other_mizerparams_arguments}
