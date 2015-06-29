@@ -5,6 +5,10 @@ test_that("basic constructor sets dimensions properly",{
     data(NS_species_params_gears)
     data(inter)
     params <- MizerParams(NS_species_params_gears, inter)
+    no_sp <- dim(params@psi)[1]
+    no_pp <- 1
+    no_w <- 100
+    no_w_full <- 130
     # Make MizerSims with t_max and t_save
     t_max <- 50
     t_save <- 1
@@ -12,7 +16,8 @@ test_that("basic constructor sets dimensions properly",{
     expect_that(dim(sim@effort)[1], equals(t_max / t_save))
     expect_that(dimnames(sim@effort)[[1]], is_identical_to(as.character(seq(from = t_save, to = t_max, by = t_save))))
     expect_that(all(dimnames(sim@effort)[[2]] %in% dimnames(params@selectivity)$gear), is_true())
-    expect_that(dim(sim@n)[1], equals(1 + (t_max / t_save)))
+    expect_that(dim(sim@n), equals(c(1 + (t_max / t_save), no_sp, no_w)))
+    expect_that(dim(sim@n_pp), equals(c(1 + (t_max / t_save), no_pp, no_w_full)))
     temp <- seq(from = t_save, to = t_max, by = t_save)
     expect_that(dimnames(sim@n)[[1]], is_identical_to(as.character(c(temp[1] - (temp[2]-temp[1]), temp))))
 
@@ -22,7 +27,8 @@ test_that("basic constructor sets dimensions properly",{
     expect_that(dim(sim@effort)[1], equals(t_max / t_save))
     expect_that(dimnames(sim@effort)[[1]], is_identical_to(as.character(seq(from = t_save, to = t_max, by = t_save))))
     expect_that(all(dimnames(sim@effort)[[2]] %in% dimnames(params@selectivity)$gear), is_true())
-    expect_that(dim(sim@n)[1], equals(1 + (t_max / t_save)))
+    expect_that(dim(sim@n), equals(c(1 + (t_max / t_save), no_sp, no_w)))
+    expect_that(dim(sim@n_pp), equals(c(1 + (t_max / t_save), no_pp, no_w_full)))
     temp <- seq(from = t_save, to = t_max, by = t_save)
     expect_that(dimnames(sim@n)[[1]], is_identical_to(as.character(c(temp[1] - (temp[2]-temp[1]), temp))))
 
@@ -37,10 +43,19 @@ test_that("basic constructor sets dimensions properly",{
     expect_that(all(dimnames(sim@effort)[[2]] %in% dimnames(params@selectivity)$gear), is_true())
     expect_that(dim(sim@n)[1], equals(1 + length(t_dimnames)))
     expect_that(dimnames(sim@n)[[1]], is_identical_to(as.character(c(t_dimnames[1] - (t_dimnames[2]-t_dimnames[1]), t_dimnames))))
+    expect_that(dim(sim@n_pp)[1], equals(1 + length(t_dimnames)))
+    expect_that(dimnames(sim@n_pp)[[1]], is_identical_to(as.character(c(t_dimnames[1] - (t_dimnames[2]-t_dimnames[1]), t_dimnames))))
 
     # Check error if t_dimnames is not numeric
     expect_that(MizerSim(params, t_dimnames = c("x","y","z")), throws_error())
     expect_that(MizerSim(params, t_dimnames = as.character(1:3)), throws_error())
+    
+    # Make MizerSim with several resources
+    no_pp <- 3
+    interaction_pp <- matrix(rnorm(no_sp*no_pp), no_sp, no_pp)
+    params <- MizerParams(NS_species_params_gears, inter, interaction_pp)
+    sim <- MizerSim(params, t_max = t_max, t_save = t_save)
+    expect_that(dim(sim@n_pp), equals(c(1 + (t_max / t_save), no_pp, no_w_full)))
 })
 
 

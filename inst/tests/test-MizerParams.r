@@ -3,6 +3,7 @@ context("MizerParams constructor dimension checks")
 test_that("basic constructor sets dimensions properly",{
     expect_that(MizerParams(1), is_a("MizerParams"))
     no_sp <- 3
+    no_pp <- 1
     min_w <- 0.1
     max_w <- 5000
     no_w <- 200
@@ -32,6 +33,7 @@ test_that("basic constructor sets dimensions properly",{
     expect_that(dim(test_params@catchability), equals(c(no_sp,no_sp)))
     expect_that(dim(test_params@selectivity), equals(c(no_sp,no_sp, no_w)))
     expect_that(dim(test_params@interaction), equals(c(no_sp,no_sp)))
+    expect_that(dim(test_params@interaction_pp), equals(c(no_sp,no_pp)))
     # lengths of the other slots
     expect_that(length(test_params@rr_pp), equals(no_w+no_w_pp)) 
     expect_that(length(test_params@cc_pp), equals(no_w+no_w_pp)) 
@@ -63,12 +65,14 @@ test_that("constructor with species_params and interaction signature gives the r
     expect_that(length(test_params_gears@w), equals(50))
 })
 
-test_that("constructor with only species_params signature gives the right dimensions",{
+test_that("constructor with only species_params signature gives the right interaction matrices",{
     data(NS_species_params_gears)
     data(NS_species_params)
     test_params <- MizerParams(NS_species_params)  
     expect_that(all(test_params@interaction==1),is_true()) 
+    expect_that(all(test_params@interaction_pp==1),is_true()) 
     expect_that(dim(test_params@interaction), equals(c(dim(test_params@psi)[1],dim(test_params@psi)[1])))
+    expect_that(dim(test_params@interaction_pp), equals(c(dim(test_params@psi)[1],1)))
 })
 
 

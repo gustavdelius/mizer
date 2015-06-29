@@ -131,8 +131,15 @@ set_axel_model <- function(no_sp = 40,
     sigmat <- 2*sqrt(2*log(no_sp))
     interaction <- matrix(rlnorm(no_sp^2, -sigmat^2/2, sigmat),nrow=no_sp, ncol=no_sp)
     
+    # Every species has its own resource
+    interaction_pp <- diag(1, no_sp, no_sp)
+    
     # Make the MizerParams
-    trait_params <- MizerParams(trait_params_df, interaction, min_w = min_w, max_w=max_w, no_w = no_w, min_w_pp = min_w_pp, w_pp_cutoff = w_pp_cutoff, n = n, p=p, q=q, r_pp=r_pp, kappa=kappa, lambda = lambda) 
+    trait_params <- MizerParams(trait_params_df, interaction, interaction_pp,
+                                min_w = min_w, max_w=max_w, no_w = no_w, 
+                                min_w_pp = min_w_pp, w_pp_cutoff = w_pp_cutoff, 
+                                n = n, p=p, q=q, r_pp=r_pp, 
+                                kappa=kappa, lambda = lambda) 
     
     # Set trivial stock-recruitment relationship
     trait_params@srr <- function(rdi, species_params){

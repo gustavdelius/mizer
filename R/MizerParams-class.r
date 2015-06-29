@@ -39,6 +39,7 @@ valid_MizerParams <- function(object) {
 	length(dim(object@activity)),
 	length(dim(object@std_metab)),
 	length(dim(object@interaction)),
+	length(dim(object@interaction_pp)),
 	length(dim(object@catchability))) == 2)){
 	    msg <- "psi, intake_max, search_vol, activity, std_metab, interaction and catchability must all be two dimensions"
 	    errors <- c(errors, msg)
@@ -61,6 +62,7 @@ valid_MizerParams <- function(object) {
 	dim(object@selectivity)[2],
 	dim(object@catchability)[2],
 	dim(object@interaction)[1],
+	dim(object@interaction_pp)[1],
 	dim(object@interaction)[2]) == 
 	    dim(object@species_params)[1])){
 	    msg <- "The number of species in the model must be consistent across the species_params, psi, intake_max, search_vol, activity, pred_kernel, interaction (dim 1), selectivity, catchability and interaction (dim 2) slots"
@@ -84,7 +86,7 @@ valid_MizerParams <- function(object) {
 	msg <- "The length of the full size spectrum in the third dimension of the pred_kernel slot must be the same length as the w_full slot"
 	errors <- c(errors, msg)
     }
-    # Check numbe of gears
+    # Check number of gears
     if(!isTRUE(all.equal(dim(object@selectivity)[1], dim(object@catchability)[1]))){
 	msg <- "The number of fishing gears must be consistent across the catchability and selectivity (dim 1) slots"
 	errors <- c(errors, msg)
@@ -111,6 +113,15 @@ valid_MizerParams <- function(object) {
     if(names(dimnames(object@interaction))[2] != "prey"){
 	msg <- "The first dimension of interaction must be called 'prey'"
 	errors <- c(errors, msg)
+    }
+    #interaction_pp dimension names
+    if(names(dimnames(object@interaction))[1] != "predator"){
+        msg <- "The first dimension of interaction_pp must be called 'predator'"
+        errors <- c(errors, msg)
+    }
+    if(names(dimnames(object@interaction_pp))[2] != "pp"){
+        msg <- "The first dimension of interaction_pp must be called 'pp'"
+        errors <- c(errors, msg)
     }
     # w dimension
     if(!all(c(
@@ -168,9 +179,8 @@ valid_MizerParams <- function(object) {
 	    errors <- c(errors, msg)
     }
     # Check dimnames of gear
-    if(!isTRUE(all.equal(
-	dimnames(object@catchability)[[1]],
-	dimnames(object@selectivity)[[1]]))){
+    if(!isTRUE(all.equal(dimnames(object@catchability)[[1]], 
+                         dimnames(object@selectivity)[[1]]))){
 	    msg <- "The gear names of selectivity and catchability must all be the same"
 	    errors <- c(errors, msg)
     }
@@ -203,8 +213,8 @@ valid_MizerParams <- function(object) {
     # species, z0, alpha, eRepro
     species_params_cols <- c("species","z0","alpha","erepro")
     if (!all(species_params_cols %in% names(object@species_params))){
-	msg <- "species_params data.frame must have 'species', 'z0', 'alpha' and 'erepro' columms"
-	errors <- c(errors,msg)
+	    msg <- "species_params data.frame must have 'species', 'z0', 'alpha' and 'erepro' columms"
+	    errors <- c(errors,msg)
     }
     # must also have SRR params but sorted out yet
 
@@ -425,7 +435,7 @@ setGeneric('MizerParams', function(object, interaction, interaction_pp, ...)
 #'   size and shouldn't be used by user
 setMethod('MizerParams', signature(object='numeric', interaction='missing', 
                                    interaction_pp='missing'),
-    function(object, min_w = 0.001, max_w = 1000, no_w = 100,  min_w_pp = 1e-10, 
+    function(object, no_pp = 1, min_w = 0.001, max_w = 1000, no_w = 100,  min_w_pp = 1e-10, 
              no_w_pp = round(no_w)*0.3, species_names=1:object, 
              gear_names=species_names){
 	#args <- list(...)
@@ -455,7 +465,7 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing',
 	selectivity <- array(0, dim=c(length(gear_names), object, no_w), dimnames=list(gear=gear_names, sp=species_names, w=signif(w,3)))
 	catchability <- array(0, dim=c(length(gear_names), object), dimnames = list(gear=gear_names, sp=species_names))
 	interaction <- array(1, dim=c(object,object), dimnames = list(predator = species_names, prey = species_names))
-	interaction_pp <- array(1, dim=c(object, 1), dimnames = list(predator = species_names, pp = 1))
+	interaction_pp <- array(1, dim=c(object, no_pp), dimnames = list(predator = species_names, pp = 1:no_pp))
 	vec1 <- as.numeric(rep(NA, no_w_full))
 	names(vec1) <- signif(w_full,3)
 	
@@ -551,8 +561,9 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix',
 	check_species_params_dataframe(object)
 
 	no_sp <- nrow(object)
+	no_pp <- ncol(interaction_pp)
 	# Make an empty object of the right dimensions
-	res <- MizerParams(no_sp, species_names=object$species, 
+	res <- MizerParams(no_sp, no_pp=no_pp, species_names=object$species, 
 	                   gear_names=unique(object$gear), max_w=max_w,...)
 
 	# If not w_min column in species_params, set to w_min of community

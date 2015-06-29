@@ -31,11 +31,6 @@ valid_MizerSim <- function(object){
 	msg <- "First dimension of effort, n and n_pp slots must be called 'time'"
 	errors <- c(errors, msg)
     }
-    if(!all(c(names(dimnames(object@n))[1], names(dimnames(object@n_pp))[1]) == 
-	names(dimnames(object@effort))[1])){
-	msg <- "First dimension of effort, n and n_pp slots must have the same names"
-	errors <- c(errors, msg)
-    }
     # species dimension of n
     if(dim(object@n)[2] != dim(object@params@psi)[1]){
 	msg <- "Second dimension of n slot must have same length as the species names in the params slot"
@@ -49,6 +44,19 @@ valid_MizerSim <- function(object){
 	msg <- "Second dimension of n slot must have same species names as in the params slot"
 	errors <- c(errors, msg)
     }
+    # resource dimension of n_pp
+    if(dim(object@n_pp)[2] != dim(object@params@interaction_pp)[2]){
+        msg <- "Second dimension of n_pp slot must have length given by number of resources"
+        errors <- c(errors, msg)
+    }
+    if(names(dimnames(object@n_pp))[2] != "pp"){
+        msg <- "Second dimension of n_pp slot must be called 'pp'"
+        errors <- c(errors, msg)
+    }
+#     if(!all(names(dimnames(object@n))[2] == names(dimnames(object@params@interaction_pp))[2])){
+#         msg <- "Second dimension of n slot must have same species names as in the params slot"
+#         errors <- c(errors, msg)
+#     }
     # w dimension of n
     if(dim(object@n)[3] != length(object@params@w)){
 	msg <- "Third dimension of n slot must have same length as w in the params slot"
@@ -137,7 +145,6 @@ setClass(
     validity = valid_MizerSim
 )
 
-setValidity("MizerSim", valid_MizerSim)
 remove(valid_MizerSim)
 
 

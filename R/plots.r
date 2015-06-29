@@ -191,16 +191,18 @@ setMethod('plotSpectra', signature(object='MizerSim'),
     function(object, time_range = max(as.numeric(dimnames(object@n)$time)), min_w =min(object@params@w)/100, biomass = TRUE, print_it = TRUE, ...){
         time_elements <- get_time_elements(object,time_range)
         spec_n <- apply(object@n[time_elements,,,drop=FALSE],c(2,3), mean)
-        background_n <- apply(object@n_pp[time_elements,,,drop=FALSE],2,mean)
+        background_n <- apply(object@n_pp[time_elements,,,drop=FALSE],c(2,3),mean)
         y_axis_name = "Abundance"
         if (biomass){
             spec_n <- sweep(spec_n,2,object@params@w,"*")
-            background_n <- background_n * object@params@w_full
+            background_n <- sweep(background_n,2,object@params@w_full,"*")
             y_axis_name = "Biomass"
         }
         # Make data.frame for plot
-        plot_dat <- data.frame(value = c(spec_n), Species = dimnames(spec_n)[[1]], w = rep(object@params@w, each=nrow(object@params@species_params)))
-        plot_dat <- rbind(plot_dat, data.frame(value = c(background_n), Species = "Background", w = object@params@w_full))
+        no_sp <- nrow(object@params@species_params)
+        no_pp <- ncol(object@params@interaction_pp)
+        plot_dat <- data.frame(value = c(spec_n), Species = dimnames(spec_n)[[1]], w = rep(object@params@w, each=no_sp))
+        plot_dat <- rbind(plot_dat, data.frame(value = c(background_n), Species = dimnames(background_n)[[1]], w = rep(object@params@w_full, each=no_pp)))
         # lop off 0s in background and apply min_w
         plot_dat <- plot_dat[(plot_dat$value > 0) & (plot_dat$w >= min_w),]
         p <- ggplot(plot_dat) + geom_line(aes(x=w, y = value, colour = Species, linetype=Species)) + scale_x_continuous(name = "Size", trans="log10") + scale_y_continuous(name = y_axis_name, trans="log10")
