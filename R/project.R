@@ -124,7 +124,7 @@ setMethod('project', signature(object='MizerParams', effort='numeric'),
 #' Project with time varying effort
 #' @rdname project
 setMethod('project', signature(object='MizerParams', effort='array'),
-    function(object, effort, t_save=1, dt=0.1, initial_n=get_initial_n(object), initial_n_pp=object@cc_pp,  ...){
+    function(object, effort, t_save=1, dt=0.1, initial_n=get_initial_n(object), initial_n_pp=object@cc_pp, initial_n_d=rep(0, length((get_initial_n(object))[1,])),...){
         validObject(object)
         # Check that number and names of gears in effort array is same as in MizerParams object
         no_gears <- dim(object@catchability)[1]
@@ -173,6 +173,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
         # Set initial population
         sim@n[1,,] <- initial_n 
         sim@n_pp[1,] <- initial_n_pp
+        sim@n_d[1,] <- initial_n_d
 
         # Handy things
         no_sp <- nrow(sim@params@species_params) # number of species
@@ -199,32 +200,33 @@ setMethod('project', signature(object='MizerParams', effort='array'),
         n <- array(sim@n[1,,],dim=dim(sim@n)[2:3])
         dimnames(n) <- dimnames(sim@n)[2:3]
         n_pp <- sim@n_pp[1,]
+        n_d <- sim@n_d[1,]
         t_steps <- dim(effort_dt)[1]
         for (i_time in 1:t_steps){
             # Do it piece by piece to save repeatedly calling methods
             # Calculate amount E_{a,i}(w) of available food
-            phi_prey <- getPhiPrey(sim@params, n=n, n_pp=n_pp)
+            phi_prey <- getPhiPrey(sim@params, n=n, n_pp=n_pp, n_d=n_d)
             # Calculate amount f_i(w) of food consumed
-            feeding_level <- getFeedingLevel(sim@params, n=n, n_pp=n_pp, phi_prey=phi_prey)
+            feeding_level <- getFeedingLevel(sim@params, n=n, n_pp=n_pp, n_d=n_d, phi_prey=phi_prey)
             # Calculate the predation rate
-            pred_rate <- getPredRate(sim@params, n=n, n_pp=n_pp, feeding_level=feeding_level)
+            pred_rate <- getPredRate(sim@params, n=n, n_pp=n_pp, n_d=n_d, feeding_level=feeding_level)
             # Calculate predation mortality on fish \mu_{p,i}(w)
             #m2 <- getM2(sim@params, n=n, n_pp=n_pp, pred_rate=pred_rate)
             m2 <- getM2(sim@params, pred_rate=pred_rate)
             # Calculate total mortality \mu_i(w)
-            z <- getZ(sim@params, n=n, n_pp=n_pp, effort=effort_dt[i_time,], m2=m2)
+            z <- getZ(sim@params, n=n, n_pp=n_pp, n_d=n_d, effort=effort_dt[i_time,], m2=m2)
             # Calculate predation mortality on the background spectrum
-            m2_background <- getM2Background(sim@params, n=n, n_pp=n_pp, pred_rate=pred_rate)
+            m2_background <- getM2Background(sim@params, n=n, n_pp=n_pp, n_d=n_d, pred_rate=pred_rate)
             # Calculate the resources available for reproduction and growth
-            e <- getEReproAndGrowth(sim@params, n=n, n_pp=n_pp, feeding_level=feeding_level)
+            e <- getEReproAndGrowth(sim@params, n=n, n_pp=n_pp, n_d=n_d, feeding_level=feeding_level)
             # Calculate the resources for reproduction
-            e_spawning <- getESpawning(sim@params, n=n, n_pp=n_pp, e=e)
+            e_spawning <- getESpawning(sim@params, n=n, n_pp=n_pp, n_d=n_d, e=e)
             # Calculate the growth rate g_i(w)
-            e_growth <- getEGrowth(sim@params, n=n, n_pp=n_pp, e_spawning=e_spawning, e=e)
+            e_growth <- getEGrowth(sim@params, n=n, n_pp=n_pp, n_d=n_d, e_spawning=e_spawning, e=e)
             # R_{p,i}
-            rdi <- getRDI(sim@params, n=n, n_pp=n_pp, e_spawning=e_spawning, sex_ratio=sex_ratio)
+            rdi <- getRDI(sim@params, n=n, n_pp=n_pp, n_d=n_d, e_spawning=e_spawning, sex_ratio=sex_ratio)
             # R_i
-            rdd <- getRDD(sim@params, n=n, n_pp=n_pp, rdi=rdi, sex_ratio=sex_ratio)
+            rdd <- getRDD(sim@params, n=n, n_pp=n_pp, n_d=n_d, rdi=rdi, sex_ratio=sex_ratio)
 
             # Iterate species one time step forward:
             # See Ken's PDF
@@ -253,6 +255,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             if (any(store)){
                 sim@n[which(store)+1,,] <- n 
                 sim@n_pp[which(store)+1,] <- n_pp
+                sim@n_d[which(store)+1,] <- 2*n[1,]
             }
         }
         # and end

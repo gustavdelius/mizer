@@ -122,7 +122,8 @@ setClass(
         params = "MizerParams",
         n = "array",
         effort = "array",
-        n_pp = "array"
+        n_pp = "array",
+        n_d = "array"
     ),
     prototype = prototype(
         params = new("MizerParams"),
@@ -133,6 +134,9 @@ setClass(
             NA,dim = c(1,1), dimnames = list(time = NULL, gear = NULL)
         ),
         n_pp = array(
+            NA,dim = c(1,1), dimnames = list(time = NULL, w = NULL)
+        ),
+        n_d = array(
             NA,dim = c(1,1), dimnames = list(time = NULL, w = NULL)
         )
     ),
@@ -212,11 +216,16 @@ setMethod('MizerSim', signature(object='MizerParams'),
         array_n_pp <- array(NA, dim = c(t_dim_n, no_w_full), 
                             dimnames = list(time=t_dimnames_n, 
                                             w = w_full_names))
+        
+        array_n_d <- array(NA, dim = c(t_dim_n, no_w), 
+                            dimnames = list(time=t_dimnames_n, 
+                                            w = w_names))
 
         sim <- new('MizerSim',
                n = array_n, 
                effort = array_effort,
                n_pp = array_n_pp,
+               n_d = array_n_d,
                params = object)
         return(sim)
         }
