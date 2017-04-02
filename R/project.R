@@ -227,6 +227,9 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             rdi <- getRDI(sim@params, n=n, n_pp=n_pp, n_d=n_d, e_spawning=e_spawning, sex_ratio=sex_ratio)
             # R_i
             rdd <- getRDD(sim@params, n=n, n_pp=n_pp, n_d=n_d, rdi=rdi, sex_ratio=sex_ratio)
+            
+            ## Calculate fishing mortality
+            Fmortt <- getFMort(sim@params, effort=effort_dt[i_time,])
 
             # Iterate species one time step forward:
             # See Ken's PDF
