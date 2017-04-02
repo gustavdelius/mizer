@@ -258,7 +258,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             if (any(store)){
                 sim@n[which(store)+1,,] <- n 
                 sim@n_pp[which(store)+1,] <- n_pp
-                sim@n_d[which(store)+1,] <- 2*n[1,]
+                sim@n_d[which(store)+1,] <- Fmortt[1,]*n[1,]
             }
         }
         # and end
