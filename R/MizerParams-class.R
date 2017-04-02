@@ -293,6 +293,7 @@ setClass(
         fsmat = "array",
         smatM = "array",
         fsmatM = "array",
+        discard_fraction = "array",
         pred_kernel = "array",
         #z0 = "numeric",
         rr_pp = "numeric",
@@ -317,6 +318,7 @@ setClass(
         fsmat = array(NA, dim = c(1,1)),
         smatM = array(NA, dim = c(1,1)),
         fsmatM = array(NA, dim = c(1,1)),
+        discard_fraction = array(NA, dim = c(1,1)),
         pred_kernel = array(
             NA,dim = c(1,1,1), dimnames = list(
                 sp = NULL,w_pred = NULL,w_prey = NULL
@@ -497,7 +499,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
     function(object, interaction,  n = 2/3, p = 0.7, q = 0.8, r_pp = 10, 
              kappa = 1e11, lambda = (2+q-n), w_pp_cutoff = 10, 
              max_w = max(object$w_inf)*1.1, f0 = 0.6, 
-             z0pre = 0.6, z0exp = n-1, ...){
+             z0pre = 0.6, z0exp = n-1, min_landing_weight = 1000, ...){
 
 	# Set default values for column values if missing
 	# If no gear_name column in object, then named after species
@@ -662,6 +664,21 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
             
 	res@smatM <- phiMortality
 	res@fsmatM <- fphiMortality
+	
+	######################
+	
+	
+	onevec <- rep(0,length(w))
+	onevec[w<min_landing_weight] <- rep(1,length(w))[w<min_landing_weight]
+	some_mat <- matrix(0,nrow = noSpecies, ncol = length(w))
+	for (j in 1:noSpecies){
+	    some_mat[j, ] <- onevec
+	}
+	res@discard_fraction <- some_mat
+	
+	######################
+	
+	
 	# Could maybe improve this. Pretty ugly at the moment
 	res@pred_kernel[] <- object$beta
 	res@pred_kernel <- exp(-0.5*sweep(log(sweep(sweep(res@pred_kernel,3,res@w_full,"*")^-1,2,res@w,"*")),1,object$sigma,"/")^2)
