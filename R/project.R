@@ -230,6 +230,8 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             
             ## Calculate fishing mortality
             Fmortt <- getFMort(sim@params, effort=effort_dt[i_time,])
+            
+            n_d <- n_d +dt*Fmortt[1,]*n[1,]
 
             # Iterate species one time step forward:
             # See Ken's PDF
@@ -258,7 +260,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             if (any(store)){
                 sim@n[which(store)+1,,] <- n 
                 sim@n_pp[which(store)+1,] <- n_pp
-                sim@n_d[which(store)+1,] <- Fmortt[1,]*n[1,]
+                sim@n_d[which(store)+1,] <- n_d
             }
         }
         # and end
