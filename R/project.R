@@ -232,7 +232,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             Fmortt <- getFMort(sim@params, effort=effort_dt[i_time,])
             
             pre_multiply <- Fmortt[1,]*sim@params@discard_fraction[1,]
-            n_d <- n_d +dt*n[1,]*pre_multiply
+            n_d <- n_d +dt*colSums(n)*pre_multiply
 
             # Iterate species one time step forward:
             # See Ken's PDF
