@@ -237,12 +237,21 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             
             anhilation_rate <- m2_background[((LL+1-length(n[1,])):LL)]
             
-            
             ## Calculate fishing mortality
             Fmortt <- getFMort(sim@params, effort=effort_dt[i_time,])
             
-            pre_multiply <- Fmortt[1,]*sim@params@discard_fraction[1,]
-            n_d <- n_d +dt*colSums(n)*pre_multiply - dt*anhilation_rate*n_d
+            thrown <- matrix(0,nrow = no_sp, ncol = length(n[1,]))
+            
+            for (j in 1:no_sp){
+                pre_multiply <- Fmortt[j,]*sim@params@discard_fraction[j,]
+                thrown[j,] <- pre_multiply*n[j,] 
+            }
+            
+            
+            
+            
+            
+            n_d <- n_d +dt*colSums(thrown) - dt*anhilation_rate*n_d
 
             # Iterate species one time step forward:
             # See Ken's PDF
