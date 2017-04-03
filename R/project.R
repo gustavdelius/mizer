@@ -212,7 +212,8 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             pred_rate <- getPredRate(sim@params, n=n, n_pp=n_pp, n_d=n_d, feeding_level=feeding_level)
             # Calculate predation mortality on fish \mu_{p,i}(w)
             #m2 <- getM2(sim@params, n=n, n_pp=n_pp, pred_rate=pred_rate)
-            m2 <- getM2(sim@params, pred_rate=pred_rate)
+            ###@@@### m2 <- getM2(sim@params, pred_rate=pred_rate)
+            m2 <- getM2(sim@params, n=n, n_pp=n_pp, n_d=n_d)
             # Calculate total mortality \mu_i(w)
             z <- getZ(sim@params, n=n, n_pp=n_pp, n_d=n_d, effort=effort_dt[i_time,], m2=m2)
             # Calculate predation mortality on the background spectrum
@@ -228,11 +229,20 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             # R_i
             rdd <- getRDD(sim@params, n=n, n_pp=n_pp, n_d=n_d, rdi=rdi, sex_ratio=sex_ratio)
             
+            ## Determine anhiliation rate of dead fish
+            
+            LL <- length(m2_background)
+            
+            
+            
+            anhilation_rate <- m2_background[((LL+1-length(n[1,])):LL)]
+            
+            
             ## Calculate fishing mortality
             Fmortt <- getFMort(sim@params, effort=effort_dt[i_time,])
             
             pre_multiply <- Fmortt[1,]*sim@params@discard_fraction[1,]
-            n_d <- n_d +dt*colSums(n)*pre_multiply
+            n_d <- n_d +dt*colSums(n)*pre_multiply - dt*anhilation_rate*n_d
 
             # Iterate species one time step forward:
             # See Ken's PDF
