@@ -247,11 +247,21 @@ setMethod('project', signature(object='MizerParams', effort='array'),
                 thrown[j,] <- pre_multiply*n[j,] 
             }
             
+            ##########
+            
+            n_d_diff <- rep(0, length(n_d))
+            
+            for (k in 2:length(n_d)){
+                n_d_diff[k] <- (n_d[k] - n_d[k-1])/(sim@params@dw[k])
+            }
+            
+            #########
             
             
-            
-            
-            n_d <- n_d +dt*colSums(thrown) - dt*anhilation_rate*n_d
+            ###This euler scheme is unstable when disintegration is included, 
+            ### I am not sure if this is intrinsic, or a consequence of knife-edge fishing gear
+            ###@@@### n_d <- n_d +dt*colSums(thrown) - dt*anhilation_rate*n_d +dt*sim@params@disintegration*n_d_diff
+            n_d <- n_d +dt*colSums(thrown) - dt*anhilation_rate*n_d 
 
             # Iterate species one time step forward:
             # See Ken's PDF
