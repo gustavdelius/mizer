@@ -294,6 +294,7 @@ setClass(
         smatM = "array",
         fsmatM = "array",
         discard_fraction = "array",
+        disintegration = "numeric",
         pred_kernel = "array",
         #z0 = "numeric",
         rr_pp = "numeric",
@@ -319,6 +320,7 @@ setClass(
         smatM = array(NA, dim = c(1,1)),
         fsmatM = array(NA, dim = c(1,1)),
         discard_fraction = array(NA, dim = c(1,1)),
+        disintegration = NA_real_,
         pred_kernel = array(
             NA,dim = c(1,1,1), dimnames = list(
                 sp = NULL,w_pred = NULL,w_prey = NULL
@@ -499,7 +501,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
     function(object, interaction,  n = 2/3, p = 0.7, q = 0.8, r_pp = 10, 
              kappa = 1e11, lambda = (2+q-n), w_pp_cutoff = 10, 
              max_w = max(object$w_inf)*1.1, f0 = 0.6, 
-             z0pre = 0.6, z0exp = n-1, min_landing_weight = 1000, ...){
+             z0pre = 0.6, z0exp = n-1, min_landing_weight = 1000, disintegration_rate = 1, ...){
 
 	# Set default values for column values if missing
 	# If no gear_name column in object, then named after species
@@ -676,6 +678,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	}
 	res@discard_fraction <- some_mat
 	
+	res@disintegration <- disintegration_rate
 	######################
 	
 	
