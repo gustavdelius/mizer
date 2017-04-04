@@ -240,6 +240,8 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             ## Calculate fishing mortality
             Fmortt <- getFMort(sim@params, effort=effort_dt[i_time,])
             
+            # thrown[i,j] measures the amount of size w[k] species i discarded
+            
             thrown <- matrix(0,nrow = no_sp, ncol = length(n[1,]))
             
             for (j in 1:no_sp){
@@ -247,7 +249,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
                 thrown[j,] <- pre_multiply*n[j,] 
             }
             
-            ##########
+            # n_d_diff is an approximtion to the derivative of n_d with respect to w
             
             n_d_diff <- rep(0, length(n_d))
             
@@ -259,11 +261,26 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             
             #########
             
+            II <- colSums(thrown)
+            
+            len <- length(n_d)
+            vv <- rep(0,len)
+            
+            for (k in (len-1):1){
+                AA <- -sim@params@disintegration*dt/(sim@params@dw[k])
+                BB <- 1 + (sim@params@disintegration*dt/(sim@params@dw[k])) + Fmortt[k]*dt
+                CC <- n_d[k] + dt*II[k]
+                vv[k] <- (CC-AA*vv[k+1])/BB
+            }
+            n_d <- vv
+            ############
+            
+            
             
             ###This euler scheme is unstable when disintegration is included, 
             ### I am not sure if this is intrinsic, or a consequence of knife-edge fishing gear
              ###@@@### n_d <- n_d +dt*colSums(thrown) - dt*anhilation_rate*n_d +dt*sim@params@disintegration*n_d_diff
-           n_d <- n_d +dt*colSums(thrown) - dt*anhilation_rate*n_d 
+            ###@@@### n_d <- n_d +dt*colSums(thrown) - dt*anhilation_rate*n_d 
 
             # Iterate species one time step forward:
             # See Ken's PDF
