@@ -501,7 +501,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
     function(object, interaction,  n = 2/3, p = 0.7, q = 0.8, r_pp = 10, 
              kappa = 1e11, lambda = (2+q-n), w_pp_cutoff = 10, 
              max_w = max(object$w_inf)*1.1, f0 = 0.6, 
-             z0pre = 0.6, z0exp = n-1, min_landing_weight = 1000, disintegration_rate = 1, ...){
+             z0pre = 0.6, z0exp = n-1, min_landing_weight = 1000, fraction_discarded = 1, disintegration_rate = 1, ...){
 
 	# Set default values for column values if missing
 	# If no gear_name column in object, then named after species
@@ -671,7 +671,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	
 	
 	onevec <- rep(0,length(w))
-	onevec[w<min_landing_weight] <- rep(1,length(w))[w<min_landing_weight]
+	onevec[w<min_landing_weight] <- rep(fraction_discarded,length(w))[w<min_landing_weight]
 	some_mat <- matrix(0,nrow = noSpecies, ncol = length(w))
 	for (j in 1:noSpecies){
 	    some_mat[j, ] <- onevec
