@@ -24,7 +24,13 @@ sigmoid_length <- function(w,l25,l50,a,b) {
     sr <- l50 - l25
     s1 <- l50*log(3)/sr
     s2 <- s1 / l50
-    return(1 / (1 + exp(s1 - s2*l)))
+    
+    # flatten out `sigmoid` to zero when it drops below 1% of max, 
+    # so that sigmoid times abundance does not go up when one 
+    # is considering fishing small fish with high abundance
+    sig <- 1 / (1 + exp(s1 - s2*l))
+    sig[sig<0.01] <- 0
+    return(sig)
 }
 
 #' Size based knife-edge selectivity function
