@@ -242,12 +242,15 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             # II[k] is influx of size k dead fish
             II <- colSums(thrown)
             
+            LL <- length(m2_background)
+            anhilation_rate <- m2_background[((LL+1-length(n[1,])):LL)]
+            
             # Use downwind difference scheme to update n_d
             len <- length(n_d)
             vv <- rep(0,len)
             for (k in (len-1):1){
                 AA <- -sim@params@disintegration*dt/(sim@params@dw[k+1])
-                BB <- 1 + (sim@params@disintegration*dt/(sim@params@dw[k+1])) + Fmortt[k]*dt
+                BB <- 1 + (sim@params@disintegration*dt/(sim@params@dw[k+1])) + anhilation_rate[k]*dt
                 CC <- n_d[k] + dt*II[k]
                 vv[k] <- (CC-AA*vv[k+1])/BB
             }

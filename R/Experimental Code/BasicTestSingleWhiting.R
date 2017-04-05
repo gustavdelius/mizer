@@ -12,6 +12,9 @@ library(grid)
 library(methods)
 library(plyr)
 library(reshape2)
+library("plot3D")
+library("plot3Drgl")
+
 params_data <- read.csv("./vignettes/NS_species_params.csv")
 params_data$sel_func <- "sigmoid_length"
 params_data$l25 <- c(7.6, 9.8, 8.7, 10.1, 11.5, 19.8, 16.4, 19.8, 11.5,
@@ -32,102 +35,36 @@ inter <- as(inter[6,6], "matrix")
 rownames(inter) <- nme
 colnames(inter) <-nme
 ####
-params <- MizerParams(params_data[6,], interaction = inter, no_w = 200, min_landing_weight = 250, disintegration_rate = 0.1, fraction_discarded = 1)
-sim <- project(params, effort = 1, t_max = 20, dt = 0.1, t_save = 1)
+####
+years_run <- 40
+disirate <- 1
+params <- MizerParams(params_data[6,], interaction = inter, no_w = 200, min_landing_weight = 250, disintegration_rate = disirate, fraction_discarded = 1)
+sim <- project(params, effort = 1, t_max = years_run, dt = 0.1, t_save = 1)
 #plot(sim)
 
-plot(x=params@w, y=sim@n_d[20,], type="b",log="xy")
-plot(x=params@w, y=sim@n_d[21,], type="b",log="xy")
+plot(x=params@w, y=sim@n_d[years_run,], type="b",log="xy",xlab = "Size (g)", ylab="Abundance Of Dead Fish")
+plot(x=params@w, y=sim@n_d[years_run+1,], type="b",log="xy",xlab = "Size (g)", ylab="Abundance Of Dead Fish")
+plot(x=params@w, y=sim@n[years_run,1,]*getFMort(sim@params, effort=1)[1,], type="b",log="xy", xlab = "Size (g)", ylab="Abundance Of New Discards")
+plot(x=params@w, y=sim@n[years_run+1,1,]*getFMort(sim@params, effort=1)[1,], type="b",log="xy", xlab = "Size (g)", ylab="Abundance Of New Discards")
 
-###################
+persp3D(x = (1:(years_run+1)), y = params@w, z = sim@n_d, xlab="Time", ylab="Size (g)", zlab="Abundance Of Dead Fish",
+        lighting = TRUE) 
+plotrgl(smooth = TRUE)
+persp3D(x = (1:(years_run+1)), y = log(params@w), z = log(0.01+sim@n_d), xlab="Time", ylab="log(Size (g))", zlab="log(Abundance Of Dead Fish)",
+        lighting = TRUE) 
+plotrgl(smooth = TRUE)
 
-params@w[1]
+#########
+params_without_discarding <- MizerParams(params_data[6,], interaction = inter, no_w = 200, min_landing_weight = 0, disintegration_rate = disirate, fraction_discarded = 1)
+sim_without_discarding <- project(params, effort = 1, t_max = years_run, dt = 0.1, t_save = 1)
 
-plot(x=params@w, y=sim@n[11,1,]*getFMort(sim@params, effort=1)[1,], type="b",log="xy")
+# plot change in abundance due to discarding
+# plot change in biomass due to discarding
+# 
+ 
+plot(sim@n_d[years_run+1,])
 
-dim(getFMort(sim@params, effort=1))
+head(sim@n_d[years_run+1,])
 
-head(getFMort(sim@params, effort=1))
+plot(x=params@w[(1:30)], y=sim@n_d[years_run,(1:30)], type="b",log="y",xlab = "Size (g)", ylab="log(Abundance Of Dead Fish)")
 
-params@fmort
-
-slotNames(sim)
-
-####################################
-
-params0 <- MizerParams(params_data[1,], interaction = inter, no_w = 200, min_landing_weight = 0, disintegration_rate = 2)
-sim0 <- project(params0, effort = 1, t_max = 10, dt = 0.1, t_save = 1)
-plot(x=sim0@params@w, y=sim0@n[11,1,], log="x", type="b",
-     xlab = "Size (g)", ylab="Abundance")
-
-params1 <- MizerParams(params_data[1,], interaction = inter, no_w = 200, min_landing_weight = 100, disintegration_rate = 2)
-sim1 <- project(params1, effort = 1, t_max = 10, dt = 0.1, t_save = 1)
-lines(x=sim1@params@w, y=sim1@n[11,1,])
-
-
-plot(x=sim0@params@w,y=sim1@n[11,1,]-sim0@n[11,1,],log="x",xlab = "Size (g)", ylab="Abundance Increase From Discarding")
-
-
-##################################
-
-plot(x=params@w, y=sim@n[11,2,], type="b",log="xy")
-
-sum(sim@n_d[11,]==0)
-
-plot(sim@n_d[1,])
-
-ggg[100:120]
-
-params_data
-
-params@discard_fraction[1,]
-
-params@disintegration
-
-
-#####################
-
-no_sp <- 3
-min_w <- 0.1
-max_w <- 5000
-no_w <- 200
-min_w_pp <- 1e-8
-no_w_pp <- 20
-species_names <- c("Cod","Haddock","Whiting")
-test_params <- MizerParams(no_sp, min_w = min_w, max_w = max_w, no_w = no_w, min_w_pp = min_w_pp, no_w_pp = no_w_pp, species_names = species_names)
-
-length(test_params@w_full)
-no_w+no_w_pp
-no_w
-no_w_pp
-
-max(diff(log(test_params@w_full)))
-
-min(diff(log(test_params@w_full)))
-
-
-test_params@w_full[1+length(test_params@w_full)-length(test_params@w)]
-
-test_params@w[1]
-
-
-#expect_that(dim(test_params@pred_kernel), equals(c(no_sp,no_w,no_w+no_w_pp)))
-
-dim(test_params@pred_kernel)
-
-c(no_sp,no_w,no_w+no_w_pp)
-
-c(no_sp,no_w,length(test_params@w_full))
-
-#expect_that(dim(test_params@pred_kernel), equals(c(no_sp,no_w,length(test_params@w_full))))
-
-
-##############
-
-data(NS_species_params_gears)
-data(inter)
-params <- MizerParams(NS_species_params_gears, inter)
-sim <- project(params, effort=1, t_max=40, dt = 1, t_save = 1)
-# Just check that it doesn't crash
-plot(sim)
-#expect_that(plot(sim),!throws_error())    
