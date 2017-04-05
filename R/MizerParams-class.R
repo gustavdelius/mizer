@@ -295,6 +295,8 @@ setClass(
         fsmatM = "array",
         discard_fraction = "array",
         disintegration = "numeric",
+        predationMultiplier = "numeric",
+        intrinsicAnnihilation = "numeric",
         pred_kernel = "array",
         #z0 = "numeric",
         rr_pp = "numeric",
@@ -321,6 +323,8 @@ setClass(
         fsmatM = array(NA, dim = c(1,1)),
         discard_fraction = array(NA, dim = c(1,1)),
         disintegration = NA_real_,
+        predationMultiplier = NA_real_,
+        intrinsicAnnihilation = NA_real_,
         pred_kernel = array(
             NA,dim = c(1,1,1), dimnames = list(
                 sp = NULL,w_pred = NULL,w_prey = NULL
@@ -501,7 +505,8 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
     function(object, interaction,  n = 2/3, p = 0.7, q = 0.8, r_pp = 10, 
              kappa = 1e11, lambda = (2+q-n), w_pp_cutoff = 10, 
              max_w = max(object$w_inf)*1.1, f0 = 0.6, 
-             z0pre = 0.6, z0exp = n-1, min_landing_weight = 1000, fraction_discarded = 1, disintegration_rate = 1, ...){
+             z0pre = 0.6, z0exp = n-1, min_landing_weight = 1000, fraction_discarded = 1, disintegration_rate = 1,
+             predation_multiplier = 1, intrinsic_annihilation = 0, ...){
 
 	# Set default values for column values if missing
 	# If no gear_name column in object, then named after species
@@ -680,6 +685,11 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	
 	res@disintegration <- disintegration_rate
 	######################
+	
+	res@predationMultiplier <- predation_multiplier
+	res@intrinsicAnnihilation <- intrinsic_annihilation
+	
+	#####################
 	
 	
 	# Could maybe improve this. Pretty ugly at the moment

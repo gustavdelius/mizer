@@ -38,7 +38,11 @@ colnames(inter) <-nme
 ####
 years_run <- 40
 disirate <- 1
-params <- MizerParams(params_data[6,], interaction = inter, no_w = 200, min_landing_weight = 250, disintegration_rate = disirate, fraction_discarded = 1)
+multip <- 0
+intri <- 1
+
+params <- MizerParams(params_data[6,], interaction = inter, no_w = 200, min_landing_weight = 250, disintegration_rate = disirate,
+                      fraction_discarded = 1, predation_multiplier = multip, intrinsic_annihilation = intri)
 sim <- project(params, effort = 1, t_max = years_run, dt = 0.1, t_save = 1)
 #plot(sim)
 
@@ -55,7 +59,9 @@ persp3D(x = (1:(years_run+1)), y = log(params@w), z = log(0.01+sim@n_d), xlab="T
 plotrgl(smooth = TRUE)
 
 #########
-params_without_discarding <- MizerParams(params_data[6,], interaction = inter, no_w = 200, min_landing_weight = 0, disintegration_rate = disirate, fraction_discarded = 1)
+params_without_discarding <- MizerParams(params_data[6,], interaction = inter, no_w = 200, min_landing_weight = 0,
+                                         disintegration_rate = disirate, fraction_discarded = 1, predation_multiplier = multip,
+                                         intrinsic_annihilation = intri)
 sim_without_discarding <- project(params, effort = 1, t_max = years_run, dt = 0.1, t_save = 1)
 
 # plot change in abundance due to discarding
