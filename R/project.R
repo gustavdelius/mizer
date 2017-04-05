@@ -246,8 +246,8 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             len <- length(n_d)
             vv <- rep(0,len)
             for (k in (len-1):1){
-                AA <- -sim@params@disintegration*dt/(sim@params@dw[k])
-                BB <- 1 + (sim@params@disintegration*dt/(sim@params@dw[k])) + Fmortt[k]*dt
+                AA <- -sim@params@disintegration*dt/(sim@params@dw[k+1])
+                BB <- 1 + (sim@params@disintegration*dt/(sim@params@dw[k+1])) + Fmortt[k]*dt
                 CC <- n_d[k] + dt*II[k]
                 vv[k] <- (CC-AA*vv[k+1])/BB
             }
