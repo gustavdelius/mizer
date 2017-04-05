@@ -38,12 +38,13 @@ colnames(inter) <-nme
 ####
 years_run <- 40
 disirate <- 1
-multip <- 0
-intri <- 1
+multip <- 1
+intri <- 0
 
 params <- MizerParams(params_data[6,], interaction = inter, no_w = 200, min_landing_weight = 250, disintegration_rate = disirate,
                       fraction_discarded = 1, predation_multiplier = multip, intrinsic_annihilation = intri)
 sim <- project(params, effort = 1, t_max = years_run, dt = 0.1, t_save = 1)
+nDisc <- sim@n[years_run+1,1,]
 #plot(sim)
 
 plot(x=params@w, y=sim@n_d[years_run,], type="b",log="xy",xlab = "Size (g)", ylab="Abundance Of Dead Fish")
@@ -62,15 +63,20 @@ plotrgl(smooth = TRUE)
 params_without_discarding <- MizerParams(params_data[6,], interaction = inter, no_w = 200, min_landing_weight = 0,
                                          disintegration_rate = disirate, fraction_discarded = 1, predation_multiplier = multip,
                                          intrinsic_annihilation = intri)
-sim_without_discarding <- project(params, effort = 1, t_max = years_run, dt = 0.1, t_save = 1)
+sim_without_discarding <- project(params_without_discarding, effort = 1, t_max = years_run, dt = 0.1, t_save = 1)
+nNoDisc <- sim_without_discarding@n[years_run+1,1,]
+# 
+
+
+#plot(x=params@w, y=(nDisc - nNoDisc), type="b",log="xy",xlab = "Size (g)", ylab="Increase In Abundance From Discarding")
+
+plot(x=params@w, y=nNoDisc, type="b",log="xy",xlab = "Size (g)", ylab="Whiting Abundance")
+lines(x=params@w, y=nDisc)
+
+sum(nDisc - nNoDisc <10)
+
+plot(x=params@w[(1:30)], y=sim@n_d[years_run,(1:30)], type="b",log="y",xlab = "Size (g)", ylab="log(Abundance Of Dead Fish)")
 
 # plot change in abundance due to discarding
 # plot change in biomass due to discarding
-# 
- 
-plot(sim@n_d[years_run+1,])
-
-head(sim@n_d[years_run+1,])
-
-plot(x=params@w[(1:30)], y=sim@n_d[years_run,(1:30)], type="b",log="y",xlab = "Size (g)", ylab="log(Abundance Of Dead Fish)")
 
