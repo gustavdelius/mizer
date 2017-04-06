@@ -1,0 +1,147 @@
+---
+title: "The Effect Of Discarding On Fish Size Spectra"
+author: "Richard Southwell"
+date: "5 April 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+In many places, regulations have encouraged fishermen to discard fish which have a length below a *minimum landing length*. The large amount of dead fish discarded in this way has led to a movement to ban discarding. On the sufrace of things, discarding seems to be wasteful, however it is important to be aware that it can lead to a significant reinjection of nutrients and energy into the the ecosystem, since dead fish act as food for fish and other organisms. We extened the size spectrum ecological modeling software package `mizer' so that it can be used to model discarding. In this report we describe the modeling assumptions we made, how we included them in the mizer package, and what results we obtained from our models. 
+
+
+## Governing Equations
+
+The mizer modelling software we build upon uses the McKendrik-von Foerster equation to model the abundance of different species of fish of different weights. The underlying assumptions are detailed in the mizer vignette:
+
+<https://cran.r-project.org/web/packages/mizer/vignettes/mizer_vignette.pdf>
+
+and we shall only discuss the extra features we have added to this somewhat intricate mathematical modelling framework. Mizer can keep track of the abundance of plankton (referred to as background resource), and several species of fish of different sizes. In order to model the effect of discarding we added a new type of entity that we wish to keep track of, which we call `dead fish'. We let $N_d(w)$ denote the abundance of dead fish of weight $w.$ Here $N_d(w).dw$ denotes the number of dead fish (per unit volume) which a weight in $[w,w+dw].$ We assume that the abundance of dead fish obeys the partial differential equation:
+
+ \begin{equation}
+\frac{\partial N_d (w)}{\partial t} = \frac{\partial (g_{d} N_d (w)) }{\partial w} -\mu_d (w) N_d(w) + I(w), \label{discardPDE}
+\end{equation}
+
+where the sum is over the different species $j$, and:
+
+* $g_d \geq 0$ is the *disintigaration rate* of dead fish, which we assume to be constant over time and weight.
+
+* $\mu_d (w)$ is anhillation rate of dead fish given by the following equation, that takes a similar form to (3.12) from the mizer vignette, under the assumption that all species have equal preference for dead fish:
+
+ \begin{equation}
+\mu _{d} (w) = \sum _j \int_{0} ^{\infty} \phi _j(w/w_p) (1-f_j(w_p)) \gamma _j {w_p}^q N_j(w_p) dw_p. \label{an}
+\end{equation}
+
+* $I(w) = \sum_j N_j (w) D_j (w) \mu_{F.j}(w)$ is the influx of dead fish from fishing discards.
+
+* $D_j (w) \in [0,1]$ is the fraction of the caught fish of species $j,$ and weight $w$ which are discarded, we assume the it takes the form: 
+
+ \begin{equation}
+    D_j (w)=
+    \begin{cases}
+      1, & \text{if}\ w < \text{minimum landing weight} \\
+      0, & \text{otherwise}
+    \end{cases} \label{discardFraction}
+  \end{equation}
+
+* $\mu_{F.j} (w)$ is the fishing mortality rate of fish with species $j,$ and weight $w,$ we assume it takes the form
+
+ \begin{equation}
+\mu _{F.j} (w) = (\text{effort}) \times (\text{catchability}) \times S_j(w).
+\label{fishingMort}
+\end{equation}
+
+Where $S_j(w)$ is the selectivity of our fishing gear for size $w$ members of species $j$. 
+
+In this report we just consider the case where we have a single species, Whiting, and we suppose (effort)=(catchability)=1. We take the parameters for the Whiting and background resources from the *north sea model* encoded within mizer. 
+
+## Downwind Difference Scheme
+
+The partial differential equation governing the abundance of dead fish is like a reversal of the McKendrik-von Foerster equation underlying mizer. In mizer, an upwind difference scheme is used to solve the McKendrik-von Foerster equation, where the amount of new eggs produced corresponds to a left hand boundary condition. In a similar way we use a *downwind* scheme to solve the partial differential for the number of dead fish, using the right hand boundary condition that there are no dead fish of maximum size. 
+
+In order to set this scheme up we use evenly spaced discrete time steps so that $t = T \times \Delta t$ is the $T$th time step. We also suppose that the size bins are spaced non-linearly so that the $k$th size bin is $w_k = w_0 \exp( (k-1) (\Delta x) ),$ where $\Delta x >0$ is a constant, and $w_0$ is the egg weight. The final bin is the maximum fish weight $W = w_K.$  The non-linear spacing of the weight/size bins means that the $k$th step size $\Delta w_k = w_k - w_{k-1},$ varies with $k.$
+
+We implement a downwind difference scheme in a way analogous to that discussed in Appendix G of *Food web framework for size-structured populations*, 
+
+<https://arxiv.org/pdf/1004.4138.pdf>
+
+The scheme we use is described by the equation:
+
+ \begin{equation}
+    \frac{v_k ^{T+1} - v_k ^T}{\Delta t} = g_d \left( \frac{v_{k+1} ^{T+1} - v_{k} ^{T+1} }{\Delta w_{k+1}} \right) - \bar{\mu}_k ^T v_k ^{T+1} + I_k ^T,
+     \label{diff}
+  \end{equation}
+
+where
+
+* $v_k ^T$ denotes the dead fish abundance $n_d (w_k),$ on the $T$th time step.
+
+* $\bar{\mu}$ denotes the predation based anhillation rate $\mu_d (w[k])$ on the $T$th time step.
+
+* $I_k ^T$ denotes the dead fish influx $I(w_k)$ on the $T$th time step.
+
+Letting
+ \begin{equation}
+    A_k = \frac{-g_d \Delta t}{ \Delta w_{k+1}}
+     \label{Ae}
+  \end{equation}
+  
+ \begin{equation}
+    B_k = 1+ \frac{g_d \Delta t}{ \Delta w_{k+1}} + \Delta t \bar{\mu}_k ^T 
+     \label{Be}
+  \end{equation}
+  
+   \begin{equation}
+    C_k = v_k^T + \Delta t I_k ^T  
+     \label{Ce}
+  \end{equation}
+
+
+
+we can rearrange our difference equation into a form:
+
+ \begin{equation}
+    v_k ^{T+1} = \frac{C_k - A_k v_{k+1} ^{T+1}}{B_k},
+     \label{diff2}
+  \end{equation}
+
+which we can use to determine the values $v_k ^{T+1}$ by working dowards through the $k$ indexes, using our right hand boundary condition that $v_K^{T+1} =0,$ $\forall T.$  
+
+## Parameter Settings
+
+Our minimum discard weight is 250 grams (g). We assume that our selectivity function $S(w)$ has a sigmoidal form. We can rewite this as a function $S^* (l) = S(w)$ of length $l$ (in cm), where length and weight are related by the equation $w = a l^b,$ where for our species *whiting*, the North sea model gives parameter values $a = 0.006,$ and $b = 3.080.$ In terms of length, our selectivity function takes the form
+
+ \begin{equation}
+    S^*(l) = \frac{1}{1 + \exp(S_1 - S_2 l),},
+     \label{sigmoid}
+  \end{equation}
+  
+which smoothly varies from $0$ to $1.$ Here the parameter values are $S_2 = \log(3)/(L_{50} - L_{25})$ and $S_1 = L_{50} S_2,$ where in our case $L_{25} = 26 cm,$ is the length of fish that have a 25% chance of being selected for by the fishing gear, and $L_{50} = 29 cm,$ is the length of fish that have a 50% chance of being selected for by the fishing gear.
+
+During the simulations we encountered problems because, although the selectivity $S(w)$ approaches zero as $w$ approaches the egg size $w_0,$ the abundance $N(w)$ of fish at such a weight becomes very large, and so the influx $I(w) = S(w)  D(w) N(w) = \mu_F (w) D(w) N(w)$ (which has this form because effort and catchability are assumed to be $1$), becomes unnaturally large when $w$ is small. To avoid this effect we flatten out the left side of our sigmoid curve, and whenever $S(w) <0.01,$ we instead suppose that $S(w) =0.$ 
+
+The other parameter we need to select is the disintegration rate $g_d.$ We were unsure how to select this parameter, and so we tried several different values.
+
+## Simulation Results
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
