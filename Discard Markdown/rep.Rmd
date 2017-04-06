@@ -1,7 +1,7 @@
 ---
 title: "The Effect Of Discarding On Fish Size Spectra"
 author: "Richard Southwell"
-date: "5 April 2017"
+date: ""
 output: pdf_document
 ---
 
@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-In many places, regulations have encouraged fishermen to discard fish which have a length below a *minimum landing length*. The large amount of dead fish discarded in this way has led to a movement to ban discarding. On the sufrace of things, discarding seems to be wasteful, however it is important to be aware that it can lead to a significant reinjection of nutrients and energy into the the ecosystem, since dead fish act as food for fish and other organisms. We extened the size spectrum ecological modeling software package `mizer' so that it can be used to model discarding. In this report we describe the modeling assumptions we made, how we included them in the mizer package, and what results we obtained from our models. 
+In many places, regulations have encouraged fishermen to discard fish which have a length below a *minimum landing length*. The large amount of dead fish discarded in this way has led to a movement to ban discarding. On the surface of things, discarding seems to be wasteful, however it is important to be aware that it can lead to a significant re-injection of nutrients and energy into the the ecosystem, since dead fish act as food for fish and other organisms. We extend the size spectrum ecological modeling software package `mizer' so that it can be used to model discarding. In this report we describe the modeling assumptions we made, how we included them in the mizer package, and what results we obtained from our models. 
 
 
 ## Governing Equations
@@ -30,7 +30,7 @@ where the sum is over the different species $j$, and:
 
 * $g_d \geq 0$ is the *disintigaration rate* of dead fish, which we assume to be constant over time and weight.
 
-* $\mu_d (w)$ is anhillation rate of dead fish given by the following equation, that takes a similar form to (3.12) from the mizer vignette, under the assumption that all species have equal preference for dead fish:
+* $\mu_d (w)$ is annihilation rate of dead fish given by the following equation, that takes a similar form to (3.12) from the mizer vignette, under the assumption that all species have equal preference for dead fish:
 
  \begin{equation}
 \mu _{d} (w) = \sum _j \int_{0} ^{\infty} \phi _j(w/w_p) (1-f_j(w_p)) \gamma _j {w_p}^q N_j(w_p) dw_p. \label{an}
@@ -80,7 +80,7 @@ where
 
 * $v_k ^T$ denotes the dead fish abundance $n_d (w_k),$ on the $T$th time step.
 
-* $\bar{\mu}$ denotes the predation based anhillation rate $\mu_d (w[k])$ on the $T$th time step.
+* $\bar{\mu}$ denotes the predation based annihilation rate $\mu_d (w[k])$ on the $T$th time step.
 
 * $I_k ^T$ denotes the dead fish influx $I(w_k)$ on the $T$th time step.
 
@@ -109,11 +109,11 @@ we can rearrange our difference equation into a form:
      \label{diff2}
   \end{equation}
 
-which we can use to determine the values $v_k ^{T+1}$ by working dowards through the $k$ indexes, using our right hand boundary condition that $v_K^{T+1} =0,$ $\forall T.$  
+which we can use to determine the values $v_k ^{T+1}$ by working downwards through the $k$ indexes, using our right hand boundary condition that $v_K^{T+1} =0,$ $\forall T.$  
 
 ## Parameter Settings
 
-Our minimum discard weight is 250 grams (g). We assume that our selectivity function $S(w)$ has a sigmoidal form. We can rewite this as a function $S^* (l) = S(w)$ of length $l$ (in cm), where length and weight are related by the equation $w = a l^b,$ where for our species *whiting*, the North sea model gives parameter values $a = 0.006,$ and $b = 3.080.$ In terms of length, our selectivity function takes the form
+Our minimum discard weight is 250 grams (g). We assume that our selectivity function $S(w)$ has a sigmoidal form. We can rewrite this as a function $S^* (l) = S(w)$ of length $l$ (in cm), where length and weight are related by the equation $w = a l^b,$ where for our species *whiting*, the North sea model gives parameter values $a = 0.006,$ and $b = 3.080.$ In terms of length, our selectivity function takes the form
 
  \begin{equation}
     S^*(l) = \frac{1}{1 + \exp(S_1 - S_2 l),},
@@ -128,20 +128,9 @@ The other parameter we need to select is the disintegration rate $g_d.$ We were 
 
 ## Simulation Results
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+The R code for this work is in the github repository 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+<https://github.com/gustavdelius/mizer/tree/discard>
 
-```{r cars}
-summary(cars)
-```
+from here, it can be loaded by running the file BasicTestSingleWhitingMD.R
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
