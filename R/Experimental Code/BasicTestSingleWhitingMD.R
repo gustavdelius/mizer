@@ -36,7 +36,7 @@ colnames(inter) <-nme
 ####
 ####
 years_run <- 40
-disirate <- 1
+disirate <- 10
 multip <- 1
 intri <- 0
 
@@ -52,10 +52,10 @@ plot(x=params@w_full, y=sim@n_d[years_run+1,], type="b",log="xy",xlab = "Size (g
 plot(x=params@w, y=sim@n[years_run,1,]*getFMort(sim@params, effort=1)[1,], type="b",log="xy", xlab = "Size (g)", ylab="Abundance Of New Discards")
 plot(x=params@w, y=sim@n[years_run+1,1,]*getFMort(sim@params, effort=1)[1,], type="b",log="xy", xlab = "Size (g)", ylab="Abundance Of New Discards")
 
-persp3D(x = (1:(years_run+1)), y = params@w, z = sim@n_d, xlab="Time", ylab="Size (g)", zlab="Abundance Of Dead Fish",
+persp3D(x = (1:(years_run+1)), y = params@w_full, z = sim@n_d, xlab="Time", ylab="Size (g)", zlab="Abundance Of Dead Fish",
         lighting = TRUE) 
 plotrgl(smooth = TRUE)
-persp3D(x = (1:(years_run+1)), y = log(params@w), z = log(0.01+sim@n_d), xlab="Time", ylab="log(Size (g))", zlab="log(Abundance Of Dead Fish)",
+persp3D(x = (1:(years_run+1)), y = log(params@w_full), z = log(0.01+sim@n_d), xlab="Time", ylab="log(Size (g))", zlab="log(Abundance Of Dead Fish)",
         lighting = TRUE) 
 plotrgl(smooth = TRUE)
 
