@@ -36,7 +36,7 @@ colnames(inter) <-nme
 ####
 ####
 years_run <- 40
-disirate <- 10
+disirate <- 1
 multip <- 1
 intri <- 0
 
@@ -72,6 +72,13 @@ plot(x=params@w, y=(nDisc-nNoDisc), type="b",log="xy",xlab = "Size (g)", ylab="I
 
 plot(x=params@w, y=nNoDisc, type="l",log="xy",xlab = "Size (g)", ylab="Whiting Abundance")
 lines(x=params@w, y=nDisc, col ="red")
+
+#####
+
+plot(x=params@w, y=sim@n[years_run+1,1,]*getFMort(sim@params, effort=1)[1,]*sim@params@discard_fraction[1,], type="b",log="xy", xlab = "Size (g)", ylab="Abundance Of New Discards")
+
+
+#####
 
 sum(nDisc - nNoDisc <1)
 
@@ -144,7 +151,24 @@ params <- MizerParams(params_data[6,], interaction = inter, no_w = 200, min_land
 sim <- project(params, effort = 1, t_max = years_run, dt = 0.1, t_save = 1)
 dis7 <- sim@n_d[years_run,]
 
-plot(x=params@w, y=dis10, type="l",log="xy",xlab = "Size (g)", ylab="Abundance Of Dead Fish", ylim = c(10^(-1),2*10^7))
-lines(x=params@w, y=dis1, col ="red")
-lines(x=params@w, y=dis0, col ="blue")
-lines(x=params@w, y=dis7, col ="green")
+####
+
+
+
+years_run <- 40
+disirate <- 5
+multip <- 1
+intri <- 0
+
+params <- MizerParams(params_data[6,], interaction = inter, no_w = 200, min_landing_weight = 250, disintegration_rate = disirate,
+                      fraction_discarded = 1, predation_multiplier = multip, intrinsic_annihilation = intri)
+sim <- project(params, effort = 1, t_max = years_run, dt = 0.1, t_save = 1)
+dis5 <- sim@n_d[years_run,]
+
+####
+
+plot(x=params@w_full, y=dis10, type="l",log="xy",xlab = "Size (g)", ylab="Abundance Of Dead Fish", ylim = c(10^(-1),2*10^7))
+lines(x=params@w_full, y=dis1, col ="red")
+lines(x=params@w_full, y=dis0, col ="blue")
+lines(x=params@w_full, y=dis7, col ="green")
+lines(x=params@w_full, y=dis5, col ="yellow")
