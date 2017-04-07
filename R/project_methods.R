@@ -60,14 +60,15 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='nume
 	# The vector f2 equals everything inside integral (3.4), except the feeding 
 	# kernel, phi_i(w_p/w). We work in log-space so an extra multiplier w_p is introduced.
 	
-	n_d_long <- rep(0,length(n_pp))
-	L_d <- length(n_d)
-	L_pp <- length(n_pp)
-	n_d_long[((L_pp+1-L_d):L_pp)] <- n_d
+	##n_d_long <- rep(0,length(n_pp))
+	##L_d <- length(n_d)
+	##L_pp <- length(n_pp)
+	##n_d_long[((L_pp+1-L_d):L_pp)] <- n_d
 	
 	    
 	    
-	f2 <- sweep(sweep(fishEaten, 2, n_pp+n_d_long, "+"), 2, object@w_full^2, "*")
+	###!!### f2 <- sweep(sweep(fishEaten, 2, n_pp+n_d_long, "+"), 2, object@w_full^2, "*")
+	f2 <- sweep(sweep(fishEaten, 2, n_pp+n_d, "+"), 2, object@w_full^2, "*")
 	### change n_pp to n_pp + n_d once discarding has been set up
 	# Eq (3.4) is then a convolution integral in terms of f2[w_p] and phi[w_p/w].
 	# We approximate the integral by the trapezoidal method. Using the

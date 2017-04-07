@@ -217,9 +217,9 @@ setMethod('MizerSim', signature(object='MizerParams'),
                             dimnames = list(time=t_dimnames_n, 
                                             w = w_full_names))
         
-        array_n_d <- array(NA, dim = c(t_dim_n, no_w), 
-                            dimnames = list(time=t_dimnames_n, 
-                                            w = w_names))
+        array_n_d <- array(NA, dim = c(t_dim_n, no_w_full), 
+                           dimnames = list(time=t_dimnames_n, 
+                                           w = w_full_names))
 
         sim <- new('MizerSim',
                n = array_n, 

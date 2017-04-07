@@ -28,15 +28,17 @@ params_data$b <- c(3.014, 3.320, 2.941, 3.429, 2.986, 3.080, 3.019, 3.198,
 
 inter <- read.csv("./vignettes/inter.csv", row.names=1)
 inter <- as(inter, "matrix")
-params <- MizerParams(params_data, interaction = inter, no_w = 200, min_landing_weight = 1100, disintegration_rate = 2)
+params <- MizerParams(params_data, interaction = inter, no_w = 200, min_landing_weight = 1100, disintegration_rate = 0.2)
 
-params@dw
+params@w[1]
 
 sim <- project(params, effort = 1, t_max = 10, dt = 0.1, t_save = 1)
 
 plot(sim)
 
-plot(x=params@w, y=sim@n_d[11,], type="b",log="xy")
+plot(x=params@w_full, y=sim@n_d[11,], type="b",log="xy")
+
+plot(x=params@w_full, y=sim@n_d[10,], type="b",log="xy")
 
 plot(x=params@w, y=sim@n[11,2,], type="b",log="xy")
 

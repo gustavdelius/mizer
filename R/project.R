@@ -124,7 +124,7 @@ setMethod('project', signature(object='MizerParams', effort='numeric'),
 #' Project with time varying effort
 #' @rdname project
 setMethod('project', signature(object='MizerParams', effort='array'),
-    function(object, effort, t_save=1, dt=0.1, initial_n=get_initial_n(object), initial_n_pp=object@cc_pp, initial_n_d=rep(0, length((get_initial_n(object))[1,])),...){
+    function(object, effort, t_save=1, dt=0.1, initial_n=get_initial_n(object), initial_n_pp=object@cc_pp, initial_n_d=rep(0, length(object@cc_pp)),...){
         validObject(object)
         # Check that number and names of gears in effort array is same as in MizerParams object
         no_gears <- dim(object@catchability)[1]
@@ -242,19 +242,24 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             # II[k] is influx of size k dead fish
             II <- colSums(thrown)
             
-            LL <- length(m2_background)
-            anhilation_rate <- m2_background[((LL+1-length(n[1,])):LL)]
+            ##LL <- length(m2_background)
+            ##anhilation_rate <- m2_background[((LL+1-length(n[1,])):LL)]
             
+            anhilation_rate <- m2_background
+            
+            III <- rep(0, length(n_d))
+            LL <- length(n_d)
+            III[((LL+1-length(n[1,])):LL)] <- II
             
             
             # Use downwind difference scheme to update n_d
             len <- length(n_d)
             vv <- rep(0,len)
             for (k in (len-1):1){
-                AA <- -sim@params@disintegration*dt/(sim@params@dw[k+1])
-                BB <- 1 + (sim@params@disintegration*dt/(sim@params@dw[k+1])) + 
+                AA <- -sim@params@disintegration*dt/(sim@params@dw_full[k+1])
+                BB <- 1 + (sim@params@disintegration*dt/(sim@params@dw_full[k+1])) + 
                     (sim@params@predationMultiplier*anhilation_rate[k]+sim@params@intrinsicAnnihilation)*dt
-                CC <- n_d[k] + dt*II[k]
+                CC <- n_d[k] + dt*III[k]
                 vv[k] <- (CC-AA*vv[k+1])/BB
             }
             n_d <- vv

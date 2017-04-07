@@ -46,7 +46,9 @@ sim <- project(params, effort = 1, t_max = years_run, dt = 0.1, t_save = 1)
 nDisc <- sim@n[years_run+1,1,]
 plot(sim)
 
-plot(x=params@w, y=sim@n_d[years_run,], type="b",log="xy",xlab = "Size (g)", ylab="Abundance Of Dead Fish")
+params@w_full[1]
+
+plot(x=params@w_full, y=sim@n_d[years_run,], type="b",log="xy",xlab = "Size (g)", ylab="Abundance Of Dead Fish")
 plot(x=params@w, y=sim@n_d[years_run+1,], type="b",log="xy",xlab = "Size (g)", ylab="Abundance Of Dead Fish")
 plot(x=params@w, y=sim@n[years_run,1,]*getFMort(sim@params, effort=1)[1,], type="b",log="xy", xlab = "Size (g)", ylab="Abundance Of New Discards")
 plot(x=params@w, y=sim@n[years_run+1,1,]*getFMort(sim@params, effort=1)[1,], type="b",log="xy", xlab = "Size (g)", ylab="Abundance Of New Discards")
