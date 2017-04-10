@@ -1,5 +1,5 @@
 ---
-title: "The Effect Of Discarding On Fish Size Spectra"
+title: "The Effect of Discarding on Fish Size Spectra"
 author: "Richard Southwell"
 date: ""
 output: pdf_document
@@ -20,25 +20,25 @@ The mizer modelling software we build upon uses the McKendrik-von Foerster equat
 
 <https://cran.r-project.org/web/packages/mizer/vignettes/mizer_vignette.pdf>
 
-and we shall only discuss the extra features we have added to this somewhat intricate mathematical modelling framework. Mizer can keep track of the abundance of plankton (referred to as background resource), and several species of fish of different sizes. In order to model the effect of discarding we added a new type of entity that we wish to keep track of, which we call `dead fish'. We let $N_d(w)$ denote the abundance of dead fish of weight $w.$ Here $N_d(w).dw$ denotes the number of dead fish (per unit volume) which a weight in $[w,w+dw].$ We assume that the abundance of dead fish obeys the partial differential equation:
+and we shall only discuss the extra features we have added to this somewhat intricate mathematical modelling framework. Mizer can keep track of the abundance of plankton (referred to as background resource), and several species of fish of different sizes. In order to model the effect of discarding we added a new type of entity that we wish to keep track of, which we call `dead fish'. We let $N_d(w)$ denote the abundance of dead fish of weight $w$. Here $N_d(t,w)dw$ denotes the number of dead fish (per unit volume) which a weight in $[w,w+dw]$ at time $t$. We assume that the abundance of dead fish obeys the partial differential equation
 
- \begin{equation}
-\frac{\partial N_d (w)}{\partial t} = \frac{\partial (g_{d} N_d (w)) }{\partial w} -\mu_d (w) N_d(w) + I(w), \label{discardPDE}
+\begin{equation}
+\frac{\partial N_d (t,w)}{\partial t} = \frac{\partial (g_{d} N_d (t,w)) }{\partial w} -\mu_d (t,w) N_d(t,w) + I(t,w), \label{discardPDE}
 \end{equation}
 
-where the sum is over the different species $j$, and:
+where
 
 * $g_d \geq 0$ is the *disintigaration rate* of dead fish, which we assume to be constant over time and weight.
 
-* $\mu_d (w)$ is annihilation rate of dead fish given by the following equation, that takes a similar form to (3.12) from the mizer vignette, under the assumption that all species have equal preference for dead fish:
-
- \begin{equation}
-\mu _{d} (w) = \sum _j \int_{0} ^{\infty} \phi _j(w/w_p) (1-f_j(w_p)) \gamma _j {w_p}^q N_j(w_p) dw_p. \label{an}
+* $\mu_d (t,w)$ is annihilation rate of dead fish given by the following equation, that takes a similar form to (3.12) from the mizer vignette, under the assumption that all species have equal preference for dead fish,
+\begin{equation}
+\mu _{d} (t,w) = \sum _j \int_{0} ^{\infty} \phi _j(w/w_p) (1-f_j(t,w_p)) \gamma _j {w_p}^q N_j(t,w_p) dw_p, \label{an}
 \end{equation}
+where the sum is over the different species $j$. 
 
-* $I(w) = \sum_j N_j (w) D_j (w) \mu_{F.j}(w)$ is the influx of dead fish from fishing discards.
+* $I(t,w) = \sum_j N_j (t,w) D_j (w) \mu_{F.j}(t,w)$ is the influx of dead fish from fishing discards.
 
-* $D_j (w) \in [0,1]$ is the fraction of the caught fish of species $j,$ and weight $w$ which are discarded, we assume the it takes the form: 
+* $D_j (w) \in [0,1]$ is the fraction of the caught fish of species $j$ and weight $w$ that are discarded. We assume the it takes the form
 
  \begin{equation}
     D_j (w)=
@@ -48,22 +48,26 @@ where the sum is over the different species $j$, and:
     \end{cases} \label{discardFraction}
   \end{equation}
 
-* $\mu_{F.j} (w)$ is the fishing mortality rate of fish with species $j,$ and weight $w,$ we assume it takes the form
+* $\mu_{F.j} (w)$ is the fishing mortality rate of fish with species $j$ and weight $w$. We assume it takes the form
 
  \begin{equation}
-\mu _{F.j} (w) = (\text{effort}) \times (\text{catchability}) \times S_j(w).
+\mu _{F.j} (w) = (\text{effort}) \cdot (\text{catchability}) \cdot S_j(w).
 \label{fishingMort}
 \end{equation}
 
-Where $S_j(w)$ is the selectivity of our fishing gear for size $w$ members of species $j$. 
+Here $S_j(w)$ is the selectivity of our fishing gear for size $w$ members of species $j$. 
 
 In this report we just consider the case where we have a single species, Whiting, and we suppose (effort)=(catchability)=1. We take the parameters for the Whiting and background resources from the *north sea model* encoded within mizer. 
 
 ## Downwind Difference Scheme
 
-The partial differential equation governing the abundance of dead fish is like a reversal of the McKendrik-von Foerster equation underlying mizer. In mizer, an upwind difference scheme is used to solve the McKendrik-von Foerster equation, where the amount of new eggs produced corresponds to a left hand boundary condition. In a similar way we use a *downwind* scheme to solve the partial differential for the number of dead fish, using the right hand boundary condition that there are no dead fish of maximum size. 
+The partial differential equation governing the abundance of dead fish is like a reversal of the McKendrik-von Foerster equation underlying mizer. In mizer, an upwind difference scheme is used to solve the McKendrik-von Foerster equation, where the amount of new eggs produced corresponds to a left hand boundary condition. 
+**GWD: The reproduction is not implemented as a boundary condition (in spite of what the mizer vignette may be saying) but rather as an extra term in the expression for the rate of change in the number of fish in the smallest size class.**
+In a similar way we use a *downwind* scheme to solve the partial differential for the number of dead fish, using the right hand boundary condition that there are no dead fish of maximum size. 
 
-In order to set this scheme up we use evenly spaced discrete time steps so that $t = T \times \Delta t$ is the $T$th time step. We also suppose that the size bins are spaced non-linearly so that the $k$th size bin is $w_k = w_0 \exp( (k-1) (\Delta x) ),$ where $\Delta x >0$ is a constant, and $w_0$ is the egg weight. The final bin is the maximum fish weight $W = w_K.$  The non-linear spacing of the weight/size bins means that the $k$th step size $\Delta w_k = w_k - w_{k-1},$ varies with $k.$
+In order to set this scheme up we use evenly spaced discrete time steps so that $t = T \Delta t$ is the $T$th time step. We also suppose that the size bins are spaced non-linearly so that the $k$th size bin is $w_k = w_0 \exp( (k-1) \Delta x ),$ where $\Delta x >0$ is a constant, and $w_0$ is the egg weight. 
+**GWD: a *size bin* is an interval. I think you mean *grid points*. Your expression curiously gives $w_1=w_0$. Is that intended?**
+The final bin is the maximum fish weight $W = w_K.$  The non-linear spacing of the weight/size bins means that the $k$th step size $\Delta w_k = w_k - w_{k-1},$ varies with $k.$
 
 We implement a downwind difference scheme in a way analogous to that discussed in Appendix G of *Food web framework for size-structured populations*, 
 
@@ -71,18 +75,19 @@ We implement a downwind difference scheme in a way analogous to that discussed i
 
 The scheme we use is described by the equation:
 
- \begin{equation}
+\begin{equation}
     \frac{v_k ^{T+1} - v_k ^T}{\Delta t} = g_d \left( \frac{v_{k+1} ^{T+1} - v_{k} ^{T+1} }{\Delta w_{k+1}} \right) - \bar{\mu}_k ^T v_k ^{T+1} + I_k ^T,
      \label{diff}
-  \end{equation}
+\end{equation}
 
 where
 
 * $v_k ^T$ denotes the dead fish abundance $n_d (w_k),$ on the $T$th time step.
+**GWD: It does not "denote" $N_d(w_k)$ but rather it approximates it.**
 
-* $\bar{\mu}$ denotes the predation based annihilation rate $\mu_d (w[k])$ on the $T$th time step.
+* $\bar{\mu}_k^T$ denotes the predation based annihilation rate $\mu_d (t_T,w_k)$ on the $T$th time step.
 
-* $I_k ^T$ denotes the dead fish influx $I(w_k)$ on the $T$th time step.
+* $I_k ^T$ denotes the dead fish influx $I(t_T,w_k)$ on the $T$th time step.
 
 Letting
  \begin{equation}
@@ -91,12 +96,12 @@ Letting
   \end{equation}
   
  \begin{equation}
-    B_k = 1+ \frac{g_d \Delta t}{ \Delta w_{k+1}} + \Delta t \bar{\mu}_k ^T 
+    B_k^T = 1+ \frac{g_d \Delta t}{ \Delta w_{k+1}} + \Delta t \bar{\mu}_k ^T 
      \label{Be}
   \end{equation}
   
    \begin{equation}
-    C_k = v_k^T + \Delta t I_k ^T  
+    C_k^t = v_k^T + \Delta t I_k ^T  
      \label{Ce}
   \end{equation}
 
@@ -105,7 +110,7 @@ Letting
 we can rearrange our difference equation into a form:
 
  \begin{equation}
-    v_k ^{T+1} = \frac{C_k - A_k v_{k+1} ^{T+1}}{B_k},
+    v_k ^{T+1} = \frac{C_k^T - A_k v_{k+1} ^{T+1}}{B_k^T},
      \label{diff2}
   \end{equation}
 
