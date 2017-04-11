@@ -229,8 +229,9 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             # R_i
             rdd <- getRDD(sim@params, n=n, n_pp=n_pp, n_d=n_d, rdi=rdi, sex_ratio=sex_ratio)
             
-            ##############################
-            ## Calculate fishing mortality
+            ############################## Code for discard dynamics ##################
+            
+            # Calculate fishing mortality
             Fmortt <- getFMort(sim@params, effort=effort_dt[i_time,])
             
             # thrown[i,j] measures the amount of size w[k] species i discarded
@@ -239,20 +240,21 @@ setMethod('project', signature(object='MizerParams', effort='array'),
                 pre_multiply <- Fmortt[j,]*sim@params@discard_fraction[j,]
                 thrown[j,] <- pre_multiply*n[j,] 
             }
-            # II[k] is influx of size k dead fish
+            # II[k] is influx of size w_k dead fish
             II <- colSums(thrown)
             
-            ##LL <- length(m2_background)
-            ##anhilation_rate <- m2_background[((LL+1-length(n[1,])):LL)]
-            
-            anhilation_rate <- m2_background
-            
+            # Since we wish to keep track of the dead fish density n_d all the way down to small sizes,
+            # we need to make a longer version of II called III which has the same length as n_d 
             III <- rep(0, length(n_d))
             LL <- length(n_d)
             III[((LL+1-length(n[1,])):LL)] <- II
             
+            # anhilation_rate is the rate at which dead fish disappear from being eaten, it is 
+            # identical to m2_background, which is the predation rate on plankton
+            anhilation_rate <- m2_background
             
-            # Use downwind difference scheme to update n_d
+            # Use downwind difference scheme to update n_d, the maths used is analogous to that in 
+            # Appendix G of "Food web framework for size-structured populations"
             len <- length(n_d)
             vv <- rep(0,len)
             for (k in (len-1):1){
@@ -263,7 +265,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
                 vv[k] <- (CC-AA*vv[k+1])/BB
             }
             n_d <- vv
-            ################################
+            ################################ End of discard-specific code #############
 
             # Iterate species one time step forward:
             # See Ken's PDF
