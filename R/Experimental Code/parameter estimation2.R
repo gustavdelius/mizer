@@ -20,6 +20,11 @@ library("plot3Drgl")
 library(optimx)
 set.seed(123)
 
+params_data <- read.csv("./vignettes/NS_species_params.csv")
+dd <- params_data[1,]
+dd$r_max <- 10^13
+params <- MizerParams(dd, kappa=10^8)
+
 
 # the output of model(c(log10_capacity, log10_rmax)) is a length 292 time series of 
 # the log biomass of sprat over 30 years
