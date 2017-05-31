@@ -101,9 +101,9 @@ contour(x=log_carrying_capacity, y=log_r_max, z=exp(-costt_vals/2),xlab = "log_c
 
 #### general mesh
 
-dp <- 5
-log_carrying_capacity <- seq(1,15,by=dp)
-log_r_max <- seq(1,15,by=dp)
+dp <- 0.1
+log_carrying_capacity <- seq(7,15,by=dp)
+log_r_max <- seq(7,15,by=dp)
 time_pts <- as.numeric(rownames(Y))
 
 # make array to store time series data for many points
@@ -114,6 +114,13 @@ for (i in (1:length(log_carrying_capacity))){
   }
 }
 
+## test saving features
+
+save(RD, file="RD.RData")
+#load("RD.RData")
+#RD
+
+
 # compute cost from time series
 time_series_to_cost <- function(timedata=Y,YY=Y, sd=mysd){
   return(sum((timedata-YY)^2/(sd^2)))
@@ -121,9 +128,8 @@ time_series_to_cost <- function(timedata=Y,YY=Y, sd=mysd){
 RDC <- array(0, c(length(log_carrying_capacity),length(log_r_max)))
 for (i in (1:length(log_carrying_capacity))){
   for (j in (1:length(log_r_max))){
-    RDC[i,j] <- time_series_to_cost(RD[i,j,])
+    RDC[i,j] <- time_series_to_cost(timedata=RD[i,j,],YY=Y, sd=mysd)
   }
 }
-
-RDC
+#RDC
 
