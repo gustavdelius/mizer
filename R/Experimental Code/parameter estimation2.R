@@ -92,11 +92,38 @@ contour(x=log_carrying_capacity, y=log_r_max, z=costt_vals, xlab = "log_carrying
 # A plot using the log of the model cost reveals that the model cost has a global minimum at 
 # params = c(log_carrying_capacity, log_r_max) = mypar = c(13,8) 
 
-persp3D(x=log_carrying_capacity, y=log_r_max, z=log(costt_vals),xlab = "log_carrying_capacity",
-        ylab = "log_r_max", zlab = "log_model_cost")
+persp3D(x=log_carrying_capacity, y=log_r_max, z=exp(-costt_vals/2),xlab = "log_carrying_capacity",
+        ylab = "log_r_max", zlab = "exp(model_cost)")
 
-contour(x=log_carrying_capacity, y=log_r_max, z=log(costt_vals),xlab = "log_carrying_capacity",
+contour(x=log_carrying_capacity, y=log_r_max, z=exp(-costt_vals/2),xlab = "log_carrying_capacity",
         ylab = "log_r_max")
 
 
+#### general mesh
+
+dp <- 5
+log_carrying_capacity <- seq(1,15,by=dp)
+log_r_max <- seq(1,15,by=dp)
+time_pts <- as.numeric(rownames(Y))
+
+# make array to store time series data for many points
+RD <- array(0,c(length(log_carrying_capacity),length(log_r_max),length(time_pts)))
+for (i in (1:length(log_carrying_capacity))){
+  for (j in (1:length(log_r_max))){
+    RD[i,j,] <- model(c(log_carrying_capacity[i],log_r_max[j]))
+  }
+}
+
+# compute cost from time series
+time_series_to_cost <- function(timedata=Y,YY=Y, sd=mysd){
+  return(sum((timedata-YY)^2/(sd^2)))
+}
+RDC <- array(0, c(length(log_carrying_capacity),length(log_r_max)))
+for (i in (1:length(log_carrying_capacity))){
+  for (j in (1:length(log_r_max))){
+    RDC[i,j] <- time_series_to_cost(RD[i,j,])
+  }
+}
+
+RDC
 
