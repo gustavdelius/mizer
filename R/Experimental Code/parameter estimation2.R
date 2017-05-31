@@ -68,41 +68,41 @@ fish_model_cost(par = mypar)
 
 ####### plot model cost
 
-log_carrying_capacity <- (1:15)
-cost_vals <- sapply(log_carrying_capacity, function(cap) fish_model_cost(par=c(cap,8)))
-plot(x=log_carrying_capacity, y=cost_vals)
+#log_carrying_capacity <- (1:15)
+#cost_vals <- sapply(log_carrying_capacity, function(cap) fish_model_cost(par=c(cap,8)))
+#plot(x=log_carrying_capacity, y=cost_vals)
 
-log_r_max <- (1:15)
-costt_vals <- matrix(0, nrow=length(log_carrying_capacity), ncol = length(log_r_max))
-for (i in (1:length(log_carrying_capacity))){
-  for (j in (1:length(log_r_max))){
-    costt_vals[i,j] <- fish_model_cost(par=c(log_carrying_capacity[i],log_r_max[j]))
-  }
-}
+#log_r_max <- (1:15)
+#costt_vals <- matrix(0, nrow=length(log_carrying_capacity), ncol = length(log_r_max))
+#for (i in (1:length(log_carrying_capacity))){
+#  for (j in (1:length(log_r_max))){
+#    costt_vals[i,j] <- fish_model_cost(par=c(log_carrying_capacity[i],log_r_max[j]))
+#  }
+#}
 
 # plots of how the model cost varies over parameter space
 
-persp3D(x=log_carrying_capacity, y=log_r_max, z=costt_vals,xlab = "log_carrying_capacity",
-        ylab = "log_r_max", zlab = "log_model_cost")
+#persp3D(x=log_carrying_capacity, y=log_r_max, z=costt_vals,xlab = "log_carrying_capacity",
+#        ylab = "log_r_max", zlab = "log_model_cost")
 
-contour(x=log_carrying_capacity, y=log_r_max, z=costt_vals, xlab = "log_carrying_capacity",
-        ylab = "log_r_max")
+#contour(x=log_carrying_capacity, y=log_r_max, z=costt_vals, xlab = "log_carrying_capacity",
+#        ylab = "log_r_max")
 
 
 # A plot using the log of the model cost reveals that the model cost has a global minimum at 
 # params = c(log_carrying_capacity, log_r_max) = mypar = c(13,8) 
 
-persp3D(x=log_carrying_capacity, y=log_r_max, z=exp(-costt_vals/2),xlab = "log_carrying_capacity",
-        ylab = "log_r_max", zlab = "exp(model_cost)")
+#persp3D(x=log_carrying_capacity, y=log_r_max, z=exp(-costt_vals/2),xlab = "log_carrying_capacity",
+#        ylab = "log_r_max", zlab = "exp(model_cost)")
 
-contour(x=log_carrying_capacity, y=log_r_max, z=exp(-costt_vals/2),xlab = "log_carrying_capacity",
-        ylab = "log_r_max")
+#contour(x=log_carrying_capacity, y=log_r_max, z=exp(-costt_vals/2),xlab = "log_carrying_capacity",
+#        ylab = "log_r_max")
 
 
 #### general mesh
-dp <- .001
-log_carrying_capacity <- seq(12.99,13.01,by=dp)
-log_r_max <- seq(7.09,8.01,by=dp)
+dp <- .002
+log_carrying_capacity <- seq(12.97,13.03,by=dp)
+log_r_max <- seq(7.97,8.03,by=dp)
 time_pts <- as.numeric(rownames(Y))
 
 # make array to store time series data for many points
@@ -132,6 +132,21 @@ for (i in (1:length(log_carrying_capacity))){
 }
 #RDC
 
+################ output list of different types of data
+
+
+EvolutionData <- list(log_carrying_capacity, log_r_max, time_pts, RD, RDC)
+names(EvolutionData) <- c("log_carrying_capacity","log_r_max",
+                          "time_pts", "RD", "RDC")
+
+EvolutionData$log_carrying_capacity[7]
+
+save(EvolutionData, file="EvolutionData.RData")
+#load("EvolutionData.RData")
+
+
+###############
+
 persp3D(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC/2),xlab = "log_carrying_capacity",
         ylab = "log_r_max", zlab = "likelihood")
 
@@ -150,8 +165,8 @@ contour(x=log_carrying_capacity, y=log_r_max, z=RDC,xlab = "log_carrying_capacit
 ############# run MCMC #############
 
 MCMC <- modMCMC(f = fish_model_cost, YY=Y, sd=mysd, p = c(12,7),
-                niter = 10000, jump = 0.1, updatecov = 10000, lower=0.1,
-                upper = 20, burninlength = 1000)
+                niter = 1000, jump = 0.1, updatecov = 10, lower=0.1,
+                upper = 20)
 plot(MCMC)
 summary(MCMC)
 
