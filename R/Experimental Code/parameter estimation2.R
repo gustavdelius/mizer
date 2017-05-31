@@ -100,10 +100,9 @@ contour(x=log_carrying_capacity, y=log_r_max, z=exp(-costt_vals/2),xlab = "log_c
 
 
 #### general mesh
-
-dp <- 0.1
-log_carrying_capacity <- seq(7,15,by=dp)
-log_r_max <- seq(7,15,by=dp)
+dp <- .001
+log_carrying_capacity <- seq(12.99,13.01,by=dp)
+log_r_max <- seq(7.09,8.01,by=dp)
 time_pts <- as.numeric(rownames(Y))
 
 # make array to store time series data for many points
@@ -132,4 +131,20 @@ for (i in (1:length(log_carrying_capacity))){
   }
 }
 #RDC
+
+persp3D(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC/2),xlab = "log_carrying_capacity",
+        ylab = "log_r_max", zlab = "likelihood")
+
+contour(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC/2),xlab = "log_carrying_capacity",
+        ylab = "log_r_max")
+
+
+persp3D(x=log_carrying_capacity, y=log_r_max, z=RDC,xlab = "log_carrying_capacity",
+        ylab = "log_r_max", zlab = "-2loglikelihood")
+
+plotrgl()
+
+contour(x=log_carrying_capacity, y=log_r_max, z=RDC,xlab = "log_carrying_capacity",
+        ylab = "log_r_max")
+
 
