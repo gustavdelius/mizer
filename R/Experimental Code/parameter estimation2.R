@@ -165,14 +165,14 @@ contour(x=log_carrying_capacity, y=log_r_max, z=RDC,xlab = "log_carrying_capacit
 ############# run MCMC #############
 
 MCMC <- modMCMC(f = fish_model_cost, YY=Y, sd=mysd, p = c(12,7),
-                niter = 1000, jump = 0.1, updatecov = 10, lower=0.1,
-                upper = 20)
+                niter = 100, jump = 0.1, updatecov = 10, lower=c(0.1,0.1),
+                upper = c(20,20))
 plot(MCMC)
 summary(MCMC)
-
+hist(MCMC)
 ############ single argument function optimization ####
 
-one_input_model_cost <- function(par=x){
+one_input_model_cost <- function(x){
   return(fish_model_cost(par = x))
 }
 
