@@ -1,0 +1,189 @@
+library(ggplot2)
+library(grid)
+library(methods)
+library(plyr)
+library(reshape2)
+library(mizer)
+
+library(FME)
+library(ggplot2)
+library(reshape2)
+library(deSolve)
+library(ggplot2)
+library(grid)
+library(methods)
+library(plyr)
+library(reshape2)
+library("plot3D")
+library(rgl)
+library("plot3Drgl")
+library(optimx)
+set.seed(123)
+
+params_data <- read.csv("./vignettes/NS_species_params.csv")
+dd <- params_data[1,]
+dd$r_max <- 10^13
+params <- MizerParams(dd, kappa=10^8)
+
+
+# the output of model(c(log10_capacity, log10_rmax)) is a length 292 time series of 
+# the log biomass of sprat over 30 years
+model <- function(paras)
+{
+  capacity <- 10^(paras[1])
+  rmax <- 10^(paras[2])
+  dd <- params_data[1,]
+  dd$r_max <- rmax
+  params <- MizerParams(dd, kappa=capacity)
+  sim <- project(params, effort = 0, t_max = 30, dt = 0.1, t_save =1, no_w=1000)
+  return(log10(getBiomass(sim)))
+}
+
+# time series plotter
+show_series <- function(h, isline=0){
+  if (isline==0){
+    return(plot(x=as.numeric(rownames(h)),y=h, xlab="time", ylab="log biomass"))
+  }else
+    return(lines(x=as.numeric(rownames(h)),y=h, xlab="time", ylab="log biomass", col="Red"))
+}
+
+
+show_series(model(c(13,8)))
+
+# next we generate the empirical data
+
+#the old system had length 292 time series and sd=0.05
+
+mypar <- c(13,8)
+mysd <- 1
+Y <- model(mypar) + rnorm(length(model(mypar)),mean = 0,sd=mysd)
+
+# plot empirical data
+show_series(Y)
+
+# compute model cost (=-2loglikelihood)
+fish_model_cost <- function(par=mypar,YY=Y, sd=mysd){
+  return(sum((model(par)-YY)^2/(sd^2)))
+}
+
+fish_model_cost(par = c(8,8))
+fish_model_cost(par = mypar)
+
+####### plot model cost
+
+#log_carrying_capacity <- (1:15)
+#cost_vals <- sapply(log_carrying_capacity, function(cap) fish_model_cost(par=c(cap,8)))
+#plot(x=log_carrying_capacity, y=cost_vals)
+
+#log_r_max <- (1:15)
+#costt_vals <- matrix(0, nrow=length(log_carrying_capacity), ncol = length(log_r_max))
+#for (i in (1:length(log_carrying_capacity))){
+#  for (j in (1:length(log_r_max))){
+#    costt_vals[i,j] <- fish_model_cost(par=c(log_carrying_capacity[i],log_r_max[j]))
+#  }
+#}
+
+# plots of how the model cost varies over parameter space
+
+#persp3D(x=log_carrying_capacity, y=log_r_max, z=costt_vals,xlab = "log_carrying_capacity",
+#        ylab = "log_r_max", zlab = "log_model_cost")
+
+#contour(x=log_carrying_capacity, y=log_r_max, z=costt_vals, xlab = "log_carrying_capacity",
+#        ylab = "log_r_max")
+
+
+# A plot using the log of the model cost reveals that the model cost has a global minimum at 
+# params = c(log_carrying_capacity, log_r_max) = mypar = c(13,8) 
+
+#persp3D(x=log_carrying_capacity, y=log_r_max, z=exp(-costt_vals/2),xlab = "log_carrying_capacity",
+#        ylab = "log_r_max", zlab = "exp(model_cost)")
+
+#contour(x=log_carrying_capacity, y=log_r_max, z=exp(-costt_vals/2),xlab = "log_carrying_capacity",
+#        ylab = "log_r_max")
+
+
+#### general mesh
+dp <- 0.5
+log_carrying_capacity <- seq(10,15,by=dp)
+log_r_max <- seq(1,10,by=dp)
+time_pts <- as.numeric(rownames(Y))
+
+# make array to store time series data for many points
+RD <- array(0,c(length(log_carrying_capacity),length(log_r_max),length(time_pts)))
+for (i in (1:length(log_carrying_capacity))){
+  for (j in (1:length(log_r_max))){
+    RD[i,j,] <- model(c(log_carrying_capacity[i],log_r_max[j]))
+  }
+}
+
+## test saving features
+
+save(RD, file="RD.RData")
+#load("RD.RData")
+#RD
+
+
+# compute cost from time series
+time_series_to_cost <- function(timedata=Y,YY=Y, sd=mysd){
+  return(sum((timedata-YY)^2/(sd^2)))
+}
+RDC <- array(0, c(length(log_carrying_capacity),length(log_r_max)))
+for (i in (1:length(log_carrying_capacity))){
+  for (j in (1:length(log_r_max))){
+    RDC[i,j] <- time_series_to_cost(timedata=RD[i,j,],YY=Y, sd=mysd)
+  }
+}
+#RDC
+
+################ output list of different types of data
+
+
+EvolutionData <- list(log_carrying_capacity, log_r_max, time_pts, RD, RDC)
+names(EvolutionData) <- c("log_carrying_capacity","log_r_max",
+                          "time_pts", "RD", "RDC")
+
+EvolutionData$log_carrying_capacity[7]
+
+
+#ValleyData <- EvolutionData
+#save(ValleyData, file="ValleyData.RData")
+
+
+# # #save(EvolutionData, file="EvolutionData.RData")
+
+#load("EvolutionData.RData")
+
+
+###############
+
+persp3D(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC/2),xlab = "log_carrying_capacity",
+        ylab = "log_r_max", zlab = "likelihood")
+
+contour(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC/2),xlab = "log_carrying_capacity",
+        ylab = "log_r_max")
+
+
+persp3D(x=log_carrying_capacity, y=log_r_max, z=RDC,xlab = "log_carrying_capacity",
+        ylab = "log_r_max", zlab = "-2loglikelihood")
+
+plotrgl()
+
+contour(x=log_carrying_capacity, y=log_r_max, z=RDC,xlab = "log_carrying_capacity",
+        ylab = "log_r_max")
+
+############# run MCMC #############
+
+MCMC <- modMCMC(f = fish_model_cost, YY=Y, sd=mysd, p = c(12,7),
+                niter = 100, jump = 0.1, updatecov = 10, lower=c(0.1,0.1),
+                upper = c(20,20))
+plot(MCMC)
+summary(MCMC)
+hist(MCMC)
+############ single argument function optimization ####
+
+one_input_model_cost <- function(x){
+  return(fish_model_cost(par = x))
+}
+
+OP <- optim(fn = one_input_model_cost, par = c(12,7))
+OP
