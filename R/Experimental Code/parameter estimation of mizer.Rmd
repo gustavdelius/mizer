@@ -1,0 +1,161 @@
+---
+title: "Parameter Estimation Of Mizer"
+output: html_notebook
+---
+
+
+
+Initialization
+
+```{r}
+library(mizer)
+library(FME)
+library(ggplot2)
+library(reshape2)
+library(deSolve)
+library(ggplot2)
+library(grid)
+library(methods)
+library(plyr)
+library(reshape2)
+library("plot3D")
+library(rgl)
+library("plot3Drgl")
+library(optimx)
+set.seed(123)
+```
+This is the second part of the initialization code. If this does not run in Rmd it might help to paste it into a script file, or the console, and run it there.
+
+```{r}
+params_data <- read.csv("./vignettes/NS_species_params.csv")
+inter <- read.csv("./vignettes/inter.csv", row.names=1)
+inter <- as(inter, "matrix")
+```
+
+First we define `model` function that takes in a parameter vector $\theta = (\theta_0,\theta_1,..,\theta_N)= (\log_{10}(\kappa), R_{max.1},..,R_{max.N}),$ and outputs a matrix $m(\theta) \in \mathbb{R}^{T \times N},$ where $N$ is the number of species, and $T$ is the number of time units which our population dynamics are run over. Here $m(\theta)_{t,i}$ is the log (base 10) of the total biomass of species $i \in \{1,..,N\}$ which was fished during year $t.$ This is obtained from our mizer model by first running `sim`, and then obtaining the catch data using `getYield`.
+
+
+```{r}
+model <- function(paras)
+{
+  capacity <- 10^(paras[1])
+  rmax <- 10^(paras[2:(1+length(paras))])
+  dd <- params_data
+  dd$r_max <- rmax[1:(length(dd$r_max))]
+  params <- MizerParams(dd, interaction = inter, kappa=capacity)
+  sim <- project(params, effort = 1, t_max = 10, dt = 0.1, t_save =1)
+  return(log10(getYield(sim)))
+}
+```
+
+We also use time series information $Y \in \mathbb{R}^{T \times N},$ such that $Y_{t,i}$ is the log (base 10) of the total biomass of species $i \in \{1,..,N\}$ which was fished during year $t.$  Although we treat $Y$ as empirical data, we actually generate it in this sample, by setting $Y_{t,i} = m(\theta ^*)_{t,i} + \epsilon,$ where $\epsilon \in N(0,\sigma^2)$ where $\sigma$ is the standard deviation `mysd` we use to generate the measurement noise, and $\theta^*$ is our special choice of parameters, `mypar`, which corresponds to the parameter choice used in Mizer's default North sea model.   
+
+```{r}
+mypar <- c(11,log10(params_data$r_max))
+mysd <- 1
+XX <- model(mypar)
+Y <- XX+rnorm(prod(dim(XX)),mean = 0,sd=mysd)
+```
+
+For general investigations we define the model cost to equal $(-2)$ times the log likelihood:
+
+```{r}
+fish_model_cost <- function(par=mypar,YY=Y, sd=mysd){
+  return(sum((model(par)-YY)^2/(sd^2)))
+}
+fish_model_cost()
+```
+
+For simplicity, during an initial investigation, we stall take all parameter values as fixed except for the log carrying capacity $\log_{10} (\kappa)$ and log of $R_{max.1},$ which we shall consider to be parameters that must be fitted. We write another model cost function, `fish_model_res` with restricted inputs to accomplish this:
+
+```{r}
+fish_model_res <- function(par = mypar[1:2]){
+  usedpar <- mypar
+  usedpar[1:2] <- par
+  return(fish_model_cost(usedpar))
+}
+```
+
+We wish to plot the likelihood surface that's height above a parameter point $(\log_{10} (\kappa),R_{max.1})$ is proportional to $p(Y|(\kappa),R_{max.1}))$. In order to achieve this we start by generating the time series model outputs for many parameter points on a 2D grid:
+
+Note this chunk below takes a long time to run, and it is recommended to use the next chunk instead, to load the data rather than generating it:
+
+```{R}
+dp <- 0.1
+log_carrying_capacity <- seq(10,12,by=dp)
+log_r_max <- seq(10,13,by=dp)
+time_pts <- as.numeric(rownames(Y))
+
+# make array to store time series data for many points
+RD <- array(0,c(length(log_carrying_capacity),length(log_r_max),length(time_pts),dim(Y)[2]))
+for (i in (1:length(log_carrying_capacity))){
+  for (j in (1:length(log_r_max))){
+    usedpar <- mypar
+    usedpar[1:2] <- c(log_carrying_capacity[i],log_r_max[j])
+    RD[i,j, ,] <- model(usedpar)
+  }
+}
+```
+
+It is faster just to load these time series as precomputed data. Better paste this code in to the console in order to run it:
+
+```{r}
+load("EvolutionData2.RData")
+log_carrying_capacity <- EvolutionData2$log_carrying_capacity
+log_r_max <- EvolutionData2$log_r_max
+RDC <- EvolutionData2$RDC
+RD <- EvolutionData2$RD
+```
+
+We can use these time series to compute the model cost of our grid points
+
+```{r}
+time_series_to_cost <- function(timedata=Y,YY=Y, sd=mysd){
+  return(sum((timedata-YY)^2/(sd^2)))
+}
+RDC <- array(0, c(length(log_carrying_capacity),length(log_r_max)))
+for (i in (1:length(log_carrying_capacity))){
+  for (j in (1:length(log_r_max))){
+    RDC[i,j] <- time_series_to_cost(timedata=RD[i,j, ,],YY=Y, sd=mysd)
+  }
+}
+#EvolutionData2 <- list(log_carrying_capacity, log_r_max, time_pts, RD, RDC)
+#names(EvolutionData2) <- c("log_carrying_capacity","log_r_max",
+#                           "time_pts", "RD", "RDC")
+#save(EvolutionData2, file="EvolutionData2.RData")
+```
+
+We can use this data to draw our likelihood surface, and we see it i does indeed have a maximum at the parameter values underlying the data $Y.$
+
+```{r}
+persp3D(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC/2),xlab = "log_carrying_capacity",
+        ylab = "log_r_max", zlab = "likelihood")
+```
+The position of the maximum is easier to see using a contour plot:
+
+```{r}
+contour(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC/2),xlab = "log_carrying_capacity",
+        ylab = "log_r_max")
+
+```
+
+Let us run our MCMC algorithm in this case:
+
+```{r}
+MCMC <- modMCMC(f = fish_model_res, p = c(12,7),
+                niter = 100, jump = 0.1, updatecov = 10, lower=c(0.1,0.1),
+                upper = c(20,20))
+summary(MCMC)
+```
+
+The trace on the MCMC shows us how well it is exploring the parameter space:
+
+```{r}
+plot(MCMC)
+```
+
+We can also examine a histogram showing the distribution of samples of the MCMC:
+
+```{r}
+hist(MCMC)
+```
