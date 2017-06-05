@@ -159,3 +159,49 @@ We can also examine a histogram showing the distribution of samples of the MCMC:
 ```{r}
 hist(MCMC)
 ```
+Now we will use the old model run data, together with the a new time series made up by a different model. Essentially we changed the settings we used to generate the data, so that the true generator lies outside the considered model space. Despite this we shall attempt to generate a likelihood surface:
+
+```{r}
+#load("EvolutionData2.RData")
+log_carrying_capacity <- EvolutionData2$log_carrying_capacity
+log_r_max <- EvolutionData2$log_r_max
+RDC <- EvolutionData2$RDC
+RD <- EvolutionData2$RD
+
+mysd2 <- 1
+mypar2 <- mypar
+mypar2[3:length(mypar2)] <- rep(min(mypar),(length(mypar2)-2))
+mypar2
+XX2 <- model(mypar2)
+Y2 <- XX2+rnorm(prod(dim(XX2)),mean = 0,sd=mysd2)
+
+time_series_to_cost <- function(timedata=Y,YY=Y, sd=mysd){
+  return(sum((timedata-YY)^2/(sd^2)))
+}
+RDC2 <- array(0, c(length(log_carrying_capacity),length(log_r_max)))
+for (i in (1:length(log_carrying_capacity))){
+  for (j in (1:length(log_r_max))){
+    RDC2[i,j] <- time_series_to_cost(timedata=RD[i,j, ,],YY=Y2, sd=mysd2)
+  }
+}
+
+```
+
+We can plot this likelihood surface
+
+```{r}
+persp3D(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC2/2),xlab = "log_carrying_capacity",
+        ylab = "log_r_max", zlab = "likelihood")
+```
+
+The high region of the likelihood function shown in this contour plot does not contain the actual values used, although the used values are not that far from the maximum of the likelihood function. The discrepancy is because different, inaccessible, settings were used to generate the data `Y2`, in this case.
+
+```{r}
+mypar[1:2]
+```
+
+```{r}
+contour(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC2/2),xlab = "log_carrying_capacity",
+        ylab = "log_r_max")
+
+```
