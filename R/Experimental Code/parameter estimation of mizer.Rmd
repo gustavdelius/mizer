@@ -205,3 +205,44 @@ contour(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC2/2),xlab = "log_carryin
         ylab = "log_r_max")
 
 ```
+
+Let us repeat this kind of experiment using different external model settings:
+
+```{r}
+#load("EvolutionData2.RData")
+log_carrying_capacity <- EvolutionData2$log_carrying_capacity
+log_r_max <- EvolutionData2$log_r_max
+RDC <- EvolutionData2$RDC
+RD <- EvolutionData2$RD
+
+mysd2 <- 1
+mypar2 <- mypar
+#mypar2[3:length(mypar2)] <- runif((length(mypar2)-2),8,9)
+mypar2[3:length(mypar2)] <- rep(10,(length(mypar2)-2))
+mypar2
+XX2 <- model(mypar2)
+Y2 <- XX2+rnorm(prod(dim(XX2)),mean = 0,sd=mysd2)
+
+time_series_to_cost <- function(timedata=Y,YY=Y, sd=mysd){
+  return(sum((timedata-YY)^2/(sd^2)))
+}
+RDC2 <- array(0, c(length(log_carrying_capacity),length(log_r_max)))
+for (i in (1:length(log_carrying_capacity))){
+  for (j in (1:length(log_r_max))){
+    RDC2[i,j] <- time_series_to_cost(timedata=RD[i,j, ,],YY=Y2, sd=mysd2)
+  }
+}
+```
+Let us plot the likelihood surface in this case
+
+
+```{r}
+persp3D(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC2/2),xlab = "log_carrying_capacity",
+        ylab = "log_r_max", zlab = "likelihood")
+```
+
+```{r}
+contour(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC2/2),xlab = "log_carrying_capacity",
+        ylab = "log_r_max")
+```
+
