@@ -57,6 +57,27 @@ XX <- model(mypar)
 Y <- XX+rnorm(prod(dim(XX)),mean = 0,sd=mysd)
 ```
 
+We shall make a `gdplot()` based procedure to allow us to visualize such time series:
+
+```{r}
+show_time_series <- function(dataa =Y){
+  y <- dataa
+  names(dimnames(y))[names(dimnames(y))=="sp"] <- "Species"
+  ym <- melt(y)
+  #return(ggplot(ym) + geom_line(aes(x=time,y=value, colour=Species, linetype=Species)) + scale_y_continuous(trans="log10", name="Log Yield") + scale_x_continuous(name="Time"))
+  return(ggplot(ym) + geom_line(aes(x=time,y=value, colour=Species, linetype=Species)) + scale_y_continuous( name="Log Yield") + scale_x_continuous(name="Time"))
+  #return(ggplot(ym) + geom_point(aes(x=time,y=value, colour=Species, pointtype=Species)) + scale_y_continuous( name="Log Yield") + scale_x_continuous(name="Time"))
+  }
+show_time_series(Y)
+```
+
+
+We can see that there is quite a lot of measurement noise by comparing with the corresponding error free time series:
+
+```{r}
+show_time_series(model(mypar))
+```
+
 For general investigations we define the model cost to equal $(-2)$ times the log likelihood:
 
 ```{r}
@@ -245,4 +266,7 @@ persp3D(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC2/2),xlab = "log_carryin
 contour(x=log_carrying_capacity, y=log_r_max, z=exp(-RDC2/2),xlab = "log_carrying_capacity",
         ylab = "log_r_max")
 ```
+
+
+
 
