@@ -168,7 +168,7 @@ MCMC <- modMCMC(f = fish_model_res, p = c(12,7),
                 upper = c(20,20))
 summary(MCMC)
 ```
-
+ 
 The trace on the MCMC shows us how well it is exploring the parameter space:
 
 ```{r}
