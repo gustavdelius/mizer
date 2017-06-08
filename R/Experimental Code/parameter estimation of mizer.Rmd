@@ -87,6 +87,54 @@ fish_model_cost <- function(par=mypar,YY=Y, sd=mysd){
 fish_model_cost()
 ```
 
+We shall investigate the minima of this cost function over the entire parameter space, before restricting our attention to a subspace. The actual parameter value used to generate the data was `mypar`.
+
+```{r}
+mypar
+```
+
+To investigate whether this is a minima I ran the `optim` function, starting at this point.
+
+```{r}
+myOP<-optim(fn = fish_model_cost, par=mypar,YY=Y, sd=mysd, method="BFGS")
+myOP2<-optim(fn = fish_model_cost, par=myOP$par,YY=Y, sd=mysd, method="BFGS")
+```
+
+I believe this run stops at the nearby local minimum. Our results at least verify it is a fixed point of `optim`.
+```{r}
+myOP$par
+myOP2$par
+```
+
+Let us start our optimization algorithm from a different point. 
+
+```{r}
+diffOP <- optim(fn = fish_model_cost, par=rep(9, length(mypar)),YY=Y, sd=mysd, method="BFGS")
+diffOP2 <- optim(fn = fish_model_cost, par=diffOP$par,YY=Y, sd=mysd, method="BFGS")
+```
+
+
+In this case optim converges to a different fixed point, suggesting that our likelihood function is multimodal:
+
+```{r}
+diffOP$par
+diffOP2$par
+```
+
+
+Let us compare the model costs at `mypar`, the optima `myOP$par` near `mypar`, the alternative starting point `rep(9, length(mypar))` and the fixed point `diffOP$par` which `optim` moves this alternative starting point to:
+
+```{r}
+ans <- c(fish_model_cost(par=mypar),
+  fish_model_cost(par=myOP$par),
+  fish_model_cost(par=rep(9, length(mypar))),
+  fish_model_cost(par=diffOP$par))
+```
+
+```{r}
+ans
+```
+
 For simplicity, during an initial investigation, we stall take all parameter values as fixed except for the log carrying capacity $\log_{10} (\kappa)$ and log of $R_{max.1},$ which we shall consider to be parameters that must be fitted. We write another model cost function, `fish_model_res` with restricted inputs to accomplish this:
 
 ```{r}
