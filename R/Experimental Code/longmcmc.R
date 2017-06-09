@@ -56,8 +56,12 @@ MCMC <- modMCMC(f = fish_model_cost, p = rep(9, length(mypar)),
 MCMC$pars[3,]
 
 MCMCplay <- MCMC
-save(MCMCplay, file="MCMCplay.RData")
+#save(MCMCplay, file="MCMCplay.RData")
 
 #load("MCMCplay.RData")
 #plot(MCMCplay$pars[,1])
 #summary(MCMCplay)
+
+#mypar
+#summary(MCMCplay)
+plot(MCMCplay$pars[,2])
