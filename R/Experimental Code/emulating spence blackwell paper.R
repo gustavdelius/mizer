@@ -15,6 +15,7 @@ library(optimx)
 set.seed(123)
 
 load("Fmat.RData")
+Fmat <- Fmat[,11:(dim(Fmat)[2]-1)]
 load("Landings.RData")
 params_data <- read.csv("./vignettes/NS_species_params.csv")
 inter <- read.csv("./vignettes/inter.csv", row.names=1)
@@ -38,6 +39,14 @@ myn <- sim@n[dim(sim@n)[1],,]
 sim <- project(params, effort = t(Fmat), dt = 0.1, t_save =1, initial_n=myn)
 #plot(sim)
 
+##### prepare landings data
+
+L <- t(landings)
+L[is.na(L)] <- 0
+log_landings <- log10(10^(-10)+L[18:(dim(L)[1]-1),])
+Y <- log_landings
+
+
 ################
 model <- function(paras)
 {
@@ -50,37 +59,32 @@ model <- function(paras)
   return(log10((10^(-10))+getYield(sim)))
 }
 
-y <- model(mypar)
 
-t(Fmat)
+# make a test time series v using PDE model
 
-
-dim(landings)
-
-
-landings[1,]
-
-
-#####
-dataa <- landings
-y <- dataa
-names(dimnames(y))[names(dimnames(y))=="sp"] <- "Species"
-ym <- melt(y)
-#return(ggplot(ym) + geom_line(aes(x=time,y=value, colour=Species, linetype=Species))
-#+ scale_y_continuous(trans="log10", name="Log Yield") +
-#scale_x_continuous(name="Time"))
-return(ggplot(ym) + geom_line(aes(x=time,y=value, colour=
-                                    Species, linetype=Species)) + scale_y_continuous(
-  name="Log Yield") + scale_x_continuous(name="Time"))
-ggplot(ym)
-
+v <- model(mypar)
+names(dimnames(v))[names(dimnames(v))=="sp"] <- "Species"
+ym <- melt(v)
 ggplot(ym) + geom_line(aes(x=time,y=value, colour=
                              Species, linetype=Species)) + scale_y_continuous(
                                name="Log Yield") + scale_x_continuous(name="Time")
+v-log_landings
 
-YL <- landings
-dim(YL)
-dim(y)
-t(Fmat)
+# make function to evaluate model cost for a particular parameter choice
 
-#### cut off matrix to start from 1967
+fish_model_cost <- function(par=mypar,YY=log_landings, sd=mysd){
+  return(sum((model(par)-YY)^2/(sd^2)))
+}
+fish_model_cost()
+
+MCMC <- modMCMC(f = fish_model_cost, p = rep(9, length(mypar)),
+                niter = 10, jump = 0.1, updatecov = 500,
+                lower = rep(0, length(mypar)), upper = rep(50, length(mypar)))
+
+MCMCrun1 <- MCMC
+save(MCMCrun1, file="MCMCrun1.RData")
+
+MCMCrun1$pars
+#hist(MCMCrun1)
+
+plot(MCMCrun1$pars[,1])
