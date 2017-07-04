@@ -1,0 +1,155 @@
+---
+title: "Gibbs Within Metropolis Hastings For Variance"
+output: html_notebook
+---
+
+We wish to estimate the value of a parameter $\theta \in \mathbb{R}^k.$ Suppose we have a model $m:\mathbb{R}^k \rightarrow \mathbb{R}^n,$ and we have some empirical data $y \in \mathbb{R}^n,$ which we can assume is equal to the model output, plus some Gaussian noise, so we have 
+$$y_i \sim N(m(\tilde{\theta})_i,(\tilde{v})^{1/2}),$$
+where we shall try and guess the parameter value $\tilde{\theta},$ and variance value $\tilde{v}$ used by sampling from their posterior distributions.
+
+
+The variance can be viewed as a nuisance parameter. We wish to sample from the posterior distribution $p(\theta|y).$ 
+Suppose we have the prior distributions $p(\theta)$ and $p(v)$ for our parameter and variance. 
+
+We shall choose the prior of variance $p(v)=IG(v;\alpha,\beta)$ to be the inverse gamma distribution, with shape $\alpha$ and scale $\beta,$ so that we can be assured that the posterior full conditional distribution for the variance also follows the inverse gamma distribution, in the sense that $p(v|\theta,y) = IG(v;\alpha+n, \beta+S(\theta)),$ where $S(\theta) = \sum_{i=1} ^n (m(\theta)_i-y_i)^2,$ is the sum of the squares of the differences between the model predictions and the empirical data.
+
+Using Bayes' Theorem we get the following expression for the full conditional posterior distribution of $\theta$.
+
+
+$$p(\theta|v,y) \propto p(\theta) p(y|\theta,v)$$
+where
+$$p(y|\theta,v) \propto \exp \left( \frac{-S(\theta)}{2v} \right).  $$
+To achieve our sampling we shall use a metropolis within Gibbs algorithm like the one proposed in Supplementary Material - Parameter uncertainty of
+a dynamic multi-species size spectrum model (Algorithm A):
+
+Let us define $\pi(\theta|v,y) = p(\theta)\exp \left( \frac{-S(\theta)}{2v} \right) \propto p(\theta|v,y)$ to be proportional to the posterior.
+
+Let $q(\theta_* , \theta)$ denote the proposal distribution. 
+
+Metropolis within Gibbs algorithm:
+
+$\theta_0 \sim p(\theta)$
+$v_0 \sim p(v)$
+
+for $t$ from 1 to $T$ do
+$\theta_* \sim p(.|\theta_{t-1})$ 
+$r \sim U(0,1)$
+If $r \leq \frac{\pi(\theta_*|v_{t-1},y)q(\theta_{t-1}|\theta _*)}{\pi(\theta_{t-1}|v_{t-1},y)q(\theta_{*}|\theta _{t-1})}$ then 
+$\theta_t \leftarrow \theta_*$
+else
+$\theta_t \leftarrow \theta_{t-1}$
+end if
+$v_t \sim p(v|\theta _t, y )$
+end do
+
+We conjecture that if this algorithm runs sufficiently long it will sample $\theta_t , v_t$ from the joint posterior distribution $p(\theta,v|y).$ We shall try and argue for this conjecture by connecting with the theory of Gibbs sampling. 
+
+If one changes the algorithm by holding the variance $v_*=v_1 = v_2 =..$ constant then the Markov chain would converge to a stationary distribution $p(\theta|v_*,y).$ 
+
+I would guess that the algorithm defined above also converges to stationary distribution. If, at this stationary distribution, $\theta_t$ is correctly being sampled by the MCMC part of the code so that $\theta_t \sim p(\theta|v_{t-1},y),$ for each $t$, then, since the code also samples $v_t \sim p(v|\theta_t,y)$ from the full conditional, it corresponds to a Gibb's sampler, and the results in [Multi-parameter models - Gibbs sampling ST495/590] imply that $(\theta_t,v_t) \sim p(\theta,v|y)$ are sampled from the joint posterior distribution.
+
+However, this argument is suspicious because it is not clear the MCMC has time to stabilize when a specific value of $v_t$ is used once.
+
+Now we shall do an example.
+
+Initialization
+
+
+```{r}
+library(mizer)
+library(FME)
+library(ggplot2)
+library(reshape2)
+library(deSolve)
+library(ggplot2)
+library(grid)
+library(methods)
+library(plyr)
+library(reshape2)
+library("plot3D")
+library(rgl)
+library("plot3Drgl")
+library(optimx)
+set.seed(123)
+```
+
+Define model $m(\theta) = (\theta,2 \theta,..,N \theta)$ and generate data $y$ to use to try and back-infer the parameters.
+
+```{r}
+N <- 10
+myvar <- 0.1
+mypar <- 0.7
+
+m <- function(theta){
+  return((1:N)*theta)
+}
+
+y <- m(mypar) - rnorm(N,0,sqrt(myvar))
+```
+
+Define sum of squares and proportional likelihood $K \times p(y|\theta,v)$
+
+```{r}
+SS <- function(theta){
+  return(sum((y-m(theta))^2))
+}
+
+likelihoodd <- function(theta,V){
+  return(exp(-SS(theta)/(2*V)))
+}
+
+```
+
+Set initial conditions before MCMC loop
+
+```{r}
+thetaN <- runif(1,0,1)
+prop_sd <- 0.01
+
+myshape <- .001
+myscale <- .001
+VN <- rinvgamma(1, shape = myshape, scale= myscale)
+```
+
+Run MCMC loop (main part of algorithm), and output mean theta and variance (our best guesses)
+
+```{r}
+T <- 10000
+theta_samples2 <- 1:T
+V_samples2 <- 1:T
+for (t in (1:T)){
+  theta_prop <- rnorm(1,thetaN,prop_sd)
+  r <- runif(1,0,1)
+  if (r<likelihoodd(theta_prop,VN)*dunif(theta_prop,0,1)/(
+    likelihoodd(thetaN,VN)*dunif(thetaN,0,1))){
+    thetaN <- theta_prop
+  } 
+  VN <- rinvgamma(1, shape = myshape+N/2, scale= myscale+SS(thetaN)/2)
+  theta_samples2[t] <- thetaN
+  V_samples2[t] <- VN
+} 
+mean(theta_samples2)
+mean(V_samples2)
+```
+
+Compare histogram of $\theta_t$ output with actual posterior using true variance (blue), and the posterior using the mean variance from our sampling (red)
+
+```{r}
+hist(theta_samples2,freq = FALSE,
+     breaks = seq(min(theta_samples2), max(theta_samples2),
+                                              length.out = 51))
+
+
+
+d_theta <- 0.001
+theta_v <- seq(0,1,d_theta)
+vals <- sapply(theta_v, function(x) likelihoodd(x,mean(V_samples2)))
+posteri <- vals/(d_theta*sum(vals))
+lines(theta_v,posteri,col="Red")
+
+d_theta <- 0.001
+theta_v <- seq(0,1,d_theta)
+vals <- sapply(theta_v, function(x) likelihoodd(x,myvar))
+posteri <- vals/(d_theta*sum(vals))
+lines(theta_v,posteri,col="Blue")
+```
