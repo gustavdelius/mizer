@@ -153,3 +153,59 @@ vals <- sapply(theta_v, function(x) likelihoodd(x,myvar))
 posteri <- vals/(d_theta*sum(vals))
 lines(theta_v,posteri,col="Blue")
 ```
+
+Instead we can try an alternative algorithm, but it seems slow to converge, and it looks like it over estimates the variance.
+
+```{r}
+N <- 10
+myvar <- 0.1
+mypar <- 0.7
+
+m <- function(theta){
+  return((1:N)*theta)
+}
+
+y <- m(mypar) - rnorm(N,0,sqrt(myvar))
+
+SS <- function(theta){
+  return(sum((y-m(theta))^2))
+}
+
+likelihoodd <- function(theta,V){
+  return(exp(-SS(theta)/(2*V)))
+}
+
+
+###
+###
+
+thetaN <- runif(1,0,1)
+prop_sd <- 0.005
+
+myshape <- .001
+myscale <- .001
+VN <- rinvgamma(1, shape = myshape, scale= myscale)
+VN <- 1
+
+
+T <- 100000
+theta_samples2 <- 1:T
+V_samples2 <- 1:T
+for (t in (1:T)){
+  V_prop <- rinvgamma(1, shape = myshape+N/2, scale= myscale+SS(thetaN)/2)
+  theta_prop <- rnorm(1,thetaN,prop_sd)
+  r <- runif(1,0,1)
+  if (r<likelihoodd(theta_prop,V_prop)*dunif(theta_prop,0,1)*dinvgamma(
+    V_prop, shape = myshape, scale= myscale)*dinvgamma(
+      VN, shape = myshape+N/2, scale= myscale+SS(theta_prop)/2)/(
+    likelihoodd(thetaN,VN)*dunif(thetaN,0,1)*dinvgamma(
+      VN, shape = myshape, scale= myscale)*dinvgamma(
+        V_prop, shape = myshape+N/2, scale= myscale+SS(thetaN)/2))){
+    thetaN <- theta_prop
+    VN <- V_prop
+  } 
+  theta_samples2[t] <- thetaN
+  V_samples2[t] <- VN
+} 
+
+```
