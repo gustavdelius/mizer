@@ -165,7 +165,7 @@ m <- function(theta){
   return((1:N)*theta)
 }
 
-y <- m(mypar) - rnorm(N,0,sqrt(myvar))
+#y <- m(mypar) - rnorm(N,0,sqrt(myvar))
 
 SS <- function(theta){
   return(sum((y-m(theta))^2))
@@ -193,18 +193,19 @@ theta_samples2 <- 1:T
 V_samples2 <- 1:T
 for (t in (1:T)){
   theta_prop <- rnorm(1,thetaN,prop_sd)
-  #V_prop <- rinvgamma(1, shape = myshape+N/2, scale= myscale+SS(thetaN)/2)
-  V_prop <- rinvgamma(1, shape = myshape+N/2, scale= myscale+SS(theta_prop)/2)
+  V_prop <- rinvgamma(1, shape = myshape+N/2, scale= myscale+SS(thetaN)/2)
+  #V_prop <- rinvgamma(1, shape = myshape+N/2, scale= myscale+SS(theta_prop)/2)
   r <- runif(1,0,1)
   if (r<likelihoodd(theta_prop,V_prop)*dunif(theta_prop,0,1)*dinvgamma(
     V_prop, shape = myshape, scale= myscale)*dinvgamma(
       VN, shape = myshape+N/2, scale= myscale+SS(theta_prop)/2)/(
-    likelihoodd(thetaN,VN)*dunif(thetaN,0,1)*dinvgamma(
-      VN, shape = myshape, scale= myscale)*dinvgamma(
-        V_prop, shape = myshape+N/2, scale= myscale+SS(thetaN)/2))){
+        likelihoodd(thetaN,VN)*dunif(thetaN,0,1)*dinvgamma(
+          VN, shape = myshape, scale= myscale)*dinvgamma(
+            V_prop, shape = myshape+N/2, scale= myscale+SS(thetaN)/2))){
     thetaN <- theta_prop
     VN <- V_prop
   } 
+  VN <- V_prop
   theta_samples2[t] <- thetaN
   V_samples2[t] <- VN
 } 
@@ -249,8 +250,11 @@ SS(mean(theta_samples2))/N
 myvar
 ```
 
-Here is another attempt at this problem, here we sample from the joint distribution, but we use the inverse gamma function to generate proposals:
+Here is another attempt at this problem, here we sample from the joint distribution, but we use the inverse gamma function to generate proposals. More precisely, at a given time step, given the previous sample $\phi_{t-1} = (\theta_{t-1}, v_{t-1})$, we generate a new proposal $\phi_* = (\theta _*, v_*)$ where $\theta_* \sim N(\theta_{t-1}, \sigma ^2 )$ and $v_* \sim IG(\alpha +n/2, \beta + S(\theta_{t-1})).$
 
+This sample is accepted as a member of the posterior $p(\phi|y)$ with probability $$\frac{p(\theta_{*},v_*|y)q(\theta_{t-1},v_{t-1}|\theta_*,v_*)}{p(\theta_{t-1},v_{t-1}|y)q(\theta_{*},v_{*}|\theta_{t-1},v_{t-1})} = \frac{p(\theta_*)p(v_*)p(y|\theta_*,v_*)q(v_{t-1}|\theta_*)}{p(\theta_{t-1})p(v_{t-1})p(y|\theta_{t-1},v_{t-1})q(v_{*}|\theta_{t-1})}$$
+
+where $p(v) = IG(v;\alpha,\beta)$ and $q(v|\theta) = IG(\alpha+n/2,\beta+S(\theta)/2)$ and $$p(y|\theta,v) \propto v^{-n/2} \exp\left(\frac{-\sum_{i=1} ^n (y_i - m(\theta)_i)^2}{2v}\right).$$
 ```{r}
 library(mizer)
 library(FME)
