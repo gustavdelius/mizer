@@ -158,7 +158,7 @@ Instead we can try an alternative algorithm, but it seems slow to converge, and 
 
 ```{r}
 N <- 10
-myvar <- 0.1
+myvar <- 0.3
 mypar <- 0.7
 
 m <- function(theta){
@@ -172,7 +172,7 @@ SS <- function(theta){
 }
 
 likelihoodd <- function(theta,V){
-  return(exp(-SS(theta)/(2*V)))
+  return((V^(-N/2))*exp(-SS(theta)/(2*V)))
 }
 
 
@@ -192,8 +192,9 @@ T <- 100000
 theta_samples2 <- 1:T
 V_samples2 <- 1:T
 for (t in (1:T)){
-  V_prop <- rinvgamma(1, shape = myshape+N/2, scale= myscale+SS(thetaN)/2)
   theta_prop <- rnorm(1,thetaN,prop_sd)
+  #V_prop <- rinvgamma(1, shape = myshape+N/2, scale= myscale+SS(thetaN)/2)
+  V_prop <- rinvgamma(1, shape = myshape+N/2, scale= myscale+SS(theta_prop)/2)
   r <- runif(1,0,1)
   if (r<likelihoodd(theta_prop,V_prop)*dunif(theta_prop,0,1)*dinvgamma(
     V_prop, shape = myshape, scale= myscale)*dinvgamma(
@@ -207,5 +208,136 @@ for (t in (1:T)){
   theta_samples2[t] <- thetaN
   V_samples2[t] <- VN
 } 
+
+
+
+```
+Let us now plot the results
+
+```{r}
+hist(theta_samples2,freq = FALSE,
+     breaks = seq(min(theta_samples2), max(theta_samples2),
+                  length.out = 51))
+
+
+
+d_theta <- 0.001
+theta_v <- seq(0,1,d_theta)
+vals <- sapply(theta_v, function(x) likelihoodd(x,mean(V_samples2)))
+posteri <- vals/(d_theta*sum(vals))
+lines(theta_v,posteri,col="Red")
+
+d_theta <- 0.001
+theta_v <- seq(0,1,d_theta)
+vals <- sapply(theta_v, function(x) likelihoodd(x,myvar))
+posteri <- vals/(d_theta*sum(vals))
+lines(theta_v,posteri,col="Blue")
+
+d_theta <- 0.001
+theta_v <- seq(0,1,d_theta)
+vals <- sapply(theta_v, function(x) likelihoodd(x,SS(mean(theta_samples2))/N))
+posteri <- vals/(d_theta*sum(vals))
+lines(theta_v,posteri,col="Green")
+
+
+
+```
+```{r}
+mean(V_samples2)
+SS(mean(theta_samples2))/N
+myvar
+```
+
+Here is another attempt at this problem, here we sample from the joint distribution, but we use the inverse gamma function to generate proposals:
+
+```{r}
+library(mizer)
+library(FME)
+library(ggplot2)
+library(reshape2)
+library(deSolve)
+library(ggplot2)
+library(grid)
+library(methods)
+library(plyr)
+library(reshape2)
+library("plot3D")
+library(rgl)
+library("plot3Drgl")
+library(optimx)
+library(MCMCpack)
+set.seed(123)
+
+N <- 10
+myvar <- 0.3
+mypar <- 0.7
+
+m <- function(theta){
+  return((1:N)*theta)
+}
+
+y <- m(mypar) - rnorm(N,0,sqrt(myvar))
+
+SS <- function(theta){
+  return(sum((y-m(theta))^2))
+}
+
+likelihoodd <- function(theta,V){
+  return(V^(-N/2)*exp(-SS(theta)/(2*V)))
+}
+
+
+###
+###
+
+thetaN <- runif(1,0,1)
+prop_sd <- 0.01
+
+myshape <- .001
+myscale <- .001
+VN <- rinvgamma(1, shape = myshape, scale= myscale)
+
+VN <- 2
+
+T <- 1000000
+theta_samples2 <- 1:T
+V_samples2 <- 1:T
+for (t in (1:T)){
+  theta_prop <- rnorm(1,thetaN,prop_sd)
+  V_prop <- rinvgamma(1, shape = myshape+N/2, scale= myscale+SS(thetaN)/2)
+  r <- runif(1,0,1)
+  if (r<likelihoodd(theta_prop,V_prop)*dunif(theta_prop,0,1)*dinvgamma(
+    VN, shape = myshape+N/2, scale= myscale+SS(theta_prop)/2)/(
+    likelihoodd(thetaN,VN)*dunif(thetaN,0,1)*dinvgamma(
+      V_prop, shape = myshape+N/2, scale= myscale+SS(thetaN)/2))){
+    thetaN <- theta_prop
+    VN <- V_prop
+    
+  } 
+  theta_samples2[t] <- thetaN
+  V_samples2[t] <- VN
+} 
+```
+
+I am not sure why the results do not match better
+
+```{r}
+hist(theta_samples2,freq = FALSE,
+     breaks = seq(min(theta_samples2), max(theta_samples2),
+                  length.out = 51))
+
+
+
+d_theta <- 0.001
+theta_v <- seq(0,1,d_theta)
+vals <- sapply(theta_v, function(x) likelihoodd(x,mean(V_samples2)))
+posteri <- vals/(d_theta*sum(vals))
+lines(theta_v,posteri,col="Red")
+
+d_theta <- 0.001
+theta_v <- seq(0,1,d_theta)
+vals <- sapply(theta_v, function(x) likelihoodd(x,myvar))
+posteri <- vals/(d_theta*sum(vals))
+lines(theta_v,posteri,col="Blue")
 
 ```
