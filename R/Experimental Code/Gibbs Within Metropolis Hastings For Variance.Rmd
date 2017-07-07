@@ -158,7 +158,7 @@ Instead we can try an alternative algorithm, but it seems slow to converge, and 
 
 ```{r}
 N <- 10
-myvar <- 0.3
+myvar <- 0.1
 mypar <- 0.7
 
 m <- function(theta){
@@ -209,7 +209,8 @@ for (t in (1:T)){
   V_samples2[t] <- VN
 } 
 
-
+mean(theta_samples2)
+mean(V_samples2)
 
 ```
 Let us now plot the results
@@ -269,7 +270,7 @@ library(MCMCpack)
 set.seed(123)
 
 N <- 10
-myvar <- 0.3
+myvar <- 0.1
 mypar <- 0.7
 
 m <- function(theta){
@@ -317,6 +318,8 @@ for (t in (1:T)){
   theta_samples2[t] <- thetaN
   V_samples2[t] <- VN
 } 
+mean(theta_samples2)
+mean(V_samples2)
 ```
 
 I am not sure why the results do not match better
