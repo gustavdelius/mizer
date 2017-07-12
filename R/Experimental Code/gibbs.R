@@ -26,7 +26,7 @@ plot(dinvgamma(1:5, shape = 3.2, scale= 6))
 
 
 N <- 10
-thesd <- 1
+thesd <- .5
 thepar <- 0.5
 y <- thepar*(1:N)+runif(N, 0, thesd )
 y
@@ -58,7 +58,7 @@ tsd <- inisd
 
 proposal_sd <- 0.01
 
-T <- 1000
+T <- 10000
 par_vec <- (1:T)
 sd_vec <- (1:T)
 
@@ -82,10 +82,9 @@ res <- 1000
 parr <- (1:res)/res
 dx <- 0.001
 pts <- seq(0,1,dx)
-lines(pts,sapply(pts, function(x) unnormalized_posterior(x,sd=tsd))/(dx*sum(sapply(pts, function(x) unnormalized_posterior(x,sd=tsd)))))
+tsd2 <- mean(sd_vec)
 
-
-
+lines(pts,sapply(pts, function(x) unnormalized_posterior(x,sd=tsd2))/(dx*sum(sapply(pts, function(x) unnormalized_posterior(x,sd=tsd2)))))
 
 #plot(pts,sapply(pts, function(x) unnormalized_posterior(x,sd=tsd))/(dx*sum(sapply(pts, function(x) unnormalized_posterior(x,sd=tsd)))))
 

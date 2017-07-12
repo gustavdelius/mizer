@@ -35,7 +35,7 @@ model <- function(paras)
   dd <- params_data[1,]
   dd$r_max <- rmax
   params <- MizerParams(dd, kappa=capacity)
-  sim <- project(params, effort = 0, t_max = 30, dt = 0.1, t_save =0.1, no_w=1000)
+  sim <- project(params, effort = 0, t_max = 30, dt = 0.1, t_save =1, no_w=1000)
   return(log10(getBiomass(sim)))
 }
 
@@ -51,8 +51,11 @@ show_series <- function(h, isline=0){
 show_series(model(c(13,8)))
 
 # next we generate the empirical data
+
+#the old system had length 292 time series and sd=0.05
+
 mypar <- c(13,8)
-mysd <- 0.05
+mysd <- 1
 Y <- model(mypar) + rnorm(length(model(mypar)),mean = 0,sd=mysd)
 
 # plot empirical data
@@ -100,9 +103,9 @@ fish_model_cost(par = mypar)
 
 
 #### general mesh
-dp <- .002
-log_carrying_capacity <- seq(12.97,13.03,by=dp)
-log_r_max <- seq(7.97,8.03,by=dp)
+dp <- .5
+log_carrying_capacity <- seq(11,14,by=dp)
+log_r_max <- seq(7,9,by=dp)
 time_pts <- as.numeric(rownames(Y))
 
 # make array to store time series data for many points
