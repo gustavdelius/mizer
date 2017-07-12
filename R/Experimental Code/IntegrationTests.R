@@ -115,3 +115,79 @@ lines(m2FFT[1,], col ="Blue")
 # solid red, master with new spacing
 # blue fft result
 
+shift<-c(m2NW[1,2:dim(m2NW)[2]],0)
+plot(shift)
+lines(m2FFT[1,])
+
+max(shift-m2FFT[1,])
+
+wold <- object@w
+
+###########
+
+library(mizer)
+library(ggplot2)
+library(grid)
+library(methods)
+library(plyr)
+library(reshape2)
+
+data(NS_species_params_gears)
+data(inter)
+params <- MizerParams(NS_species_params_gears, inter, no_w=300)
+object <- params
+n <- get_initial_n(object)
+n_pp <- object@cc_pp
+
+beta1 <- object@species_params$beta
+sigma1 <- object@species_params$sigma
+pk1 = array(0,dim = c(dim(n)[1],dim(n)[2],length(n_pp)))
+w1 <- object@w
+wfull1 <- object@w_full
+
+for (i in (1:dim(pk1)[1])){
+  for (k in (1:dim(pk1)[2])){
+    for (kp in (1:dim(pk1)[3])){
+      x1 <- log(w1)
+      xfull1 <- log(wfull1)
+      
+      #if (wfull1[kp]<=w1[k]) {
+      if (-log(beta1[i])-3*sigma1[i]<= xfull1[kp]-x1[k]) {
+        if (xfull1[kp]-x1[k]<=0) {
+          
+          
+          pk1[i,k,kp] <- exp((-log(w1[k]/(wfull1[kp]*beta1[i]))^2)/(2*sigma1[i]^2))
+        }}
+    }
+  }
+}
+
+
+feeding_level <- getFeedingLevel(object, n=n, n_pp=n_pp)
+n_total_in_size_bins <- sweep(n, 2, object@dw, '*', check.margin=FALSE) # N_i(w)dw
+
+#predd_rate <- sweep(object@pred_kernel,c(1,2),(1-feeding_level)*object@search_vol*n_total_in_size_bins,"*", check.margin=FALSE)
+predd_rate <- sweep(pk1,c(1,2),(1-feeding_level)*object@search_vol*n_total_in_size_bins,"*", check.margin=FALSE)
+
+#### old getM2 calculator
+idx_sp <- (length(object@w_full) - length(object@w) + 1):length(object@w_full)
+idx_sp <- (length(object@w_full) - length(object@w) + 1):length(object@w_full)
+
+m2OWT <- t(object@interaction) %*% colSums(aperm(predd_rate, c(2,1,3)),dims=1)[,idx_sp]
+
+idx_sp
+length(object@w_full)
+
+################
+wnew <- object@w
+
+
+
+plot(x=wold, y=m2OW[1,],log="xy")
+lines(x=wnew, y=m2OWT[1,], col ="Red")
+lines(x=wold, y=m2FFT[1,], col ="Blue")
+
+shiftFFT<-c(m2FFT[1,1],m2FFT[1,1:(dim(m2NW)[2]-1)])
+lines(x=wold, y=shiftFFT, col ="Green")
+
+

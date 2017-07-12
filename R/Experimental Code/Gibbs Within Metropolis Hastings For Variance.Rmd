@@ -154,7 +154,13 @@ posteri <- vals/(d_theta*sum(vals))
 lines(theta_v,posteri,col="Blue")
 ```
 
-Instead we can try an alternative algorithm, but it seems slow to converge, and it looks like it over estimates the variance.
+Instead we can try an alternative algorithm, which we can better justify. 
+
+$\theta _0 \sim p(\theta),$ $v_0 \sim p(v)$
+
+For $t$ from $1$ to $T$ do
+
+$\theta_* \sim q(\theta_*|\theta_{t-1})$
 
 ```{r}
 N <- 10
