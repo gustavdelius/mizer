@@ -122,7 +122,8 @@ setClass(
         params = "MizerParams",
         n = "array",
         effort = "array",
-        n_pp = "array"
+        n_pp = "array",
+        growth = "array"
     ),
     prototype = prototype(
         params = new("MizerParams"),
@@ -134,6 +135,9 @@ setClass(
         ),
         n_pp = array(
             NA,dim = c(1,1), dimnames = list(time = NULL, w = NULL)
+        ),
+        growth = array(
+          NA,dim = c(1,1,1), dimnames = list(time = NULL, sp = NULL, w = NULL)
         )
     ),
     validity = valid_MizerSim
@@ -217,6 +221,7 @@ setMethod('MizerSim', signature(object='MizerParams'),
                n = array_n, 
                effort = array_effort,
                n_pp = array_n_pp,
+               growth = array_n,
                params = object)
         return(sim)
         }

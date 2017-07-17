@@ -173,6 +173,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
         # Set initial population
         sim@n[1,,] <- initial_n 
         sim@n_pp[1,] <- initial_n_pp
+        sim@growth <- sim@growth 
 
         # Handy things
         no_sp <- nrow(sim@params@species_params) # number of species
@@ -253,9 +254,13 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             if (any(store)){
                 sim@n[which(store)+1,,] <- n 
                 sim@n_pp[which(store)+1,] <- n_pp
+                sim@growth[which(store),,] <- e_growth
             }
         }
         # and end
+        # 
+        sim@growth[dim(sim@growth)[1],,] <- sim@growth[dim(sim@growth)[1]-1,,] 
+        #sim@growth[1,,] <- sim@growth[2,,] 
         return(sim)
     }
 )
