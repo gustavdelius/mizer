@@ -38,7 +38,26 @@ return(MM)
 # of the mizersim object test, that was generated using mizerparams object param1
 
 #################
-mytimes <- seq(0,10,0.1)
+mytimes <- seq(0,100,0.1)
 MM <- sizeHistory(param1,test,times=mytimes)
 plot(mytimes,MM[,1])
 
+hh<-param1@species_params
+#species
+hh[,1]
+# empirical max weight
+hh[,2]
+# my prediction of weight after 10 yrs
+MM[dim(MM)[1],]
+
+plot(hh[,2])
+points(MM[dim(MM)[1],], col="Red")
+
+hh[,1][[11]]
+
+hh[11,2]
+
+plot(mytimes,MM[,11])
+
+
+MM[dim(MM)[1],]-hh[,2]
