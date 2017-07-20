@@ -40,7 +40,7 @@ return(MM)
 #################
 mytimes <- seq(0,100,0.1)
 MM <- sizeHistory(param1,test,times=mytimes)
-plot(mytimes,MM[,1])
+plot(mytimes,MM[,11])
 
 hh<-param1@species_params
 #species
@@ -61,3 +61,68 @@ plot(mytimes,MM[,11])
 
 
 MM[dim(MM)[1],]-hh[,2]
+
+for (i in 1:12){
+  plot(mytimes,MM[,i])
+}
+
+
+####
+
+GG<-  getEGrowth(param1, test@n[dim(test@n)[1],,], test@n_pp[dim(test@n_pp)[1],])
+dim(GG)
+GG[1,]
+plot(param1@w,GG[1,],log="xy")
+
+GG[1,sum(GG[1,]>0)]
+param1@w[sum(GG[1,]>0)]
+param1@w[sum(GG[1,]>0)+1]
+
+#######
+
+MM <- sizeHistory(param1,test,times=mytimes)
+
+dim(MM)
+
+plot(mytimes,MM[,1])
+
+length(param1@w)
+
+length(MM[1:1000,1])
+
+dim(param1@species_params)
+
+param1@species_params[1,]
+
+param1
+
+####
+
+weightTo
+
+a <- 0.058
+b <- 3.08
+
+w <- a*L^b
+
+w/a = L^b
+
+exp(log(MM[dim(MM)[1],1]/a)/b)
+
+a*8^b
+
+param1@species_params
+
+
+plot(mytimes,MM[,4])
+
+a <- 0.006
+b <- 3.05
+exp(log(MM[dim(MM)[1],4]/a)/b)
+
+
+MM[,4]
+
+plot(param1@w,test@n[4,4,],log="xy")
+plot(test)
+
