@@ -153,5 +153,65 @@ exp(dmvnorm(MU,MU,SIGMA,log=T))
 
 MU
 
+##################
+#################
+
+lengths <- herring_length(params_data,mytimes, hdef, gammadef, w_infdef )
+dats <- data.frame(X=mytimes, Y= lengths)
+vbTyp<-function(X,Linf,k){(Linf*(1-exp(-k*X)))}
+obs_Linf <- 29.3
+obs_k <- 0.6
+fitTyp<-nls(Y~vbTyp(X,Linf,k),data=dats,start=list(Linf=obs_Linf,k=obs_k))
+rett <- dmvnorm(coef(fitTyp),MU,SIGMA,log=T)
+
+##################
+#################
+
+lengths3 <- herring_length(params_data,mytimes, hdef, gammadef, wstrange )
+dats3 <- data.frame(X=mytimes, Y= lengths3)
+vbTyp <-function(X,Linf,k){(Linf*(1-exp(-k*X)))}
+obs_Linf <- 29.3
+obs_k <- 0.6
+fitTyp3<-nls(Y~vbTyp(X,Linf,k),data=dats3,start=list(Linf=obs_Linf,k=obs_k))
+rett3 <- dmvnorm(coef(fitTyp3),MU,SIGMA,log=T)
+
+rett
+rett3
+
+coef(fitTyp)
+
+coef(fitTyp3)
+MU
+
+## what is going on
 
 
+##################
+#################
+
+lengths <- herring_length(params_data,mytimes, hdef, gammadef, w_infdef )
+dats <- data.frame(X=mytimes, Y= lengths)
+vbTyp<-function(X,Linf,k){(Linf*(1-exp(-k*X)))}
+obs_Linf <- 29.3
+obs_k <- 0.6
+fitTyp<-nls(Y~vbTyp(X,Linf,k),data=dats,start=list(Linf=obs_Linf,k=obs_k))
+rett <- dmvnorm(coef(fitTyp),MU,SIGMA,log=T)
+
+##################
+#################
+
+lengths3 <- herring_length(params_data,mytimes, hdef, gammadef, wstrange )
+dats3 <- data.frame(X=mytimes, Y= lengths3)
+vbTyp <-function(X,Linf,k){(Linf*(1-exp(-k*X)))}
+obs_Linf <- 29.3
+obs_k <- 0.6
+fitTyp3<-nls(Y~vbTyp(X,Linf,k),data=dats3,start=list(Linf=obs_Linf,k=obs_k))
+rett3 <- dmvnorm(coef(fitTyp3),MU,SIGMA,log=T)
+
+rett
+rett3
+
+coef(fitTyp)
+
+coef(fitTyp3)
+MU
