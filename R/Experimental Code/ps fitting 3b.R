@@ -129,6 +129,18 @@ for (i in 1:10){
 }
 plot(LIKE)
 
+wstrange <- w_infdef
+
+wstrange[4] <- 0.03
+
+loglike(hdef,gammadef,wstrange)
+loglike(hdef,gammadef,w_infdef)
+
+loglike(hdef,gammadef,w2)
+
+# It is strange that our likelihood is maxed by such a small w inf value, perhaps it is because 
+# small fish are over represenhted in our growth curve
+
 ############
 ############
 
@@ -140,4 +152,6 @@ exp(dmvnorm(coef(fitTyp),MU,SIGMA,log=T))
 exp(dmvnorm(MU,MU,SIGMA,log=T))
 
 MU
+
+
 
