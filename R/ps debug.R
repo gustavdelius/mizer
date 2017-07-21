@@ -73,7 +73,7 @@ loglikeA <- dmvnorm(vbfitA,MU,SIGMA,log=T)
 # code again, but for absurd sprat that have W_inf = 50g instead of 300 ish
 
 wB <- params_data[["w_inf"]]
-wB[4] <- 50
+wB[4] <- 100
 
 params_dataB <- params_data
 params_dataB[["h"]] <- param1@species_params[,14]
@@ -161,3 +161,8 @@ dmvnorm(c(vbfitB[["k"]],vbfitB[["Linf"]]),MU,SIGMA,log=T)
 
 dmvnorm(vbfitC,MU,SIGMA,log=T)
 
+vbfitB
+vbfitA
+MU
+
+# B fits better, somehow the data wants kmax to be lower
