@@ -87,7 +87,7 @@ for (i in (1:20)){
   loglikevec[i] <- loglikk(20*i)
 }
 w_inf_herring <- 10*(1:20)
-plot(10*(1:20),loglikevec)
+plot(w_inf_herring,loglikevec)
 
 ############################### specific run ###############
 # generate likelihood for default settings, first by making params and sim object, test.
