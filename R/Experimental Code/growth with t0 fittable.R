@@ -27,14 +27,14 @@ mytimes <- seq(0,100,0.1)
 param1 <- MizerParams(params_data, interaction = inter, no_w = 100)
 test<-project(param1,effort=0.5,t_max = 3, dt = 0.25, t_save = 1)
 
-loglikk <- function(hherring){
-  hB <- param1@species_params[,14]
-  hB[4] <- hherring
-  #actual val encoded in mizer is 35.03807
+loglikk <- function(winfher){
+  wB <- params_data[["w_inf"]]
+  wB[4] <- winfher
+  
   params_dataB <- params_data
-  params_dataB[["h"]] <- hB
+  params_dataB[["h"]] <- param1@species_params[,14]
   params_dataB[["gamma"]] <- param1@species_params[,15]
-  #params_dataB[["w_inf"]] <- wB
+  params_dataB[["w_inf"]] <- wB
   param1B <- MizerParams(params_dataB, interaction = inter, no_w = 100)
   testB<-project(param1B,effort=0.5,t_max = 3, dt = 0.25, t_save = 1)
   
@@ -91,13 +91,13 @@ loglikk(20)
 
 
 
-loglikevec <- 1:10
+loglikevec <- 1:20
 
-for (i in (1:10)){
-  loglikevec[i] <- loglikk(i*10)
+for (i in (1:20)){
+  loglikevec[i] <- loglikk(20*i)
 }
-h_herring <- (1:10)*10
-plot(h_herring,loglikevec)
+w_inf_herring <- 10*(1:20)
+plot(w_inf_herring,loglikevec)
 
 ############################### specific run ###############
 # generate likelihood for default settings, first by making params and sim object, test.
@@ -152,6 +152,4 @@ vbfitA <- coef(fitTypA)
 
 loglikeA <- dmvnorm(c(vbfitA[["k"]],vbfitA[["Linf"]],vbfitA[["t0"]]),MU,SIGMA,log=T)
 
-
-loglikeA
 
