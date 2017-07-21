@@ -5,9 +5,7 @@ date: "21 July 2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ## Outline
 
@@ -35,13 +33,15 @@ At the moment I am using improper priors, and sampling using MCMC.
 
 The code needs to be pasted
 
-```{r,eval=FALSE}
+
+```r
 source("./R/Experimental Code/growth with t0 and variable h.R")
 ```
 
 (copy and paste into console).
 
-```{r,eval=FALSE}
+
+```r
 library(devtools)
 library(ggplot2)
 library(grid)
@@ -60,7 +60,8 @@ load("Herring.Rdata")
 
 We also specify the length to weight conversion constants $\alpha$ and $\beta$ and `mtimes` which are the time steps we shall generate the (age,length) data over.
 
-```{r,eval=FALSE}
+
+```r
 a <- 0.006
 b <- 3.05
 mytimes <- seq(0,100,0.1)
@@ -68,7 +69,8 @@ mytimes <- seq(0,100,0.1)
 
 We take mike's samples and re-scale the length to convert it from mm to cm.
 
-```{r,eval=FALSE}
+
+```r
 out2 <- out
 out2[,2] <- out[,2]/10
 SIGMA<-cov(out2[,1:3])
@@ -84,7 +86,8 @@ We shall go through the code used to estimate the likelihood $p(\theta|k,F_x(.))
 
 Choose parameters and build the appropriate params object, and run mizer.
 
-```{r,eval=FALSE}
+
+```r
 params_dataA <- params_data
 params_dataA[["h"]] <- param1@species_params[,14]
 params_dataA[["gamma"]] <- param1@species_params[,15]
@@ -97,16 +100,17 @@ naa <- testA@n[dim(testA@n)[1],,]
 
 Extract growth rates
 
-```{r,eval=FALSE}
-gg <- getEGrowth(param1A, testA@n[dim(testA@n)[1],,], testA@n_pp[dim(testA@n_pp)[1],])
 
+```r
+gg <- getEGrowth(param1A, testA@n[dim(testA@n)[1],,], testA@n_pp[dim(testA@n_pp)[1],])
 ```
 
 Get time vs weight curves for the different species by filling out growth rate points using an interpolator, and then solving ODE's. At the moment I am using the static growth rate associated with the final state, but this needs to be improved.
 
 
 
-```{r,eval=FALSE}
+
+```r
 weightsA <- matrix(0,nrow=length(mytimes),ncol=dim(testA@n)[2])
 for (i in (1:ns)){
   gini <- approxfun(param1A@w, gg[i,])
@@ -120,13 +124,15 @@ for (i in (1:ns)){
 
 Convert from weight to length
 
-```{r,eval=FALSE}
+
+```r
 lengthsA <- sapply(weightsA[,4],function(x) exp(log(x/a)/b))
 ```
 
 Find best fit VB parameters $k_{best}[m(\theta)]$ to data
 
-```{r,eval=FALSE}
+
+```r
 datsA <- data.frame(X=mytimes, Y= lengthsA)
 vbTyp<-function(X,Linf,k,t0){(Linf*(1-exp(-k*(X-t0))))}
 obs_k <- MU[[1]]
@@ -138,14 +144,16 @@ vbfitA <- coef(fitTypA)
 
 Determine likelihood $p(k|\theta,F_x(.)) \approx F_x(k_{best}[m(\theta)])$
 
-```{r,eval=FALSE}
+
+```r
 loglikeA <- dmvnorm(c(vbfitA[["k"]],vbfitA[["Linf"]],vbfitA[["t0"]]),MU,SIGMA,log=T)
 loglikeA
 ```
 
 An algorithm to generate likelihood for variable $h_{herring}$ (default is 35)
 
-```{r,eval=FALSE}
+
+```r
 loglikk <- function(hherring){
   hB <- param1@species_params[,14]
   hB[4] <- hherring
@@ -183,7 +191,8 @@ loglikk(10)
 ```
 
 Calculate likelihoods for different h vals.
-```{r,eval=FALSE}
+
+```r
 loglikevec <- 1:7
 for (i in (2:8)){
   loglikevec[i-1] <- loglikk(i*10)
@@ -193,7 +202,8 @@ h_herring <- (2:8)*10
 
 Plot them
 
-```{r,eval=FALSE}
+
+```r
 plot(h_herring,loglikevec)
 ```
 
