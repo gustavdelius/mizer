@@ -28,6 +28,44 @@ So we write our target posterior distribution as
 
 $$p(\theta|k,F_x()) \propto p(\theta) F_x(k_{best}[m(\theta)])$$
 At the moment I am using improper priors, and sampling using MCMC.
+
+## Code
+
+Initialization code (copy and paste into consol).
+
+```{r,eval=FALSE}
+library(devtools)
+library(ggplot2)
+library(grid)
+library(methods)
+library(plyr)
+library(reshape2)
+library(mizer)
+library(deSolve)
+load("Herring.Rdata")
+#out is name of this data = k, Linf, 
+library(mvtnorm)
+
+a <- 0.006
+b <- 3.05
+
+out2 <- out
+out2[,2] <- out[,2]/10
+SIGMA<-cov(out2[,1:2])
+MU<-colMeans(out2[,1:2])
+
+
+
+params_data <- read.csv("./vignettes/NS_species_params.csv")
+inter <- read.csv("./vignettes/inter.csv", row.names=1)
+inter <- as(inter, "matrix")
+mytimes <- seq(0,100,0.1)
+param1 <- MizerParams(params_data, interaction = inter, no_w = 100)
+test<-project(param1,effort=0.5,t_max = 3, dt = 0.25, t_save = 1)
+```
+
+change to add t0
+
 ## Notes
 
 

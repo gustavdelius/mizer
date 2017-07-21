@@ -133,7 +133,43 @@ $(document).ready(function () {
 <p>We wish to sample from <span class="math inline">\(p(\theta|k,F_x(.)),\)</span> which is the posterior distribution of the parameter <span class="math inline">\(\theta,\)</span> given VB parameters <span class="math inline">\(k,\)</span> under the assumption that <span class="math inline">\(k\)</span> is distributed according to distribution <span class="math inline">\(F_x\)</span> that was constructed using the empirical data <span class="math inline">\(x.\)</span></p>
 <p>According to Bayes theorem <span class="math inline">\(p(\theta|k,F_x(.)) \propto p(\theta)p(k|\theta,F_x(.)),\)</span> where the likelihood can be rewritten as <span class="math display">\[p(k|\theta,F_x(.)) = F_x(k_{best}[m(\theta)]),\]</span> where <span class="math inline">\(k_{best}[m(\theta)])\)</span> consists of the VB parameters that best fit the (age,length) data <span class="math inline">\(m(\theta)\)</span> which mizer generated.</p>
 <p>So we write our target posterior distribution as</p>
-<p><span class="math display">\[p(\theta|k,F_x()) \propto p(\theta) F_x(k_{best}[m(\theta)])\]</span> At the moment I am using improper priors, and sampling using MCMC. ## Notes</p>
+<p><span class="math display">\[p(\theta|k,F_x()) \propto p(\theta) F_x(k_{best}[m(\theta)])\]</span> At the moment I am using improper priors, and sampling using MCMC.</p>
+</div>
+<div id="code" class="section level2">
+<h2>Code</h2>
+<p>Initialization code (copy and paste into consol).</p>
+<pre class="r"><code>library(devtools)
+library(ggplot2)
+library(grid)
+library(methods)
+library(plyr)
+library(reshape2)
+library(mizer)
+library(deSolve)
+load(&quot;Herring.Rdata&quot;)
+#out is name of this data = k, Linf, 
+library(mvtnorm)
+
+a &lt;- 0.006
+b &lt;- 3.05
+
+out2 &lt;- out
+out2[,2] &lt;- out[,2]/10
+SIGMA&lt;-cov(out2[,1:2])
+MU&lt;-colMeans(out2[,1:2])
+
+
+
+params_data &lt;- read.csv(&quot;./vignettes/NS_species_params.csv&quot;)
+inter &lt;- read.csv(&quot;./vignettes/inter.csv&quot;, row.names=1)
+inter &lt;- as(inter, &quot;matrix&quot;)
+mytimes &lt;- seq(0,100,0.1)
+param1 &lt;- MizerParams(params_data, interaction = inter, no_w = 100)
+test&lt;-project(param1,effort=0.5,t_max = 3, dt = 0.25, t_save = 1)</code></pre>
+<p>change to add t0</p>
+</div>
+<div id="notes" class="section level2">
+<h2>Notes</h2>
 <p>I think mike’s previous work assumed <span class="math inline">\(t0=0\)</span>, so perhaps we should re-adjust our growth curves so that fish begin to grow at size zero. Or fit <span class="math inline">\(t0\)</span> as well. I was wondering if we need to make the assumption that t0 =0. If this case the VB parameter fitting will work under the assumption that the fish is size 0 at age 0. However, to correspond to this, we should need to simulate how fish grow from size 0 in mizer. The issue is, I think it could be hard to get the growth rates for fish below egg size, as mizer is not designed to work in that regime, and it does not make as much physical sense to try and model the feeding habits of sub-egg-sized fish. I wonder if one way around this would be to also include t0 as an extra parameter we should fit (I guess I can do this using column 3 of herring.Rdata). Currently my mizer-generated time vs length plots work under the assumption that the fish is egg sized at t=0.</p>
 <p>I need to include dynamic growth rates, include fitting of t0, and setup MCMC, and run it for herring.</p>
 </div>
