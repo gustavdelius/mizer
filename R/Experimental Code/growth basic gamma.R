@@ -106,18 +106,18 @@ param1@species_params[4,15]
 
 #loglikk(params_data[["w_inf"]][4])
 
-loglikk(10)
-loglikk(20)
+#loglikk(10)
+#loglikk(20)
 
 
 
-loglikevec <- 1:20
+#loglikevec <- 1:20
 
-for (i in (1:20)){
-  loglikevec[i] <- loglikk(20*i)
-}
-w_inf_herring <- 10*(1:20)
-plot(w_inf_herring,loglikevec)
+#for (i in (1:20)){
+#  loglikevec[i] <- loglikk(20*i)
+#}
+#w_inf_herring <- 10*(1:20)
+#plot(w_inf_herring,loglikevec)
 
 ############################### specific run ###############
 # generate likelihood for default settings, first by making params and sim object, test.
