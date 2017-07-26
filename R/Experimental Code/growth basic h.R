@@ -94,7 +94,7 @@ loglikk <- function(hval){
   
 }
 
-hvals <- seq(20,100,5)
+hvals <- seq(73.91,73.912,.00005)
 
 #loggamma <- seq(-26.3,-25,0.01)
 #ln_likelihood <- sapply(loggamma,loglikk)
@@ -109,7 +109,7 @@ plot(hvals,ln_likelihood)
 
 # actual gamma used by mizer
 #param1@species_params[4,15]
-
+plot(hvals,exp(ln_likelihood-max(ln_likelihood)))
 
 
 #plot(((-27):(-10)),sapply(seq(-27,-10,1),loglikk))
