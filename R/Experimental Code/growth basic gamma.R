@@ -89,10 +89,18 @@ loglikk <- function(loggam){
 
 }
 
-loggamma <- seq(-26,-25,0.01)
-likelihood <- sapply(loggamma,loglikk)
+loggamma <- seq(-26.3,-25,0.01)
+ln_likelihood <- sapply(loggamma,loglikk)
 
-plot(loggamma,likelihood)
+plot(loggamma,ln_likelihood)
+
+# most likely gamma
+exp(loggamma[which(ln_likelihood==max(ln_likelihood))])
+
+# actual gamma used by mizer
+param1@species_params[4,15]
+
+
 
 #plot(((-27):(-10)),sapply(seq(-27,-10,1),loglikk))
 
