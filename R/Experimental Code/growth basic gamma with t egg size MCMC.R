@@ -220,10 +220,19 @@ outputt <- 1:T
 outputt[1] <- theta
 for (t in (1:(T-1))){
   theta <- outputt[t]
-  thetap <- rnorm(1,theta,0.01)
+  thetap <- rnorm(1,theta,0.001)
   r <- runif(1,0,1)
   outputt[t+1] <- theta
   if (r<exp(loglikk(thetap)-loglikk(theta))){
     outputt[t+1] <- thetap
   }
-  }
+}
+# mizer gamma
+param1@species_params[4,15]
+
+# MCMC gamma
+exp(mean(outputt[200:1000]))
+
+# Best fit gamma
+exp(loggamma[which(ln_likelihood==max(ln_likelihood))])
+
