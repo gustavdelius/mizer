@@ -230,3 +230,5 @@ ageWeightGenBirth <- function(t0) {
 # weight for a herring born in 1980
 
 plot(ageWeightGenBirth(1980)[,1],ageWeightGenBirth(1980)[,4+1])
+
+## connect this with prevnomod..
