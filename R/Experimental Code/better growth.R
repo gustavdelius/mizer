@@ -76,6 +76,15 @@ head(sim@growth[432,1,])
 sim@growth[dim(sim@growth)[1],,] <- getEGrowth(params,sim@n[nrow(sim@n),,],sim@n_pp[nrow(sim@n_pp),])
 plot(sim@growth[,1,1])
 
+
+ExtractGrowthRates <- function(sim){
+  HH <- sim@growth
+  HH[dim(HH)[1],,] <- getEGrowth(params,sim@n[nrow(sim@n),,],sim@n_pp[nrow(sim@n_pp),])
+  return(HH)
+}
+
+plot(ExtractGrowthRates(sim)[,1,1])
+
 ###################################
 ######################################
 
@@ -93,3 +102,8 @@ plot(sim@growth[,1,1])
 # extract growth rates
 # backup on github
 # investigate alpha, make markdown
+
+
+#############
+#############
+
