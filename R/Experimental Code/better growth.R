@@ -184,3 +184,49 @@ Ginter(370,1997.734,eg)[4]
 # the growth rate g(W,T) where W=params@w[k] and 
 # T = as.numeric(rownames(sim@n_pp))[t]
 # is the t th time point at which mizer saves output
+
+################
+
+# get (age, length) points for a fish born at t0
+# (I should work on all species in parralel, but lets start with 
+# herring)
+
+## prev approach
+#weightsB <- matrix(0,nrow=length(mytimes),ncol=dim(testB@n)[2])
+#for (i in (1:ns)){
+#  gini <- approxfun(param1B@w, ggB[i,])
+#  
+#  myodefun <- function(t, state, parameters){
+#    return(list(gini(state)))
+#  }
+#  weightsB[,i] <- ode(y = param1B@w[1], times = mytimes, func = myodefun, parms = 1)[,2]
+#}
+#
+#lengthsB <- sapply(weightsB[,4],function(x) exp(log(x/a)/b))
+##
+
+
+
+myodefun <- function(t, state, parameters){
+      return(list(Ginter(state,t,eg)))
+   }
+  
+ageWeight <- ode(y = rep(w_pts[1],12), times = TimesWeKnowG, func = myodefun, parms = 1)
+
+head(ageWeight)
+
+# time vs weight curve for a herring born at the start, in 1967
+
+# we want a more general function where we can vary the birth time
+
+plot(TimesWeKnowG,ageWeight[,4+1])
+
+ageWeightGenBirth <- function(t0) {
+  return(ode(y = rep(w_pts[1],12),
+             times = TimesWeKnowG[TimesWeKnowG>=t0], func = myodefun, parms = 1))
+  
+}
+
+# weight for a herring born in 1980
+
+plot(ageWeightGenBirth(1980)[,1],ageWeightGenBirth(1980)[,4+1])
