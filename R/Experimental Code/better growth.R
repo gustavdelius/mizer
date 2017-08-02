@@ -60,7 +60,21 @@ plot(sim)
 plot(sim@growth[,1,1])
 
 # need to make initial condition properly
+head(getEGrowth(params,sim@n[nrow(sim@n),,],sim@n_pp[nrow(sim@n_pp),])[1,])
 
+head(getEGrowth(params,sim@n[nrow(sim@n)-1,,],sim@n_pp[nrow(sim@n_pp)-1,])[1,])
+head(sim@growth[432,1,])
+
+#####
+
+# The sim@growth slot that we made mizer produce during sim
+# is such that 
+# sim@growth[t,,] == getEGrowth(params,sim@n[t,,],sim@n_pp[t,])
+# holds for each t except the last, in that the 
+# final growth rates are just copied from the penultimate ones in 
+# this is fixed by the following command:
+sim@growth[dim(sim@growth)[1],,] <- getEGrowth(params,sim@n[nrow(sim@n),,],sim@n_pp[nrow(sim@n_pp),])
+plot(sim@growth[,1,1])
 
 ###################################
 ######################################
