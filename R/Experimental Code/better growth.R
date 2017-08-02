@@ -77,6 +77,12 @@ sim@growth[dim(sim@growth)[1],,] <- getEGrowth(params,sim@n[nrow(sim@n),,],sim@n
 plot(sim@growth[,1,1])
 
 
+# Here ExtractGrowthRates(sim)[k,i,t] equals
+# the growth rate g(W,T) where W=params@w[k] and 
+# T = as.numeric(rownames(sim@n_pp))[t]
+# is the t th time point at which mizer saves output
+
+
 ExtractGrowthRates <- function(sim){
   HH <- sim@growth
   HH[dim(HH)[1],,] <- getEGrowth(params,sim@n[nrow(sim@n),,],sim@n_pp[nrow(sim@n_pp),])
@@ -107,3 +113,74 @@ plot(ExtractGrowthRates(sim)[,1,1])
 #############
 #############
 
+#plank <- sim@n_pp
+#as.numeric(rownames(plank))
+
+eg <- ExtractGrowthRates(sim)
+eg
+
+TimesWeKnowG <- as.numeric(rownames(sim@n_pp))
+
+# Here ExtractGrowthRates(sim)[k,i,t] equals
+# the growth rate g(W,T) where W=params@w[k] and 
+# T = as.numeric(rownames(sim@n_pp))[t]
+# is the t th time point at which mizer saves output
+
+##############
+
+# 
+w_pts <- params@w
+
+#get_indexes <- function(W,T){
+#  return(c(length(w_pts[w_pts <= W]),length(TimesWeKnowG[TimesWeKnowG <- T])))
+#   
+#  }
+
+
+#inter_round_down <- function(W,T,eg){
+#  return(eg[length(w_pts[w_pts <= W]), ,
+#     length(TimesWeKnowG[TimesWeKnowG <- T])])
+#}
+
+w_pts[length(w_pts[w_pts <=1000])]
+
+get_w_index <- function(W){
+  return(length(w_pts[w_pts <=W]))
+}
+  
+w_pts[get_w_index(1000)]
+
+#length(TimesWeKnowG[TimesWeKnowG<=1999.7])
+
+get_t_index <- function(T){
+  return(length(TimesWeKnowG[TimesWeKnowG<=T]))
+}
+TimesWeKnowG[get_t_index(1999.734)]
+
+eg <- ExtractGrowthRates(sim)
+
+# Ginter approximates the growth rate @ weight W and time T, 
+# by the growth rate known in eg at W* and T* where W* is the max val 
+# less than or equal to W where the growth rate is known, and 
+# T* is the max val 
+# less than or equal to T where the growth rate is known
+
+# Here Ginter(W,T,egg)[i] gives resulting growth rate for species i.
+
+Ginter <- function(W,T,eg){
+  return(eg[get_t_index(T),,get_w_index(W)])
+}
+
+Ginter(1000,1997.734,eg)
+
+myw <- (1:400)
+plot(myw,sapply(myw, function(x) Ginter(x,1997.734,eg)[4]))
+
+params_data$w_inf[4]
+
+Ginter(370,1997.734,eg)[4]
+
+# Here ExtractGrowthRates(sim)[k,i,t] equals
+# the growth rate g(W,T) where W=params@w[k] and 
+# T = as.numeric(rownames(sim@n_pp))[t]
+# is the t th time point at which mizer saves output
