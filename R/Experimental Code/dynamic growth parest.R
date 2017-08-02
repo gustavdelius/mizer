@@ -97,19 +97,38 @@ get_t_index <- function(T){
   return(length(TimesWeKnowG[TimesWeKnowG<=T]))
 }
 eg <- ExtractGrowthRates(sim)
+#!!!!!!!!!!!!!!!!!!!
+#Ginter <- function(W,T,eg){
+#  return(eg[get_t_index(T),,get_w_index(W)])
+#}
+#myodefun <- function(t, state, parameters){
+#  return(list(Ginter(state,t,eg)))
+#}
+#ageWeightGenBirth <- function(t0) {
+#  return(ode(y = rep(w_pts[1],12),
+#             times = TimesWeKnowG[TimesWeKnowG>=t0], func = myodefun, parms = 1))
+#  
+#}
+#EarlyBirthData <- ageWeightGenBirth(TimesWeKnowG[1])
+#weightsB <- EarlyBirthData[,2:13]
+#!!!!!!!!!!!!!!
 Ginter <- function(W,T,eg){
   return(eg[get_t_index(T),,get_w_index(W)])
 }
-myodefun <- function(t, state, parameters){
-  return(list(Ginter(state,t,eg)))
-}
-ageWeightGenBirth <- function(t0) {
-  return(ode(y = rep(w_pts[1],12),
-             times = TimesWeKnowG[TimesWeKnowG>=t0], func = myodefun, parms = 1))
+EarlyBirthData <- matrix(0,nrow=length(TimesWeKnowG),ncol=12)
+for (i in (1:12)){
+  myodefun <- function(t, state, parameters){
+    return(list(Ginter(state,t,eg)[i]))
+  }
   
+  ageWeightGenBirth <- function(t0) {
+    return(ode(y = w_pts[1],
+               times = TimesWeKnowG[TimesWeKnowG>=t0], func = myodefun, parms = 1))
+  }
+  EarlyBirthData[,i] <- ageWeightGenBirth(TimesWeKnowG[1])[,2]
 }
-EarlyBirthData <- ageWeightGenBirth(TimesWeKnowG[1])
-weightsB <- EarlyBirthData[,2:13]
+weightsB <- EarlyBirthData
+#!!!!!!!!!!!!!!!!!
 lengthsB <- sapply(weightsB[,4],function(x) exp(log(x/a)/b))
 # # # # # # mini weld
 # should edit list before use, to avoid using data 
