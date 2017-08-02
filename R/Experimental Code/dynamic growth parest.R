@@ -1,4 +1,5 @@
 
+set.seed(5)
 
 library(devtools)
 library(ggplot2)
@@ -62,7 +63,9 @@ loggam <- -25
 #loglikk <- function(loggam){
   #wB <- params_data[["w_inf"]]
   #wB[4] <- winfher
+
 param1 <- params
+
   wG <- log(param1@species_params[,15])
   # log(param1@species_params[4,15]) = -25
   
@@ -112,6 +115,9 @@ param1 <- params
   #datsB <- data.frame(X=TimesWeKnowG, Y= lengthsB)
   #datsB <- data.frame(X=TimesWeKnowG[lengthsB>1], Y= lengthsB[lengthsB>1])
   datsB <- data.frame(X=TimesWeKnowG-TimesWeKnowG[1], Y= lengthsB)
+  
+  param1 <- params
+  
   W_egg <- param1@w[1]
   L_egg <- (W_egg/a)^(1/b)
   gett0 <- function(Linf,k){
