@@ -115,7 +115,9 @@ Ginter <- function(W,T,eg){
 
 # solve ODE to get age vs length data 
 # for a Herring born in 1976
-EarlyBirthData <- matrix(0,nrow=length(TimesWeKnowG),ncol=12)
+###EarlyBirthData <- matrix(0,nrow=length(TimesWeKnowG),ncol=12)
+ages <- seq(1,40,1)
+EarlyBirthData <- matrix(0,nrow=length(ages),ncol=12)
 for (i in (1:12)){
   myodefun <- function(t, state, parameters){
     return(list(Ginter(state,t,eg)[i]))
@@ -128,12 +130,16 @@ for (i in (1:12)){
     return(ode(y = w_pts[1],
                times = TimesWeKnowG[TimesWeKnowG>=t0], func = myodefun, parms = 1, method = "euler"))    
   }
-  EarlyBirthData[,i] <- ageWeightGenBirth(TimesWeKnowG[1])[,2]
+  ###EarlyBirthData[,i] <- ageWeightGenBirth(TimesWeKnowG[1])[,2]
+  weightss <- ages
+  for (m in (1:length(ages))){
+    XQ <- ageWeightGenBirth(TimesWeKnowG[length(TimesWeKnowG)]-ages[m])
+    weightss[m] <- XQ[dim(XQ)[1],2]
+  }
+  EarlyBirthData[,i] <- weightss
 }
 weightsB <- EarlyBirthData
-# TO DO *: Modify this generation of age-length data so 
-# we can choose a_i and start with fish born at t0=T-a_i
-# and generate for many a_i. Cross check how VB works wrt t0
+# TO DO *:  Cross check how VB works wrt t0
 
 # TO DO: Speed up this iterpolation and ODE solving
 
@@ -142,7 +148,8 @@ lengthsB <- sapply(weightsB[,4],function(x) exp(log(x/a)/b))
 
 # do nonlinear least squares fitting to find VB parameters best 
 # fitting mizer's output
-datsB <- data.frame(X=TimesWeKnowG-TimesWeKnowG[1], Y= lengthsB)
+###datsB <- data.frame(X=TimesWeKnowG-TimesWeKnowG[1], Y= lengthsB)
+datsB <- data.frame(X=ages, Y= lengthsB)
 param1 <- params
 W_egg <- param1@w[1]
 L_egg <- (W_egg/a)^(1/b)
