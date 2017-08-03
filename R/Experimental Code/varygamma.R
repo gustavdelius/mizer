@@ -172,7 +172,19 @@ ln_gam <- seq( -26.3, -24, .1)
 ln_like <- sapply(ln_gam, loglikk)
 plot(ln_gam,ln_like)
 best_log_gam <- ln_gam[which.max(ln_like)]
+param1fst <- MizerParams(params_data, interaction = inter, no_w = 100)
+
 c(best_log_gam,exp(best_log_gam),max(ln_like))
+#-2.590000e+01  5.646417e-12 -1.252503e+07
+
+log(param1fst@species_params[4,15])
+# -25.21224
 
 # some type of error from line 149 of debug, about
 #   return(log(1-L_egg/Linf)/k)
+
+# maybe I should add tryCatch() or if(Linf <= L_egg) Linf<-L_egg+0.001
+# also look at whether maybe k is too small
+
+# Add truncation of small & large, and add data frame output, for 
+# variable gamma
