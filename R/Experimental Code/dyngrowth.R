@@ -72,6 +72,9 @@ params <- MizerParams(params_dataB, interaction = inter, no_w = 100)
 primer <- project(params, effort = t(Fmat), dt = 0.1, t_save =.1)
 sim <- project(params, effort = t(Fmat), dt = 0.1, t_save =.1,initial_n= primer@n[nrow(primer@n),,], initial_n_pp=primer@n_pp[nrow(primer@n_pp),])
 
+# [sim] picture
+plot(sim)
+
 # get the saved growth rates, and rewrite the growth rates on 
 # the last step correctly (by default they are same as on penultimate
 # step)
@@ -88,9 +91,17 @@ ExtractGrowthRates <- function(sim){
   return(HH)
 }
 
+
 # Get the times we  run mizer over, and w
 TimesWeKnowG <- as.numeric(rownames(sim@n_pp))
 w_pts <- params@w
+
+#growth rates of small herring
+#[growthrates]
+plot(TimesWeKnowG, ExtractGrowthRates(sim)[,4,1])
+
+
+
 # For interpolation between w and t that we have g(w,t) for
 # I use these functions that return greatest index of a point 
 # with a value <= input
@@ -112,6 +123,13 @@ eg <- ExtractGrowthRates(sim)
 Ginter <- function(W,T,eg){
   return(eg[get_t_index(T),,get_w_index(W)])
 }
+
+# plot growth rates of herring in 1997
+# [growth97]
+myw <- (1:400)
+growth97 <- sapply(myw, function(x) Ginter(x,1997.734,eg)[4])
+plot(myw,growth97)
+
 
 # solve ODE to get age vs length data 
 # for a Herring born in 1976
@@ -143,8 +161,20 @@ weightsB <- EarlyBirthData
 
 # TO DO: Speed up this iterpolation and ODE solving
 
+# TO DO: Use linear interpolation
+
+# TO DO: improve VB parameter fitting method
+
+# [ageVweight]
+plot(ages,weightsB[,4])
+
+
 # convert weights to lengths
 lengthsB <- sapply(weightsB[,4],function(x) exp(log(x/a)/b))
+
+# [ageVlength]
+plot(ages,lengthsB)
+
 
 # do nonlinear least squares fitting to find VB parameters best 
 # fitting mizer's output
@@ -169,6 +199,7 @@ loglikeB <- dmvnorm(c(vbfitB[["k"]],vbfitB[["Linf"]]),MU,SIGMA,log=T)
 loglikeB
 #$$$$$$$$$$$$$$$$$$$
 #return(loglikeB)}
-
+#[loglike]
+#[loglikevals]
 
 
