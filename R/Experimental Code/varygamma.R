@@ -171,7 +171,8 @@ loglikk(-26)
 ln_gam <- seq( -26.3, -24, .1)
 ln_like <- sapply(ln_gam, loglikk)
 plot(ln_gam,ln_like)
-
+best_log_gam <- ln_gam[which.max(ln_like)]
+c(best_log_gam,exp(best_log_gam),max(ln_like))
 
 # some type of error from line 149 of debug, about
 #   return(log(1-L_egg/Linf)/k)
