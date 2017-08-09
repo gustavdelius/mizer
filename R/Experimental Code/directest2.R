@@ -276,8 +276,11 @@ V_samples2 <- 1:T
 for (t in (1:T)){
   theta_prop <- rnorm(1,thetaN,prop_sd)
   r <- runif(1,0,1)
-  if (r<exp(loglikelihoodd(theta_prop,VN)-loglikelihoodd(thetaN,VN))*dunif(theta_prop,0,1)/(dunif(thetaN,0,1))){
-    thetaN <- theta_prop
+  
+  XX <- exp(loglikelihoodd(theta_prop,VN)-loglikelihoodd(thetaN,VN))
+  if (r<XX){
+  
+  thetaN <- theta_prop
   } 
   VN <- rinvgamma(1, shape = myshape+N/2, scale= myscale+SS(thetaN)/2)
   theta_samples2[t] <- thetaN
@@ -287,3 +290,11 @@ mean(theta_samples2)
 mean(V_samples2)
 hist(theta_samples2)
 plot(theta_samples2)
+
+#exp(loglikelihoodd(theta_prop,VN)-loglikelihoodd(thetaN,VN))
+#exp(loglikelihoodd(theta_prop,VN)-loglikelihoodd(thetaN,VN))*dunif(theta_prop,0,1)/(dunif(thetaN,0,1))))
+#XX <- exp(loglikelihoodd(theta_prop,VN)-loglikelihoodd(thetaN,VN))
+#if (r<XX){
+#  thetaN <- theta_prop
+#} 
+
