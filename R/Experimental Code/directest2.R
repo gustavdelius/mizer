@@ -179,6 +179,7 @@ ss <- sum((emp_lengths-sapply(emp_ages+0.5,mizer_interp))^2)
 # and maybe we should use
 #ss <- sum((log(emp_lengths)-log(sapply(emp_ages+0.5,mizer_interp)))^2)
 
+ss <- sum((log(emp_lengths)-log(sapply(emp_ages+0.5,mizer_interp)))^2)
 
 
 #mizer_interp(1.5)
@@ -187,3 +188,66 @@ ss <- sum((emp_lengths-sapply(emp_ages+0.5,mizer_interp))^2)
 #sum((a1b-a1a)^2)
 
 #emp_ages[2109]
+
+##############################################
+###############################################
+#############################################
+#loggam <- -24
+
+sumsq <- function(loggam){
+param1 <- MizerParams(params_data, interaction = inter, no_w = 100)
+wG <- log(param1@species_params[,15])
+wG[4] <- loggam
+params_dataB <- params_data
+## params_dataB[["h"]] <- param1@species_params[,14]
+params_dataB[["gamma"]] <- exp(wG)
+params_dataB[["w_inf"]] <- params_data[["w_inf"]]
+params <- MizerParams(params_dataB, interaction = inter, no_w = 100)
+sim <- project(params, effort = effort2010, t_max=20 , dt = 0.1, t_save =.1,initial_n= primer@n[nrow(primer@n),,], initial_n_pp=primer@n_pp[nrow(primer@n_pp),])
+
+
+GR <- getEGrowth(params, sim@n[nrow(sim@n),,], sim@n_pp[nrow(sim@n_pp),])
+
+
+the_times <- seq(0,40,0.5)
+
+
+GRint <- approxfun(params@w,GR[4,])
+
+ma <- max(Hdata$Age)
+the_times <- seq(0,1+ma,0.5)
+
+myodefun <- function(t, state, parameters){
+  return(list(GRint(state)))
+}
+weightsA <- ode(y = param1@w[1], times = the_times, func = myodefun, parms = 1)[,2]
+
+lengthsA <- sapply(weightsA,function(x) exp(log(x/a)/b))
+
+emp_ages <- Hdata$Age
+emp_lengths <- Hdata$Lngt
+
+mizer_interp <- approxfun(the_times,lengthsA)
+
+ss <- sum((log(emp_lengths)-log(sapply(emp_ages+0.5,mizer_interp)))^2)
+return(ss)
+}
+
+sumsq(-25)
+
+sumsq(-26)
+
+sumsq(-20)
+
+log_gamma <- seq(-27,-20,1)
+sum_squares <- sapply(log_gamma,sumsq)
+plot(log_gamma,sum_squares)
+
+log_gamma <- seq(-25.1,-24.9,0.02)
+sum_squares <- sapply(log_gamma,sumsq)
+plot(log_gamma,sum_squares)
+
+# likelihood plot when sigma = 1
+plot(log_gamma,exp(-sum_squares/2))
+
+# make scatter plot
