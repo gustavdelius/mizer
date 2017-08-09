@@ -243,7 +243,7 @@ log_gamma <- seq(-27,-20,1)
 sum_squares <- sapply(log_gamma,sumsq)
 plot(log_gamma,sum_squares)
 
-log_gamma <- seq(-25.1,-24.9,0.02)
+log_gamma <- seq(-25.1,-24.8,0.05)
 sum_squares <- sapply(log_gamma,sumsq)
 plot(log_gamma,sum_squares)
 
@@ -270,7 +270,7 @@ VN <- rinvgamma(1, shape = myshape, scale= myscale)
 
 N <- length(emp_ages)
 
-T <- 200
+T <- 500
 theta_samples2 <- 1:T
 V_samples2 <- 1:T
 for (t in (1:T)){
