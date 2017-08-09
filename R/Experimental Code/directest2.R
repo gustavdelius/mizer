@@ -268,7 +268,7 @@ VN <- rinvgamma(1, shape = myshape, scale= myscale)
 
 #####################
 
-
+N <- length(emp_ages)
 
 T <- 100
 theta_samples2 <- 1:T
