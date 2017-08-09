@@ -282,7 +282,7 @@ for (t in (1:T)){
   
   thetaN <- theta_prop
   } 
-  VN <- rinvgamma(1, shape = myshape+N/2, scale= myscale+SS(thetaN)/2)
+  VN <- rinvgamma(1, shape = myshape+N/2, scale= myscale+sumsq(thetaN)/2)
   theta_samples2[t] <- thetaN
   V_samples2[t] <- VN
 } 
