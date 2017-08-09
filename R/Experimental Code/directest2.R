@@ -261,7 +261,7 @@ loglikelihoodd(-25,1)
 library(MCMCpack)
 
 thetaN <- -25
-prop_sd <- 0.1
+prop_sd <- 0.05
 myshape <- .001
 myscale <- .001
 VN <- rinvgamma(1, shape = myshape, scale= myscale)
@@ -270,7 +270,7 @@ VN <- rinvgamma(1, shape = myshape, scale= myscale)
 
 N <- length(emp_ages)
 
-T <- 100
+T <- 200
 theta_samples2 <- 1:T
 V_samples2 <- 1:T
 for (t in (1:T)){
