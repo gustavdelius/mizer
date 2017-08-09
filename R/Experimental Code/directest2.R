@@ -65,7 +65,7 @@ effort2010 <- Fmat[,44]
 
 
 params_init <- MizerParams(params_data, interaction = inter, no_w = 100)
-primer <- project(params, effort = effort2010, t_max=100 , dt = 0.1, t_save =.1)
+primer <- project(params_init, effort = effort2010, t_max=100 , dt = 0.1, t_save =.1)
 
 
 # gamma is the volumetric search rate constant (for Herring)
@@ -114,7 +114,7 @@ plot(params@w[params@w<1000],GR[4,params@w<1000])
 
 # maximum age empirically recorded
 ma <- max(Hdata$Age)
-the_times <- seq(0,ma,0.5)
+the_times <- seq(0,1+ma,0.5)
 
   myodefun <- function(t, state, parameters){
     return(list(GRint(state)))
@@ -160,3 +160,30 @@ lines(the_times,lengthsA )
 # distribution in terms of extra parameters
 
 # how to test log normallcy of data ?
+
+emp_ages[1]
+emp_lengths[1]
+
+mizer_interp <- approxfun(the_times,lengthsA)
+
+mizer_interp(emp_ages[1]+0.5)
+
+#ss <- mizer_interp(emp_ages[1]+0.5)-emp_lengths[1]
+
+#ss<- sum((sapply(emp_ages+0.5,mizer_interp) - emp_lengths)^2)
+#ss
+
+ss <- sum((emp_lengths-sapply(emp_ages+0.5,mizer_interp))^2)
+
+# We should convert to logs in order to properly evaluate likelihood
+# and maybe we should use
+#ss <- sum((log(emp_lengths)-log(sapply(emp_ages+0.5,mizer_interp)))^2)
+
+
+
+#mizer_interp(1.5)
+#a1a <- sapply(emp_ages+0.5,mizer_interp) 
+#a1b <- emp_lengths
+#sum((a1b-a1a)^2)
+
+#emp_ages[2109]
