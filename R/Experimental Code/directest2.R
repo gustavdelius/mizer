@@ -70,7 +70,10 @@ primer <- project(params_init, effort = effort2010, t_max=100 , dt = 0.1, t_save
 
 # gamma is the volumetric search rate constant (for Herring)
 # set the log gamma value to work with.
-loggam <- -24
+#loggam <- -24
+
+loggam <- -24.87457
+
 # mizer-encoded `empirical` value is -25.21224
 # $$$$$$$$ # loglikk <- function(loggam){
 
@@ -298,3 +301,11 @@ plot(theta_samples2)
 #  thetaN <- theta_prop
 #} 
 
+hist(theta_samples2,breaks = 20)
+
+#save(theta_samples2, file="theta_samples2.RData")
+
+mean(theta_samples2)
+
+
+# -24.87457
