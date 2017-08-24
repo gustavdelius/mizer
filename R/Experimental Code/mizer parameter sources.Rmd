@@ -1,0 +1,134 @@
+---
+title: "Mizer Parameter Sources"
+author: "Richard Southwell"
+date: "22 August 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exponent for max. food intake
+
+```{r}
+n <- 3/4
+```
+
+
+Here $h_i w^n$ is the maximum consumption rate (with dimensions mass per time. Mizer's default value $n=\frac{3}{4}$ is predicted by theory from 
+
+[West, G., J. Brown, and B. Enquist. 1997. A general model for the
+origin of allometric scaling laws in biology. Science 276:122–126.
+———. 2001. A general model for ontogenetic growth. Nature 413]
+
+
+This is discussed in
+
+[as] = [Asymptotic Size Determines Species Abundance
+in the Marine Size Spectrum, K. H. Andersen and J. E. Beyer]
+
+## Exponent for volumetric search rate
+
+```{r}
+q <- 0.8
+```
+
+
+In [as] reasons are given for this value of $q$ based on forage velocity and optimal foraging theory.
+
+## Exponent of resource spectrum
+
+```{r}
+lambda <- 2+q-n
+# lambda <- 2.05
+```
+
+The feeding level of an individual is 
+
+$$f_i(w) = \frac{\gamma_i w^q E_{a.i} (w)}{\gamma_i w^q E_{a.i} (w)+h_i w^n},$$
+where $E_{a.i} (w)$ is the energy available to a fish of species $i$ and mass $w$. 
+
+We use the assumptions (1) that the plankton is at carrying capacity, and has abundance with power-law exponent $\lambda,$ and (2) that the feeding level $f_0$ will be constant (independent of size) for individuals that only feed off plankton (e.g., small individuals), while the plankton is at carrying capacity. 
+
+This is done in
+
+[hart] = [Food web framework for size-structured populations
+Martin Hartvig, Ken H. Andersenb, Jan E. Beyer] 
+
+Under these assumptions one may evaluate the feeding level $f_i(w),$ and the notion that the feeding level $f_0$ of small individuals must be size independent means that the exponents must cancel in our expression for $f_i(w),$ and this gives us the equality for our exponents. 
+
+[as] uses different assumptions to arrive at the $\lambda = 2+q-n$
+
+## Initial feeding level
+
+[hart] says an critical feeding level of $f_c = 0.2$ seems reasonable, and [hart] also predicts an initial feeding level of $f_0=0.6.$  
+
+## Species Specific Parameters
+
+Discussion of these parameters is mostly taken from Supporting Information (part B) of 
+
+[ns] 
+
+= [Evaluating targets and trade-offs among fisheries and
+conservation objectives using a multispecies size
+spectrum model
+Julia L. Blanchard, Ken H. Andersen, Finlay Scott, Niels T. Hintzen, Gerjan Piet and
+Simon Jennings]
+
+## Plankton
+
+
+The carrying capacity $\kappa _r$ of the plankton was parameter fitted along with the $R_{max}$ values, as we shall discuss later.
+
+## Spatial interaction matrix
+
+IBTS survey data was used, for different rectangles of the ocean, to determine the overlap of the different species  in said rectangle. Here presumably the overlap is the product of the relative requencies of the two species in said rectangle. The average overlap between a pair of species $i$ and $j$ is the value of $\theta _{i,j}$
+
+## Predator Prey Mass Ratio
+
+The parameters $\beta$ and $\sigma$ where obtained primarily from analysising stomach data, however the analysis requires a linear mixed effect model due to sample dependencies. For some fish like Northen Pout there was not enough information available, so considerations of mouth size and common prey characteristics were used. 
+
+## Fishing Efforts/Mortality
+
+The fishing efforts were obtained from ICES stock assesment reports. Presumably these were download by Julia from ICES, and detail how much time and fishing gear has been used on the North sea.
+
+## Fishing Selectivity
+
+I'm not sure if they mean catchability instead of selectivity. Anyhow age based stock data is used to determine selectivity at age. This is done using a sigmoidal model of age vs selectivity with parameters $S_1$ and $S_2.$ Next the von Bertalanffy (VB) parameters underlying $h$ are used to convert this into a weight vs selectivity model, and this is used when setting up the fishing model in mizer by obtaing the $L25$ and $L50$ values.
+
+The VB parameters can be obtained by consulting literature on the north sea species.
+
+## Max Consumption Rate
+
+There is supposed to be an approximate correspondance between the VB growth curve and the growth curve mizer prediction one obtains by solving $\frac{dw}{dt}=g(w),$ using the mizer growth rate $g(w)$ at power law steady state. Using this correspondance [hart] (I think) get the relationship
+
+$$h_i = \frac{3K_i}{\alpha f_0}W_{\infty}^{1/3}$$
+
+## Volumetric Search Constant
+
+The assumptions (1) and (2) of power law abundance, and constant feeding level discussed above allow exact evaluation of the integral which gives the energy encountered $E_{e.i} (w).$ This can be used to get an expression for the feeding level $f_i(w)$ in terms of the volumetric search constant $\gamma.$ And solving this (and approximating away an exponential term), is what [hart] did to get the formula
+
+$$\gamma _i (f_0) = \frac{f_0 h_i \beta_i ^{2-\lambda}}{(1-f_0)\sqrt{2\pi}\kappa _r \sigma _i}$$
+
+I tried to go through the logic of this derivation here
+
+<https://www.dropbox.com/s/1f9xgcgvpj2azsy/IMG_20170821_175145.jpg?dl=0>
+
+(although forgot to write $\kappa _r$ downstairs in result)
+
+Note that $\gamma$ depends on the carrying capacity $\kappa _r,$  so whenever we change the system species, we should refit $\kappa _r$ (see later), and this will have a knock on effect on the volumetric search rates of the different species.
+
+## Maximum reproduction rate 
+
+These $R_{max.i}$ values, along with the resource carryng capacity $\kappa _r$ were chosen to minimize the sum of the squared differences of mizers predicted landing rates with the actual landing rates. Fishing efforts were known for these years. The problem was much elaborated on in 
+
+[Parameter uncertainty of a dynamic multispecies size spectrum model, Michael A. Spence,ab Paul G. Blackwell,a Julia L. Blanchard]
+
+## Maturation weight
+
+The weight $w_i ^*$ of a fish at maturation was estimated using data on the proportion mature at length.
+
+IBTS survey data was used, for different rectangles of the ocean, to determine the overlap of the different species  in said rectangle. Here presumably the overlap is the product of the relative requencies of the two species in said rectangle. The average overlap between a pair of species $i$ and $j$ is the value of $\theta _{i,j}$
+
+
