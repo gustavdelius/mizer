@@ -1,3 +1,8 @@
+# Aggregate branch
+
+This branch is for experimenting with aggregating a range of species from the 
+trait-based model into one effective species.
+
 # mizer
 
 mizer is a package that implements size-based ecological models.
