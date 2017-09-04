@@ -124,17 +124,8 @@ lines(rownames(getYield(sim_prim_mod))
 #####################
 
 params_data_altered <- prim_mod
-#mypar <- c(11,log10(params_data$r_max))
-#mysd <- 1
-#parass <- mypar
-#capacity <- 10^(parass[1])
-#rmax <- 10^(parass[2:(1+length(parass))])
-#dd <- params_data
-#dd$r_max <- rmax[1:(length(dd$r_max))]
-#params <- MizerParams(dd, interaction = inter, kappa=capacity)
-
 rmax_trait <- 1.655195e+08
-params_data_altered$r_max[1:(rp-1)] <- rmax_trait*params_data_altered$r_max[1:(rp-1)]/min(params_data_altered$r_max[1:(rp-1)])
+params_data_altered$r_max[1:(rp-1)] <- rmax_trait*prim_mod$r_max[1:(rp-1)]/min(prim_mod$r_max[1:(rp-1)])
 rmax_whiting <- 5.480000e+11
 params_data_altered$r_max[rp] <- rmax_whiting
 capacity <- 10^(11)
@@ -143,8 +134,55 @@ params_prim_mod_altered <- MizerParams(params_data_altered,kappa=capacity)
 sim_prim_mod_altered <- project(params_prim_mod_altered,effort = t(hybrid_Fmat))
 plot(sim_prim_mod_altered)
 
-
 plot(rownames(getYield(sim_prim_mod_altered))
      ,getYield(sim_prim_mod_altered)[,rp])
 lines(rownames(getYield(sim_prim_mod_altered))
       ,100000*whiting_landings)
+
+dosim <- function(capacity=10^(11),rmax_trait=1.655195e+08,rmax_whiting=5.480000e+11){
+  params_data_altered <- prim_mod
+  params_data_altered$r_max[1:(rp-1)] <- rmax_trait*prim_mod$r_max[1:(rp-1)]/min(prim_mod$r_max[1:(rp-1)])
+  params_data_altered$r_max[rp] <- rmax_whiting
+  params_prim_mod_altered <- MizerParams(params_data_altered,kappa=capacity)
+  sim_prim_mod_altered_warmup <- project(params_prim_mod_altered,effort = t(hybrid_Fmat))
+  sim_prim_mod_altered <- project(params_prim_mod_altered,effort = t(hybrid_Fmat),initial_n=sim_prim_mod_altered_warmup@n[dim(sim_prim_mod_altered_warmup@n)[1],,],initial_n_pp=sim_prim_mod_altered_warmup@n_pp[dim(sim_prim_mod_altered_warmup@n_pp)[1],])
+return(sim_prim_mod_altered)
+}
+
+mydosim <- dosim()
+
+plot(rownames(getYield(mydosim))
+     ,getYield(mydosim)[,rp])
+lines(rownames(getYield(mydosim))
+      ,1000000*whiting_landings)
+# ss(theta) is sum(ln(landings_sim)-ln(landings_emp))^2
+
+SS <- function(capacity=10^(11),rmax_trait=1.655195e+08,rmax_whiting=5.480000e+11){
+  mydosim <- dosim(capacity, rmax_trait,rmax_whiting  )
+  return(sum((log(getYield(mydosim)[,rp])-log(whiting_landings))^2))
+}
+SS(10^(11),1.655195e+08,5.480000e+11)
+
+myfun <- function(par){
+  return(SS(par[1],par[2],par[3]))
+}
+op <- optim(par=c(10^(11),1.655195e+08,5.480000e+11),myfun)
+guesssim <- dosim(op$par[1],op$par[2],op$par[3])
+plot(guesssim)
+
+log10(10^(11))
+twodf <- function(parr=c(11,log10(1.655195e+08))){
+  return(SS(10^parr[1],10^parr[2],5.480000e+11))
+}
+twodf(c(11,log10(1.655195e+08)))
+op2 <- optim(par=c(11,log10(1.655195e+08)),twodf,lower=c(5,5),upper = c(15,15))
+
+guesssim2 <- dosim(10^(op2$par[1]),10^(op2$par[2]),5.480000e+11)
+plot(guesssim2)
+twodf(op2$par)
+
+plot(rownames(getYield(guesssim2))
+     ,getYield(guesssim2)[,rp])
+lines(rownames(getYield(guesssim2))
+      ,whiting_landings)
+
