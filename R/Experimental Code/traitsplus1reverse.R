@@ -92,6 +92,7 @@ hybrid_Fmat <- matrix(eff, nrow=(no_traits+1), ncol=ncol(Fmat))
 hybrid_Fmat[rp,] <- Fmat[whiting_no,]
 rownames(hybrid_Fmat) <- params_prim_mod@species_params$species
 colnames(hybrid_Fmat) <- colnames(Fmat)
+hybrid_Fmat <- hybrid_Fmat[,24:44]
 sim_prim_mod <- project(params_prim_mod,effort = t(hybrid_Fmat))
 plot(sim_prim_mod)
 
@@ -110,4 +111,11 @@ plot(rownames(getYield(sim_prim_mod))
 colnames(landings[,18:(dim(landings)[2]-1)])
 colnames(hybrid_Fmat)
 ##########
-landings[whiting_no,41:(dim(landings)[2]-1)]
+whiting_landings <- landings[whiting_no,41:(dim(landings)[2]-1)]
+
+plot(rownames(getYield(sim_prim_mod))
+     ,getYield(sim_prim_mod)[,rp])
+lines(rownames(getYield(sim_prim_mod))
+     ,100000*whiting_landings)
+#getYield(sim_prim_mod)[,rp]
+#whiting_landings
