@@ -80,4 +80,18 @@ plot(sim_prim_mod)
 # turn effort on in hypbrid model and examine default fishing gears
 # change w_cut
 
+sim_prim_mod <- project(params_prim_mod,effort=1)
+plot(sim_prim_mod)
+
+#sim_ini <- project(params_NS, effort = t(Fmat), dt = 0.1, t_save =1)
+
+Fmat
+no_traits+1
+eff <- 0
+hybrid_Fmat <- matrix(eff, nrow=(no_traits+1), ncol=ncol(Fmat))
+hybrid_Fmat[rp,] <- Fmat[whiting_no,]
+rownames(hybrid_Fmat) <- params_prim_mod@species_params$species
+colnames(hybrid_Fmat) <- colnames(Fmat)
+sim_prim_mod <- project(params_prim_mod,effort = t(hybrid_Fmat))
+plot(sim_prim_mod)
 
