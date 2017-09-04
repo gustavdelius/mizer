@@ -76,6 +76,8 @@ sim_prim_mod <- project(params_prim_mod)
 plot(sim_prim_mod)
 
 
-
+# test this code from reset
+# turn effort on in hypbrid model and examine default fishing gears
+# change w_cut
 
 
