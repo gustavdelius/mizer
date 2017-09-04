@@ -119,3 +119,32 @@ lines(rownames(getYield(sim_prim_mod))
      ,100000*whiting_landings)
 #getYield(sim_prim_mod)[,rp]
 #whiting_landings
+
+##################### figure out how to change r_max etc.
+#####################
+
+params_data_altered <- prim_mod
+#mypar <- c(11,log10(params_data$r_max))
+#mysd <- 1
+#parass <- mypar
+#capacity <- 10^(parass[1])
+#rmax <- 10^(parass[2:(1+length(parass))])
+#dd <- params_data
+#dd$r_max <- rmax[1:(length(dd$r_max))]
+#params <- MizerParams(dd, interaction = inter, kappa=capacity)
+
+rmax_trait <- 1.655195e+08
+params_data_altered$r_max[1:(rp-1)] <- rmax_trait*params_data_altered$r_max[1:(rp-1)]/min(params_data_altered$r_max[1:(rp-1)])
+rmax_whiting <- 5.480000e+11
+params_data_altered$r_max[rp] <- rmax_whiting
+capacity <- 10^(11)
+params_prim_mod_altered <- MizerParams(params_data_altered,kappa=capacity)
+
+sim_prim_mod_altered <- project(params_prim_mod_altered,effort = t(hybrid_Fmat))
+plot(sim_prim_mod_altered)
+
+
+plot(rownames(getYield(sim_prim_mod_altered))
+     ,getYield(sim_prim_mod_altered)[,rp])
+lines(rownames(getYield(sim_prim_mod_altered))
+      ,100000*whiting_landings)
