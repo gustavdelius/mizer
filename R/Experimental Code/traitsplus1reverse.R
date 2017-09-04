@@ -144,7 +144,10 @@ dosim <- function(capacity=10^(11),rmax_trait=1.655195e+08,rmax_whiting=5.480000
   params_data_altered$r_max[1:(rp-1)] <- rmax_trait*prim_mod$r_max[1:(rp-1)]/min(prim_mod$r_max[1:(rp-1)])
   params_data_altered$r_max[rp] <- rmax_whiting
   params_prim_mod_altered <- MizerParams(params_data_altered,kappa=capacity)
-  sim_prim_mod_altered_warmup <- project(params_prim_mod_altered,effort = t(hybrid_Fmat))
+  hybrid_Fmat2 <- cbind(hybrid_Fmat,hybrid_Fmat)
+  colnames(hybrid_Fmat2) <- 1990:2031
+  sim_prim_mod_altered_warmup <- project(params_prim_mod_altered,effort = t(hybrid_Fmat2))
+  ###sim_prim_mod_altered_warmup <- project(params_prim_mod_altered,effort = t(hybrid_Fmat))
   sim_prim_mod_altered <- project(params_prim_mod_altered,effort = t(hybrid_Fmat),initial_n=sim_prim_mod_altered_warmup@n[dim(sim_prim_mod_altered_warmup@n)[1],,],initial_n_pp=sim_prim_mod_altered_warmup@n_pp[dim(sim_prim_mod_altered_warmup@n_pp)[1],])
 return(sim_prim_mod_altered)
 }
