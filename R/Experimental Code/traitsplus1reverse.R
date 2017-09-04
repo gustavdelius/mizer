@@ -95,3 +95,19 @@ colnames(hybrid_Fmat) <- colnames(Fmat)
 sim_prim_mod <- project(params_prim_mod,effort = t(hybrid_Fmat))
 plot(sim_prim_mod)
 
+# extract landings data
+# write code where background fishing effort, Rmax, kappa_R and k0
+# can be varied, and we can tune to match landings data
+
+plot(rownames(getYield(sim_prim_mod))
+,getYield(sim_prim_mod)[,rp],log="xy")
+whiting_landings <- landings[whiting_no,18:(dim(landings)[2]-1)]
+#length(getYield(sim_prim_mod)[,rp])
+#length(whiting_landings)
+plot(rownames(getYield(sim_prim_mod))
+      ,whiting_landings,log="xy")
+
+colnames(landings[,18:(dim(landings)[2]-1)])
+colnames(hybrid_Fmat)
+##########
+landings[whiting_no,41:(dim(landings)[2]-1)]
