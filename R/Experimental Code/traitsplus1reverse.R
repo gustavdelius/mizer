@@ -168,7 +168,14 @@ myfun <- function(par){
 }
 op <- optim(par=c(10^(11),1.655195e+08,5.480000e+11),myfun)
 guesssim <- dosim(op$par[1],op$par[2],op$par[3])
+
 plot(guesssim)
+
+plot(rownames(getYield(guesssim))
+     ,getYield(guesssim)[,rp])
+lines(rownames(getYield(guesssim))
+      ,whiting_landings)
+
 
 log10(10^(11))
 twodf <- function(parr=c(11,log10(1.655195e+08))){
@@ -179,10 +186,9 @@ op2 <- optim(par=c(11,log10(1.655195e+08)),twodf,lower=c(5,5),upper = c(15,15))
 
 guesssim2 <- dosim(10^(op2$par[1]),10^(op2$par[2]),5.480000e+11)
 plot(guesssim2)
-twodf(op2$par)
+#twodf
 
 plot(rownames(getYield(guesssim2))
      ,getYield(guesssim2)[,rp])
 lines(rownames(getYield(guesssim2))
       ,whiting_landings)
-
