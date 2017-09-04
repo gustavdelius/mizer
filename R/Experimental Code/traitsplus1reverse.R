@@ -47,7 +47,7 @@ paramsK <- set_trait_model(no_sp = no_traits+1, min_w_pp=min(params_NS@w_full), 
 simK <- project(paramsK)
 plot(simK)
 
-
+ff0 <- 0.6
 kvb<-(paramsK@species_params$h)*(paramsK@species_params$alpha
 )*ff0*((paramsK@species_params$w_inf
 )^(-1/3))/3
