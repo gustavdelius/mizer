@@ -144,8 +144,8 @@ dosim <- function(capacity=10^(11),rmax_trait=1.655195e+08,rmax_whiting=5.480000
   params_data_altered$r_max[1:(rp-1)] <- rmax_trait*prim_mod$r_max[1:(rp-1)]/min(prim_mod$r_max[1:(rp-1)])
   params_data_altered$r_max[rp] <- rmax_whiting
   params_prim_mod_altered <- MizerParams(params_data_altered,kappa=capacity)
-  hybrid_Fmat2 <- cbind(hybrid_Fmat,hybrid_Fmat)
-  colnames(hybrid_Fmat2) <- 1990:2031
+  hybrid_Fmat2 <- cbind(hybrid_Fmat,hybrid_Fmat,hybrid_Fmat,hybrid_Fmat)
+  colnames(hybrid_Fmat2) <- 1990:2073
   sim_prim_mod_altered_warmup <- project(params_prim_mod_altered,effort = t(hybrid_Fmat2))
   ###sim_prim_mod_altered_warmup <- project(params_prim_mod_altered,effort = t(hybrid_Fmat))
   sim_prim_mod_altered <- project(params_prim_mod_altered,effort = t(hybrid_Fmat),initial_n=sim_prim_mod_altered_warmup@n[dim(sim_prim_mod_altered_warmup@n)[1],,],initial_n_pp=sim_prim_mod_altered_warmup@n_pp[dim(sim_prim_mod_altered_warmup@n_pp)[1],])
@@ -169,6 +169,7 @@ SS(10^(11),1.655195e+08,5.480000e+11)
 myfun <- function(par){
   return(SS(par[1],par[2],par[3]))
 }
+
 op <- optim(par=c(10^(11),1.655195e+08,5.480000e+11),myfun)
 guesssim <- dosim(op$par[1],op$par[2],op$par[3])
 
@@ -195,3 +196,22 @@ plot(rownames(getYield(guesssim2))
      ,getYield(guesssim2)[,rp])
 lines(rownames(getYield(guesssim2))
       ,whiting_landings)
+
+
+threedf <- function(parr=c(11,log10(1.655195e+08),log10(5.480000e+11))){
+  return(SS(10^parr[1],10^parr[2],10^parr[3]))
+}
+op3 <- optim(par=c(11,log10(1.655195e+08),log10(5.480000e+11)),threedf,lower=c(5,5,5),upper = c(15,15,15))
+
+guesssim3 <- dosim(10^(op3$par[1]),10^(op3$par[2]),10^(op3$par[3]))
+plot(guesssim3)
+
+plot(rownames(getYield(guesssim3))
+     ,getYield(guesssim3)[,rp])
+lines(rownames(getYield(guesssim3))
+      ,whiting_landings)
+
+par_good <- c(10.468546, 10.733931,  7.370165)
+
+guesssim4 <- dosim(10^(par_good[1]),10^(par_good[2]),10^(par_good[3]))
+plot(guesssim4)
