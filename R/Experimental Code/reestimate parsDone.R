@@ -262,6 +262,7 @@ twodfB(c(11,log10(5.480000e+11)))
 op2B <- optim(par=c(11,log10(5.480000e+11)),twodfB,lower=c(5,5),upper = c(15,15))
 
 mgood_par <- c(op2B$par[1],log10(1.655195e+08),op2B$par[2])
+# found vals  8.795080 8.218849 6.742935
 
 guesssim4m <- dosim(10^(mgood_par[1]),10^(mgood_par[2]),10^(mgood_par[3]))
 plot(guesssim4m)
