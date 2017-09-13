@@ -108,7 +108,7 @@ optt <- optim(par=rep(9, length(mypar)),
 #                lower = rep(0, length(mypar)), upper = rep(50, length(mypar)))
 
 MCMC <- modMCMC(f = fish_model_cost, p = rep(9, length(mypar)),
-                niter = 100, jump = 0.1, updatecov = 100,
+                niter = 3000, jump = 0.1, updatecov = 100,
                 lower = rep(0, length(mypar)), upper = rep(50, length(mypar)))
 
 
