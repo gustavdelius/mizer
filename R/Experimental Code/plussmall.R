@@ -135,3 +135,5 @@ plot(simplussmall)
 moresimplussmall <- dosim(10^(11),1.655195e+07,5.480000e+11)
 plot(moresimplussmall)
 
+moresimplussmall2 <- dosim(10^(11),1.655195e+05,5.480000e+11)
+plot(moresimplussmall2)
