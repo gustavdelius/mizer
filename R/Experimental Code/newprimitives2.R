@@ -147,7 +147,7 @@ two()
 
 plot(dosim(capacity=10^(11), rmax_trait=10^opt$par[1], rmax_whiting=10^opt$par[2]))
 
-
+ 
 
 
 
