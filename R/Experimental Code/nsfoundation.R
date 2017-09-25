@@ -24,8 +24,8 @@ f_history <- as(f_history, "matrix")
 #params_data$catchability <- as.numeric(f_history["1990",])
 params_data$catchability <- as.numeric(colMeans((f_history)[19:29,]))
 params <- MizerParams(params_data, inter, kappa = 9.27e10)
-#relative_effort <- sweep(f_history,2,f_history["1990",],"/")
-relative_effort <- sweep(f_history,2,colMeans((f_history)[19:29,]),"/")
+relative_effort <- sweep(f_history,2,f_history["1990",],"/")
+#relative_effort <- sweep(f_history,2,colMeans((f_history)[19:29,]),"/")
 relative_effort[as.character(1988:1992),]
 initial_effort <- matrix(relative_effort[1,],byrow=TRUE, nrow=100,
                          ncol=ncol(relative_effort), dimnames = list(1867:1966))
@@ -76,7 +76,7 @@ sim <- project(params, effort = relative_effort, dt = 0.1, t_save =1, initial_n=
 vv <- log10((10^(-10))+getYield(sim))
 
 
-j <- 12
+j <- 11
 plot(log_landings[,j])
 lines(vv[(dim(vv)[1]+1-dim(log_landings)[1]):dim(vv)[1],j]-6)
 
