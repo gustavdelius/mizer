@@ -72,3 +72,7 @@ params_data$species[j]
 plot(log(landings[,j]))
 lines(vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],j])
 
+
+vv <- log((getYield(sim)+10^(-10))*10^(-6))
+# sum of squares
+sum((vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],]-log(10^(-10)+landings[,]))^2)
