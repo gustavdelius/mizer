@@ -181,3 +181,21 @@ for (i in (1:22)){
   lines(moresimplussmall2@params@w,moresimplussmall2@params@w*moresimplussmall2@n[dim(moresimplussmall2@n)[1],i,],log="xy",ylim=c(10^(-5),10^20))
 }
 
+###################
+
+moresimplussmall2 <- dosim(10^(11),8.655195e+10,5.480000e+11)
+
+plot(moresimplussmall2@params@w_full,moresimplussmall2@params@w_full*moresimplussmall2@n_pp[dim(moresimplussmall2@n)[1],],log="xy",ylim=c(10^(-5),10^20))
+for (i in (1:22)){
+  lines(moresimplussmall2@params@w,moresimplussmall2@params@w*moresimplussmall2@n[dim(moresimplussmall2@n)[1],i,],log="xy",ylim=c(10^(-5),10^20))
+}
+plot(moresimplussmall2)
+
+# this is a good starting point for parameter fitting
+# dosim(10^(10),7.655195e+9,5.480000e+11) 
+
+
+###########
+
+basicsmallfishsetup <- dosim(10^(11),8.655195e+10,5.480000e+11)
+plot(basicsmallfishsetup)
