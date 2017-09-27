@@ -199,3 +199,22 @@ plot(moresimplussmall2)
 
 basicsmallfishsetup <- dosim(10^(11),8.655195e+10,5.480000e+11)
 plot(basicsmallfishsetup)
+
+################
+#################
+#capacity=10^(11),rmax_trait=1.655195e+08,rmax_whiting=5.480000e+11
+# if needs be we can minimize the measure of how the community spectrum deviates 
+# from the plankton community slopeif needs be, but we could alternatively just 
+# set the rmaxes of the traits one at a time, so they line up, but the vignette
+# suggests exact line ups dont always happen
+capacity <- 10^(11)
+rmax_trait <- 8.655195e+10
+rmax_whiting <- 5.480000e+11
+  params_data_altered <- prim_mod
+  params_data_altered$r_max[1:(rp-1)] <- rmax_trait*prim_mod$r_max[1:(rp-1)]/min(prim_mod$r_max[1:(rp-1)])
+  params_data_altered$r_max[rp] <- rmax_whiting
+  params_prim_mod_altered <- MizerParams(params_data_altered,
+                                         kappa=capacity,w_pp_cutoff=1,interaction = biginter)
+  sim_prim_mod_altered <- project(params_prim_mod_altered,effort = relative_effort_big)
+ plot(sim_prim_mod_altered) 
+ # add facility to change the rmax of the other 11 NS species, and tune to fit landings data
