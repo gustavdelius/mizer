@@ -179,7 +179,7 @@ minme <- function(parr=basicpar){
   return(sum((vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],]-log(10^(-10)+landings[,]))^2))
 }
 minme()
-op <- optim(par=basicpar, fn=minme, method = "SANN", control = list(maxit = 10))
+op <- optim(par=basicpar, fn=minme, method = "SANN", control = list(maxit = 1000))
 op$par
 #[1]  0.7172174 12.6982774 12.6719398 10.8196778 14.7854789 11.1804614
 #[7] 10.9234074 10.9920829 10.6595965 10.4257599 13.7506109 13.1286795
