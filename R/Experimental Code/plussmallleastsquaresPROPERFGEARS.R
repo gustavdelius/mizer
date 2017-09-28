@@ -123,7 +123,7 @@ for (i in (1:12)){
 }
 ################## run combined model
 capacity <- capacity_imp
-rmax_trait <- 5.655195e+8
+rmax_trait <- 1.655195e+8
 params_data_altered <- prim_mod
 params_data_altered$r_max[1:(rp-1)] <- rmax_trait*prim_mod$r_max[1:(rp-1)]/min(prim_mod$r_max[1:(rp-1)])
 params_prim_mod_altered <- MizerParams(params_data_altered,
