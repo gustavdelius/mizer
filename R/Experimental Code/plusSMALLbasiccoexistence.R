@@ -253,4 +253,4 @@ op2$par
 #[13] 11.0738237 13.3075197
 
 newsim <- runusingpar2(op2$par)
-rdi <- getRDI(newsim)
+#rdi <- getRDI(newsim)
