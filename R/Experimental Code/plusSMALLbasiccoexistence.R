@@ -246,3 +246,11 @@ minme2(opfound)
 op2 <- optim(par=opfound, fn=minme2, method = "SANN", control = list(maxit = 100))
 
 plot(runusingpar2(op2$par))
+
+op2$par
+#[1]  0.3719099 12.9085442 12.4696547 11.3335755 14.8308784 11.8057142
+#[7] 12.2713743  9.0424862 10.3101206 10.2955246 13.5605521 11.9421168
+#[13] 11.0738237 13.3075197
+
+newsim <- runusingpar2(op2$par)
+rdi <- getRDI(newsim)
