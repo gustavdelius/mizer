@@ -206,3 +206,43 @@ getBiomass(simww)[44,]
 plot(simww)
 
 # note this works when max trait size is 5g, and plankton cutoff is 1g
+good_ini_n <- simww@n[44,,]
+good_ini_n_pp <- simww@n_pp[44,]
+
+runusingpar2 <- function(parr=basicpar){
+  properpar <- 10^parr
+  capacity <- properpar[2]
+  rmax_trait <- properpar[1]*min(prim_mod$r_max[1:no_traits])
+  params_data_altered <- prim_mod
+  params_data_altered$r_max[1:no_traits] <- rmax_trait*prim_mod$r_max[1:no_traits]/min(prim_mod$r_max[1:no_traits])
+  params_data_altered$r_max[(no_traits+1):(no_traits+12)] <- properpar[3:14]
+  params_prim_mod_altered <- MizerParams(params_data_altered,
+                                         kappa=capacity,w_pp_cutoff=1,interaction = biginter)
+  sim_prim_mod_altered <- project(params_prim_mod_altered,effort = effort_history_85_95_big,init_n=good_ini_n,init_n_pp=good_ini_n_pp)
+  sim_prim_mod_altered_result <- project(params_prim_mod_altered,effort = effort_history_85_95_big, 
+                                         initial_n_pp=sim_prim_mod_altered@n_pp[dim(sim_prim_mod_altered@n_pp)[1],],
+                                         initial_n=sim_prim_mod_altered@n[dim(sim_prim_mod_altered@n)[1],,])
+  return(sim_prim_mod_altered_result)
+}
+plot(runusingpar2(opfound))
+
+
+minme2 <- function(parr=basicpar){
+  somesim <- runusingpar2(parr)
+  vv <- log((getYield(somesim)+10^(-10))*10^(-6))[,((no_traits+1):(no_traits+12))]
+  if (max(getBiomass(somesim)[44,])/min(getBiomass(somesim)[44,])<10^6) {
+    hh <- 0
+  } else {
+    hh <- 10^(30)
+  }
+  
+  ss <- sum((vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],]-log(10^(-10)+landings[,]))^2)
+  
+  return(ss+hh)
+}
+
+minme2(opfound)
+
+op2 <- optim(par=opfound, fn=minme2, method = "SANN", control = list(maxit = 100))
+
+plot(runusingpar2(op2$par))
