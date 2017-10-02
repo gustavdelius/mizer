@@ -60,3 +60,7 @@ sim2 <- project(params2, t_max=100, effort = 0)
 plot(sim2)
 
 plot(params2@w,sim2@n[50,rp,],log="xy")
+
+bm <- getBiomass(sim2)
+dim(bm)
+sum(bm[101,1:10])
