@@ -156,7 +156,7 @@ opout <- c(25.01638, -23.74906, -25.36743, -22.75435, -25.31926, -23.82399, -23.
    -24.45443, -23.59808, -22.60934, -23.74995, -22.87058, -22.00435)
   
 
-op <- optim(par=opout, fn=minme, method = "SANN", control = list(maxit = 1000))
+op <- optim(par=opout, fn=minme, method = "SANN", control = list(maxit = 3000))
 mypar
 op$par
 
