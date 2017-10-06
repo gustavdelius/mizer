@@ -144,7 +144,7 @@ minme <- function(par=mypar){
   gb <- getBiomass(sim)
   extinctionPunishment <- 10^(49)
   if (min(gb[dim(gb)[1],])>0) {
-    if ((max(gb[dim(gb)[1],])/min(gb[dim(gb)[1],]))<=10^3) {
+    if ((max(gb[dim(gb)[1],])/min(gb[dim(gb)[1],]))<=10^2) {
       extinctionPunishment <- 0
     }
   }
@@ -152,16 +152,23 @@ minme <- function(par=mypar){
 }
 minme()
 
-op <- optim(par=mypar, fn=minme, method = "SANN", control = list(maxit = 300))
+opout <- c(25.01638, -23.74906, -25.36743, -22.75435, -25.31926, -23.82399, -23.69747,
+   -24.45443, -23.59808, -22.60934, -23.74995, -22.87058, -22.00435)
+  
+
+op <- optim(par=opout, fn=minme, method = "SANN", control = list(maxit = 1000))
 mypar
 op$par
 
 #[1]  25.32816 -24.21185 -25.00448 -22.68365 -25.08402 -21.67672 -24.53056
 #[8] -24.51131 -24.55053 -24.01618 -25.77193 -21.16473 -21.80833
 
+#newer
+#[1]  25.01638 -23.74906 -25.36743 -22.75435 -25.31926 -23.82399 -23.69747
+#[8] -24.45443 -23.59808 -22.60934 -23.74995 -22.87058 -22.00435
 
 simm <- runnit(op$par)
-simm <- runnit(mypar)
+#simm <- runnit(mypar)
 
 vv <- log((getYield(simm)+10^(-10))*10^(-6))
 for (j in (1:12)){
