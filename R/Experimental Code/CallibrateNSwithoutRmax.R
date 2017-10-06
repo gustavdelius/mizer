@@ -159,7 +159,8 @@ minme <- function(par=mypar){
 
 
 minme(mypar)
-
-op <- optim(par=mypar, fn=minme, method = "SANN", control = list(maxit = 500))
+opout <- c(24.17998808,  0.69679349,  0.01870239,  0.86088319,  0.32818179,  0.46232592,  0.88687955,  0.93563621,  0.25391759,  0.43602907,  0.63072766,
+0.55883389,  0.79431001)
+op <- optim(par=opout, fn=minme, method = "SANN", control = list(maxit = 3000))
 mypar
 op$par
