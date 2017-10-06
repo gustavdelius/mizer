@@ -142,11 +142,12 @@ minme <- function(par=mypar){
   #}
   #return(addon+sum((vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],]-log(10^(-10)+landings[,]))^2))
   gb <- getBiomass(sim)
-  extinctionPunishment <- 0
-  if (max(gb[dim(gb)[1],])/min(gb[dim(gb)[1],])>10^3){
-    extinctionPunishment <- 10^(49)
+  extinctionPunishment <- 10^(49)
+  if (min(gb[dim(gb)[1],])>0) {
+    if ((max(gb[dim(gb)[1],])/min(gb[dim(gb)[1],]))<=10^3) {
+      extinctionPunishment <- 0
+    }
   }
-  
   return(extinctionPunishment+sum((vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],]-log(10^(-10)+landings[,]))^2))
 }
 minme()
