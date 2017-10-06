@@ -136,15 +136,22 @@ minme <- function(par=mypar){
   }
   
   gb <- getBiomass(sim)
-  extinctionPunishment <- 0
-  if (max(gb[dim(gb)[1],])/min(gb[dim(gb)[1],])>10^3){
-    extinctionPunishment <- 10^(49)
+  extinctionPunishment <- 10^(49)
+  
+  
+  
+  if (min(gb[dim(gb)[1],])>0) {
+      if ((max(gb[dim(gb)[1],])/min(gb[dim(gb)[1],]))<=10^3) {
+          extinctionPunishment <- 0
+      }
   }
+  
+  
   
   return(extinctionPunishment+addon+sum((vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],]-log(10^(-10)+landings[,]))^2))
 }
 minme()
 
-op <- optim(par=mypar, fn=minme, method = "SANN", control = list(maxit = 3))
+op <- optim(par=mypar, fn=minme, method = "SANN", control = list(maxit = 500))
 mypar
 op$par
