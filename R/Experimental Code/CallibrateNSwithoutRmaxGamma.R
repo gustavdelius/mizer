@@ -141,10 +141,40 @@ minme <- function(par=mypar){
   #  }
   #}
   #return(addon+sum((vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],]-log(10^(-10)+landings[,]))^2))
-  return(sum((vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],]-log(10^(-10)+landings[,]))^2))
+  gb <- getBiomass(sim)
+  extinctionPunishment <- 0
+  if (max(gb[dim(gb)[1],])/min(gb[dim(gb)[1],])>10^3){
+    extinctionPunishment <- 10^(49)
+  }
+  
+  return(extinctionPunishment+sum((vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],]-log(10^(-10)+landings[,]))^2))
 }
 minme()
 
 op <- optim(par=mypar, fn=minme, method = "SANN", control = list(maxit = 300))
 mypar
 op$par
+
+#[1]  25.32816 -24.21185 -25.00448 -22.68365 -25.08402 -21.67672 -24.53056
+#[8] -24.51131 -24.55053 -24.01618 -25.77193 -21.16473 -21.80833
+
+
+simm <- runnit(op$par)
+simm <- runnit(mypar)
+
+vv <- log((getYield(simm)+10^(-10))*10^(-6))
+for (j in (1:12)){
+  params_data$species[j]
+  plot(log(landings[,j]))
+  lines(vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],j])
+}
+  
+# add condition to promote coexistence
+# 
+plot(simm)
+gb <- getBiomass(simm)
+extinctionPunishment <- 0
+if (max(gb[dim(gb)[1],])/min(gb[dim(gb)[1],])>10^3){
+  extinctionPunishment <- 10^(49)
+}
+
