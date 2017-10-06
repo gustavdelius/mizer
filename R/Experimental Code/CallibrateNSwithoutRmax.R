@@ -139,18 +139,26 @@ minme <- function(par=mypar){
   extinctionPunishment <- 10^(49)
   
   
-  
+  if (addon <=0){
+      
   if (min(gb[dim(gb)[1],])>0) {
       if ((max(gb[dim(gb)[1],])/min(gb[dim(gb)[1],]))<=10^3) {
           extinctionPunishment <- 0
       }
   }
+  }
   
   
+  if (addon+extinctionPunishment>0){
+      return(10^49)
+  } else{
+      return(extinctionPunishment+addon+sum((vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],]-log(10^(-10)+landings[,]))^2))
+  }
   
-  return(extinctionPunishment+addon+sum((vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],]-log(10^(-10)+landings[,]))^2))
 }
-minme()
+
+
+minme(mypar)
 
 op <- optim(par=mypar, fn=minme, method = "SANN", control = list(maxit = 500))
 mypar
