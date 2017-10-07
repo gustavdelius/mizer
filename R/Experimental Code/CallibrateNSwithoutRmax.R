@@ -161,6 +161,20 @@ minme <- function(par=mypar){
 minme(mypar)
 opout <- c(24.17998808,  0.69679349,  0.01870239,  0.86088319,  0.32818179,  0.46232592,  0.88687955,  0.93563621,  0.25391759,  0.43602907,  0.63072766,
 0.55883389,  0.79431001)
-op <- optim(par=opout, fn=minme, method = "SANN", control = list(maxit = 3000))
+
+opout <- c(23.198595555,  0.697481042,  0.001938167,  0.856968745,  0.840836768,  0.019152519,  0.466566572,  0.413246705, 0.213734268,  0.472882399, 0.708389479,  0.540541376,  0.370444726)
+
+
+op <- optim(par=opout, fn=minme, method = "SANN", control = list(maxit = 300))
 mypar
 op$par
+
+plot(runnit(op$par))
+
+simm <- runnit(op$par)
+vv <- log((getYield(simm)+10^(-10))*10^(-6))
+for (j in 1:12){
+params_data$species[j]
+plot(log(landings[,j]))
+lines(vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],j])
+}
