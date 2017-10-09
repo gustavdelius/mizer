@@ -28,7 +28,7 @@ dd$r_max <- rep(10^49,12)
 capacity <- exp(25.210)
 
 params <- MizerParams(dd, interaction = inter, kappa=capacity)
-epsi <- 0.15
+epsi <- 0.03
 kappaR2 <- capacity
 lambda2 <- 2+0.8-(2/3)
 source("./R/Experimental Code/project_methodsmodPREYSWITCH2.R")
@@ -51,9 +51,9 @@ runnit <- function(par=mypar){
   dd$r_max <- rep(10^49,12)
   dd$gamma <- exp(par[2:13])
   params <- MizerParams(dd, interaction = inter, kappa=exp(par[1]))
-  epsi <- 0.15
+  #epsi <- 0.15
   kappaR2 <- exp(par[1])
-  lambda2 <- 2+0.8-(2/3)
+  #lambda2 <- 2+0.8-(2/3)
   source("./R/Experimental Code/project_methodsmodPREYSWITCH2.R")
   source("./R/Experimental Code/projectmodPREYSWITCH2.R")
   sim <- project(params, effort = 1, dt = 0.1, t_save =1, initial_n=init_n,initial_n_pp=init_n_pp,t_max=100)
@@ -72,7 +72,8 @@ gy[dim(gy)[1],]*10^(-6)
 landings_data90
 
 minmesimpler <- function(par=mypar){
-  if ((all(-26<par[2:13]))&(all(par[2:13]< (-22)) )){
+  #if ((all(-26<par[2:13]))&(all(par[2:13]< (-22)) )){
+    if ((all(-26<par[2:13]))&(all(par[2:13]< (-20)) )){   
     simm <- runnit(par)
     gy <- getYield(simm)
     
@@ -89,8 +90,9 @@ opout <- c(25.32141, -23.48951, -25.39341, -23.11366, -25.09401, -23.44043, -23.
             -24.47119, -24.35656, -24.45090, -23.16593, -22.53987)
 opout <- c(24.97661, -23.70650, -25.21430, -22.86702, -24.72171, -23.70656, -23.24409, -23.79086, -22.43615, -22.09472,
            -23.50825, -22.43677, -22.78187)
+# this gives a good fit when chi=0.15, except it over estimates cod
 
-op <- optim(par=opout, fn=minmesimpler, method = "SANN", control = list(maxit = 3000))
+op <- optim(par=opout, fn=minmesimpler, method = "SANN", control = list(maxit = 5000))
 opout <- op$par
 opout
 mypar
