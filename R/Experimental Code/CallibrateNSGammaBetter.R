@@ -87,7 +87,7 @@ minmesimpler <- function(par=mypar){
 
 opout <- c(25.32141, -23.48951, -25.39341, -23.11366, -25.09401, -23.44043, -23.19967, -24.57311,
             -24.47119, -24.35656, -24.45090, -23.16593, -22.53987)
-op <- optim(par=opout, fn=minmesimpler, method = "SANN", control = list(maxit = 30))
+op <- optim(par=opout, fn=minmesimpler, method = "SANN", control = list(maxit = 3000))
 opout <- op$par
 opout
 mypar
