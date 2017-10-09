@@ -170,10 +170,13 @@ op$par
 simm <- runnit(op$par)
 #simm <- runnit(mypar)
 
+simm <- runnit(opout)
+
+
 vv <- log((getYield(simm)+10^(-10))*10^(-6))
 for (j in (1:12)){
   params_data$species[j]
-  plot(log(landings[,j]))
+  plot(log(landings[,j]),ylim=c(1,20))
   lines(vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],j])
 }
   

@@ -67,7 +67,7 @@ dd$erepro <- rep(0.9,12)
 params <- MizerParams(dd, interaction = inter, kappa=capacity)
 #params <- MizerParams(params_data, interaction = inter, kappa=9.27e10)
 
-epsi <- 0.5
+epsi <- 0.15
 kappaR2 <- capacity
 lambda2 <- 2+0.8-(2/3)
 source("./R/Experimental Code/project_methodsmodPREYSWITCH2.R")
@@ -76,7 +76,7 @@ source("./R/Experimental Code/projectmodPREYSWITCH2.R")
 
 simini <- project(params, effort = relative_effort, dt = 0.1, t_save =1)
 sim <- project(params, effort = relative_effort, dt = 0.1, t_save =1, initial_n=simini@n[dim(simini@n)[1],,],initial_n_pp=simini@n_pp[dim(simini@n_pp)[1],])
-
+plot(sim)
 vv <- log(getYield(sim)*10^(-6))
 
 
@@ -171,10 +171,12 @@ op$par
 
 plot(runnit(op$par))
 
-simm <- runnit(op$par)
+simm <- runnit(opout)
+plot(simm)
 vv <- log((getYield(simm)+10^(-10))*10^(-6))
 for (j in 1:12){
 params_data$species[j]
 plot(log(landings[,j]))
 lines(vv[(dim(vv)[1]+1-dim(landings)[1]):dim(vv)[1],j])
 }
+
