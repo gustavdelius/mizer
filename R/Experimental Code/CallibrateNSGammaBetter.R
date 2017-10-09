@@ -56,7 +56,7 @@ runnit <- function(par=mypar){
   lambda2 <- 2+0.8-(2/3)
   source("./R/Experimental Code/project_methodsmodPREYSWITCH2.R")
   source("./R/Experimental Code/projectmodPREYSWITCH2.R")
-  sim <- project(params, effort = 1, dt = 0.1, t_save =1, initial_n=init_n,initial_n_pp=init_n_pp,t_max=20)
+  sim <- project(params, effort = 1, dt = 0.1, t_save =1, initial_n=init_n,initial_n_pp=init_n_pp,t_max=100)
   init_n <<- sim@n[dim(sim@n)[1],,]
   init_n_pp <<- sim@n_pp[dim(sim@n_pp)[1],]
   return(sim)
@@ -95,3 +95,4 @@ plot(simm)
 gy <- getYield(simm)
 log(gy[dim(gy)[1],]*10^(-6)+10^(-10))
 log(landings_data90+10^(-10))
+
