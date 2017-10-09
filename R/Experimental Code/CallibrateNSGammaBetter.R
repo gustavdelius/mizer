@@ -22,10 +22,11 @@ params_data$b <- c(3.014, 3.320, 2.941, 3.429, 2.986, 3.080, 3.019, 3.198,
 f_history <- read.csv("./vignettes/NS_f_history.csv", row.names=1)
 f_history <- as(f_history, "matrix")
 params_data$catchability <- as.numeric(f_history["1990",])
-params <- MizerParams(params_data, inter, kappa = 9.27e10)
+#params <- MizerParams(params_data, inter, kappa = 9.27e10)
 dd <- params_data
-dd$r_max <- rmax[1:(length(dd$r_max))]
 dd$r_max <- rep(10^49,12)
+capacity <- exp(25.210)
+
 params <- MizerParams(dd, interaction = inter, kappa=capacity)
 epsi <- 0.15
 kappaR2 <- capacity
@@ -85,10 +86,12 @@ minmesimpler <- function(par=mypar){
 }
 
 
-op <- optim(par=mypar, fn=minme, method = "SANN", control = list(maxit = 30))
+op <- optim(par=mypar, fn=minmesimpler, method = "SANN", control = list(maxit = 30))
 opout <- op$par
 opout
+mypar
 simm <- runnit(opout)
+plot(simm)
 gy <- getYield(simm)
 log(gy[dim(gy)[1],]*10^(-6)+10^(-10))
 log(landings_data90+10^(-10))
