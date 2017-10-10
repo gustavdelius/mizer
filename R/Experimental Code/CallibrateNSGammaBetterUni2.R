@@ -111,7 +111,7 @@ opout <- c(24.12404, -22.65066, -24.34945, -21.46254, -23.77408, -22.91059, -22.
           -21.55856, -21.47968, -22.69693, -21.78034, -21.89216)
 # this gives a good fit when chi=0.15, except it over estimates cod
 
-op <- optim(par=opout, fn=minmesimpler, method = "SANN", control = list(maxit = 10000))
+op <- optim(par=opout, fn=minmesimpler, method = "SANN", control = list(maxit = 1000))
 opout <- op$par
 opout
 mypar
