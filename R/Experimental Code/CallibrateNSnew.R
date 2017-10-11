@@ -132,3 +132,43 @@ log(landings_data90+10^(-10))
 plot(log(gy[dim(gy)[1],]*10^(-6)+10^(-10)))
 lines(log(landings_data90+10^(-10)))
 
+#####################################################
+#####################################################
+opout <- c(23.72777, -22.48480, -24.05474, -21.34615, -23.67116, -22.75233, -22.11081, -23.05727, -22.30578, -22.51287,
+           -22.27092, -21.61280, -21.41763)
+simmWorks <- runnit(opout)
+minmesimpler(opout)
+plotSpectra(simmWorks,ylim=c(10^(-4),10^12))
+simmWorks@n[dim(simmWorks@n)[1],,length(params@w[params@w<36])]
+params@species_params
+
+
+simmWorks@n[dim(simmWorks@n)[1],,length(params@w[params@w<21])]
+
+nn <- simmWorks@n[dim(simmWorks@n)[1],,]
+vz <- nn[2,length(params@w[params@w<22]):dim(simmWorks@n)[3]]
+nn[2,length(params@w[params@w<22]):dim(simmWorks@n)[3]] <- rep(0,length(vz))
+
+
+parTY <- c(23.72777, -22.48480, -24.05474, -21.34615, -23.67116, -22.75233, -22.11081, -23.05727, -22.30578, -22.51287,
+           -22.27092, -21.61280, -21.41763)
+
+
+dd <- params_data
+dd$r_max <- rep(10^49,12)
+dd$gamma <- exp(parTY[2:13])
+params <- MizerParams(dd, interaction = inter, kappa=exp(parTY[1]))
+#epsi <- 0.15
+kappaR2 <- exp(parTY[1])
+#lambda2 <- 2+0.8-(2/3)
+source("./R/Experimental Code/project_methodsmodPREYSWITCH2.R")
+source("./R/Experimental Code/projectmodPREYSWITCH2.R")
+sim <- project(params, effort = 1, dt = 0.1, t_save =1, initial_n=nn,initial_n_pp=init_n_pp,t_max=250)
+plot(sim)
+gy <- getYield(sim)
+log(gy[dim(gy)[1],]*10^(-6)+10^(-10))
+log(landings_data90+10^(-10))
+
+sum((log(gy[dim(gy)[1],]*10^(-6)+10^(-10))-log(landings_data90+10^(-10)))^2)
+
+minmesimpler(opout)
