@@ -56,7 +56,7 @@ runnit <- function(par=mypar){
   #lambda2 <- 2+0.8-(2/3)
   source("./R/Experimental Code/project_methodsmodPREYSWITCH2.R")
   source("./R/Experimental Code/projectmodPREYSWITCH2.R")
-  sim <- project(params, effort = 1, dt = 0.1, t_save =1, initial_n=init_n,initial_n_pp=init_n_pp,t_max=50)
+  sim <- project(params, effort = 1, dt = 0.1, t_save =1, initial_n=init_n,initial_n_pp=init_n_pp,t_max=75)
   init_n <<- sim@n[dim(sim@n)[1],,]
   init_n_pp <<- sim@n_pp[dim(sim@n_pp)[1],]
   return(sim)
@@ -119,7 +119,10 @@ opout <- c(24.23100, c(-22.53000, -24.47867, -21.29554, -23.94000, -22.96140, -2
 
 minmesimpler(opout)
 
-op <- optim(par=opout, fn=minmesimpler, method = "Nelder-Mead", control = list(maxit = 5000))
+opout <- c(23.72777, -22.48480, -24.05474, -21.34615, -23.67116, -22.75233, -22.11081, -23.05727, -22.30578, -22.51287,
+           -22.27092, -21.61280, -21.41763)
+
+op <- optim(par=opout, fn=minmesimpler, method = "Nelder-Mead", control = list(maxit = 1000))
 opout <- op$par
 opout
 mypar
