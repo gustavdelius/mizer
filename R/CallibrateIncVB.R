@@ -238,8 +238,13 @@ minmesimplerWmore <- function(par=mypar){
 
 minmesimplerWmore()
 
-opWmore <- optim(par=opout, fn=minmesimplerWmore, method = "BFGS", control = list(maxit = 100))
-
 runnitWmore(mypar)
 
 sm <- runnit(mypar)
+
+
+opWmore <- optim(par=opout, fn=minmesimplerWmore, method = "BFGS", control = list(maxit = 100))
+
+sm <- runnitWmore(opWmore)
+plot(sm)
+minmesimplerWmore(opWmore)
