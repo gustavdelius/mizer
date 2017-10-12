@@ -164,7 +164,7 @@ runnitWmore <- function(par=mypar){
   dd <- params_data
   dd$r_max <- rep(10^49,12)
   dd$gamma <- exp(par[2:13])
-  dd$h <- exp(par[14:25])
+  #dd$h <- par[14:25]
   params <- MizerParams(dd, interaction = inter, kappa=exp(par[1]))
   #epsi <- 0.15
   kappaR2 <- exp(par[1])/12
@@ -199,7 +199,7 @@ k_from_params <- params_data_classic$k_vb
 
 minmesimplerWmore <- function(par=mypar){
   if ((all(-26<par[2:13]))&(all(par[2:13]< (-21)) )){   
-    sim <- runnit(par)
+    sim <- runnitWmore(par)
     gy <- getYield(sim)
     # # #
     ggB <- getEGrowth(params, sim@n[dim(sim@n)[1],,], sim@n_pp[dim(sim@n_pp)[1],])
@@ -237,3 +237,9 @@ minmesimplerWmore <- function(par=mypar){
 }
 
 minmesimplerWmore()
+
+opWmore <- optim(par=opout, fn=minmesimplerWmore, method = "BFGS", control = list(maxit = 100))
+
+runnitWmore(mypar)
+
+sm <- runnit(mypar)
