@@ -251,9 +251,9 @@ runnitWmore(mypar)
 sm <- runnit(mypar)
 
 
-opWmore <- optim(par=mypar, fn=minmesimplerWmore, method = "SANN", control = list(maxit = 100))
+#opWmore <- optim(par=mypar, fn=minmesimplerWmore, method = "SANN", control = list(maxit = 100))
 
-opWmore <- optim(par=mypar, fn=minmesimplerWmore, method = "Nelder-Mead", control = list(maxit = 3))
+#opWmore <- optim(par=mypar, fn=minmesimplerWmore, method = "Nelder-Mead", control = list(maxit = 3))
 
 opWmore$par
 
@@ -262,13 +262,19 @@ oppar <- c(28.67780, -22.76756, -23.31577, -24.52235, -23.30139, -22.55133, -23.
 28.21609,  34.51110,  37.56373,  27.83461,  27.24384,  19.95958,  19.83727,
 13.86937,  30.70238,  60.83273,  36.04262)
 
-opWmore <- optim(par=oppar, fn=minmesimplerWmore, control = list(maxit = 20))
+opWmore$par
+#
+oppar <- c(28.67780, -22.76756, -23.31577, -24.52235, -23.30139, -22.55132, -23.33563, -23.64171,
+-23.16090, -21.94299, -22.22919, -24.26759, -23.04357,  17.20392,  28.21610,  34.51111,
+43.64696,  27.83462,  27.24385,  19.95958,  19.83727,  13.86937,  30.70239,  60.83273, 36.04262)
+
+opWmore <- optim(par=oppar, fn=minmesimplerWmore, control = list(maxit = 2000))
 
 
-opWmore <- optim(par=oppar, fn=minmesimplerWmore, method = "SANN", control = list(maxit = 100))
+#opWmore <- optim(par=oppar, fn=minmesimplerWmore, method = "SANN", control = list(maxit = 100))
 
 
 
-sm <- runnitWmore(opWmore)
+sm <- runnitWmore(opWmore$par)
 plot(sm)
-minmesimplerWmore(opWmore)
+minmesimplerWmore(opWmore$par)
