@@ -75,6 +75,13 @@ source("./R/Experimental Code/project_methods_small_change.R")
 
 
 simini <- project(params, effort = relative_effort, dt = 0.1, t_save =1)
-sim <- project(params, effort = relative_effort, dt = 0.1, t_save =1, initial_n=simini@n[dim(simini@n)[1],,],initial_n_pp=simini@n_pp[dim(simini@n_pp)[1],])
+sim <- project(params, effort = relative_effort, dt = 0.1, t_save =1, initial_n=simini@n[dim(simini@n)[1],,],initial_n_pp=simini@n_pp[dim(simini@n_pp)[1],],t_max=200)
 plot(sim)
 vv <- log(getYield(sim)*10^(-6))
+
+
+epsi <- 0.3
+
+sim1 <- project(params, effort = 1, dt = 0.1, t_save =1, initial_n=simini@n[dim(simini@n)[1],,],initial_n_pp=simini@n_pp[dim(simini@n_pp)[1],],t_max=200)
+plot(sim1)
+
