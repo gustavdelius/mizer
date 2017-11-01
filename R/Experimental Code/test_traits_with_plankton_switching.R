@@ -1,7 +1,7 @@
 library(mizer)
 library(plyr)
 
-epsi <- 0.25
+epsi <- 0.05
 
 kappaR2 <- 0.005
 lambda2 <- 2+0.9-(2/3)
@@ -9,8 +9,8 @@ lambda2 <- 2+0.9-(2/3)
 #source("./R/Experimental Code/projectmodPREYSWITCH2.R")
 source("./R/Experimental Code/project_methods_medium_change.R")
 
-paramsConst <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5,k0=50*10^(50))
-simConst <- project(paramsConst, t_max=50, effort = 0)
+paramsConst <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 1e5,k0=50*10^(50),lambda = ((3+0.9-(2/3))/(epsi+1))-1)
+simConst <- project(paramsConst, t_max=250, effort = 0)
 plot(simConst)
 
 
