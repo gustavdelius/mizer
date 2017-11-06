@@ -61,3 +61,6 @@ is_zero <- function(C){
 }
 
 plot(10:20,sapply(10:20,is_zero))
+
+plot(wvec[1:71],result_n(11.5)[1:71]*wvec[1:71],log="xy")
+abline(v=149)
