@@ -78,6 +78,14 @@ A Trait Based Model From Scale Free Assumptions
 Richard Southwell
 \end_layout
 
+\begin_layout Section
+Model Definition
+\end_layout
+
+\begin_layout Subsection
+The Basics 
+\end_layout
+
 \begin_layout Standard
 We model our ecosystem by keeping track of the abundance 
 \begin_inset Formula $N(w,w_{*},t)$
@@ -118,6 +126,727 @@ to vary continously, and to take any possitive values, and hence we are
 \end_inset
 
  The abundance 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ is defined such that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\int_{w_{1}}^{w_{2}}\int_{w_{*1}}^{w_{*2}}N(w,w_{*},t).dw.dw_{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is the number of fish per unit volume which have a weight 
+\begin_inset Formula $w\in[w_{1},w_{2}]$
+\end_inset
+
+ and a maturity weight 
+\begin_inset Formula $w_{*}\in[w_{*1},w_{*2}].$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The abundance 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ of fish with a particular maturity weight 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+vary according to the Mckendrick-von Foerster equation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial N(w,w_{*},t)}{\partial t}=-\frac{\partial[N(w,w_{*},t)g(w,w_{*})]}{\partial w}-\mu(w,w_{*})N(w,w_{*},t)\label{eq:MVF}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+for time 
+\begin_inset Formula $t\in\mathbb{R},$
+\end_inset
+
+ and weight 
+\begin_inset Formula $w\in\left[w_{e}(w_{*}),\frac{w_{*}}{\eta}\right].$
+\end_inset
+
+ The abundance 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ of fish with weight 
+\begin_inset Formula $w\notin\left[w_{e}(w_{*}),\frac{w_{*}}{\eta}\right]$
+\end_inset
+
+ must be zero.
+\end_layout
+
+\begin_layout Standard
+We furthur insist that our abundances 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ must satisfy the boundary condition:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g(w_{e}(w_{*}),w_{*})N(w_{e}(w_{*}),w_{*},t)=\frac{\epsilon}{2w_{e}(w_{*})}\int_{0}^{\infty}N(w,w_{*},t)E_{g}(w)\psi(w,w_{*}).dw,\label{eq:BC}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+the left hand side of which represents the flux of new offspring into the
+ system, and the right hand side of which represents how the amount of such
+ new offspring is obtained by integrating over the reproducing fish of different
+ weights.
+ An abundance function 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ is a solution to our system if and only if it saisfies (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF"
+
+\end_inset
+
+) and (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BC"
+
+\end_inset
+
+) for each 
+\begin_inset Formula $w_{*}>0,$
+\end_inset
+
+ 
+\begin_inset Formula $t\in\mathbb{R},$
+\end_inset
+
+ and 
+\begin_inset Formula $w\in\left[w_{e}(w_{*}),\frac{w_{*}}{\eta}\right],$
+\end_inset
+
+ while 
+\begin_inset Formula $w\notin\left[w_{e}(w_{*}),\frac{w_{*}}{\eta}\right]\Rightarrow N(w,w_{*},t)=0.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here 
+\begin_inset Formula $g(w,w_{*})$
+\end_inset
+
+ is the growth rate, 
+\begin_inset Formula $\mu(w,w_{*})$
+\end_inset
+
+ is the mortality rate,
+\begin_inset Formula $w_{e}(w_{*})$
+\end_inset
+
+ is the egg size of species with 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+ as their maturity weight, 
+\begin_inset Formula $\frac{w_{*}}{\eta}$
+\end_inset
+
+ is the asymtotic weight of such a species, 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ is the reproductive efficiency, 
+\begin_inset Formula $E_{g}(w)$
+\end_inset
+
+ is the energy available for reproduction and growth, and 
+\begin_inset Formula $\psi(w,w_{*})$
+\end_inset
+
+ is the fraction of such energy which a fish uses for reproduction.
+ We shall describe these quanities in more detail later.
+\end_layout
+
+\begin_layout Subsection
+Scale Free Assumption
+\end_layout
+
+\begin_layout Standard
+Setting up a size spectrum model required the definition of many functions
+ representing features of the feeding, growth, death and reproduction of
+ fish.
+ Often the real world nature of these functions is poorly understood, or
+ the model becomes analtically intractable once there are modeled in sufficient
+ detail.
+ Therefore various assumptions are often introduced, such as the assumption
+ of constant feeding level in Hartvig, Instead of this, our main simplifiying
+ assumption is that our model should be scale invarient, in the sense that
+ if we apply particular kinds of rescaling upon the units of weight, maturity
+ weight, time, and abundance, we get another solution to our system.
+ Using this assumption gives us natural constraits on the forms of functions
+ we should use which are often in remarkable agreement to function forms
+ justified by other researchers for other reasons.
+ Applying our particular type of rescaling to an abundance function 
+\begin_inset Formula $N:\mathbb{R}_{+}\times\mathbb{R}_{+}\times\mathbb{R}\rightarrow\mathbb{R}$
+\end_inset
+
+ using a scaling constant 
+\begin_inset Formula $C>0$
+\end_inset
+
+ yields a new abundance function 
+\begin_inset Formula $F_{c}[N]=\widetilde{N}$
+\end_inset
+
+ where 
+\begin_inset Formula $\widetilde{N}:\mathbb{R}_{+}\times\mathbb{R}_{+}\times\mathbb{R}\rightarrow\mathbb{R}$
+\end_inset
+
+ is defined such that 
+\begin_inset Formula $\widetilde{N}(w,w_{*},t)=c^{\Lambda}N(cw,c^{A},c^{B})$
+\end_inset
+
+ for each 
+\begin_inset Formula $w,w_{*}>0$
+\end_inset
+
+ and each 
+\begin_inset Formula $t\in\mathbb{R}.$
+\end_inset
+
+ Here 
+\begin_inset Formula $\mathbb{R}_{+}$
+\end_inset
+
+ denotes the set of possitive reals.
+ Sometimes we call 
+\begin_inset Formula $F_{C}$
+\end_inset
+
+ a symmetry transform because it represents a type of rescaling that we
+ require the key features of our model to be invarient under.
+ Formally, our scale free assumption is that: if the abundance function
+ 
+\begin_inset Formula $N$
+\end_inset
+
+ satifies our system, then we require the rescaled abundance function 
+\begin_inset Formula $F_{C}[N]$
+\end_inset
+
+ to also be a solution to the system, for each 
+\begin_inset Formula $C>0.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsection
+Prey Switching
+\end_layout
+
+\begin_layout Standard
+The problem of coexistencnce, is the problem of making an ecological model
+ where multiple different species competing for common resources can coexist.
+ Coexistence is not generally possible in the classical size spectrum models
+ of [Hartvig] for example, and this can be seen by noting that there are
+ no steady state of the Mckendrick von Foester equation they use, where
+ all species coexist, that satifies the boundary conditions for each maturity
+ weight 
+\begin_inset Formula $w_{*}.$
+\end_inset
+
+ We resolve this problem by adding a small amount of extra density dependence
+ into the dynamics of predation.
+ In the classical theory, the total predation mortality rate of individuals
+ with mass 
+\begin_inset Formula $w$
+\end_inset
+
+ and maturity weight 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+ is 
+\begin_inset Formula $\check{\mu}_{p}(w)N(w,w_{*},t),$
+\end_inset
+
+ where 
+\begin_inset Formula $\check{\mu}_{p}(w)$
+\end_inset
+
+ is the per capita predation mortality rate.
+ In our model, the total predation mortality rate is instead 
+\begin_inset Formula $\check{\mu}_{p}(w)N(w,w_{*},t)\hat{N}(w,w_{*},t)^{\chi}$
+\end_inset
+
+ where the prey switching constant 
+\begin_inset Formula $\chi\geq0$
+\end_inset
+
+ is some (typically small) number which abstractly represents the amount
+ of prey switching, and 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{N}(w,w_{*},t)=N(w,w_{*},t)w^{\Omega}w_{*}^{\Gamma}\Delta
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\Delta,\Omega$
+\end_inset
+
+ and 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ are constants.
+ We do not give a direct ecological interpretation to this new prey switching
+ factor, but the result of adding the factor is that it makes the total
+ predation mortality rate into a superlinear function of the prey's density
+ in a way which works well with our scale free assumption.
+ Adding such density dependence seems justified ecologically since large
+ groups of prey are more likely to be targetted by predators.
+ Also, only a small amount of prey switching (e.g., 
+\begin_inset Formula $\chi=0.05$
+\end_inset
+
+) is often required to make it possible for a solution of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF"
+
+\end_inset
+
+) to satisfy the boundary conditions (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BC"
+
+\end_inset
+
+).
+ Perhaps the simplist form of prey switching would be to pick 
+\begin_inset Formula $\Omega=\Gamma=0,$
+\end_inset
+
+ in which case the prey switching corresponds to a simple additional dependence
+ upon the abundance.
+ Similar biomass based prey switching can be encoded by setting 
+\begin_inset Formula $\Omega=1,$
+\end_inset
+
+ 
+\begin_inset Formula $\Gamma=0.$
+\end_inset
+
+ If one lets 
+\begin_inset Formula $\Omega=1,$
+\end_inset
+
+ 
+\begin_inset Formula $\Gamma=1$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta=\delta\delta_{*}$
+\end_inset
+
+then the prey switching term approximates the number of individuals (per
+ unit volume) with nearby weights and maturity weights, in the sense that
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{N}(w,w_{*},t)\thickapprox\int_{w}^{(\delta+1)w}\int_{w_{*}}^{\left(\delta_{*}+1\right)w_{*}}N(w',w'_{*},t).dw'.dw'_{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+in this case.
+ If one lets 
+\begin_inset Formula $\Omega=2,$
+\end_inset
+
+ 
+\begin_inset Formula $\Gamma=1$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta=\delta\delta_{*}$
+\end_inset
+
+then the prey switching term approximates the total biomass (per unit volume)
+ of individuals with nearby weights and maturity weights, in the sense that
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{N}(w,w_{*},t)\thickapprox\int_{w}^{(\delta+1)w}\int_{w_{*}}^{\left(\delta_{*}+1\right)w_{*}}w'N(w',w'_{*},t).dw'.dw'_{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+in this case.
+\end_layout
+
+\begin_layout Standard
+Since adding a prey switching term 
+\begin_inset Formula $\hat{N}(w,w_{*},t)$
+\end_inset
+
+ (of whatever form) will effect the total predation mortality rate, there
+ will be a corresponding modification to the term 
+\begin_inset Formula $\phi(w)$
+\end_inset
+
+ which denotes the total amount of energy available to a size 
+\begin_inset Formula $w$
+\end_inset
+
+ predator.
+ The classical expression for available energy in [Hartvig] was essentially
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\int_{0}^{\infty}\int_{0}^{\infty}w'N(w',w'_{*},t)s(w',w)dw'dw'_{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+s(w,w')=\exp\left[-\left(\ln\left(\frac{\beta w'}{w}\right)\right)^{2}/\left(2\sigma^{2}\right)\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+represents the preference that a predator of weight 
+\begin_inset Formula $w$
+\end_inset
+
+ has for a prey of weight 
+\begin_inset Formula $w'.$
+\end_inset
+
+ Here 
+\begin_inset Formula $\beta$
+\end_inset
+
+ is the prefered predator-prey mass ratio, and 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ represents the width of sizes of prey which the predator will tolerate.
+ When we include our prey switching, the expression for available energy
+ changes to 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\phi(w)=\int_{0}^{\infty}\int_{0}^{\infty}w'N(w',w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}s(w',w)dw'dw'_{*}\label{eq:avail}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so when prey switching is present (i.e., when 
+\begin_inset Formula $\chi>0$
+\end_inset
+
+) the amount of food extracted from the prey goes up superlinearly with
+ their abundance.
+\end_layout
+
+\begin_layout Subsection
+Growth Rate
+\end_layout
+
+\begin_layout Standard
+The available energy (i.e., the food available) 
+\begin_inset Formula $\phi(w)$
+\end_inset
+
+ to a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ predator is given by Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:avail"
+
+\end_inset
+
+).
+ To get the energy encountered 
+\begin_inset Formula $E_{e}(w)$
+\end_inset
+
+ by such a predator 
+\begin_inset Formula $\phi(w)$
+\end_inset
+
+ must be multiplied by the volumetric search rate 
+\begin_inset Formula $\gamma w^{q}$
+\end_inset
+
+ so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E_{e}(w)=\phi(w)\gamma w^{q}.\label{eq:enc}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The feeding level of an individual is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f(w)=\frac{E_{e}(w)}{E_{e}(w)+hw^{n}}\label{eq:feed}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $hw^{n}$
+\end_inset
+
+ is the maximum food intake rate of a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ individual.
+ The total energy intake 
+\begin_inset Formula $f(w)hw^{n},$
+\end_inset
+
+ however we suppose energy is only assimilated with an efficiency 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ individual must spend energy 
+\begin_inset Formula $kw^{p}$
+\end_inset
+
+ in order to satisfy its metabolic needs or else it will be subject to potential
+ starvation.
+ It follows that the energy available for growth and reproduction is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E_{g}(w)=\alpha f(w)hw^{n}-kw^{p}.\label{eq:growthAndRepro}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The growth rate is now defined as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g(w,w_{*})=\begin{cases}
+\left(1-\psi(w,w_{*})\right)E_{g}(w) & \text{if }E_{g}(w)>0\\
+0 & \text{otherwise.}
+\end{cases}\label{eq:growth}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Mortality Rate
+\end_layout
+
+\begin_layout Standard
+The (per capita) mortality rate 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu(w,w_{*})=\mu_{b}(w_{*})+\mu_{s}(w)+\mu_{p}(w)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is the sum of the background mortality rate 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{b}(w_{*})=\mu_{0}w_{*}^{n-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the starvation mortality rate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{s}(w)=\begin{cases}
+\frac{-E_{g}(w)}{\xi} & \text{if }E_{g}(w)<0\\
+0 & \text{otherwise.}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the predation mortality rate 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{p}(w)=\hat{N}(w,w'_{*},t)^{\chi}\int_{0}^{\infty}\int_{0}^{\infty}\left(\frac{f(w')hw'^{n}}{E_{e}(w')}\right)N(w',w'_{*},t)s(w',w)\gamma w'^{q}dw'dw'_{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\left(\frac{f(w')hw'^{n}}{E_{e}(w')}\right)$
+\end_inset
+
+ is the energy income of the weight 
+\begin_inset Formula $w'$
+\end_inset
+
+ predators, divided by the total energy encountered.
+ This equals the fraction of encountered individuals they consume.
+ The remaining terms inside the integral represent the amount of weight
+ 
+\begin_inset Formula $w$
+\end_inset
+
+ prey encountered by predators, and we multiply this by 
+\begin_inset Formula $\hat{N}(w,w'_{*},t)^{\chi}$
+\end_inset
+
+ to account for prey switching.
+\end_layout
+
+\begin_layout Section
+Using Scale Invarience
+\end_layout
+
+\begin_layout Standard
+In this section we shall define the various functions underlying our models
+ growth, death and reproduction rates.
+ To do this we shall frequently use our scale free assumption, and we shall
+ use similar functional forms to those appearing in previous studies of
+ size spectrum dynamics.
 \end_layout
 
 \end_body
