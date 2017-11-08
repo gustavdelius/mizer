@@ -2453,7 +2453,7 @@ The community spectrum, modified by prey switching, as encountered by a
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\int_{0}^{\infty}\left(w^{\Omega}w'_{*}^{\Gamma}\Delta\right)^{\chi}N(w,w'_{*},t)^{\chi+1}dw'_{*},
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}==\int_{0}^{\infty}\left(w^{\Omega}\left(w_{*}'\right)^{\Gamma}\Delta\right)^{\chi}N(w,w'_{*},t)^{\chi+1}dw'_{*},
 \end{equation}
 
 \end_inset
