@@ -2281,5 +2281,208 @@ and hence our factors balance, and the boundary condition is satisfied,
  so we have shown that our system satisfies the scale invariance assumption.
 \end_layout
 
+\begin_layout Section
+A scale free steady state solution
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\widehat{\mu}(w,w_{*})=\left(\mu_{b}(w_{*})+\mu_{s}(w)+\mu_{p}(w)\right)\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}.$
+\end_inset
+
+ We shall rewrite Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+) as 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial N(w,w_{*},t)}{\partial t}=-\frac{\partial[N(w,w_{*},t)g(w,w_{*})]}{\partial w}-\widehat{\mu}(w,w_{*})N(w,w_{*},t)^{\chi+1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We shall assume that the system is at steady state, so that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial[N(w,w_{*},t)g(w,w_{*})]}{\partial w}=-\widehat{\mu}(w,w_{*})N(w,w_{*},t)^{\chi+1}.\label{eq:steadystate}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+((solve already, then consider case where symmetry leaves solution unaltered)).
+\end_layout
+
+\begin_layout Standard
+We shall also assume that our abundance function 
+\begin_inset Formula $N$
+\end_inset
+
+ is unaltered by the symmetry transform 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ for any 
+\begin_inset Formula $c>0.$
+\end_inset
+
+ It follows that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*},t)=c^{\Lambda}N(cw,c^{A}w_{*},c^{B}t),
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+since we are at steady state, there is no time dependence, so we can write
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(cw,c^{A}w_{*})=c^{-\Lambda}N(w,w_{*}),
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and choosing 
+\begin_inset Formula $w_{*}=1,c^{A}=v_{*}$
+\end_inset
+
+ we get
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(wv_{*}^{\frac{1}{A}},v_{*})=c^{-\Lambda}N(w,1),\label{eq:soltransform}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so if we can solve (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:steadystate"
+
+\end_inset
+
+) for 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ for a particular maturity weight 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+ we can use (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:soltransform"
+
+\end_inset
+
+) to give us the form of the abundance function on different maturity weights.
+\end_layout
+
+\begin_layout Standard
+The assumption that our solution is unaltered by any symmetry transform
+ 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ constraints the forms of 
+\begin_inset Formula $g(w,w_{*})$
+\end_inset
+
+ and 
+\begin_inset Formula $\widehat{\mu}(w,w_{*})$
+\end_inset
+
+ so that we can write down an expression for the solution to (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:steadystate"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection
+The community spectrum
+\end_layout
+
+\begin_layout Standard
+The community spectrum, modified by prey switching, as encountered by a
+ predator is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\int_{0}^{\infty}\left(w^{\Omega}w'_{*}^{\Gamma}\Delta\right)^{\chi}N(w,w'_{*},t)^{\chi+1}dw'_{*},
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+in the sense that the available energy can be written as
+\end_layout
+
+\begin_layout Standard
+this is invariant and so we get power law
+\end_layout
+
+\begin_layout Standard
+supposing power law, our growth and mortality rates are
+\end_layout
+
+\begin_layout Standard
+and the general solution to the pde is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $ $
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
