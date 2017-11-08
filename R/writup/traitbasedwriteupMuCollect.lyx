@@ -2282,7 +2282,7 @@ and hence our factors balance, and the boundary condition is satisfied,
 \end_layout
 
 \begin_layout Section
-A scale free steady state solution
+A Steady State Solution
 \end_layout
 
 \begin_layout Standard
@@ -2318,7 +2318,7 @@ We shall assume that the system is at steady state, so that
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\frac{\partial[N(w,w_{*},t)g(w,w_{*})]}{\partial w}=-\widehat{\mu}(w,w_{*})N(w,w_{*},t)^{\chi+1}.\label{eq:steadystate}
+\frac{\partial[N(w,w_{*})g(w,w_{*})]}{\partial w}=-\widehat{\mu}(w,w_{*})N(w,w_{*})^{\chi+1}.\label{eq:steadystate}
 \end{equation}
 
 \end_inset
@@ -2327,11 +2327,99 @@ We shall assume that the system is at steady state, so that
 \end_layout
 
 \begin_layout Standard
-((solve already, then consider case where symmetry leaves solution unaltered)).
+where we neglect to write the 
+\begin_inset Formula $t$
+\end_inset
+
+'s because 
+\begin_inset Formula $N$
+\end_inset
+
+ is time invariant in this case.
+ To solve ODE (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:steadystate"
+
+\end_inset
+
+), we rewrite it in terms of 
 \end_layout
 
 \begin_layout Standard
-We shall also assume that our abundance function 
+\begin_inset Formula 
+\begin{equation}
+X(w,w_{*})=N(w,w_{*})g(w,w_{*})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to get
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+-\frac{1}{\chi}\frac{\partial[X(w,w_{*})^{-\chi}]}{\partial w}=\frac{\partial X(w,w_{*})}{\partial w}X(w,w_{*})^{-\chi-1}=-\frac{\widehat{\mu}(w,w_{*})}{g(w,w_{*})^{\chi+1}}.\label{eq:steadystate-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hence 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial[X(w,w_{*})^{-\chi}]}{\partial w}=\frac{\chi\widehat{\mu}(w,w_{*})}{g(w,w_{*})^{\chi+1}},
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so there exists 
+\begin_inset Formula $w_{0}\in\mathbb{R}$
+\end_inset
+
+ such that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{X(w,w_{*})}{g(w,w_{*})}=N(w,w_{*})=\left(\chi\int_{w_{0}}^{w}\frac{\widehat{\mu}(w',w_{*})}{g(w',w_{*})^{\chi+1}}.dw'\right)^{-1/\chi}\label{eq:ODEsol}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+A Scale Free Steady State
+\end_layout
+
+\begin_layout Standard
+In order to be able to evaluate the terms within the steady state solution
+ (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ODEsol"
+
+\end_inset
+
+), we shall assume that our abundance function 
 \begin_inset Formula $N$
 \end_inset
 
@@ -2477,11 +2565,68 @@ supposing power law, our growth and mortality rates are
 and the general solution to the pde is
 \end_layout
 
+\begin_layout Subsection
+To Do
+\end_layout
+
 \begin_layout Standard
-\begin_inset Formula $ $
+Go through exponent constraints from scale invariance
+\end_layout
+
+\begin_layout Standard
+Go through how 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ invariant terms are described, and what this implies for power law
+\end_layout
+
+\begin_layout Standard
+Add in different terms for reproduction term,
+\end_layout
+
+\begin_layout Standard
+Evaluate ODE in most general case possible
+\end_layout
+
+\begin_layout Standard
+Show Harvig +r is a special case, and go through numerical solution in this
+ case
+\end_layout
+
+\begin_layout Standard
+Use special case to get stock recruitment etc.
+\end_layout
+
+\begin_layout Standard
+what about the scale free time variant solutions, do they decay to the steady
+ state scale free solution
+\end_layout
+
+\begin_layout Standard
+what about if one proposes a background traveling wave rather than a background
+ power law
+\end_layout
+
+\begin_layout Standard
+are there any non-steady states for which a non-trivial time transformation
+ on 
+\begin_inset Formula $N$
+\end_inset
+
+ has the same effect as performing a symmetry transform on 
+\begin_inset Formula $N,$
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Lit review
+\end_layout
+
+\begin_layout Standard
+Put multiple eggs in, and code in mizer.
 \end_layout
 
 \end_body
