@@ -201,7 +201,7 @@ for time
 
  depend integrals over abundances, and these abundances may change with
  time.
- However, for notational similicity we often neglect to notate the time
+ However, for notational simplicity we often neglect to notate the time
  dependence, and write these terms as 
 \begin_inset Formula $g(w,w_{*})$
 \end_inset
@@ -830,7 +830,7 @@ Mortality Rate
 
 \begin_layout Standard
 When we have taken account of prey switching the (per capita) mortality
- rate of inividuals is 
+ rate of individuals is 
 \begin_inset Formula $\overline{\mu}(w,w_{*})=\mu(w,w_{*})\hat{N}(w,w_{*},t)^{\chi},$
 \end_inset
 
@@ -1181,7 +1181,7 @@ reference "eq:MVF-1"
 \begin_inset Formula $F_{c}$
 \end_inset
 
- transformation we are left with a new expression that satifies an equation
+ transformation we are left with a new expression that satisfies an equation
  of the same form as Equation (
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1375,8 +1375,8 @@ reference "eq:backgroundmort"
 
 \end_inset
 
-) together to get the following expression for how the total backfound mortality
- is transformed under 
+) together to get the following expression for how the total background
+ mortality is transformed under 
 \begin_inset Formula $F_{c}:$
 \end_inset
 
@@ -1445,7 +1445,14 @@ d, must cancel out.
 \end_inset
 
  so we must have 
-\begin_inset Formula $Q=\frac{r-B}{A}.$
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q=\frac{r-B}{A}\label{eq:Q}
+\end{equation}
+
 \end_inset
 
 
@@ -1767,7 +1774,7 @@ The per capita starvation mortality rate
 \begin{equation}
 \mu_{s}(w)=\begin{cases}
 0 & \text{if \ensuremath{E_{g}(w)>0}}\\
--\frac{E_{g}(w)}{\xi w} & \text{otherwise}
+-\frac{E_{g}(w)}{\xi w^{d}} & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -1789,7 +1796,7 @@ this transforms under
 \begin{equation}
 \mu_{s}(w)\mapsto\begin{cases}
 0 & \text{if \ensuremath{E_{g}(\tilde{w})>0}}\\
--\frac{c^{-n}E_{g}(\tilde{w})}{\xi}\frac{c}{\tilde{w}} & \text{otherwise}
+-\frac{c^{-n}E_{g}(\tilde{w})}{\xi}\frac{c^{d}}{\tilde{w^{d}}} & \text{otherwise}
 \end{cases}
 \end{equation}
 
@@ -1805,7 +1812,7 @@ and so we have
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\mu_{s}(w)\mapsto c^{1-n}\mu_{s}(\tilde{w})
+\mu_{s}(w)\mapsto c^{d-n}\mu_{s}(\tilde{w})
 \end{equation}
 
 \end_inset
@@ -1856,8 +1863,8 @@ transforms under
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
-\mu_{s}(w)N(w,w_{*},t)\hat{N}(w,w'_{*},t)^{\chi} & \mapsto & c^{1-n}\mu_{s}(\tilde{w})c^{\Lambda+r}N(\tilde{w},\tilde{w}_{*},\tilde{t})\hat{N}(\tilde{w},\tilde{w}_{*},\tilde{t})^{\chi}\\
- &  & =c^{\Lambda+r+1-n}\mu_{s}(\tilde{w})\left(\tilde{w}^{\Omega}\tilde{w}_{*}^{\Gamma}\Delta\right)^{\chi}N(\tilde{w},\tilde{w}_{*},\tilde{t})^{\chi+1}
+\mu_{s}(w)N(w,w_{*},t)\hat{N}(w,w'_{*},t)^{\chi} & \mapsto & c^{d-n}\mu_{s}(\tilde{w})c^{\Lambda+r}N(\tilde{w},\tilde{w}_{*},\tilde{t})\hat{N}(\tilde{w},\tilde{w}_{*},\tilde{t})^{\chi}\\
+ &  & =c^{\Lambda+r+d-n}\mu_{s}(\tilde{w})\left(\tilde{w}^{\Omega}\tilde{w}_{*}^{\Gamma}\Delta\right)^{\chi}N(\tilde{w},\tilde{w}_{*},\tilde{t})^{\chi+1}
 \end{eqnarray*}
 
 \end_inset
@@ -1875,31 +1882,403 @@ reference "eq:timeC"
 \end_inset
 
 )), we must have 
-\begin_inset Formula $\Lambda+r+1-n=\Lambda+B$
+\begin_inset Formula $\Lambda+r+d-n=\Lambda+B$
 \end_inset
 
 , it is interesting to compare this to our previous observation that 
 \begin_inset Formula $c^{\Lambda+B}=c^{\Lambda+r-AQ},$
 \end_inset
 
- since this means 
-\begin_inset Formula $Q=\frac{r-B}{A},$
+ since this means
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Lambda+r+d-n=\Lambda+r-AQ
+\end{equation}
+
 \end_inset
 
- I dare say that if 
-\begin_inset Formula $A=1,$
+
+\end_layout
+
+\begin_layout Standard
+and hence 
+\begin_inset Formula $n-d=AQ.$
 \end_inset
 
- and 
+
+\end_layout
+
+\begin_layout Standard
+If one chooses exponents 
+\begin_inset Formula $d=A=1,$
+\end_inset
+
+ as they do in [Harvig], you get 
 \begin_inset Formula $Q=n-1,$
 \end_inset
 
- this implies 
-\begin_inset Formula $r=0.$
+ which is the value they use in [Harvig].
+\end_layout
+
+\begin_layout Subsection
+Predation Mortality
+\end_layout
+
+\begin_layout Standard
+The per capita predation mortality rate 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{p}(w)=\int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(w')\right)N(w',w'_{*},t)s(w',w)\gamma w'^{q}dw'dw'_{*}\label{eq:mort-2}
+\end{equation}
+
 \end_inset
 
- In other words, unless we change the exponents in either the background
- mortality rate, or the starvation rate, we cannot incorporate prey switching.
+
+\end_layout
+
+\begin_layout Standard
+transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\mu_{p}(w) & \mapsto & \int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(\tilde{w}')\right)c^{\Lambda}N(\tilde{w}',\tilde{w}'_{*},t)s(\tilde{w}',\tilde{w})\gamma\frac{\tilde{w}'^{q}}{c^{q}}\frac{d\tilde{w}'}{c}\frac{d\tilde{w}'_{*}}{c^{A}}\\
+ &  & =c^{\Lambda-q-1-A}\mu_{p}(\tilde{w})
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So the total predation rate appearing as a term in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+) 
+\end_layout
+
+\begin_layout Standard
+transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\mu_{p}(w)\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}N(w,w_{*},t)^{\chi+1} & \mapsto & c^{\Lambda+r}N(\tilde{w},\tilde{w}_{*},\tilde{t})\hat{N}(\tilde{w},\tilde{w}_{*},\tilde{t})^{\chi}=c^{\Lambda-q-1-A}\mu_{p}(\tilde{w})c^{\Lambda+r}\left(\tilde{w}^{\Omega}\tilde{w}_{*}^{\Gamma}\Delta\right)^{\chi}N(\tilde{w},\tilde{w}_{*},\tilde{t}){}^{\chi+1}.\\
+ &  & =c^{2\Lambda+r-q-1-A}\mu_{p}(\tilde{w})\left(\tilde{w}^{\Omega}\tilde{w}_{*}^{\Gamma}\Delta\right)^{\chi}N(\tilde{w},\tilde{w}_{*},\tilde{t}){}^{\chi+1}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the factor balancing we require in order for the scale invariance assumption
+ to hold we need that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+2\Lambda+r-q-1-A=\Lambda+B
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and hence if we choose 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q=\Lambda+r-1-A-B
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Rearranging Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Q"
+
+\end_inset
+
+) into terms of 
+\begin_inset Formula $B$
+\end_inset
+
+ gives
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+B=r-AQ
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Consistency Check
+\end_layout
+
+\begin_layout Standard
+In [Harvig] they choose 
+\begin_inset Formula $A=1,r=0,Q=n-1,$
+\end_inset
+
+ and 
+\begin_inset Formula $\Lambda=\mathring{\lambda}+1$
+\end_inset
+
+ and in this case we get the familiar 
+\begin_inset Formula $B=1-n$
+\end_inset
+
+ and 
+\begin_inset Formula $q=\mathring{\lambda}+1-2+n-1,$
+\end_inset
+
+ so we get 
+\begin_inset Formula $\mathring{\lambda}=2+q-n$
+\end_inset
+
+ as is used in classical mizer.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+((Note that in Harvig, they use 
+\begin_inset Formula $\Lambda=\lambda+1,$
+\end_inset
+
+ 
+\begin_inset Formula $r=0,A=1$
+\end_inset
+
+ and 
+\begin_inset Formula $B=1-n,$
+\end_inset
+
+ so this expression gives the familiar 
+\begin_inset Formula $q=\lambda-1-(1-n)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+In [Harvig] they use 
+\begin_inset Formula $Q=n-1,$
+\end_inset
+
+ and so Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Q"
+
+\end_inset
+
+) becomes 
+\begin_inset Formula $Q=\frac{r-B}{A}=n-1.$
+\end_inset
+
+ and in Harvig, they also use 
+\begin_inset Formula $r=0$
+\end_inset
+
+ and 
+\begin_inset Formula $A=1$
+\end_inset
+
+ and so this becomes 
+\begin_inset Formula $B=1-n$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+PDE obeys symmetry
+\end_layout
+
+\begin_layout Standard
+So we have applied our 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ transformation to each term of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+), and shown that for appropriately chosen exponents, the result of performing
+ the 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ transform is that that the newly introduced 
+\begin_inset Formula $c^{?}$
+\end_inset
+
+ factors cancel, and this results in a new partial differential equation,
+ in terms of 
+\begin_inset Formula $\tilde{w},\tilde{w}_{*}$
+\end_inset
+
+ and 
+\begin_inset Formula $\tilde{t},$
+\end_inset
+
+ which has precisely the same form as (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+), except with new variable names.
+ It follows that the transformed solution also satisfies equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+), and hence we only have to show that the boundary condition is still satisfied
+ after the symmetry transform, and we will have finished demonstrating that
+ the scale invariance assumption holds.
+\end_layout
+
+\begin_layout Subsection
+Boundary Condition
+\end_layout
+
+\begin_layout Standard
+We shall suppose that individuals of weight 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+lay eggs of weight
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+w_{e}(w_{*})=Gw_{*}^{\frac{1}{A}}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that under our symmetry transform 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ this egg weight transforms so that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+w_{e}(w_{*})\mapsto G\frac{\tilde{w}_{*}^{\frac{1}{A}}}{c^{1}}=\frac{w_{e}(\tilde{w}_{*})}{c}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Under The left hand side of the boundary condition (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BC"
+
+\end_inset
+
+) transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ so that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g(w_{e}(w_{*}),w_{*})N(w_{e}(w_{*}),w_{*},t)\mapsto c^{\Lambda-n}g(c\frac{w_{e}(\tilde{w}_{*})}{c},\tilde{w}_{*})N(w_{e}(\tilde{w}_{*}),\tilde{w}_{*},\tilde{t})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the right hand side transforms so that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\epsilon}{2w_{e}(w_{*})}\int_{0}^{\infty}N(w,w_{*},t)E_{g}(w)\psi(w,w_{*}).dw & \mapsto & \frac{\epsilon c}{2w_{e}(\tilde{w}_{*})}\int_{0}^{\infty}c^{\Lambda}N(\tilde{w},\tilde{w}_{*},\tilde{t})c^{-n}E_{g}(\tilde{w})\psi(\tilde{w},\tilde{w}_{*}).\frac{d\tilde{w}}{c}\\
+ &  & =c^{\Lambda-n}\frac{\epsilon}{2w_{e}(\tilde{w}_{*})}\int_{0}^{\infty}N(\tilde{w},\tilde{w}_{*},\tilde{t})E_{g}(\tilde{w})\psi(\tilde{w},\tilde{w}_{*}).d\tilde{w}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and hence our factors balance, and the boundary condition is satisfied,
+ so we have shown that our system satisfies the scale invariance assumption.
 \end_layout
 
 \end_body
