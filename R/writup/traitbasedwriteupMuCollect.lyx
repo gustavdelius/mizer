@@ -1262,7 +1262,14 @@ c^{\Lambda}N(cw,c^{A}w_{*},c^{B}t)\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\
 
 \begin_layout Standard
 where we define 
-\begin_inset Formula $r=\chi\Lambda-\chi\Omega-\chi\Gamma.$
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+r=\chi\Lambda-\chi\Omega-\chi\Gamma\label{eq:rdfn}
+\end{equation}
+
 \end_inset
 
 
@@ -1450,7 +1457,30 @@ d, must cancel out.
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-Q=\frac{r-B}{A}\label{eq:Q}
+\Lambda+B=\Lambda+r-AQ\label{eq:expbal1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We refer to refer to equations like (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:expbal1"
+
+\end_inset
+
+) as `exponent balancing equations'.
+ This one implies
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q=\frac{r-B}{A}.\label{eq:Q}
 \end{equation}
 
 \end_inset
@@ -1754,7 +1784,23 @@ reference "eq:timeC"
 
 \end_inset
 
-), and hence we require 
+).
+ This leads to our next exponent balancing equation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Lambda+B=\Lambda-n+1\label{eq:expbal2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+hence we require 
 \begin_inset Formula $n=1-B.$
 \end_inset
 
@@ -1881,11 +1927,22 @@ reference "eq:timeC"
 
 \end_inset
 
-)), we must have 
-\begin_inset Formula $\Lambda+r+d-n=\Lambda+B$
+)), so we get our next exponent balancing equation: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Lambda+B=\Lambda+r+d-n\label{eq:expbal3}
+\end{equation}
+
 \end_inset
 
-, it is interesting to compare this to our previous observation that 
+
+\end_layout
+
+\begin_layout Standard
+It is interesting to compare this to our previous observation that 
 \begin_inset Formula $c^{\Lambda+B}=c^{\Lambda+r-AQ},$
 \end_inset
 
@@ -1995,13 +2052,13 @@ transforms under
 
 \begin_layout Standard
 and the factor balancing we require in order for the scale invariance assumption
- to hold we need that
+ to hold we need the following exponent balancing Equation to hold
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-2\Lambda+r-q-1-A=\Lambda+B
+\Lambda+B=2\Lambda+r-q-1-A\label{eq:expbal4}
 \end{equation}
 
 \end_inset
@@ -2050,11 +2107,11 @@ B=r-AQ
 
 \end_layout
 
-\begin_layout Subsection
-Consistency Check
-\end_layout
-
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
 In [Harvig] they choose 
 \begin_inset Formula $A=1,r=0,Q=n-1,$
 \end_inset
@@ -2077,10 +2134,6 @@ In [Harvig] they choose
 
  as is used in classical mizer.
 \end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
 
 \begin_layout Plain Layout
 ((Note that in Harvig, they use 
@@ -2133,6 +2186,170 @@ reference "eq:Q"
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Exponent Balancing
+\end_layout
+
+\begin_layout Standard
+Gathering together the different exponent balancing equations which have
+ to hold to get our scale invariance assumption gives us
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Lambda+B=\Lambda-n+1=\Lambda+r-AQ=\Lambda+r+d-n=2\Lambda+r-q-1-A\label{eq:exptogether}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where the equated quantities correspond to the exponents of 
+\begin_inset Formula $c$
+\end_inset
+
+ which the respective terms of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+) get multiplied by when we apply the 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ transform.
+ These equations hold if and only if
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\label{eq:list}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+n & = & 1-B\\
+d & = & 1-r\\
+Q & = & \frac{n-d}{A}=\frac{r-B}{A}\\
+q & = & \Lambda+r-1-A-B
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Clearly then for any choice of 
+\begin_inset Formula $A,B,\Lambda,$
+\end_inset
+
+ and whatever value 
+\begin_inset Formula $r$
+\end_inset
+
+ takes (according to its definition 
+\begin_inset Formula $r=\chi\Lambda-\chi\Omega-\chi\Gamma$
+\end_inset
+
+), we can select exponents 
+\begin_inset Formula $n,d,Q,q$
+\end_inset
+
+ that lead to a satisfaction of the scale free assumption (at least, with
+ respect to Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+), and we will show the boundary condition is also satisfied.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+12,24,34,45
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+\Lambda+r+d-n & = & 2\Lambda+r-q-1-A\\
+B-r=d-n & = & \Lambda-q-1-A
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since 
+\begin_inset Formula $B=1-n,$
+\end_inset
+
+ if we introduce a new constant defined as 
+\begin_inset Formula $\Lambda-1=\mathring{\lambda}$
+\end_inset
+
+ then the final Equation of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:list"
+
+\end_inset
+
+) can be rewritten as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q=\mathring{\lambda}+r-A-(1-n)\Leftrightarrow\mathring{\lambda}=1+A+q-n-r
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and when 
+\begin_inset Formula $A=1$
+\end_inset
+
+ and 
+\begin_inset Formula $r=0,$
+\end_inset
+
+ as is done in [Hartvig], this gives us the familiar expression 
+\begin_inset Formula $\mathring{\lambda}=2+q-n.$
 \end_inset
 
 
