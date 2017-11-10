@@ -2623,6 +2623,26 @@ and so there exists
 
 \end_layout
 
+\begin_layout Standard
+Another way to express this solution is to say that there exists a constant
+ 
+\begin_inset Formula $D(w_{*})$
+\end_inset
+
+ such that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*})=\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*})}^{w}\frac{\widehat{\mu}(w',w_{*})}{g(w',w_{*})^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 A Scale Free Steady State
 \end_layout
@@ -2747,18 +2767,18 @@ reference "eq:steadystate"
 \end_layout
 
 \begin_layout Subsection
-The community spectrum
+The prey community spectrum
 \end_layout
 
 \begin_layout Standard
-The community spectrum, modified by prey switching, as encountered by a
- predator is 
+The prey community spectrum, modified by prey switching, as encountered
+ by a predator is 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}==\int_{0}^{\infty}\left(w^{\Omega}\left(w_{*}'\right)^{\Gamma}\Delta\right)^{\chi}N(w,w'_{*},t)^{\chi+1}dw'_{*},
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\int_{0}^{\infty}\left(w^{\Omega}\left(w_{*}'\right)^{\Gamma}\Delta\right)^{\chi}N(w,w'_{*},t)^{\chi+1}dw'_{*},
 \end{equation}
 
 \end_inset
@@ -2767,19 +2787,427 @@ N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}==\in
 \end_layout
 
 \begin_layout Standard
-in the sense that the available energy can be written as
+Since we are assumping that 
+\begin_inset Formula $N$
+\end_inset
+
+ is invariant under 
+\begin_inset Formula $F_{c},$
+\end_inset
+
+ we must have that 
+\begin_inset Formula $N_{prey}(w)$
+\end_inset
+
+ is invariant under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ and so 
+\begin_inset Formula $N_{prey}\mapsto J$
+\end_inset
+
+ where
 \end_layout
 
 \begin_layout Standard
-this is invariant and so we get power law
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{prey}(w) & = & J(w)=\int_{0}^{\infty}\left(w^{\Omega}\left(w_{*}'\right)^{\Gamma}\Delta\right)^{\chi}c^{\Lambda(\chi+1)}N(cw,c^{A}w'_{*},c^{B}t)^{\chi+1}dw'_{*}\\
+ &  & =\int_{0}^{\infty}\left(\left(\frac{\tilde{w}}{c}\right)^{\Omega}\left(\frac{\tilde{w}'_{*}}{c^{A}}\right)^{\Gamma}\Delta\right)^{\chi}c^{\chi\Lambda+\Lambda}N(\tilde{w},\tilde{w}'_{*},\tilde{t})^{\chi+1}\frac{d\tilde{w}'_{*}}{c^{A}}\\
+ &  & =c^{r+\Lambda-A}N_{prey}(cw)
+\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $r=\chi\Lambda-\chi\Omega-\chi\Gamma,$
+\end_inset
+
+ 
+\begin_inset Formula $\tilde{w}=cw,$
+\end_inset
+
+
+\begin_inset Formula $\tilde{w}'_{*}=c^{A}w'_{*}$
+\end_inset
+
+ and 
+\begin_inset Formula $\tilde{t}=c^{B}t.$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-supposing power law, our growth and mortality rates are
+Letting 
+\begin_inset Formula $w=1$
+\end_inset
+
+ and 
+\begin_inset Formula $c=v$
+\end_inset
+
+ in the expression 
+\begin_inset Formula $N_{prey}(cw)=c^{A-r-\Lambda}N_{prey}(w)$
+\end_inset
+
+ gives us 
+\begin_inset Formula $N_{prey}(v)=v^{A-r-\Lambda}N_{prey}(1)$
+\end_inset
+
+ so we have
 \end_layout
 
 \begin_layout Standard
-and the general solution to the pde is
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=w^{A-r-\Lambda}N_{prey}(1)=\kappa_{R}^{*}w^{-\lambda_{*}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we define 
+\begin_inset Formula $\lambda_{*}=\Lambda+r-A$
+\end_inset
+
+ to be the exponent of the 
+\begin_inset Formula $\chi$
+\end_inset
+
+ modified community spectrum, and 
+\begin_inset Formula $\kappa_{R}^{*}=N_{prey}(1)$
+\end_inset
+
+ is the associated prefactor.
+\end_layout
+
+\begin_layout Subsection
+The unaltered community spectrum
+\end_layout
+
+\begin_layout Standard
+The community spectrum in the absence of prey switching, is the spectrum
+ of the community of predators in the predation mortality equations.
+ This is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{pred}(w)=w^{A-\Lambda}N_{pred}(1)=\kappa_{R}w^{-\lambda}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we define 
+\begin_inset Formula $\lambda=\Lambda-A$
+\end_inset
+
+ to be the exponent of the unmodified community spectrum, and 
+\begin_inset Formula $\kappa_{R}=N_{pred}(1)$
+\end_inset
+
+ is the associated prefactor.
+ Hence
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\lambda_{*} & = & \lambda+r\\
+ & = & \lambda+\chi\Lambda-\chi\Omega-\chi\Gamma\\
+ & = & \lambda+\chi(\lambda+A)-\chi\Omega-\chi\Gamma\\
+ & = & (\chi+1)(\lambda+A)-A-\chi\Omega-\chi\Gamma
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Growth Rate At Steady State
+\end_layout
+
+\begin_layout Standard
+When we are at a 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ invarient steady state, we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+E_{g}(w)\mapsto c^{-n}E_{g}(cw)= & E_{g}(w)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so we get 
+\begin_inset Formula $E_{g}(w)=E_{g}(1)w^{n}=\alpha f(w)hw^{n}-kw^{n}=\hbar w^{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $g(w,w_{*})=\hbar w^{n}(1-\psi(w,w_{*})),$
+\end_inset
+
+ where 
+\begin_inset Formula $\alpha\bar{f}h-k$
+\end_inset
+
+ and 
+\begin_inset Formula $\bar{f}$
+\end_inset
+
+ is the feeding level (which must be constant at such an 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ invariant state).
+\end_layout
+
+\begin_layout Subsection
+Predation Mortality Rate
+\end_layout
+
+\begin_layout Standard
+At our 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ invariant steady state the predation mortality rate is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\mu_{p}(w) & = & \int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(w')\right)N(w',w'_{*},t)s(w',w)\gamma w'^{q}dw'dw'_{*}\\
+ & = & \int_{0}^{\infty}\left(1-f(w')\right)N_{pred}(w')s(w',w)\gamma w'^{q}dw'\\
+ & = & \alpha_{p}w^{n-1}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where, in Equations (A.2) and (A.3) we have that [Hartvig] evaluates
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\alpha_{p}=\sqrt{2\pi}\beta^{\lambda-2}\exp\left(\frac{\sigma^{2}}{2}(2-\lambda)^{2}\right).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Case Without Starvation Or Background Mortality
+\end_layout
+
+\begin_layout Standard
+We shall suppose that 
+\begin_inset Formula $\mu_{0}=0$
+\end_inset
+
+ and that there is no starvation mortality so 
+\begin_inset Formula $\mu_{s}(w)=0,\forall w.$
+\end_inset
+
+ In this case we have 
+\begin_inset Formula $\widehat{\mu}(w',w_{*})=\alpha_{p}w^{n-1}$
+\end_inset
+
+ and 
+\begin_inset Formula $g(w,w_{*})=\hbar w^{n}(1-\psi(w,w_{*})),$
+\end_inset
+
+ and so the expression for our solution is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*})=\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*})}^{w}\frac{\alpha_{p}w^{n-1}}{\left(\hbar w^{n}(1-\psi(w,w_{*}))\right)^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we wish to choose 
+\begin_inset Formula $D(w_{*})$
+\end_inset
+
+ so that the boundary condition 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g(w_{e}(w_{*}),w_{*})N(w_{e}(w_{*}),w_{*})=\frac{\epsilon}{2w_{e}(w_{*})}\int_{0}^{\infty}N(w,w_{*})\hbar w^{n}\psi(w,w_{*}).dw,\label{eq:BC-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is satisfied.
+\end_layout
+
+\begin_layout Subsection
+Solution in a specific case
+\end_layout
+
+\begin_layout Standard
+We shall here consider a specific case, with realistic parameter settings,
+ within which we can numerically determine 
+\begin_inset Formula $D(w_{*})$
+\end_inset
+
+ such that the expression in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ODEsol-1-1"
+
+\end_inset
+
+) satisfies (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BC-1"
+
+\end_inset
+
+).
+ For this case we shall assume 
+\begin_inset Formula $A=1$
+\end_inset
+
+ and use a reproduction function of the form
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi(w,w_{*}) & = & \left[1+\left(\frac{w}{w_{*}}\right)^{-u}\right]^{-1}\left(\frac{w_{*}}{w}\right)^{n-1}\eta^{1-n}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+as they do in [Hartvig], where 
+\begin_inset Formula $u$
+\end_inset
+
+ determines the width of the step function which the square bracketed factor
+ acts like.
+ We also use additional parameter values as follows:
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+library(mizer) library(plyr) paramsConst <- set_trait_model(no_sp = 10,
+ min_w_inf = 10) simConst <- project(paramsConst, t_max=150, effort = 0)
+ plot(simConst)
+\end_layout
+
+\begin_layout Plain Layout
+paramsConst@species_params$h
+\end_layout
+
+\begin_layout Plain Layout
+fbar <- 0.4 hbar <- (paramsConst@species_params$alpha*paramsConst@species_params$
+h*fbar)[1] # perhaps better to let hbar=10 ? #paramsConst@species_params$k
+ myspno <- 5 psi <- paramsConst@psi[myspno,] nval <- 2/3 wvec <- paramsConst@w
+ growth_rate <- (1-psi)*hbar*(wvec^nval) 
+\end_layout
+
+\begin_layout Plain Layout
+qval <- 0.9 lambdastar <- 2+qval-nval chi <- 0.05 lambda <- ((lambdastar+1)/(chi+1
+))-1 thetabar <- 1 beta <- paramsConst@species_params$beta[1] sigmaval <-
+ paramsConst@species_params$sigma[1] kappaRval <- 0.005 gammaval <- paramsConst@s
+pecies_params$gamma[1] alpha_p <- thetabar*(1-fbar)*sqrt(2*pi)*kappaRval*gammava
+l*sigmaval*(beta^(1+qval-lambda))* exp(((sigmaval^2)*(1+qval-lambda)^2)/2)
+ alpha_p mu_p <- alpha_p*wvec^(nval-1)
+\end_layout
+
+\begin_layout Plain Layout
+integrand <- mu_p/(growth_rate^(chi+1))
+\end_layout
+
+\begin_layout Plain Layout
+determine_int <- function(w){ L <- length(wvec[wvec<w]) within <- sum(((wvec[2:L
++1]-wvec[1:L])*integrand[1:L])) return(within) }
+\end_layout
+
+\begin_layout Plain Layout
+intvals <- sapply(wvec,determine_int) intvals2 <- rep(2,length(wvec)) intvals2[1
+:72] <- intvals[1:72]
+\end_layout
+
+\begin_layout Plain Layout
+result_n <- function(C){ return(((chi*(intvals2+C))^(-1/chi))/growth_rate)
+ } plot(wvec[1:71],result_n(1)[1:71],log="xy")
+\end_layout
+
+\begin_layout Plain Layout
+repro_eff <- 0.1 egg_size <- wvec[1]
+\end_layout
+
+\begin_layout Plain Layout
+is_zero <- function(C){ result_nn <- result_n(C) result_nnn <- rep(0,length(wvec
+)) result_nnn[1:71] <- result_nn[1:71] LHS <- result_nnn[1]*growth_rate[1]
+ RHS <- sum(((result_nnn*psi*hbar*wvec^nval)[1:(length(wvec)-1)])*(wvec[2:length
+(wvec)]-wvec[1:(length(wvec)-1)]))*repro_eff/(2*egg_size) return(RHS-LHS)
+ }
+\end_layout
+
+\begin_layout Plain Layout
+plot(10:20,sapply(10:20,is_zero))
+\end_layout
+
+\begin_layout Plain Layout
+plot(wvec[1:71],result_n(11.5)[1:71]*wvec[1:71],log="xy") abline(v=149)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -2796,6 +3224,10 @@ Go through how
 \end_inset
 
  invariant terms are described, and what this implies for power law
+\end_layout
+
+\begin_layout Standard
+Go back and argue about egg size properly
 \end_layout
 
 \begin_layout Standard
