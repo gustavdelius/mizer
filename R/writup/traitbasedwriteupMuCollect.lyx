@@ -2433,17 +2433,13 @@ w_{e}(w_{*})=Gw_{*}^{\frac{1}{A}}.
 \end_layout
 
 \begin_layout Standard
-Note that under our symmetry transform 
-\begin_inset Formula $F_{c}$
-\end_inset
-
- this egg weight transforms so that
+Note that this function has the property that
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-w_{e}(w_{*})\mapsto G\frac{\tilde{w}_{*}^{\frac{1}{A}}}{c^{1}}=\frac{w_{e}(\tilde{w}_{*})}{c}
+cw_{e}(w_{*})=w_{e}(\tilde{w}_{*})
 \end{equation}
 
 \end_inset
@@ -2468,9 +2464,10 @@ reference "eq:BC"
 
 \begin_layout Standard
 \begin_inset Formula 
-\begin{equation}
-g(w_{e}(w_{*}),w_{*})N(w_{e}(w_{*}),w_{*},t)\mapsto c^{\Lambda-n}g(c\frac{w_{e}(\tilde{w}_{*})}{c},\tilde{w}_{*})N(w_{e}(\tilde{w}_{*}),\tilde{w}_{*},\tilde{t})
-\end{equation}
+\begin{eqnarray*}
+g(w_{e}(w_{*}),w_{*})N(w_{e}(w_{*}),w_{*},t) & \mapsto & c^{\Lambda-n}g(cw_{e}(w_{*}),\tilde{w}_{*})N(w_{e}(\tilde{w}_{*}),\tilde{w}_{*},\tilde{t})\\
+ &  & =c^{\Lambda-n}g(w_{e}(\tilde{w}_{*}),\tilde{w}_{*})N(w_{e}(\tilde{w}_{*}),\tilde{w}_{*},\tilde{t})
+\end{eqnarray*}
 
 \end_inset
 
@@ -2787,7 +2784,7 @@ N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\int
 \end_layout
 
 \begin_layout Standard
-Since we are assumping that 
+Since we are assuming that 
 \begin_inset Formula $N$
 \end_inset
 
@@ -2886,6 +2883,34 @@ where we define
  is the associated prefactor.
 \end_layout
 
+\begin_layout Standard
+Now note that since 
+\begin_inset Formula $q=\Lambda+r-1-A-B,$
+\end_inset
+
+ we have 
+\begin_inset Formula $q+1+A+B=\Lambda+r$
+\end_inset
+
+ and so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\lambda_{*} & = & q+1+B\\
+ & = & q+2-n
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which is the same as the value it gets in [Hartvig].
+\end_layout
+
 \begin_layout Subsection
 The unaltered community spectrum
 \end_layout
@@ -2943,7 +2968,7 @@ When we are at a
 \begin_inset Formula $F_{c}$
 \end_inset
 
- invarient steady state, we have
+ invariant steady state, we have
 \end_layout
 
 \begin_layout Standard
@@ -3108,7 +3133,12 @@ reference "eq:BC-1"
 \begin_inset Formula $A=1$
 \end_inset
 
- and use a reproduction function of the form
+ and 
+\begin_inset Formula $k=0$
+\end_inset
+
+ (so there is no metabolic cost or starvation) and use a reproduction function
+ of the form
 \end_layout
 
 \begin_layout Standard
@@ -3129,10 +3159,139 @@ as they do in [Hartvig], where
 
  determines the width of the step function which the square bracketed factor
  acts like.
+ We shall assume 
+\begin_inset Formula $u\gg1$
+\end_inset
+
+ so 
+\begin_inset Formula $\psi$
+\end_inset
+
+ raises initially like an abrupt step.
  We also use additional parameter values as follows:
 \end_layout
 
 \begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\bar{f} & = & 0.4\\
+A & = & 1\\
+\alpha & = & 0.6\\
+h & = & 30\\
+q & = & 0.9\\
+k & = & 0\\
+\mu_{0} & = & 0\\
+\chi & = & 0.05\\
+\Delta & = & 1\\
+\Omega=\Gamma & = & 0\\
+\kappa_{R} & = & 0.005\\
+\gamma & = & 600.4424\\
+\beta & = & 100\\
+\sigma & = & 1.3\\
+w_{*} & = & 149.871063\\
+w_{e} & = & 0.001\\
+\epsilon & = & 0.1
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we use formulas
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\hbar=\alpha h\bar{f}-k$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda_{*}=q+2-n$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda+\chi(\lambda+A)-\chi\Omega-\chi\Gamma$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda+\chi(\lambda+A)-\chi\Omega-\chi\Gamma$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda_{*}=\lambda(1+\chi)+A\chi-\chi\Omega-\chi\Gamma$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda=\frac{\lambda_{*}-A\chi+\Omega\chi+\Gamma\chi}{(1+\chi)}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Also note
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $B=$
+\end_inset
+
+
+\begin_inset Formula $1-n$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $r=\chi\Lambda-\chi\Omega-\chi\Gamma$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $n=p$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $Q$
+\end_inset
+
+ and 
+\begin_inset Formula $d$
+\end_inset
+
+ are irrelevant 
+\end_layout
+
+\begin_layout Standard
+also note
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\Lambda=\lambda_{*}+A-r.$
+\end_inset
+
 
 \end_layout
 
@@ -3203,6 +3362,80 @@ plot(10:20,sapply(10:20,is_zero))
 
 \begin_layout Plain Layout
 plot(wvec[1:71],result_n(11.5)[1:71]*wvec[1:71],log="xy") abline(v=149)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this case numerical simulations at
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/gustavdelius/mizer/blob/aggregate/R/Experimental%20Code/soluti
+on_testing.R
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+show that the boundary condition is satisfied for integration constant 
+\begin_inset Formula $D=11.73,$
+\end_inset
+
+ and this leads to the resulting plot of 
+\begin_inset Formula $w$
+\end_inset
+
+ vs 
+\begin_inset Formula $N(w,w_{*}).$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename solplot.PNG
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+References
+\end_layout
+
+\begin_layout Standard
+[Harvig]=Martin Hartvig, K.
+ H.
+ Andersen, and Jan E.
+ Beyer.
+ Food web framework for size-structured populations RID c-4303-2011.
+ Journal of Theoretical Biology, 272(1):113{122, March 2011.
+ ISSN 0022-5193.
+ doi: 10.1016/j.jtbi.2010.12.006.
+ WOS
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://arxiv.org/pdf/1004.4138.pdf
 \end_layout
 
 \end_inset
