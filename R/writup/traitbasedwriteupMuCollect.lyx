@@ -652,7 +652,7 @@ where
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-s(w,w')=\exp\left[-\left(\ln\left(\frac{\beta w'}{w}\right)\right)^{2}/\left(2\sigma^{2}\right)\right]
+s(w',w)=\exp\left[-\left(\ln\left(\frac{\beta w'}{w}\right)\right)^{2}/\left(2\sigma^{2}\right)\right]
 \end{equation}
 
 \end_inset
@@ -900,7 +900,7 @@ and the predation mortality rate
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\mu_{p}(w)=\int_{0}^{\infty}\int_{0}^{\infty}\left(\frac{f(w')hw'^{n}}{E_{e}(w')}\right)N(w',w'_{*},t)s(w',w)\gamma w'^{q}dw'dw'_{*}\label{eq:mort}
+\mu_{p}(w)=\int_{0}^{\infty}\int_{0}^{\infty}\left(\frac{f(w')hw'^{n}}{E_{e}(w')}\right)N(w',w'_{*},t)s(w,w')\gamma w'^{q}dw'dw'_{*}\label{eq:mort}
 \end{equation}
 
 \end_inset
@@ -949,7 +949,7 @@ reference "eq:mort"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\mu_{p}(w)=\int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(w')\right)N(w',w'_{*},t)s(w',w)\gamma w'^{q}dw'dw'_{*}\label{eq:mort-1}
+\mu_{p}(w)=\int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(w')\right)N(w',w'_{*},t)s(w,w')\gamma w'^{q}dw'dw'_{*}\label{eq:mort-1}
 \end{equation}
 
 \end_inset
@@ -1991,7 +1991,7 @@ The per capita predation mortality rate
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\mu_{p}(w)=\int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(w')\right)N(w',w'_{*},t)s(w',w)\gamma w'^{q}dw'dw'_{*}\label{eq:mort-2}
+\mu_{p}(w)=\int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(w')\right)N(w',w'_{*},t)s(w,w')\gamma w'^{q}dw'dw'_{*}\label{eq:mort-2}
 \end{equation}
 
 \end_inset
@@ -2010,7 +2010,7 @@ transforms under
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
-\mu_{p}(w) & \mapsto & \int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(\tilde{w}')\right)c^{\Lambda}N(\tilde{w}',\tilde{w}'_{*},t)s(\tilde{w}',\tilde{w})\gamma\frac{\tilde{w}'^{q}}{c^{q}}\frac{d\tilde{w}'}{c}\frac{d\tilde{w}'_{*}}{c^{A}}\\
+\mu_{p}(w) & \mapsto & \int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(\tilde{w}')\right)c^{\Lambda}N(\tilde{w}',\tilde{w}'_{*},t)s(\tilde{w},\tilde{w}')\gamma\frac{\tilde{w}'^{q}}{c^{q}}\frac{d\tilde{w}'}{c}\frac{d\tilde{w}'_{*}}{c^{A}}\\
  &  & =c^{\Lambda-q-1-A}\mu_{p}(\tilde{w})
 \end{eqnarray*}
 
@@ -3015,15 +3015,14 @@ At our
 \begin_inset Formula $F_{c}$
 \end_inset
 
- invariant steady state the predation mortality rate is
+ invariant steady state the predation mortality rate is such that
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
-\mu_{p}(w) & = & \int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(w')\right)N(w',w'_{*},t)s(w',w)\gamma w'^{q}dw'dw'_{*}\\
- & = & \int_{0}^{\infty}\left(1-f(w')\right)N_{pred}(w')s(w',w)\gamma w'^{q}dw'\\
- & = & \alpha_{p}w^{n-1}
+\mu_{p}(w) & = & \int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(w')\right)N(w',w'_{*},t)s(w,w')\gamma w'^{q}dw'dw'_{*}\\
+ &  & =c^{\Lambda-q-1-A}\mu_{p}(cw)
 \end{eqnarray*}
 
 \end_inset
@@ -3032,18 +3031,29 @@ At our
 \end_layout
 
 \begin_layout Standard
-where, in Equations (A.2) and (A.3) we have that [Hartvig] evaluates
+Letting 
+\begin_inset Formula $c=\frac{1}{w}$
+\end_inset
+
+ gives
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
-\begin{equation}
-\alpha_{p}=(1-\bar{f})\sqrt{2\pi}\kappa\gamma\sigma\beta^{1+q-\lambda}\exp\left(\frac{\sigma^{2}}{2}(1+q-\lambda)^{2}\right).
-\end{equation}
+\begin{eqnarray*}
+\mu_{p}(w) & = & w^{1+q+A-\Lambda}\mu_{p}(1)
+\end{eqnarray*}
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The prefactor was determined Equations (A.2) and (A.3) of [Hartvig] for there
+ case, where prey switching was absent.
+ Also see Appendix B of [Andersen].
+ We can modify approach.
 \end_layout
 
 \begin_layout Subsection
@@ -3579,7 +3589,7 @@ where
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\kappa_{*}w^{\lambda_{*}}
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\kappa_{*}w^{-\lambda_{*}}
 \end{equation}
 
 \end_inset
@@ -3626,15 +3636,14 @@ g(w,w_{*})=\alpha\bar{f}hw^{n}(1-\psi(w,w_{*}))
 \end_layout
 
 \begin_layout Standard
-Check that
+Use
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
-\mu_{p}(w) & = & \overline{\mu}(w)\\
- & = & \int_{0}^{\infty}\left(1-f(w')\right)N_{pred}(w')s(w',w)\gamma w'^{q}dw'\\
- & = & \alpha_{p}w^{n-1}
+\mu_{p}(w) & = & \mu_{p}(w)=w^{1+q+A-\Lambda}\mu_{p}(1)\\
+ & = & \int_{0}^{\infty}\left(1-f(w')\right)N_{pred}(w')s(w,w')\gamma w'^{q}dw'
 \end{eqnarray*}
 
 \end_inset
@@ -3643,18 +3652,33 @@ Check that
 \end_layout
 
 \begin_layout Standard
-where
+to evaluate predation mortality, and note that
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-\alpha_{p}=(1-\bar{f})\sqrt{2\pi}\kappa\gamma\sigma\beta^{1+q-\lambda}\exp\left(\frac{\sigma^{2}}{2}(1+q-\lambda)^{2}\right).
-\end{equation}
-
+In our case 
+\begin_inset Formula $\Omega=\Gamma=0$
 \end_inset
 
+ so
+\end_layout
 
+\begin_layout Standard
+\begin_inset Formula $\Lambda+r=\Lambda(1+\chi)=\lambda_{*}+A$
+\end_inset
+
+ so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\Lambda=\frac{\lambda_{*}+A}{1+\chi}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+[[This agrees with simu, but we need to extend support of community spectrum]].
 \end_layout
 
 \begin_layout Standard
@@ -3794,6 +3818,19 @@ https://arxiv.org/pdf/1004.4138.pdf
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+[Andersen]=K.
+ H.
+ Andersen and J.
+ E.
+ Beyer, “Asymptotic Size Determines Species Abundance in the Marine Size
+ Spectrum” (Am.
+ Nat., vol.
+ 168, no.
+ 1, p.
+ 54)
 \end_layout
 
 \begin_layout Subsection
