@@ -104,7 +104,7 @@ result_n <- function(C){
 
 plot(wvec,result_n(11),log="xy")
 
-plot(wvec[1:71],result_n(1)[1:71],log="xy")
+#plot(wvec[1:71],result_n(1)[1:71],log="xy")
 
 repro_eff <- 0.1
 egg_size <- wvec[1]
@@ -117,13 +117,35 @@ is_zero <- function(C){
   RHS <- sum(((result_nnn*psi*hbar*wvec^nval)[1:(length(wvec)-1)])*(wvec[2:length(wvec)]-wvec[1:(length(wvec)-1)]))*repro_eff/(2*egg_size)
   return(RHS-LHS)
 }
+library(pracma)
+Cval <- newtonRaphson(is_zero, 1)$root
+#plot(sapply(seq(1,7,0.1),is_zero))
+#is_zero(5)
+#is_zero(5.6699)
+#optim(1,is_zero,lower = 0.5,upper=8)
+plot(wvec[1:71],result_n(1)[1:71],log="xy")
+plot(wvec,result_n(Cval),log="xy")
+ngood <- result_n(Cval)
+# make function that gives a value of ngood for any input weight
+FF <- approxfun(x=wvec, y = result_n(Cval),       method = "linear",
+          yleft=0, yright=0, rule = 1, f = 0, ties = mean)
+plot(wvec,sapply(wvec,FF),log="xy")
 
-#newtonRaphson(fun, x0, dfun = NULL, ..., maxiter = 100, tol = .Machine$double.eps^0.5)
 
+Lambda <- (lambdastar+A)/(chi+1)
 
-plot(sapply(seq(1,7,0.1),is_zero))
+matsize <- paramsConst@species_params$w_mat[myspno]
+Npred <- function(w){
+  ws <- wvecfull
+  integrand <- ((matsize/ws)^Lambda)*FF(w*(matsize/ws))
+  L <- length(ws)-1
+  return(sum((ws[2:(L+1)]-ws[1:L])*integrand[1:(L)]))
+}
 
-is_zero(5)
-is_zero(5.6699)
+community <- sapply(wvec,Npred)
+lines(wvec,wvec^(-lambdastar))
+plot(wvec,sapply(wvec,Npred),log="xy")
+lambda <- (lambdastar-chi)/(1+chi)
+plot(sapply(wvec,Npred)/(wvec^(-lambda)))
+kappaout <- sapply(wvec,Npred)/(wvec^(-lambda))[1]
 
-optim(1,is_zero,lower = 0.5,upper=8)
