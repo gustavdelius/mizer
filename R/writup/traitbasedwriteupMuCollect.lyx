@@ -685,7 +685,7 @@ represents the preference that a predator of weight
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\phi(w)=\int_{0}^{\infty}\int_{0}^{\infty}w'N(w',w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}s(w',w)dw'dw'_{*}\label{eq:avail}
+\phi(w)=\int_{0}^{\infty}\int_{0}^{\infty}w'N(w',w'_{*},t)\hat{N}(w',w'_{*},t)^{\chi}s(w',w)dw'dw'_{*}\label{eq:avail}
 \end{equation}
 
 \end_inset
@@ -3038,7 +3038,7 @@ where, in Equations (A.2) and (A.3) we have that [Hartvig] evaluates
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\alpha_{p}=\sqrt{2\pi}\beta^{\lambda-2}\exp\left(\frac{\sigma^{2}}{2}(2-\lambda)^{2}\right).
+\alpha_{p}=(1-\bar{f})\sqrt{2\pi}\kappa\gamma\sigma\beta^{1+q-\lambda}\exp\left(\frac{\sigma^{2}}{2}(1+q-\lambda)^{2}\right).
 \end{equation}
 
 \end_inset
@@ -3514,6 +3514,256 @@ We wish to find a case where
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsection
+Practical Procedure
+\end_layout
+
+\begin_layout Standard
+Choose 
+\begin_inset Formula $\kappa_{*},$
+\end_inset
+
+ and 
+\begin_inset Formula $\kappa$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+(&)
+\end_layout
+
+\begin_layout Standard
+Choose 
+\begin_inset Formula $n$
+\end_inset
+
+ and 
+\begin_inset Formula $q.$
+\end_inset
+
+ Let 
+\begin_inset Formula $\lambda_{*}=q+2-n.$
+\end_inset
+
+ Choose 
+\begin_inset Formula $\beta,\sigma$
+\end_inset
+
+ so that 
+\begin_inset Formula $s(,)$
+\end_inset
+
+ is defined.
+ evaluate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\phi(w)=\int_{0}^{\infty}\int_{0}^{\infty}w'N(w',w'_{*},t)\hat{N}(w',w'_{*},t)^{\chi}s(w',w)dw'dw'_{*}=\int_{0}^{\infty}w's(w',w)N_{prey}(w').dw'\label{eq:avail-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\kappa_{*}w^{\lambda_{*}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Choose 
+\begin_inset Formula $\gamma,h,$
+\end_inset
+
+ evaluate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f(w)=\frac{\gamma w^{q}\phi(w)}{\gamma w^{q}\phi(w)+hw^{n}}=\bar{f}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Choose 
+\begin_inset Formula $\alpha,\psi$
+\end_inset
+
+ define 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g(w,w_{*})=\alpha\bar{f}hw^{n}(1-\psi(w,w_{*}))
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Check that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\mu_{p}(w) & = & \overline{\mu}(w)\\
+ & = & \int_{0}^{\infty}\left(1-f(w')\right)N_{pred}(w')s(w',w)\gamma w'^{q}dw'\\
+ & = & \alpha_{p}w^{n-1}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\alpha_{p}=(1-\bar{f})\sqrt{2\pi}\kappa\gamma\sigma\beta^{1+q-\lambda}\exp\left(\frac{\sigma^{2}}{2}(1+q-\lambda)^{2}\right).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Pick 
+\begin_inset Formula $w_{e}(w_{*}^{\#})$
+\end_inset
+
+ to be typical egg size,
+\end_layout
+
+\begin_layout Standard
+For 
+\begin_inset Formula $w_{*}^{\#},$
+\end_inset
+
+ evaluate 
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*}^{\#})=\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*}^{\#})}^{w}\frac{\widehat{\mu}(w',w_{*}^{\#})}{g(w',w_{*}^{\#})^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Determine 
+\begin_inset Formula $D(w_{*})$
+\end_inset
+
+ so that boundary condition
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g(w_{e}(w_{*}^{\#}),w_{*}^{\#})N(w_{e}(w_{*}^{\#}),w_{*},t)=\frac{\epsilon}{2w_{e}(w_{*}^{\#})}\int_{0}^{\infty}N(w,w_{*}^{\#},t)E_{g}(w)\psi(w,w_{*}^{\#}).dw,\label{eq:BC-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Use 
+\begin_inset Formula $N$
+\end_inset
+
+ to evaluate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{pred}(w)=\int_{0}^{\infty}N(w,w_{*}).dw_{*}=\kappa'w^{-\lambda}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+using
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*})=\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\frac{\Lambda}{A}}N\left(w\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\frac{1}{A}},w_{*}^{\#}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and determine output 
+\begin_inset Formula $\kappa'.$
+\end_inset
+
+ Similarly, evaluate 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\kappa_{*}'w^{-\lambda_{*}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to determine 
+\begin_inset Formula $\kappa_{*}'.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Go to (&) and iterate round until the same kappa values are outputted as
+ were inputted.
 \end_layout
 
 \begin_layout Subsection*
