@@ -3413,6 +3413,109 @@ show that the boundary condition is satisfied for integration constant
 
 \end_layout
 
+\begin_layout Subsection
+Evaluation strategy
+\end_layout
+
+\begin_layout Standard
+In order to use the above procedure, we must select 
+\begin_inset Formula $\kappa$
+\end_inset
+
+ and 
+\begin_inset Formula $\kappa^{*},$
+\end_inset
+
+ (inputs) which will lead to a particular value of 
+\begin_inset Formula $f$
+\end_inset
+
+ (which we should have computed, rather than assumed, via numeric evaluation
+ of 
+\begin_inset Formula $E_{g}$
+\end_inset
+
+ using the community power law).
+ Having done this we can determine our growth and mortality rates, and then
+ perform the integrals, and solve for the boundary condition to get a particular
+ value of 
+\begin_inset Formula $N(w,w_{*}^{\#}),$
+\end_inset
+
+ for some particular maturity weight 
+\begin_inset Formula $w_{*}^{\#}.$
+\end_inset
+
+ Say we know function for 
+\begin_inset Formula $w_{*}^{\#}=1.$
+\end_inset
+
+ In this case we use the relation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*})=\left(w_{*}\right)^{-\Lambda/A}N\left(\frac{w}{w_{*}^{1/A}},1\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to evaluate 
+\begin_inset Formula 
+\begin{equation}
+N_{pred}(w)=\int_{0}^{\infty}N(w,w_{*}).dw_{*}=\kappa w^{-\lambda}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and to determine 
+\begin_inset Formula $\kappa$
+\end_inset
+
+ output.
+ Similarly we should evaluate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\kappa_{*}w^{-\lambda_{*}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to determine 
+\begin_inset Formula $\kappa_{*}$
+\end_inset
+
+ output.
+\end_layout
+
+\begin_layout Standard
+We wish to find a case where 
+\begin_inset Formula $\kappa_{input}=\kappa_{output}$
+\end_inset
+
+ and 
+\begin_inset Formula $\kappa_{*input}=\kappa_{*output}.$
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection*
 References
 \end_layout
