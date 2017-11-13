@@ -7,6 +7,10 @@ plot(simConst)
 kappaRval <- 0.005
 kappaRstarval <- 0.004
 
+itme <- function(Z=c(0.005,0.004)){
+  kappaRval <- Z[1]
+  kappaRstarval <- Z[2]
+  
 
 myspno <- 3
 nval <- 2/3
@@ -128,7 +132,7 @@ plot(wvec,result_n(Cval),log="xy")
 ngood <- result_n(Cval)
 # make function that gives a value of ngood for any input weight
 FF <- approxfun(x=wvec, y = result_n(Cval),       method = "linear",
-          yleft=0, yright=0, rule = 1, f = 0, ties = mean)
+                yleft=0, yright=0, rule = 1, f = 0, ties = mean)
 plot(wvec,sapply(wvec,FF),log="xy")
 
 
@@ -150,6 +154,7 @@ plot(sapply(wvec,Npred)/(wvec^(-lambda)))
 kappaouth <- sapply(wvec,Npred)/(wvec^(-lambda))[1]
 kappaout <- kappaouth[1]
 
+
 Nprey <- function(w){
   ws <- wvecfull
   integrand <- (((matsize/ws)^Lambda)*FF(w*(matsize/ws)))^(chi+1)
@@ -159,3 +164,26 @@ Nprey <- function(w){
 plot(sapply(wvec,Nprey)/(wvec^(-lambdastar)))
 kappastarouth <- sapply(wvec,Nprey)/(wvec^(-lambdastar))[1]
 kappastarout <- kappastarouth[1]
+
+return(c(kappaout,kappastarout))
+}
+itme(itme(c(0.4,0.5)))
+itme(c(100,100))
+itme(itme(c(10^12,10^13)))
+
+XX <- c(10^12,10^13)
+for (i in (1:50)){
+  XX <- itme(XX)
+  
+}
+XX
+objecti <- function(x,y){
+  return(sum((itme(c(x,y))-c(x,y))^2))
+}
+HH <- matrix(1,nrow=5,ncol=5)
+for (i in 1:nrow(HH)){
+  for (j in (1:ncol(HH))){
+    HH[i,j] <- objecti(i,j)
+  }
+}
+itme(c(1,5))
