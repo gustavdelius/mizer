@@ -163,11 +163,46 @@ return(c(kappaoutput,kappastaroutput))
 itme(itme(itme(itme(c(0.005,0.004)))))
 
 ZZ <- c(0.005,0.004)
-T <- 100
+T <- 10
 out <- 1:T
 for (t in (1:T)){
   ZZ <- itme(ZZ)
-  out[t] <- ZZ[1]
+  out[t] <- ZZ[2]
 }
 plot(out,log="y",type="l")
 
+myfun <- function(z){
+  return(c(z[1]-z[2],2*z[2]-z[1]))
+}
+newtonRaphson(myfun, c(1.1,5))$root
+myfun(c(1.1,5))
+newton(myfun, c(1.1,5))$root
+
+res <- function(par){
+  return(sum((diff <- par-itme(par))^2))
+}
+
+op <- optim(c(0.005,0.004),res,lower = c(10^(-20),10^(-20)))
+
+res(c(0.5,6))
+
+f.sphere <- function(x) {
+  x <- matrix(x, ncol=2)
+  f.x <- apply(x^2, 1, sum)
+  return(f.x)
+}
+optim(c(1,1), f.sphere, method = "Nelder-Mead")
+
+itme(c(0.005240708,0.003731182))
+
+#0.005240708 0.003731182
+
+resvec <- function(par){
+  if (par[1]<0||par[2]<0) {
+    return(c(100,100))
+  } else {
+    return((par-itme(par)))
+  }
+  
+}
+newtonRaphson(resvec, c(1.1,5))$root
