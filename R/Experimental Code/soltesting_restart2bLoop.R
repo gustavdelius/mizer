@@ -7,6 +7,11 @@ plot(simConst)
 kappaRval <- 0.005
 kappaRstarval <- 0.004
 
+itme <- function(Z){
+  kappaRval <- Z[1]
+  kappaRstarval <- Z[2]
+  
+
 
 myspno <- 3
 nval <- 2/3
@@ -128,7 +133,7 @@ plot(wvec,result_n(Cval),log="xy")
 ngood <- result_n(Cval)
 # make function that gives a value of ngood for any input weight
 FF <- approxfun(x=wvec, y = result_n(Cval),       method = "linear",
-          yleft=0, yright=0, rule = 1, f = 0, ties = mean)
+                yleft=0, yright=0, rule = 1, f = 0, ties = mean)
 plot(wvec,sapply(wvec,FF),log="xy")
 
 
@@ -174,3 +179,8 @@ kappaoutput <- sum(integrand[1:LL]*(wvec[2:(LL+1)]-wvec[1:LL]))
 plot(sapply(wvec,Nprey)/(wvec^(-lambdastar)))
 kappastarouth <- sapply(wvec,Nprey)/(wvec^(-lambdastar))[1]
 kappastarout <- kappastarouth[1]
+
+return(c(kappaoutput,kappastaroutput))
+}
+itme(itme(itme(c(0.005,0.004))))
+itme(itme(c(0.005,0.004)))
