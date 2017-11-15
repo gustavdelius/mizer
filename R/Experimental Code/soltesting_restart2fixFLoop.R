@@ -20,7 +20,7 @@ myspno <- 3
 nval <- 2/3
 qval <- 0.9
 lambdastar <- 2+qval-nval
-chi <- 0.5
+chi <- 0.05
 beta <- paramsConst@species_params$beta[1]
 sigmaval <- paramsConst@species_params$sigma[1] 
 
@@ -37,7 +37,7 @@ determine_phi <- function(w){
 #determine_phi(1)
 
 phivals <- sapply(wvec,determine_phi)
-gamma <- paramsConst@species_params$gamma[1]
+gamma <- paramsConst@species_params$gamma[1]/1000
 
 ##h <- paramsConst@species_params$h[1]
 Ee <- gamma*phivals*wvec^qval
@@ -237,7 +237,7 @@ itme(c(XX[2],YY[1]))
 
 
 NX <- 20
-NY <- 200
+NY <- 20
 XX <- (1:NX)/NX
 YY <- (1:NY)/NY
 MM <- matrix(0,NX,NY)
