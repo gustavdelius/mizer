@@ -7,9 +7,8 @@ plot(simConst)
 kappaRval <- 0.005
 kappaRstarval <- 0.004
 
-#kappaRval <- 2.122549e+22
-#kappaRstarval <- 2.491999e+23
-
+#kappaRval <- 1.912070e-11 
+#kappaRstarval <- 7.758407e-19
 
 
 
@@ -17,7 +16,7 @@ myspno <- 3
 nval <- 2/3
 qval <- 0.9
 lambdastar <- 2+qval-nval
-chi <- 0.05
+chi <- 0.5
 beta <- paramsConst@species_params$beta[1]
 sigmaval <- paramsConst@species_params$sigma[1] 
 

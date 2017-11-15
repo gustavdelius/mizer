@@ -20,7 +20,7 @@ myspno <- 3
 nval <- 2/3
 qval <- 0.9
 lambdastar <- 2+qval-nval
-chi <- 0.05
+chi <- 0.5
 beta <- paramsConst@species_params$beta[1]
 sigmaval <- paramsConst@species_params$sigma[1] 
 
@@ -174,7 +174,7 @@ return(c(kappaoutput,kappastaroutput))
 itme(itme(itme(itme(c(0.005,0.004)))))
 
 ZZ <- c(0.005,0.004)
-T <- 3
+T <- 5
 out <- 1:T
 for (t in (1:T)){
   ZZ <- itme(ZZ)
@@ -193,7 +193,9 @@ res <- function(par){
   return(sum((diff <- par-itme(par))^2))
 }
 
-op <- optim(c(0.005,0.004),res,lower = c(10^(-20),10^(-20)))
+op <- optim(c(0.005,0.004),res,lower = c(10^(-10),10^(-10)),
+            upper = c(10^(20),10^(20))
+            ,method="L-BFGS-B")
 
 res(c(0.5,6))
 
