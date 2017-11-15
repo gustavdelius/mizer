@@ -187,3 +187,9 @@ for (i in 1:nrow(HH)){
   }
 }
 itme(c(1,5))
+
+XX <- c(24440081,51401126)
+
+for (t in (1:10)){
+  XX <- itme(XX)
+}
