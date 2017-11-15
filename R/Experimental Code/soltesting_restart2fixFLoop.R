@@ -193,7 +193,7 @@ res <- function(par){
   return(sum((diff <- par-itme(par))^2))
 }
 
-op <- optim(c(0.005,0.004),res,lower = c(10^(-10),10^(-10)),
+op <- optim(c(0.3,0.1),res,lower = c(10^(-10),10^(-10)),
             upper = c(10^(20),10^(20))
             ,method="L-BFGS-B")
 
@@ -202,4 +202,33 @@ res(c(0.5,6))
 
 itme(c(0.005240708,0.003731182))
 
+NX <- 20
+NY <- 20
+XX <- 1:NX
+YY <- 1:NY
+MM <- matrix(0,NX,NY)
+for (i in (1:NX)){
+  for (j in (1:NY)){
+    MM[i,j] <- log(res(c(XX[i],YY[j])))
+  }
+}
+persp(MM)
+library("plot3D")
+contour2D(MM, lwd = 2)
+itme(c(0.3,0.1))
+
+NX <- 20
+NY <- 20
+XX <- (1:NX)/NX
+YY <- (1:NY)/NY
+MM <- matrix(0,NX,NY)
+for (i in (1:NX)){
+  for (j in (1:NY)){
+    MM[i,j] <- log(res(c(XX[i],YY[j])))
+  }
+}
+persp(MM)
+library("plot3D")
+contour2D(MM, lwd = 2)
+itme(c(0.3,0.1))
 
