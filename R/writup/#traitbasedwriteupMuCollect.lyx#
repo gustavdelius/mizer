@@ -2612,7 +2612,7 @@ and so there exists
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\frac{X(w,w_{*})}{g(w,w_{*})}=N(w,w_{*})=\left(\chi\int_{w_{0}}^{w}\frac{\widehat{\mu}(w',w_{*})}{g(w',w_{*})^{\chi+1}}.dw'\right)^{-1/\chi}\label{eq:ODEsol}
+\frac{X(w,w_{*})}{g(w,w_{*})}=N(w,w_{*})=\frac{1}{g(w,w_{*})}\left(\chi\int_{w_{0}}^{w}\frac{\widehat{\mu}(w',w_{*})}{g(w',w_{*})^{\chi+1}}.dw'\right)^{-1/\chi}\label{eq:ODEsol}
 \end{equation}
 
 \end_inset
@@ -2632,7 +2632,7 @@ Another way to express this solution is to say that there exists a constant
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-N(w,w_{*})=\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*})}^{w}\frac{\widehat{\mu}(w',w_{*})}{g(w',w_{*})^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1}
+N(w,w_{*})=\frac{1}{g(w,w_{*})}\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*})}^{w}\frac{\widehat{\mu}(w',w_{*})}{g(w',w_{*})^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1}
 \end{equation}
 
 \end_inset
@@ -3056,25 +3056,6 @@ The prefactor was determined Equations (A.2) and (A.3) of [Hartvig] for there
  We can modify approach.
 \end_layout
 
-\begin_layout Standard
-Also note
-\end_layout
-
-\begin_layout Standard
-In our case 
-\begin_inset Formula $\Omega=\Gamma=0$
-\end_inset
-
- so
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $\Lambda+r=\Lambda(1+\chi)$
-\end_inset
-
-
-\end_layout
-
 \begin_layout Subsection
 Case Without Starvation Or Background Mortality
 \end_layout
@@ -3102,7 +3083,7 @@ We shall suppose that
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-N(w,w_{*})=\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*})}^{w}\frac{\alpha_{p}w^{n-1}}{\left(\hbar w^{n}(1-\psi(w,w_{*}))\right)^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1-1}
+N(w,w_{*})=\frac{1}{g(w,w_{*})}\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*})}^{w}\frac{\alpha_{p}w^{n-1}}{\left(\hbar w^{n}(1-\psi(w,w_{*}))\right)^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1-1}
 \end{equation}
 
 \end_inset
@@ -3655,15 +3636,14 @@ g(w,w_{*})=\alpha\bar{f}hw^{n}(1-\psi(w,w_{*}))
 \end_layout
 
 \begin_layout Standard
-Check that
+Use
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
-\mu_{p}(w) & = & \overline{\mu}(w)\\
- & = & \int_{0}^{\infty}\left(1-f(w')\right)N_{pred}(w')s(w,w')\gamma w'^{q}dw'\\
- & = & \alpha_{p}w^{n-1}
+\mu_{p}(w) & = & \mu_{p}(w)=w^{1+q+A-\Lambda}\mu_{p}(1)\\
+ & = & \int_{0}^{\infty}\left(1-f(w')\right)N_{pred}(w')s(w,w')\gamma w'^{q}dw'
 \end{eqnarray*}
 
 \end_inset
@@ -3672,18 +3652,33 @@ Check that
 \end_layout
 
 \begin_layout Standard
-where
+to evaluate predation mortality, and note that
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-\alpha_{p}=(1-\bar{f})\sqrt{2\pi}\kappa\gamma\sigma\beta^{1+q-\lambda}\exp\left(\frac{\sigma^{2}}{2}(1+q-\lambda)^{2}\right).
-\end{equation}
-
+In our case 
+\begin_inset Formula $\Omega=\Gamma=0$
 \end_inset
 
+ so
+\end_layout
 
+\begin_layout Standard
+\begin_inset Formula $\Lambda+r=\Lambda(1+\chi)=\lambda_{*}+A$
+\end_inset
+
+ so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\Lambda=\frac{\lambda_{*}+A}{1+\chi}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+[[This agrees with simu, but we need to extend support of community spectrum]].
 \end_layout
 
 \begin_layout Standard
@@ -3702,7 +3697,7 @@ For
  evaluate 
 \begin_inset Formula 
 \begin{equation}
-N(w,w_{*}^{\#})=\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*}^{\#})}^{w}\frac{\widehat{\mu}(w',w_{*}^{\#})}{g(w',w_{*}^{\#})^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1-2}
+N(w,w_{*}^{\#})=\frac{1}{g(w,w_{*}^{\#})}\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*}^{\#})}^{w}\frac{\widehat{\mu}(w',w_{*}^{\#})}{g(w',w_{*}^{\#})^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1-2}
 \end{equation}
 
 \end_inset
@@ -3783,7 +3778,61 @@ N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\kap
 \end_layout
 
 \begin_layout Standard
-to determine 
+In our case with 
+\begin_inset Formula $\Omega=\Gamma=0$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta=A=1$
+\end_inset
+
+ we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)^{\chi+1}dw'_{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{prey}(w) & = & \int_{0}^{\infty}N(w,w'_{*},t)^{\chi+1}dw'_{*}\\
+ & = & \int_{0}^{\infty}\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\Lambda(\chi+1)}N\left(w\left(\frac{w_{*}^{\#}}{w_{*}}\right),w_{*}^{\#}\right)^{\chi+1}dw'_{*}\\
+ & = & \int_{0}^{\infty}\left(\frac{w_{*}^{\#}}{y}\right)^{\Lambda(\chi+1)}N\left(y,w_{*}^{\#}\right)^{\chi+1}dw'_{*}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we use
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $y=w\left(\frac{w_{*}^{\#}}{w_{*}}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\frac{dy}{dw_{*}}=-ww_{*}^{\#}w_{*}^{-2}=-\frac{y^{2}}{ww_{*}^{\#}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Use these results to determine 
 \begin_inset Formula $\kappa_{*}'.$
 \end_inset
 

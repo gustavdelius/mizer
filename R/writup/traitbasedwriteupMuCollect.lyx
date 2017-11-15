@@ -2612,7 +2612,7 @@ and so there exists
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\frac{X(w,w_{*})}{g(w,w_{*})}=N(w,w_{*})=\left(\chi\int_{w_{0}}^{w}\frac{\widehat{\mu}(w',w_{*})}{g(w',w_{*})^{\chi+1}}.dw'\right)^{-1/\chi}\label{eq:ODEsol}
+\frac{X(w,w_{*})}{g(w,w_{*})}=N(w,w_{*})=\frac{1}{g(w,w_{*})}\left(\chi\int_{w_{0}}^{w}\frac{\widehat{\mu}(w',w_{*})}{g(w',w_{*})^{\chi+1}}.dw'\right)^{-1/\chi}\label{eq:ODEsol}
 \end{equation}
 
 \end_inset
@@ -2632,7 +2632,7 @@ Another way to express this solution is to say that there exists a constant
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-N(w,w_{*})=\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*})}^{w}\frac{\widehat{\mu}(w',w_{*})}{g(w',w_{*})^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1}
+N(w,w_{*})=\frac{1}{g(w,w_{*})}\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*})}^{w}\frac{\widehat{\mu}(w',w_{*})}{g(w',w_{*})^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1}
 \end{equation}
 
 \end_inset
@@ -3083,7 +3083,7 @@ We shall suppose that
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-N(w,w_{*})=\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*})}^{w}\frac{\alpha_{p}w^{n-1}}{\left(\hbar w^{n}(1-\psi(w,w_{*}))\right)^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1-1}
+N(w,w_{*})=\frac{1}{g(w,w_{*})}\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*})}^{w}\frac{\alpha_{p}w^{n-1}}{\left(\hbar w^{n}(1-\psi(w,w_{*}))\right)^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1-1}
 \end{equation}
 
 \end_inset
@@ -3697,7 +3697,7 @@ For
  evaluate 
 \begin_inset Formula 
 \begin{equation}
-N(w,w_{*}^{\#})=\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*}^{\#})}^{w}\frac{\widehat{\mu}(w',w_{*}^{\#})}{g(w',w_{*}^{\#})^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1-2}
+N(w,w_{*}^{\#})=\frac{1}{g(w,w_{*}^{\#})}\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*}^{\#})}^{w}\frac{\widehat{\mu}(w',w_{*}^{\#})}{g(w',w_{*}^{\#})^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1-2}
 \end{equation}
 
 \end_inset
@@ -3778,7 +3778,61 @@ N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\kap
 \end_layout
 
 \begin_layout Standard
-to determine 
+In our case with 
+\begin_inset Formula $\Omega=\Gamma=0$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta=A=1$
+\end_inset
+
+ we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)^{\chi+1}dw'_{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{prey}(w) & = & \int_{0}^{\infty}N(w,w'_{*},t)^{\chi+1}dw'_{*}\\
+ & = & \int_{0}^{\infty}\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\Lambda(\chi+1)}N\left(w\left(\frac{w_{*}^{\#}}{w_{*}}\right),w_{*}^{\#}\right)^{\chi+1}dw'_{*}\\
+ & = & ww_{*}^{\#}\int_{0}^{\infty}\left(\frac{w_{*}^{\#}}{y}\right)^{\Lambda(\chi+1)}N\left(y,w_{*}^{\#}\right)^{\chi+1}y^{-2}dy
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we use
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $y=w\left(\frac{w_{*}^{\#}}{w_{*}}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\frac{dy}{dw_{*}}=-ww_{*}^{\#}w_{*}^{-2}=-\frac{y^{2}}{ww_{*}^{\#}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Use these results to determine 
 \begin_inset Formula $\kappa_{*}'.$
 \end_inset
 
