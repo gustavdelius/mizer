@@ -231,4 +231,25 @@ persp(MM)
 library("plot3D")
 contour2D(MM, lwd = 2)
 itme(c(0.3,0.1))
+itme(c(XX[2],YY[1]))
 
+###########
+
+
+NX <- 20
+NY <- 200
+XX <- (1:NX)/NX
+YY <- (1:NY)/NY
+MM <- matrix(0,NX,NY)
+for (i in (1:NX)){
+  for (j in (1:NY)){
+    MM[i,j] <- log(res(c(XX[i],YY[j])))
+  }
+}
+persp(MM)
+library("plot3D")
+contour2D(MM, lwd = 2)
+which(MM==min(MM))
+
+c(XX[1],YY[3])
+itme(c(XX[1],YY[3]))
