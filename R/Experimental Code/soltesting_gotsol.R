@@ -168,6 +168,15 @@ chii <- 0
 integrand <- matsize*y^(Lambda*(chii+1))*ngood^(chii+1)*y^(-2)
 LL <- length(wvec)-1
 kappaoutput <- sum(integrand[1:LL]*(wvec[2:(LL+1)]-wvec[1:LL]))
+c(kappaRval,kappaRstarval)
+c(kappaoutput,kappastaroutput)
+
+result_nnn <- result_n(Cval)
+LHS <- result_nnn[1]*growth_rate[1]
+RHSS <- sum(((result_nnn*psi*hbar*wvec^nval)[1:(length(wvec)-1)])*(wvec[2:length(wvec)]-wvec[1:(length(wvec)-1)]))/(2*egg_size)
+repro_efff <- LHS/RHSS
+repro_efff
+#rrrrrr#
 
 plot(seq(-5,5,1),sapply(seq(-5,5,1),is_zero))
 
