@@ -174,3 +174,212 @@ plot(seq(-5,5,1),sapply(seq(-5,5,1),is_zero))
 plot(wvec,result_n(Cval),log="xy")
 
 plot(wvec,result_n(10^100+Cval),log="xy")
+is_zero(1)
+is_zero(10^100)
+
+rootSolve 
+cvalues <- 10^seq(1,100,1)
+plot(sapply(cvalues,is_zero))
+
+BCdeviation <- sapply(cvalues,is_zero)
+
+Lc <- length(BCdeviation)-1
+cvalues[BCdeviation[2:(Lc+1)]-BCdeviation[1:(Lc)]>0]
+
+midval <-function(v){
+  L <- length(v)
+  return(v[floor((L-1)/2)+1])
+}
+
+midval(cvalues)
+
+newtonRaphson(is_zero, midval(cvalues[BCdeviation[2:(Lc+1)]-BCdeviation[1:(Lc)]>0]))$root
+
+
+hyper_is_zero<- function(logc)
+{return(is_zero(exp(logc)))}
+newtonRaphson(is_zero, 1)$root
+newtonRaphson(hyper_is_zero, 1)$root
+
+is_zero(1.00964e+11)
+
+is_zero(1.00964e+12)
+
+is_zero(1.00964e+10)
+
+plot(1:200,sapply(1:200,hyper_is_zero))
+
+goodcvals <- cvalues[BCdeviation[2:(Lc+1)]-BCdeviation[1:(Lc)]>0]
+Lg <- length(goodcvals)
+plot(goodcvals[1:(Lg-1)],sapply(goodcvals[1:(Lg-1)],is_zero),log="x")
+
+
+newtonRaphson(is_zero, midval(goodcvals[1:(Lg-1)]))$root
+
+is_zero(147550537211)
+10^15
+is_zero()
+
+log(10^15)
+plot(exp(20:40),sapply(exp(20:40),is_zero),log="x")
+abline(h=0)
+
+exp(20:40)[sapply(exp(20:40),is_zero)>0][1]
+is_zero(2.146436e+14)
+is_zero(exp(20:40)[sapply(exp(20:40),is_zero)>0][1])
+jj <- sapply(exp(20:40),is_zero)>0
+length(jj)
+
+toolow <- exp(20:40)[sapply(exp(20:40),is_zero)<=0]
+toolow[length(toolow)]
+
+
+
+is_zero(toolow[length(toolow)])
+is_zero(exp(20:40)[sapply(exp(20:40),is_zero)>0][1])
+
+########
+err <- 0
+poscand <- exp((-10):100)
+negcand <- -exp((-10):100)
+
+cgroup <- poscand
+
+results <- sapply(cgroup,is_zero)
+
+cgroup[which(results^2==min(results^2))]
+
+is_zero(cgroup[which(results^2==min(results^2))])
+
+cgroup <- poscand
+results <- sapply(cgroup,is_zero)
+if (length(which(results<0))==length(results)){
+  err <- 1
+}
+if (length(which(results>0))==length(results)){
+  err <- 1
+}
+
+if (err ==0){
+  firstpos <- cgroup[which(results>0)[1]]
+  negones <- cgroup[which(results<=0)]
+  lastneg <- negones[length(negones)]
+  bestguess <- firstpos
+  if (is_zero(lastneg)^2<is_zero(bestguess)^2){
+    bestguess <- lastneg
+  }
+}
+
+cgroup[which(results^2==min(results^2))]
+
+is_zero(cgroup[which(results^2==min(results^2))])
+
+
+bestguess
+is_zero(bestguess)
+
+is_zero(2.688117e+48)
+2.688117e+43
+
+library(NLRoot)
+z<- BFfzero(is_zero, 10^10, 10^30)
+z
+ff <- function(x){0.1+x^2-x}
+z<- BFfzero(ff, -2, 2)
+
+bisection <- function(f, a, b, n = 1000, tol = 1e-7) {
+  # If the signs of the function at the evaluated points, a and b, stop the function and return message.
+  if (!(f(a) < 0) && (f(b) > 0)) {
+    stop('signs of f(a) and f(b) differ')
+  } else if ((f(a) > 0) && (f(b) < 0)) {
+    stop('signs of f(a) and f(b) differ')
+  }
+  
+  for (i in 1:n) {
+    c <- (a + b) / 2 # Calculate midpoint
+    
+    # If the function equals 0 at the midpoint or the midpoint is below the desired tolerance, stop the 
+    # function and return the root.
+    if ((f(c) == 0) || ((b - a) / 2) < tol) {
+      return(c)
+    }
+    
+    # If another iteration is required, 
+    # check the signs of the function at the points c and a and reassign
+    # a or b accordingly as the midpoint to be used in the next iteration.
+    ifelse(sign(f(c)) == sign(f(a)), 
+           a <- c,
+           b <- c)
+  }
+  # If the max number of iterations is reached and no root has been found, 
+  # return message and end function.
+  print('Too many iterations')
+}
+bisection(ff,-1,1)
+
+BFfzero(ff,-1,1)
+bisection(ff,-1,1)
+
+is_zero(bestguess)
+
+hyper_is_zero(log(bestguess))
+
+BFfzero(hyper_is_zero,log(bestguess/10),log(bestguess*10))
+
+32.43766
+
+BFfzerobetter <- function (f, a, b, num = 10, eps = 1e-05) 
+{
+  h = abs(b - a)/num
+  i = 0
+  j = 0
+  a1 = b1 = 0
+  while (i <= num) {
+    a1 = a + i * h
+    b1 = a1 + h
+    if (f(a1) == 0) {
+      print(a1)
+      print(f(a1))
+    }
+    else if (f(b1) == 0) {
+      print(b1)
+      print(f(b1))
+    }
+    else if (f(a1) * f(b1) < 0) {
+      repeat {
+        if (abs(b1 - a1) < eps) 
+          break
+        x <- (a1 + b1)/2
+        if (f(a1) * f(x) < 0) 
+          b1 <- x
+        else a1 <- x
+      }
+      print(j + 1)
+      j = j + 1
+      print((a1 + b1)/2)
+      print(f((a1 + b1)/2))
+    }
+    i = i + 1
+  }
+  if (j == 0) 
+    print("finding root is fail")
+  else {print("finding root is successful")
+  return((a1 + b1)/2)}
+}
+
+ww<-BFfzerobetter(hyper_is_zero,log(bestguess/10),log(bestguess*10))
+exp(ww)
+
+www <- BFfzerobetter(is_zero,10^10,10^17)
+is_zero(www)
+is_zero(www*2)
+is_zero(www/2)
+
+is_zero(exp(ww))
+bestguess
+
+BFfzerobetter(is_zero,10^10,10^11)
+
+ty <- BFfzerobetter(is_zero,-10^10,10^20)
+
+ty <- BFfzerobetter(is_zero,10^14,10^17)
