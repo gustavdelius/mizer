@@ -1,13 +1,14 @@
+
 library(mizer)
 library(plyr)
 # load parameter values
 paramsConst <- set_trait_model(no_sp = 10, min_w_inf = 10)
 
 # set q and input kappas
-kappaRval <- 5.273115e-11
-kappaRstarval <- 2.697401e-18
-qval <- 1.5
-go2 <- function(kappaRval,kappaRstarval,qval){
+kappaRval <- 2.184406e-01
+kappaRstarval <- 1.141175e-01
+qval <- 1.9
+
 # focus on third species
 myspno <- 3
 # choose n
@@ -67,13 +68,13 @@ maxsizeindex <- length(maxsize[wvec<maxsize])
 realalpha_p <- max((mortvals/(wvec^(A+1+qval-((lambdastar+A)/(chi+1)))))[1:maxsizeindex])
 # check resulting function has constant value = mortality rate prefactor 
 XX <- (mortvals/(wvec^(A+1+qval-((lambdastar+A)/(chi+1)))))[1:maxsizeindex]
-#plot(XX)
+plot(XX)
 # get powerlaw form of mortality rate
 realmu_pp <- realalpha_p *wvec^(A+1+qval-((lambdastar+A)/(chi+1)))
 # check powerlaw matches reality up to maxsize
-#plot(wvec,mortvals,log="xy")
-#lines(wvec,realmu_pp)
-#abline(v=maxsize)
+plot(wvec,mortvals,log="xy")
+lines(wvec,realmu_pp)
+abline(v=maxsize)
 # prepare integrand from pde steady state expression
 integrand <- realmu_pp/(growth_rate^(chi+1))
 # evaluate integral for w from eggsize to W
@@ -92,7 +93,7 @@ result_n <- function(C){
   return(nstart)
 }
 # plot an example solution
-#plot(wvec,result_n(11),log="xy")
+plot(wvec,result_n(11),log="xy")
 
 repro_eff <- 0.1
 
@@ -112,9 +113,10 @@ library(pracma)
 # try and find C to solve BC
 ##Cval <- newtonRaphson(is_zero, 1)$root
 ##Cval <- 1.00875e+11 
+##plot(wvec,result_n(Cval),log="xy")
+## here we just use Cval=1 and tune reproductive eff epsilon to fit BC instead
 Cval <- 1
-#plot(wvec,result_n(Cval),log="xy")
-
+plot(wvec,result_n(Cval),log="xy")
 # use this to define solution
 ngood <- result_n(Cval)
 # get abundance scaling exponent
@@ -146,35 +148,4 @@ LHS <- result_nnn[1]*growth_rate[1]
 RHSS <- sum(((result_nnn*psi*hbar*wvec^nval)[1:(length(wvec)-1)])*(wvec[2:length(wvec)]-wvec[1:(length(wvec)-1)]))/(2*egg_size)
 repro_efff <- LHS/RHSS
 repro_efff
-return(c(kappaoutput,kappastaroutput,repro_efff))
-}
 
-itme <- function(Z,qval){
-  return(go2(Z[1],Z[2],qval)[1:2])
-}
-
-Z0 <- c(5.273115e-11,2.697401e-18)
-Z0 <- c(10^1,10^1)
-
-QQval <- 1.9
-T <- 50
-kapparesults <- 1:T
-Z0 <- itme(Z0,QQval)
-for (t in (1:T)){
-  kapparesults[t] <- Z0[1]
-  Z0 <- itme(Z0,QQval)
-}
-plot(kapparesults,log="y")
-# note the Z0 from iterating this is exactly self returning, although the epsilon
-# is > 1
-Z0
-go2(Z0[1], Z0[2] ,QQval)
-
-#go2(3.125824e-02, 3.896207e-05 ,1.5)
-#go2(2.184797e-01,1.142112e-01,2.5)
-
-go2(2.184406e-01,1.141175e-01,2.5)
-itme(Z0,QQval)
-go2(Z0[1],Z0[2],QQval)[1:2]
-
-go2(0.2184406 ,0.1141175,1.9)
