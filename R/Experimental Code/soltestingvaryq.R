@@ -209,3 +209,5 @@ for (t in (1:T)){
 Z0
 Z0 <- itmenu(Z0)
 plot(1:T,collectkappas,log="y")
+
+go(5.273115e-11, 2.697401e-18,1.5)
