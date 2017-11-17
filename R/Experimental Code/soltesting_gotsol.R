@@ -7,10 +7,16 @@ plot(simConst)
 kappaRval <- 0.005
 kappaRstarval <- 0.004
 qval <- 0.9
+
+kappaRval <- 5.273115e-11
+kappaRstarval <- 2.697401e-18
+qval <- 1.5
+
 #kappaRval <- 1.912070e-11 
 #kappaRstarval <- 7.758407e-19
 
-go <- function(kappaRval=kappaRval,kappaRstarval=kappaRstarval,qval=qval){
+go(5.273115e-11, 2.697401e-18,1.5)
+
 
 myspno <- 3
 nval <- 2/3
@@ -82,22 +88,22 @@ A<-1
 mu_pp <- alpha_p*wvec^(A+1+qval-((lambdastar+A)/(chi+1)))
 
 
-##plot(wvec,mortvals,log="xy")
-##lines(wvec,mu_pp)
+plot(wvec,mortvals,log="xy")
+lines(wvec,mu_pp)
 # work out mortality integral again, 
 #and check whether an adjustment should be added
 maxsize <- paramsConst@species_params$w_inf[myspno]
 maxsizeindex <- length(maxsize[wvec<maxsize])
 realalpha_p <- max((mortvals/(wvec^(A+1+qval-((lambdastar+A)/(chi+1)))))[1:maxsizeindex])
 XX <- (mortvals/(wvec^(A+1+qval-((lambdastar+A)/(chi+1)))))[1:maxsizeindex]
-##plot(XX)
-##alpha_p
-##abline(v=maxsize)
+plot(XX)
+alpha_p
+abline(v=maxsize)
 realmu_pp <- realalpha_p *wvec^(A+1+qval-((lambdastar+A)/(chi+1)))
 
-##plot(wvec,mortvals,log="xy")
-##lines(wvec,realmu_pp)
-##abline(v=maxsize)
+plot(wvec,mortvals,log="xy")
+lines(wvec,realmu_pp)
+abline(v=maxsize)
 
 integrand <- realmu_pp/(growth_rate^(chi+1))
 
@@ -115,7 +121,7 @@ result_n <- function(C){
   return(nstart)
 }
 
-##plot(wvec,result_n(11),log="xy")
+plot(wvec,result_n(11),log="xy")
 
 #plot(wvec[1:71],result_n(1)[1:71],log="xy")
 
@@ -136,13 +142,13 @@ Cval <- newtonRaphson(is_zero, 1)$root
 #is_zero(5)
 #is_zero(5.6699)
 #optim(1,is_zero,lower = 0.5,upper=8)
-##plot(wvec[1:71],result_n(1)[1:71],log="xy")
-##plot(wvec,result_n(Cval),log="xy")
+plot(wvec[1:71],result_n(1)[1:71],log="xy")
+plot(wvec,result_n(Cval),log="xy")
 ngood <- result_n(Cval)
 # make function that gives a value of ngood for any input weight
 FF <- approxfun(x=wvec, y = result_n(Cval),       method = "linear",
                 yleft=0, yright=0, rule = 1, f = 0, ties = mean)
-##plot(wvec,sapply(wvec,FF),log="xy")
+plot(wvec,sapply(wvec,FF),log="xy")
 
 
 Lambda <- (lambdastar+A)/(chi+1)
@@ -163,58 +169,8 @@ integrand <- matsize*y^(Lambda*(chii+1))*ngood^(chii+1)*y^(-2)
 LL <- length(wvec)-1
 kappaoutput <- sum(integrand[1:LL]*(wvec[2:(LL+1)]-wvec[1:LL]))
 
-return(c(kappaoutput,kappastaroutput,is_zero(Cval)))
-}
+plot(seq(-5,5,1),sapply(seq(-5,5,1),is_zero))
 
-kappaRval <- 0.005
-kappaRstarval <- 0.004
-qval <- 0.9
-go(kappaRval,kappaRstarval,qval)
-kappaRvalnu <- 1
-kappaRstarvalnu <- .9
+plot(wvec,result_n(Cval),log="xy")
 
-qvec <- seq(0.5,1.5,0.1)
-kapoutvec <- qvec
-for (i in (1:length(qvec))){
-  kapoutvec[i] <- go(kappaRvalnu,kappaRstarvalnu,qvec[i])
-}
-plot(qvec,kapoutvec,log="y")
-
-kapoutvec
-
-itmenu <- function(Z){
-###!!  go(Z[1],Z[2],qval)[1:2]
-  go(Z[1],Z[2],1.5)[1:2]
-  ##go(Z[1],Z[2],2.25)[1:2]
-}
-
-itmenu(itmenu(c(kappaRval,kappaRstarval)))
-
-Z0 <- c(kappaRval,kappaRstarval)
-for (t in (1:4)){
-  Z0 <- itmenu(Z0)
-}
-
-Z0
-kappaRvalBad <- 4.113601e-08 
-kappaRstarvalBad <- 2.442755e-13
-go(kappaRvalBad,kappaRstarvalBad,qval)
-
-Z0 <- c(kappaRval,kappaRstarval)*10^5
-Z0 <- c(kappaRval,kappaRstarval)
-
-Z0 <- c(0.05,0.04)
-
-T <- 35
-collectkappas <- 1:T
-for (t in (1:T)){
-  collectkappas[t] <- Z0[1]
-  Z0 <- itmenu(Z0)
-}
-Z0
-Z0 <- itmenu(Z0)
-plot(1:T,collectkappas,log="y")
-
-go(5.273115e-11, 2.697401e-18,1.5)
-
-go(4.369297e-11, 1.982203e-18,1.5) 
+plot(wvec,result_n(10^100+Cval),log="xy")
