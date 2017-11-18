@@ -4034,7 +4034,7 @@ k & = & 0\\
 \gamma & = & 600.4424\\
 \beta & = & 100\\
 \sigma & = & 1.3\\
-w_{*} & = & 149.871063\\
+w_{*}^{\#} & = & 19.356\\
 w_{e} & = & 0.001\\
 D(w_{*}) & = & 1
 \end{eqnarray*}
@@ -4093,6 +4093,120 @@ tingtruesol.R
 
 \end_layout
 
+\begin_layout Standard
+Here is a plot of the associated growth rate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename growthrate.PNG
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and mortality rate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename mortrate.PNG
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and reproduction function
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename psi.PNG
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And, for 
+\begin_inset Formula $w=1,$
+\end_inset
+
+ we can use our formula
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*})=\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\frac{\Lambda}{A}}N\left(w\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\frac{1}{A}},w_{*}^{\#}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To give us the following plot of 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+ vs 
+\begin_inset Formula $N(1,w_{*})$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+In addition we can make a surface, or contour, plot of how 
+\begin_inset Formula $N(w,w_{*})$
+\end_inset
+
+ varies with 
+\begin_inset Formula $w,w_{*}.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+In our case with 
+\begin_inset Formula $A=1,$
+\end_inset
+
+ we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(1,w_{*})=\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\Lambda}N\left(\frac{w_{*}^{\#}}{w_{*}},w_{*}^{\#}\right),
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and evaluating this gives
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename wsdep.PNG
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection*
 References
 \end_layout
@@ -4141,67 +4255,15 @@ To Do
 \end_layout
 
 \begin_layout Standard
-Go through exponent constraints from scale invariance
+Make surface plot of whole community
 \end_layout
 
 \begin_layout Standard
-Go through how 
-\begin_inset Formula $F_{c}$
-\end_inset
-
- invariant terms are described, and what this implies for power law
+generalize kappa solver and use newton raphson
 \end_layout
 
 \begin_layout Standard
-Go back and argue about egg size properly
-\end_layout
-
-\begin_layout Standard
-Add in different terms for reproduction term,
-\end_layout
-
-\begin_layout Standard
-Evaluate ODE in most general case possible
-\end_layout
-
-\begin_layout Standard
-Show Harvig +r is a special case, and go through numerical solution in this
- case
-\end_layout
-
-\begin_layout Standard
-Use special case to get stock recruitment etc.
-\end_layout
-
-\begin_layout Standard
-what about the scale free time variant solutions, do they decay to the steady
- state scale free solution
-\end_layout
-
-\begin_layout Standard
-what about if one proposes a background traveling wave rather than a background
- power law
-\end_layout
-
-\begin_layout Standard
-are there any non-steady states for which a non-trivial time transformation
- on 
-\begin_inset Formula $N$
-\end_inset
-
- has the same effect as performing a symmetry transform on 
-\begin_inset Formula $N,$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Lit review
-\end_layout
-
-\begin_layout Standard
-Put multiple eggs in, and code in mizer.
+find other solutions, and constraints by which we can tune the system
 \end_layout
 
 \end_body
