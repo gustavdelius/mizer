@@ -187,7 +187,7 @@ QQ <- 2.1
 zerme <- function(Z0){
 return(itme(Z0,QQ)-Z0)
 }
-multiroot(zerme,c(1,1))$root
+multiroot(zerme,c(1,1),maxiter = 10000)$root
 
 QQvec <- seq(0.5,3,0.1)
 kapstorevec <- QQvec
@@ -199,11 +199,17 @@ for (i in (1:L)){
   zerme2 <- function(Z0){
     return(itme(Z0,QQvec[i])-Z0)
   }
-  res <- multiroot(zerme2,c(1,1))$root
+  res <- multiroot(zerme2,c(1,1),maxiter = 10000)$root
   kapstorevec[i] <- res[1]
   kapstarstorevec[i] <- res[2]
   epsilonvec[i] <- go2(res[1],res[2],QQvec[i])[3]
   
 }
-
+itme(c(1,1),QQQ)
 plot()
+QQQ <- 0.5
+zerme2 <- function(Z0){
+  return(itme(Z0,QQQ)-Z0)
+}
+res <- multiroot(zerme2,itme(c(1,1),QQQ),maxiter = 10000)$root
+go2(res[1],res[2],QQQ)
