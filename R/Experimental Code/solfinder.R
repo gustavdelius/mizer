@@ -213,3 +213,20 @@ zerme2 <- function(Z0){
 }
 res <- multiroot(zerme2,itme(c(1,1),QQQ),maxiter = 10000)$root
 go2(res[1],res[2],QQQ)
+
+QQQ <- 2.5
+Z0 <- c(1,1)
+T <- 30
+reskap <- 1:T
+reskapstar <- 1:T
+for (t in (1:T)){
+  reskap[t] <- Z0[1]
+  reskapstar[t] <- Z0[2]
+  Z0 <- itme(Z0,QQQ)
+}
+plot(reskap,reskapstar)
+plot(reskap)
+reskap
+
+res <- multiroot(zerme2,itme(c(1,1),QQQ),maxiter = 10000)$root
+go2(res[1],res[2],QQQ)
