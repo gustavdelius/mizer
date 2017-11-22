@@ -12,7 +12,7 @@ kappaRval <- 0.4
 kappaRstarval <- kappaRval
 
 #kappaRstarval <- 1.141175e-01
-qval <- 0.8
+qval <- 0.9
 
   kappaRstarval <- kappaRval
   
@@ -55,7 +55,7 @@ qval <- 0.8
   psi <- paramsConst@psi[myspno,]
   # define fraction of energy assimilated by prey
   alpha <- paramsConst@species_params$alpha[myspno]
-  alpha <- 0.23
+  alpha <- 0.19
   # define growth rate with k=0 metabolic loss
   growth_rate <- (alpha*fbar*h*wvec^nval)*(1-psi)
   # get exponent of predator spectrum
