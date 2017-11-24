@@ -4245,7 +4245,7 @@ With
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
-N_{H}(w,w_{*}) & = & H\frac{\exp(-I)}{(1-\psi(w,w_{*}))}
+N_{H}(w,w_{*}) & = & H\frac{\exp(-I)}{\hbar w^{n}(1-\psi(w,w_{*}))}
 \end{eqnarray*}
 
 \end_inset
@@ -4316,15 +4316,11 @@ So, back to the solution
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-N_{H}(w,w_{*})=H\frac{\left(\frac{w_{e}}{w}\left(\frac{1-Bw^{a}}{1-Bw_{e}^{a}}\right)^{\frac{1}{a}}\right)^{\frac{\mu_{0}}{\hbar}}}{(1-\psi(w,w_{*}))}
+N_{H}(w,w_{*})=H\frac{\left(\frac{w_{e}}{w}\left(\frac{1-Bw^{a}}{1-Bw_{e}^{a}}\right)^{\frac{1}{a}}\right)^{\frac{\mu_{0}}{\hbar}}}{\hbar w^{n}(1-\psi(w,w_{*}))}
 \end{equation}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 
 \end_layout
 
