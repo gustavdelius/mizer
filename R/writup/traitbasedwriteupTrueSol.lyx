@@ -4207,6 +4207,127 @@ and evaluating this gives
 
 \end_layout
 
+\begin_layout Section
+Analytic Solution Without Prey Switching
+\end_layout
+
+\begin_layout Standard
+Suppose 
+\begin_inset Formula $u>>1$
+\end_inset
+
+ so the fraction of energy diverted to the reproduction becomes the step
+ function
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\psi(w,w_{*})=\begin{cases}
+0 & \text{if \ensuremath{w<w_{*}}}\\
+\left(\frac{w_{*}}{\eta}\right)^{n-1}w^{1-n} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+With 
+\begin_inset Formula $\chi=0$
+\end_inset
+
+ the steady state to the Mckendric von-Foerster Equation is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{H}(w,w_{*}) & = & H\frac{\exp(-I)}{(1-\psi(w,w_{*}))}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $H$
+\end_inset
+
+ is a constant from integration.
+ We suppose 
+\begin_inset Formula $w>w_{*}$
+\end_inset
+
+ so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+I & = & \int_{w_{e}}^{w}\frac{\mu(w')}{g(w')}.dw'\\
+ & = & \frac{\mu_{0}}{\hbar}\int_{w_{e}}^{w}\frac{1}{w'(1-Bw'^{a})}.dw'\\
+ & =
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $a=1-n,B=\left(\frac{w_{*}}{\eta}\right)^{n-1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Changing the variable of integration to 
+\begin_inset Formula $v=B^{\frac{1}{a}}w'=Cw'$
+\end_inset
+
+ gives us
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+I & = & \frac{\mu_{0}}{\hbar}\int_{Cw_{e}}^{Cw}\frac{1}{v(1-v^{a})}.dv\\
+ & = & \frac{\mu_{0}}{\hbar}\left(\left(\ln\left(B^{\frac{1}{a}}w\right)-\ln\left(1-Bw^{a}\right)/a\right)-\left(\ln\left(B^{\frac{1}{a}}w_{e}\right)-\ln\left(1-Bw_{e}^{a}\right)/a\right)\right)\\
+ & = & \frac{\mu_{0}}{\hbar}\left(\ln\left(\frac{B^{\frac{1}{a}}w}{\left(1-Bw^{a}\right)^{\frac{1}{a}}}\left(\frac{B^{\frac{1}{a}}w_{e}}{\left(1-Bw_{e}^{a}\right)^{\frac{1}{a}}}\right)^{-1}\right)\right)\\
+ & = & \ln\left(\left(\frac{w}{w_{e}}\left(\frac{1-Bw_{e}^{a}}{1-Bw^{a}}\right)^{\frac{1}{a}}\right)^{\frac{\mu_{0}}{\hbar}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So, back to the solution
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{H}(w,w_{*})=H\frac{\left(\frac{w_{e}}{w}\left(\frac{1-Bw^{a}}{1-Bw_{e}^{a}}\right)^{\frac{1}{a}}\right)^{\frac{\mu_{0}}{\hbar}}}{(1-\psi(w,w_{*}))}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
 \begin_layout Subsection*
 References
 \end_layout
