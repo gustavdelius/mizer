@@ -4212,10 +4212,6 @@ and evaluating this gives
 Analytic Solution Without Prey Switching
 \end_layout
 
-\begin_layout Subsection
-Mature Fish
-\end_layout
-
 \begin_layout Standard
 Suppose 
 \begin_inset Formula $u>>1$
@@ -4262,14 +4258,23 @@ where
 \end_layout
 
 \begin_layout Standard
-With 
-\begin_inset Formula $\chi=0$
-\end_inset
-
- the steady state to the Mckendric von-Foerster Equation is
+We also suppose 
 \end_layout
 
 \begin_layout Standard
+\begin_inset Formula $\chi=0$
+\end_inset
+
+.
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+the steady state to the Mckendric von-Foerster Equation is
+\end_layout
+
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{eqnarray*}
 N_{H}(w,w_{*}) & = & H\frac{\exp(-I)}{\hbar w^{n}(1-\psi(w,w_{*}))}
@@ -4280,7 +4285,7 @@ N_{H}(w,w_{*}) & = & H\frac{\exp(-I)}{\hbar w^{n}(1-\psi(w,w_{*}))}
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 where 
 \begin_inset Formula $H$
 \end_inset
@@ -4293,7 +4298,7 @@ where
  so
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{eqnarray*}
 I & = & \int_{w_{e}}^{w}\frac{\mu(w')}{g(w')}.dw'\\
@@ -4305,7 +4310,7 @@ I & = & \int_{w_{e}}^{w}\frac{\mu(w')}{g(w')}.dw'\\
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Changing the variable of integration to 
 \begin_inset Formula $v=\frac{w'}{W}$
 \end_inset
@@ -4313,7 +4318,7 @@ Changing the variable of integration to
  gives us
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{eqnarray*}
 I & = & \frac{\mu_{0}}{\hbar}\int_{\frac{w_{e}}{W}}^{\frac{w}{W}}\frac{1}{v(1-v^{(1-n)})}.dv\\
@@ -4326,11 +4331,11 @@ I & = & \frac{\mu_{0}}{\hbar}\int_{\frac{w_{e}}{W}}^{\frac{w}{W}}\frac{1}{v(1-v^
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 So, the solution is 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Formula 
 \begin{equation}
 N_{H}(w,w_{*})=\frac{H}{\hbar w^{n}\left(1-\left(\frac{w}{W}\right)^{1-n}\right)}\left(\frac{w_{e}}{w}\right)^{\frac{\mu_{0}}{\hbar}}\left(\frac{1-\left(\frac{w}{W}\right)^{1-n}}{1-\left(\frac{w_{e}}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}\left(\frac{\mu_{0}}{\hbar}\right)}
@@ -4341,46 +4346,17 @@ N_{H}(w,w_{*})=\frac{H}{\hbar w^{n}\left(1-\left(\frac{w}{W}\right)^{1-n}\right)
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 for our case where 
 \begin_inset Formula $w>w_{*}.$
 \end_inset
 
- Compare with equation (11) from [Andersen].
  
 \end_layout
 
-\begin_layout Standard
-In the case where 
-\begin_inset Formula $\frac{\mu_{0}}{\hbar}=1$
-\end_inset
-
- and 
-\begin_inset Formula $n=\frac{1}{2}$
-\end_inset
-
- this becomes
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{eqnarray*}
-N_{H}(w,w_{*}) & = & \frac{H}{\hbar\sqrt{w}}\left(\frac{w_{e}}{w}\right)\left(\frac{1}{1-\sqrt{\frac{w_{e}}{W}}}\right)^{2}\left(1-\sqrt{\frac{w}{W}}\right)\\
- & = & \frac{H}{\hbar}w_{e}\left(\frac{1}{1-\sqrt{\frac{w_{e}}{W}}}\right)^{2}\left(w^{-\frac{3}{2}}-W^{-\frac{1}{2}}w^{-1}\right)
-\end{eqnarray*}
-
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-The general case where 
-\begin_inset Formula $w\leq w_{*}$
-\end_inset
-
- was solved [Hartvig] section 3, although we include our own derivation
- in the next subsection.
 \end_layout
 
 \begin_layout Subsection
@@ -4397,7 +4373,7 @@ Now we shall solve the Mckendric von-Foerster Equation, for the case where
 \begin_inset Formula $\psi(w,w_{*})=0,$
 \end_inset
 
- and the solution is
+ the solution is
 \end_layout
 
 \begin_layout Standard
@@ -4439,29 +4415,99 @@ N_{H}(w,w_{*})=\frac{H}{\hbar w^{n}}\left(\frac{w_{e}}{w}\right)^{\frac{\mu_{0}}
 \end_layout
 
 \begin_layout Subsection
-Continuity requirement
+Solution for mature fish
 \end_layout
 
 \begin_layout Standard
-I think the mature and juvenile solutions should agree when 
-\begin_inset Formula $w=w_{*},$
+Since 
+\begin_inset Formula $\psi(w,w_{*})=\begin{cases}
+0 & \text{if \ensuremath{w<w_{*}}}\\
+\left(\frac{w}{W}\right)^{1-n} & \text{otherwise}
+\end{cases}$
 \end_inset
 
- and so we require that 
-\begin_inset Formula $w,w_{*}$
+
+\end_layout
+
+\begin_layout Standard
+there is a discontinuity in 
+\begin_inset Formula $g$
 \end_inset
 
- and 
-\begin_inset Formula $W$
+ so when 
+\begin_inset Formula $w>w_{*}$
 \end_inset
 
- are related in the sense that
+we must use peicewise integration to solve our ODE, so we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{H}(w,w_{*}) & = & H\frac{\exp(-I)}{\hbar w^{n}\left(1-\left(\frac{w}{W}\right)^{1-n}\right)}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+I & = & \left(\int_{w_{e}}^{w_{*}}\frac{\mu_{0}w'^{n-1}}{\hbar w'^{n}}.dw'\right)+\int_{w_{*}}^{w}\frac{\mu_{0}w'^{n-1}}{\hbar w'^{n}\left(1-\left(\frac{w'}{W}\right)^{1-n}\right)}.dw'
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Changing the variable of integration to 
+\begin_inset Formula $v=\frac{w'}{W}$
+\end_inset
+
+ gives us
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+ &  & \int_{w_{*}}^{w}\frac{\mu_{0}w'^{n-1}}{\hbar w'^{n}\left(1-\left(\frac{w'}{W}\right)^{1-n}\right)}.dw'=\frac{\mu_{0}}{\hbar}\int_{\frac{w_{*}}{W}}^{\frac{w}{W}}\frac{1}{v(1-v^{(1-n)})}.dv\\
+ & = & \frac{\mu_{0}}{\hbar}\left(\left(\ln\left(\frac{w}{W}\right)-\frac{\ln\left(1-\left(\frac{w}{W}\right)^{1-n}\right)}{1-n}\right)-\left(\ln\left(\frac{w_{*}}{W}\right)-\frac{\ln\left(1-\left(\frac{w_{*}}{W}\right)^{1-n}\right)}{1-n}\right)\right)\\
+ & = & \frac{\mu_{0}}{\hbar}\ln\left(\frac{w}{w_{*}}\left(\frac{1-\left(\frac{w_{*}}{W}\right)^{1-n}}{1-\left(\frac{w}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+I & = & \ln\left(\left(\frac{w_{*}}{w_{e}}\right)^{\frac{\mu_{0}}{\hbar}}\right)+\frac{\mu_{0}}{\hbar}\ln\left(\frac{w}{w_{*}}\left(\frac{1-\left(\frac{w_{*}}{W}\right)^{1-n}}{1-\left(\frac{w}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}}\right)\\
+ & = & \frac{\mu_{0}}{\hbar}\ln\left(\frac{w}{w_{e}}\left(\frac{1-\left(\frac{w_{*}}{W}\right)^{1-n}}{1-\left(\frac{w}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\frac{1}{\left(1-\left(\frac{w_{*}}{W}\right)^{1-n}\right)}\left(\frac{1-\left(\frac{w_{*}}{W}\right)^{1-n}}{1-\left(\frac{w_{e}}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}\left(\frac{\mu_{0}}{\hbar}\right)}=1
+N_{H}(w,w_{*})=\frac{H}{\hbar w^{n}\left(1-\left(\frac{w}{W}\right)^{1-n}\right)}\left(\frac{w_{e}}{w}\right)^{\frac{\mu_{0}}{\hbar}}\left(\frac{1-\left(\frac{w}{W}\right)^{1-n}}{1-\left(\frac{w_{*}}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}\left(\frac{\mu_{0}}{\hbar}\right)}
 \end{equation}
 
 \end_inset
