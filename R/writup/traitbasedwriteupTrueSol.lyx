@@ -3713,7 +3713,8 @@ In our case
 \end_layout
 
 \begin_layout Standard
-[[This agrees with simu, but we need to extend support of community spectrum]].
+[[This agrees with simulation, but we need to extend support of community
+ spectrum]].
 \end_layout
 
 \begin_layout Standard
@@ -3942,7 +3943,7 @@ N_{pred}(w)=\int_{0}^{\infty}N(w,w'_{*},t)dw'_{*}=\kappa'w^{-\lambda}
 \end_layout
 
 \begin_layout Standard
-and we can evalue this to be
+and we can evaluate this to be
 \end_layout
 
 \begin_layout Standard
@@ -3981,11 +3982,11 @@ Go to (&) and iterate round until the same kappa values are outputted as
 \end_layout
 
 \begin_layout Subsection
-Iteratition and true solution
+Iteration and true solution
 \end_layout
 
 \begin_layout Standard
-In order to be a self consitstent solution, the map 
+In order to be a self consistent solution, the map 
 \begin_inset Formula $(\kappa,\kappa_{*})\mapsto(\kappa',\kappa_{*}')$
 \end_inset
 
@@ -4010,7 +4011,7 @@ By repeatedly iterating this map, starting with
 \end_layout
 
 \begin_layout Standard
-To summarise, our solution uses parameter values
+To summarize, our solution uses parameter values
 \end_layout
 
 \begin_layout Standard
@@ -4235,6 +4236,28 @@ Suppose
 \end_layout
 
 \begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\psi(w,w_{*})=\begin{cases}
+0 & \text{if \ensuremath{w<w_{*}}}\\
+\left(\frac{w}{W}\right)^{1-n} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $W=\frac{w_{*}}{\eta}$
+\end_inset
+
+ is the asymptotic size.
+\end_layout
+
+\begin_layout Standard
 With 
 \begin_inset Formula $\chi=0$
 \end_inset
@@ -4270,8 +4293,7 @@ where
 \begin_inset Formula 
 \begin{eqnarray*}
 I & = & \int_{w_{e}}^{w}\frac{\mu(w')}{g(w')}.dw'\\
- & = & \frac{\mu_{0}}{\hbar}\int_{w_{e}}^{w}\frac{1}{w'(1-Bw'^{a})}.dw'\\
- & =
+ & = & \frac{\mu_{0}}{\hbar}\int_{w_{e}}^{w}\frac{1}{w'\left(1-\left(\frac{w'}{W}\right)^{1-n}\right)}.dw'
 \end{eqnarray*}
 
 \end_inset
@@ -4280,16 +4302,8 @@ I & = & \int_{w_{e}}^{w}\frac{\mu(w')}{g(w')}.dw'\\
 \end_layout
 
 \begin_layout Standard
-where 
-\begin_inset Formula $a=1-n,B=\left(\frac{w_{*}}{\eta}\right)^{n-1}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 Changing the variable of integration to 
-\begin_inset Formula $v=B^{\frac{1}{a}}w'=Cw'$
+\begin_inset Formula $v=\frac{w'}{W}$
 \end_inset
 
  gives us
@@ -4298,10 +4312,9 @@ Changing the variable of integration to
 \begin_layout Standard
 \begin_inset Formula 
 \begin{eqnarray*}
-I & = & \frac{\mu_{0}}{\hbar}\int_{Cw_{e}}^{Cw}\frac{1}{v(1-v^{a})}.dv\\
- & = & \frac{\mu_{0}}{\hbar}\left(\left(\ln\left(B^{\frac{1}{a}}w\right)-\ln\left(1-Bw^{a}\right)/a\right)-\left(\ln\left(B^{\frac{1}{a}}w_{e}\right)-\ln\left(1-Bw_{e}^{a}\right)/a\right)\right)\\
- & = & \frac{\mu_{0}}{\hbar}\left(\ln\left(\frac{B^{\frac{1}{a}}w}{\left(1-Bw^{a}\right)^{\frac{1}{a}}}\left(\frac{B^{\frac{1}{a}}w_{e}}{\left(1-Bw_{e}^{a}\right)^{\frac{1}{a}}}\right)^{-1}\right)\right)\\
- & = & \ln\left(\left(\frac{w}{w_{e}}\left(\frac{1-Bw_{e}^{a}}{1-Bw^{a}}\right)^{\frac{1}{a}}\right)^{\frac{\mu_{0}}{\hbar}}\right)
+I & = & \frac{\mu_{0}}{\hbar}\int_{\frac{w_{e}}{W}}^{\frac{w}{W}}\frac{1}{v(1-v^{(1-n)})}.dv\\
+ & = & \frac{\mu_{0}}{\hbar}\left(\left(\ln\left(\frac{w}{W}\right)-\frac{\ln\left(1-\left(\frac{w}{W}\right)^{1-n}\right)}{1-n}\right)-\left(\ln\left(\frac{w_{e}}{W}\right)-\frac{\ln\left(1-\left(\frac{w_{e}}{W}\right)^{1-n}\right)}{1-n}\right)\right)\\
+ & = & \frac{\mu_{0}}{\hbar}\ln\left(\frac{w}{w_{e}}\left(\frac{1-\left(\frac{w_{e}}{W}\right)^{1-n}}{1-\left(\frac{w}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}}\right)
 \end{eqnarray*}
 
 \end_inset
@@ -4310,18 +4323,60 @@ I & = & \frac{\mu_{0}}{\hbar}\int_{Cw_{e}}^{Cw}\frac{1}{v(1-v^{a})}.dv\\
 \end_layout
 
 \begin_layout Standard
-So, back to the solution
+So, the solution is 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-N_{H}(w,w_{*})=H\frac{\left(\frac{w_{e}}{w}\left(\frac{1-Bw^{a}}{1-Bw_{e}^{a}}\right)^{\frac{1}{a}}\right)^{\frac{\mu_{0}}{\hbar}}}{\hbar w^{n}(1-\psi(w,w_{*}))}
+N_{H}(w,w_{*})=\frac{H}{\hbar w^{n}\left(1-\left(\frac{w}{W}\right)^{1-n}\right)}\left(\frac{w_{e}}{w}\right)^{\frac{\mu_{0}}{\hbar}}\left(\frac{1-\left(\frac{w}{W}\right)^{1-n}}{1-\left(\frac{w_{e}}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}\left(\frac{\mu_{0}}{\hbar}\right)}
 \end{equation}
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+for our case where 
+\begin_inset Formula $w>w_{*}.$
+\end_inset
+
+ Compare with equation (3) from [Andersen].
+ 
+\end_layout
+
+\begin_layout Standard
+In the case where 
+\begin_inset Formula $\frac{\mu_{0}}{\hbar}=1$
+\end_inset
+
+ and 
+\begin_inset Formula $n=\frac{1}{2}$
+\end_inset
+
+ this becomes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{H}(w,w_{*}) & = & \frac{H}{\hbar\sqrt{w}}\left(\frac{w_{e}}{w}\right)\left(\frac{1}{1-\sqrt{\frac{w_{e}}{W}}}\right)^{2}\left(1-\sqrt{\frac{w}{W}}\right)\\
+ & = & \frac{H}{\hbar}w_{e}\left(\frac{1}{1-\sqrt{\frac{w_{e}}{W}}}\right)^{2}\left(w^{-\frac{3}{2}}-W^{-\frac{1}{2}}w^{-1}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The general case where 
+\begin_inset Formula $w\leq w_{*}$
+\end_inset
+
+ was solved [Hartvig] section 3.
+ 
 \end_layout
 
 \begin_layout Subsection*
