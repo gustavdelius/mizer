@@ -4212,6 +4212,10 @@ and evaluating this gives
 Analytic Solution Without Prey Switching
 \end_layout
 
+\begin_layout Subsection
+Mature Fish
+\end_layout
+
 \begin_layout Standard
 Suppose 
 \begin_inset Formula $u>>1$
@@ -4375,8 +4379,94 @@ The general case where
 \begin_inset Formula $w\leq w_{*}$
 \end_inset
 
- was solved [Hartvig] section 3.
+ was solved [Hartvig] section 3, although we include our own derivation
+ in the next subsection.
+\end_layout
+
+\begin_layout Subsection
+Solution for juveniles
+\end_layout
+
+\begin_layout Standard
+Now we shall solve the Mckendric von-Foerster Equation, for the case where
  
+\begin_inset Formula $w\leq w_{*},$
+\end_inset
+
+ so 
+\begin_inset Formula $\psi(w,w_{*})=0,$
+\end_inset
+
+ and the solution is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{H}(w,w_{*}) & = & H\frac{\exp(-J)}{\hbar w^{n}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+J & = & \int_{w_{e}}^{w}\frac{\mu_{0}w'^{n-1}}{\hbar w'^{n}}dw'\\
+ & = & \ln\left(\left(\frac{w}{w_{e}}\right)^{\frac{\mu_{0}}{\hbar}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{H}(w,w_{*})=\frac{H}{\hbar w^{n}}\left(\frac{w_{e}}{w}\right)^{\frac{\mu_{0}}{\hbar}}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Continuity requirement
+\end_layout
+
+\begin_layout Standard
+I think the mature and juvenile solutions should agree when 
+\begin_inset Formula $w=w_{*},$
+\end_inset
+
+ and so we require that 
+\begin_inset Formula $w,w_{*}$
+\end_inset
+
+ and 
+\begin_inset Formula $W$
+\end_inset
+
+ are related in the sense that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{1}{\left(1-\left(\frac{w_{*}}{W}\right)^{1-n}\right)}\left(\frac{1-\left(\frac{w_{*}}{W}\right)^{1-n}}{1-\left(\frac{w_{e}}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}\left(\frac{\mu_{0}}{\hbar}\right)}=1
+\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection*
