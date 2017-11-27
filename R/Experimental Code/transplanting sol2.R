@@ -169,13 +169,14 @@ mort_eter <- function(w){
 plot(wvec,sapply(wvec,mort_eter),log="xy")
 
 mort_eter <- function(w){
-  return(sum(((1-fbar)*exp(-((log(wvecright[1:Lr])-log(w)-log(beta))^2)/(2*sigmaval*sigmaval)
+  return(sum(((1-fbar)*exp(-(((log(wvecright[1:Lr])-log(w)-log(beta))^2)/(2*sigmaval*sigmaval))
   )*gamma*kappaRval*wvecright[1:Lr]^(qval-lambda))*(wvecright[2:(Lr+1)]-wvecright[1:Lr])))
 }
-plot(wvec,sapply(wvec,mort_eter),log="xy")
+plot(wvec,sapply(wvec,mort_eter),log="x")
 
+wvecL <- c(wvec,wvecright)
 
-
+plot(wvecL,sapply(wvecL,mort_eter),log="x")
 
 library(pracma)
 
@@ -193,3 +194,20 @@ direct_mort_eter <- function(w){
 
 plot(wvec,sapply(wvec,direct_mort_eter),log="xy")
 
+sum(((1-fbar)*exp(-((log(wvecright[1:Lr])-log(w)-log(beta))^2)/(2*sigmaval*sigmaval)
+)*gamma*kappaRval*wvecright[1:Lr]^(qval-lambda))*(wvecright[2:(Lr+1)]-wvecright[1:Lr]))
+vw <- 1
+plot(((1-fbar)*exp(-((log(wvecright[1:Lr])-log(vw)-log(beta))^2)/(2*sigmaval*sigmaval)
+)*gamma*kappaRval*wvecright[1:Lr]^(qval-lambda))*(wvecright[2:(Lr+1)]-wvecright[1:Lr]),log="xy")
+
+vw <-10^7
+plot(wvecright[1:Lr],(exp(-((log(wvecright[1:Lr])-log(vw)-log(beta))^2)/(2*sigmaval*sigmaval))),log="xy")
+
+plot(wvecright[1:Lr],exp(-((log(10^7)-log(wvecright[1:Lr]))^2)/(2*sigmaval*sigmaval)),log="xy")
+
+plot(wvecright[1:Lr],exp(-((log(10^7)-log(wvecright[1:Lr]))^2)/(1)),log="xy")
+
+
+plot(wvecright[1:Lr],exp(-(1-log(wvecright[1:Lr]))^2),log="x")
+plot(wvec,exp(-(10-wvec)^2),log="xy")
+plot(wvec,exp(-((log(10)-log(wvec))^2)),log="x")

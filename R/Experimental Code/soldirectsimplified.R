@@ -47,6 +47,10 @@ realmu_pp <- realalpha_p *wvec^(1+1+qval-((lambda+1)/(1)))
 plot(wvec,mortvals,log="xy")
 lines(wvec,realmu_pp)
 abline(v=maxsize)
+
+etmort <- realmu_pp-mortvals
+plot(wvec,etmort,log="x")
+
 # solve for steady state
 solintegrand <- realmu_pp/(growth_rate)
 determine_int <- function(w){
