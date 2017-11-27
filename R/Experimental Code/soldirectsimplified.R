@@ -25,7 +25,7 @@ h <- (((Ee/fbar)-Ee)/(wvec^nval))[1]
 psi <- paramsConst@psi[myspno,]
 # check psi has appropriate form
 #alpha <- paramsConst@species_params$alpha[myspno]
-alpha <- 0.19
+alpha <- 0.17
 k <- 0
 hbar <- alpha*fbar*h -k
 growth_rate <- (hbar*wvec^nval)*(1-psi)
