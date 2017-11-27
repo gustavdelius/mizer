@@ -149,3 +149,28 @@ paramsConst2 <- set_trait_model2(no_sp = 10, min_w_inf = 10,n=2/3,q=0.8,eta=0.25
 )
 sim2 <- project(paramsConst2, t_max=150, effort = 0)
 plot(sim2)
+
+# it seems that we should let paramsConst2 determine gamma via (3.16)
+# I should make code that uses alphaE and f0 to determine h, and then gamma
+
+#(1-fbar)*exp(-((log(ww)-log(w)-log(beta))^2)/(2*sigmaval*sigmaval))*gamma*kappa*ww^(q-lambda)
+
+tail(wvec)
+logdiff <- log(wvec)[2] -log(wvec)[1]
+bigenough <- wvec[length(wvec)]*beta*exp(5*sigmaval)
+wvecright <- exp(seq(log(wvec[length(wvec)]),log(bigenough),by=logdiff))
+Lr <- length(wvecright)-1
+
+
+mort_eter <- function(w){
+  return(sum(((1-fbar)*exp(-((log(wvecright[1:Lr])-log(w)-log(beta))^2)/(2*sigmaval*sigmaval)
+             )*gamma*kappaRval*wvecright[1:Lr]^(qval-lambda))*(wvecright[2:(Lr+1)]-wvecright[1:Lr])))
+}
+plot(wvec,sapply(wvec,mort_eter),log="xy")
+
+wv <-1
+sum(((1-fbar)*exp(-((log(wvecright[1:Lr])-log(wv)-log(beta))^2)/(2*sigmaval*sigmaval)
+)*gamma*kappa*wvecright[1:Lr]^(q-lambda))*(wvecright[2:(Lr+1)]-wvecright[1:Lr]))
+
+(1-fbar)*exp(-((log(wvecright[1:Lr])-log(wv)-log(beta))^2)/(2*sigmaval*sigmaval)
+)*gamma*kappa
