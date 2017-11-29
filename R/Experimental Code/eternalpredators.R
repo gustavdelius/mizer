@@ -23,9 +23,9 @@ const*(
   -1 + fbar)*gamma*kappaRval*sqrt(pi/2)*sigmaval*w^(1 - lambda + qval)*(sqrt(1/sigmaval^2)*sigmaval + erf(((1 - lambda + qval)*sigmaval^2 + log(beta) + log(w) - 
                                                                                              log(WW))/(sqrt(2)*sigmaval)))
 }
-
+##########
 consise <- (-beta^(1 - lambda + qval))*exp((1/2)*((1 - lambda + qval)^2)*sigmaval^2)*(-1 + fbar)*gamma*kappaRval*sqrt(pi/2)*sigmaval*wvec^(1 - lambda + qval)*(sqrt(1/sigmaval^2)*sigmaval + erf(((1 - lambda + qval)*sigmaval^2 + log(beta) + log(wvec) -log(WW))/(sqrt(2)*sigmaval)))
-
+##########
 plot(wvec,consise,log="x")
 
 
@@ -52,5 +52,15 @@ const <- (-beta^(1 - lambda + qval))*exp((1/2)*((1 - lambda + qval)^2)*sigmaval^
 # grid point maker
 # increasingly accurate 
 
-(-beta^(1 - lambda + qval))*exp((1/2)*((1 - lambda + qval)^2)*sigmaval^2)*(-1 + fbar)*gamma*kappaRval*sqrt(pi/2)*sigmaval*w^(1 - lambda + qval)*(sqrt(1/sigmaval^2)*sigmaval + erf(((1 - lambda + qval)*sigmaval^2 + log(beta) + log(w) - 
-                                                                                                             
+#(-beta^(1 - lambda + qval))*exp((1/2)*((1 - lambda + qval)^2)*sigmaval^2)*(-1 + fbar)*gamma*kappaRval*sqrt(pi/2)*sigmaval*w^(1 - lambda + qval)*(sqrt(1/sigmaval^2)*sigmaval + erf(((1 - lambda + qval)*sigmaval^2 + log(beta) + log(w) - 
+ 
+
+library(mizer)
+library(plyr)
+
+source("R/MizerParams-classETRN.R")
+
+
+paramsConst <- set_trait_model(no_sp = 10, min_w_inf = 10)
+
+plot(wvec,paramsConst@mu_et,log="x")
