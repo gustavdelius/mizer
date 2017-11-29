@@ -1,9 +1,17 @@
 library(mizer)
 library(plyr)
+source("R/MizerParams-classETRN.R")
+source("R/wrapper_functionsETRN.R")
+
 paramsConst <- set_trait_model(no_sp = 10, min_w_inf = 10,n=2/3,q=0.8,eta=0.25,
                                k0=10^(50),kappa=0.4, alpha=0.17,
-                               h=1614.363,f0=0.5,ks=0,z0=0
+                               h=1614.363,f0=0.5,ks=0,z0=0,gamma=660.2633
                               )
+plot(paramsConst@w,paramsConst@mu_et,log="x") 
+abline(v=max(paramsConst@w)/100)
+# have to supply h and gamma, in order for system to be sensitive to varying f0
+paramsConst@mu_et[1:7]
+#lambda,WW,f0,kappa,qval,n
 sim <- project(paramsConst, t_max=150, effort = 0)
 plot(sim)
 paramsConst@species_params$z0
