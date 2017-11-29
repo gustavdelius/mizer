@@ -677,7 +677,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	lambdaval <- lambda
 	sigmaval <- sigma[1]
 	wvec <- res@w
-	gammaval <- gamma[1]
+	gammaval <- (object$gamma)[1]
 	WW <- max(object$w_inf)
 	fbar <- f0
 	kappaval <- kappa

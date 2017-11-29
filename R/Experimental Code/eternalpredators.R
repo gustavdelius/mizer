@@ -63,4 +63,4 @@ source("R/MizerParams-classETRN.R")
 
 paramsConst <- set_trait_model(no_sp = 10, min_w_inf = 10)
 
-plot(wvec,paramsConst@mu_et,log="x")
+plot(paramsConst@w,paramsConst@mu_et,log="x") 
