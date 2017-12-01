@@ -680,7 +680,9 @@ setMethod('getZ', signature(object='MizerParams', n = 'matrix',
         #z <- sweep(m2 + f_mort,1,object@species_params$z0,"+", check.margin=FALSE) # not a slow sweep
         #z <- sweep(m2*(n^epsi) + f_mort,1,object@species_params$z0,"+", check.margin=FALSE) # not a slow sweep
         z <- (n^epsi)*sweep(m2 + f_mort,1,object@species_params$z0,"+", check.margin=FALSE) # not a slow sweep
-        return(z)
+        #return(z)
+        #return(sweep(z,2,et_on*object@mu_et,"+"))
+        return(sweep(z,2,et_on*mmu_et,"+"))
     }
 )
 
