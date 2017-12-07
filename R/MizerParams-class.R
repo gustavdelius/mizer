@@ -220,6 +220,7 @@ valid_MizerParams <- function(object) {
 #'   is the same as the second to last value
 #' @slot psi An array (species x size) that holds the allocation to reproduction
 #'   for each species at size
+#' @slot mu_ext An array (species x size) that holds an extra mortality rate
 #' @slot intake_max An array (species x size) that holds the maximum intake for
 #'   each species at size
 #' @slot search_vol An array (species x size) that holds the search volume for
@@ -269,6 +270,7 @@ setClass(
         w_full = "numeric",
         dw_full = "numeric",
         psi = "array",
+        mu_ext = "array",
         intake_max = "array",
         search_vol = "array",
         activity = "array",
@@ -290,6 +292,7 @@ setClass(
         w_full = NA_real_,
         dw_full = NA_real_,
         psi = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
+        mu_ext = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         intake_max = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         search_vol = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         activity = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
@@ -463,7 +466,7 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	# Should Z0, rrPP and ccPP have names (species names etc)?
 	res <- new("MizerParams",
 	    w = w, dw = dw, w_full = w_full, dw_full = dw_full,
-	    psi = mat1, intake_max = mat1, search_vol = mat1, activity = mat1, 
+	    psi = mat1, mu_ext = mat1, intake_max = mat1, search_vol = mat1, activity = mat1, 
 	    std_metab = mat1, ft_pred_kernel_e = ft_pred_kernel_e, 
 	    ft_pred_kernel_p = ft_pred_kernel_p,
 	    selectivity=selectivity, catchability=catchability,
