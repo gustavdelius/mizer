@@ -24,6 +24,7 @@ Collate:
     'MizerParams-class.R'
     'MizerSim-class.R'
     'selectivity_funcs.R'
+    'death_funcs.R'
     'project.R'
     'help.R'
     'project_methods.R'
@@ -32,4 +33,4 @@ Collate:
     'wrapper_functions.R'
     'data.R'
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

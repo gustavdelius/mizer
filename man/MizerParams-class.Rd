@@ -36,6 +36,8 @@ is the same as the second to last value}
 \item{\code{psi}}{An array (species x size) that holds the allocation to reproduction
 for each species at size}
 
+\item{\code{mu_ext}}{An array (species x size) that holds an extra mortality rate}
+
 \item{\code{intake_max}}{An array (species x size) that holds the maximum intake for
 each species at size}
 
@@ -76,6 +78,7 @@ each species by gear and species size}
 \item{\code{catchability}}{An array (gear x species) that holds the catchability of
 each species by each gear}
 }}
+
 \note{
 The \code{MizerParams} class is fairly complex with a large number of
   slots, many of which are multidimensional arrays. The dimensions of these

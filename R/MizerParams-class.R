@@ -284,15 +284,27 @@ setClass(
         interaction = "array",
         srr  = "function",
         selectivity = "array",
-        catchability = "array"
+        catchability = "array",
+        n = "numeric",
+        p = "numeric",
+        lambda = "numeric",
+        q = "numeric",
+        f0 = "numeric",
+        kappa = "numeric"
     ),
     prototype = prototype(
         w = NA_real_,
         dw = NA_real_,
         w_full = NA_real_,
         dw_full = NA_real_,
+        n = NA_real_,
+        p = NA_real_,
+        lambda = NA_real_,
+        q = NA_real_,
+        f0 = NA_real_,
+        kappa = NA_real_,
         psi = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
-        mu_ext = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
+        mu_ext = array(0,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         intake_max = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         search_vol = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         activity = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
@@ -436,6 +448,8 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	# Basic arrays for templates
 	mat1 <- array(NA, dim=c(object,no_w), dimnames = list(sp=species_names,w=signif(w,3)))
 	mat2 <- array(NA, dim=c(object,no_w,no_w_full), dimnames = list(sp=species_names,w_pred=signif(w,3), w_prey=signif(w_full,3)))
+	mu_ext <- array(0, dim=c(object,no_w), dimnames = list(sp=species_names,w=signif(w,3)))
+	
 	
 	ft_pred_kernel_e <- array(NA, dim=c(object,no_w_full), dimnames = list(sp=species_names, k=1:no_w_full))
 	
@@ -466,12 +480,13 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	# Should Z0, rrPP and ccPP have names (species names etc)?
 	res <- new("MizerParams",
 	    w = w, dw = dw, w_full = w_full, dw_full = dw_full,
-	    psi = mat1, mu_ext = mat1, intake_max = mat1, search_vol = mat1, activity = mat1, 
+	    psi = mat1, mu_ext = mu_ext, intake_max = mat1, search_vol = mat1, activity = mat1, 
 	    std_metab = mat1, ft_pred_kernel_e = ft_pred_kernel_e, 
 	    ft_pred_kernel_p = ft_pred_kernel_p,
 	    selectivity=selectivity, catchability=catchability,
 	    rr_pp = vec1, cc_pp = vec1, species_params = species_params,
-	    interaction = interaction, srr = srr) 
+	    interaction = interaction, srr = srr, n = 0, p = 0, lambda = 0,
+	    q = 0, f0 = 0, kappa = 0) 
 	return(res)
     }
 )
@@ -545,6 +560,12 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	# Make an empty object of the right dimensions
 	res <- MizerParams(no_sp, species_names=object$species, 
 	                   gear_names=unique(object$gear), max_w=max_w,...)
+	res@n <- n
+	res@p <- p
+	res@lambda <- lambda
+	res@q <- q
+	res@f0 <- f0
+	res@kappa <- kappa
 
 	# If not w_min column in species_params, set to w_min of community
 	# Check min_w argument is not > w_min in species_params
