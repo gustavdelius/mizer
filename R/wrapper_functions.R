@@ -329,7 +329,11 @@ set_trait_model <- function(no_sp = 10,
     alpha_rec <- alpha_p / (alpha * h * f0 - ks)
     # Calculating dw using Ken's code - see Ken's email 12/08/13
     tmpA <- w_inf[1]
-    tmpB <- (log10(w_inf[length(w_inf)]) - log10(w_inf[1])) / (no_sp - 1) # Difference between logged w_infs, fine
+    if (no_sp==1) {
+        tmpB <- log10(max_w_inf-min_w_inf)
+    } else {
+        tmpB <- (log10(w_inf[length(w_inf)]) - log10(w_inf[1])) / (no_sp - 1) # Difference between logged w_infs, fine
+    }
     dw_winf <- tmpB * tmpA *10^(tmpB*((1:no_sp)-1)) # ?
     N0_max <- k0 * w_inf^(n*2-q-3+alpha_rec) * dw_winf  # Why * dw_winf, not / ? Ken confirms * in email
     # No need to include (1 - psi) in growth equation because allocation to reproduction at this size = 0, so 1 - psi = 1
