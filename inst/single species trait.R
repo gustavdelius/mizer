@@ -72,8 +72,8 @@ lines(params@w,sol_mult*Nmat)
 Nsol <- sol_mult*((params@w<params@species_params$w_mat[1])*Njuv+
     (params@w>=params@species_params$w_mat[1])*Nmat)
 
-plot(params@w,Nsol,log="xy")
-lines(params@w,sim@n[dim(sim@n)[1],,])
+plot(params@w,Nsol,log="xy",type="l")
+lines(params@w,sim@n[dim(sim@n)[1],,],col="blue")
 
 ###
 plot(params@w,hbar*params@w^params@n,log="xy", type="l", col="blue")
