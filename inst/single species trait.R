@@ -44,3 +44,15 @@ hbar <- params@species_params$alpha[1]*params@species_params$h[1]*
     params@f0-params@species_params$ks[1]
 plot(params@w,(1-params@psi[1,])*hbar*params@w^params@n,log="xy")
 lines(params@w,getEGrowth(params,matrix(sim@n[dim(sim@n)[1],,],nrow = 1),sim@n_pp[dim(sim@n_pp)[1],]))
+
+##
+Njuv <- ((params@w[1]/params@w)^(mu0/hbar))/(hbar*params@w^params@n)
+plot(params@w,sim@n[dim(sim@n)[1],,],log="xy")
+lines(params@w,Njuv)
+sol_mult <- getRDD(params,matrix(sim@n[dim(sim@n)[1],,],nrow = 1),sim@n_pp[dim(sim@n_pp)[1],])/
+    (Njuv[1]*hbar*params@w[1]^params@n)
+
+plot(params@w,sol_mult*Njuv,log="xy")
+
+plot(params@w,sim@n[dim(sim@n)[1],,],log="xy")
+lines(params@w,sol_mult*Njuv)
