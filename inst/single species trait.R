@@ -84,3 +84,5 @@ lines(params@w,getEReproAndGrowth(params,
 params@n
 plot(params@w,params@intake_max,log="xy")
 lines(params@w,params@species_params$h[1]*params@w^params@n, col="Red")
+plot(params@w,Nsol,log="xy",type="l")
+lines(params@w,sim@n[dim(sim@n)[1],,],col="blue")
