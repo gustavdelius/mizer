@@ -58,8 +58,8 @@ plot(params@w,sim@n[dim(sim@n)[1],,],log="xy")
 lines(params@w,sol_mult*Njuv)
 pow <- mu0/(hbar*(1-params@n))
 Nmat <- Njuv*
-    ((1+(params@w/params@species_params$w_inf[1])^(1-params@n))^(pow-1))/
-    (1+(params@species_params$w_mat[1]/params@species_params$w_inf[1])^(1-params@n))^(pow)
+    ((1-(params@w/params@species_params$w_inf[1])^(1-params@n))^(pow-1))*
+    (1-(params@species_params$w_mat[1]/params@species_params$w_inf[1])^(1-params@n))^(-pow)
 lines(params@w,sol_mult*Nmat)
 
 Nsol <- sol_mult*((params@w<params@species_params$w_mat[1])*Njuv+
