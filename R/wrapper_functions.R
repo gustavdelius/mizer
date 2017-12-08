@@ -330,7 +330,7 @@ set_trait_model <- function(no_sp = 10,
     # Calculating dw using Ken's code - see Ken's email 12/08/13
     tmpA <- w_inf[1]
     if (no_sp==1) {
-        tmpB <- log10(max_w_inf-min_w_inf)
+        tmpB <- log10(max_w_inf/min_w_inf)
     } else {
         tmpB <- (log10(w_inf[length(w_inf)]) - log10(w_inf[1])) / (no_sp - 1) # Difference between logged w_infs, fine
     }

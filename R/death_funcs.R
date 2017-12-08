@@ -7,13 +7,13 @@
 #'
 #' @param res the mizer params object.
 #' @export
-large_predation <- function(res){
+large_predation <- function(res,WW=max(params@species_params$w_inf)){
     betaval <- res@species_params$beta[1]
     lambdaval <- res@lambda
     sigmaval <- res@species_params$sigma[1]
     wvec <- res@w
     gammaval <- res@species_params$gamma[1]
-    WW <- max(params@species_params$w_inf)
+   # WW <- max(params@species_params$w_inf)
     fbar <- res@f0
     kappaval <- res@kappa
     qval <- res@q

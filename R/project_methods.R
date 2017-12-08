@@ -347,7 +347,7 @@ setMethod('getM2', signature(object='MizerParams', n = 'matrix',
       idx_sp <- (length(object@w_full) - length(object@w) + 1):length(object@w_full)
       
       m2 <- (t(object@interaction) %*% pred_rate)[, idx_sp, drop=FALSE]
-      return(m2)
+      return(m2+object@mu_ext)
     }
 )
 

@@ -4,7 +4,7 @@
 \alias{large_predation}
 \title{Extra Mortality From Large Predators}
 \usage{
-large_predation(res)
+large_predation(res, WW = max(params@species_params$w_inf))
 }
 \arguments{
 \item{res}{the mizer params object.}
