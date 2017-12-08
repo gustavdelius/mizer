@@ -315,7 +315,7 @@ set_trait_model <- function(no_sp = 10,
             erepro = 1 # not used but included out of necessity
     )
     # Make the MizerParams
-    trait_params <- MizerParams(trait_params_df, min_w = min_w, max_w=max_w, no_w = no_w, min_w_pp = min_w_pp, w_pp_cutoff = w_pp_cutoff, n = n, p=p, q=q, r_pp=r_pp, kappa=kappa, lambda = lambda) 
+    trait_params <- MizerParams(trait_params_df, min_w = min_w, max_w=max_w, no_w = no_w, min_w_pp = min_w_pp, w_pp_cutoff = w_pp_cutoff, n = n, p=p, q=q, r_pp=r_pp, kappa=kappa, lambda = lambda, f0 = f0) 
     # Sort out maximum recruitment - see A&P 2009
     # Get max flux at recruitment boundary, R_max
     # R -> | -> g0 N0
