@@ -25,8 +25,10 @@ getSteadyState <- function(params){
 }
 
 ####################
+myalpha <- 0.6
+#myalpha <- 0.35
 params <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 10+10^(-0.5),
-                          w_pp_cutoff = 10,z0pre = 0,no_w=1000,p=2/3,alpha=0.35)
+                          w_pp_cutoff = 10,z0pre = 0,no_w=1000,p=2/3,alpha=myalpha)
 params@mu_ext <- large_predation(params,WW=params@w[1])
 sim <- project(params, t_max=75, effort = 0)
 plot(sim)
@@ -61,7 +63,22 @@ lines(params@w,sim2@n[dim(sim2@n)[1],2,],col="blue")
 # solutions for different w* agree in first part, because 
 # here juvenile solutions are the same because egg size is constant
 
+#(hbar[1]*params@species_params$w_min[1]^params@n)*
+#    sol_mult*sol[1,params@species_params$w_min_idx[1]]
+#params2@species_params$r_max
+
+#params@species_params$r_max
+
+# looks like old rmax was quite a lot higher than rdd
+
+#getRDI(params,sim@n[dim(sim@n)[1],,],sim@n_pp[dim(sim@n_pp)[1],])
+#getRDD(params,sim@n[dim(sim@n)[1],,],sim@n_pp[dim(sim@n_pp)[1],])
+
+
 getRDI(params2,sim2@n[dim(sim2@n)[1],,],sim2@n_pp[dim(sim2@n_pp)[1],])
 getRDD(params2,sim2@n[dim(sim@n)[1],,],sim2@n_pp[dim(sim2@n_pp)[1],])
 
-
+# this approach works when alpha =0.6, but for smaller alpha, like alpha =0.35, 
+# we found useful before, the Rdd is too much lower than the Rmax, so it does not work
+# also, we should probably make the egg size proportional to maturity size, so 
+# the species have different juvenile solutions
