@@ -32,7 +32,7 @@ myalpha <- 0.6
 #params <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 10+10^(-0.5),
 #                          w_pp_cutoff = 10,z0pre = 0,no_w=1000,p=2/3,alpha=myalpha)
 params <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 10^5,
-                          w_pp_cutoff = 10,z0pre = 0,no_w=1000,p=2/3,alpha=myalpha)
+                          w_pp_cutoff = 10,z0pre = 0,p=2/3,alpha=myalpha)
 params@mu_ext <- large_predation(params,WW=params@w[1])
 
 # setup egg sizes
@@ -61,7 +61,7 @@ for (i in 1:no_s){
 }
 
 
-sim <- project(params, t_max=75, effort = 0)
+sim <- project(params, t_max=500, effort = 0)
 plot(sim)
 
 plot(params@w,true_sol[1,],log="xy",type="l")
