@@ -11,8 +11,10 @@ getSteadyState <- function(params){
         
         hbar <- params@species_params$alpha[i]*params@species_params$h[i]*
             params@f0-params@species_params$ks[i]
-        
-        Njuv <- ((params@species_params$w_min[i]/params@w)^(mu0/hbar))/(hbar*params@w^params@n)
+        LL <- length(params@w)
+        Njuv <- rep(0,LL)
+        ei <- params@species_params$w_min_idx[i]
+        Njuv[ei:LL] <- ((params@species_params$w_min[i]/params@w[ei:LL])^(mu0/hbar))/(hbar*params@w[ei:LL]^params@n)
         
         pow <- mu0/(hbar*(1-params@n))
         Nmat <- Njuv*
