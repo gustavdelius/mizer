@@ -27,7 +27,8 @@ getSteadyState <- function(params){
 }
 
 ####################
-myalpha <- 0.35
+#myalpha <- 0.35
+myalpha <- 0.4
 #myalpha <- 0.3
 #myalpha <- 0.6
 #myalpha <- 0.35
@@ -47,6 +48,8 @@ params <- set_trait_model(interaction=myinteraction,r_pp = myrpp,no_sp = myno_sp
 
 params@mu_ext <- large_predation(params,WW=params@w[1])
 params@mu_ext <- large_predation(params,WW=10^5)
+params@mu_ext <- large_predation(params,WW=0.25*10^5)
+
 ##params@interaction[,] <- 0
 
 # setup egg sizes
@@ -77,7 +80,7 @@ for (i in 1:no_s){
 
 true_sol[is.nan(true_sol)] <- 0
 #sim <- project(params, t_max=500, effort = 0)
-sim <- project(params, t_max=100, effort = 0,initial_n=true_sol)
+sim <- project(params, t_max=50, effort = 0,initial_n=true_sol)
 
 plot(sim)
 
@@ -116,6 +119,13 @@ colSums(sim@n[dim(sim@n)[1],,])
 
 istart <- length(params@w_full[params@w_full<params@w[1]])
 
-plot(params@w,params@w*sim@n_pp[dim(sim@n_pp)[1],params@w_full>=params@w[1]],log="xy",type="l")
-lines(params@w,params@w*colSums(sim@n[dim(sim@n)[1],,]),log="xy")
+plot(params@w,params@w*colSums(sim@n[dim(sim@n)[1],,]),log="xy")
+lines(params@w,params@w*sim@n_pp[dim(sim@n_pp)[1],params@w_full>=params@w[1]],log="xy",type="l",col="red")
+
 abline(v=params@species_params$w_mat[1])
+
+plot(params@w,params@w*colSums(sim@n[1,,]),log="xy")
+lines(params@w,params@w*sim@n_pp[dim(sim@n_pp)[1],params@w_full>=params@w[1]],log="xy",type="l",col="red")
+
+abline(v=params@species_params$w_mat[1])
+
