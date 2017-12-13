@@ -32,7 +32,7 @@ myalpha <- 0.6
 #params <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 10+10^(-0.5),
 #                          w_pp_cutoff = 10,z0pre = 0,no_w=1000,p=2/3,alpha=myalpha)
 params <- set_trait_model(no_sp = 10, min_w_inf = 10, max_w_inf = 10^5,
-                          w_pp_cutoff = 10^5,z0pre = 0,p=2/3,alpha=myalpha)
+                          w_pp_cutoff = 10^5,z0pre = 0,p=2/3,alpha=myalpha,no_w=1000)
 params@mu_ext <- large_predation(params,WW=params@w[1])
 
 # setup egg sizes
@@ -51,7 +51,7 @@ sol <- getSteadyState(params)
 # supposing egg size of species 1 is w[1]
 hbar <- params@species_params$alpha*params@species_params$h*
     params@f0-params@species_params$ks
-sol_mult <- rep(10^(-6),no_s)
+sol_mult <- rep(10^(-16),no_s)
 true_sol <- sol
 for (i in 1:no_s){
     sol_mult[i] <- sol_mult[1]*(params@species_params$w_mat[1]/params@species_params$w_mat[i])^(params@lambda)
@@ -62,7 +62,7 @@ for (i in 1:no_s){
 
 true_sol[is.nan(true_sol)] <- 0
 #sim <- project(params, t_max=500, effort = 0)
-sim <- project(params, t_max=505, effort = 0,initial_n=true_sol)
+sim <- project(params, t_max=10, effort = 0,initial_n=true_sol)
 
 plot(sim)
 
@@ -72,6 +72,10 @@ lines(params@w,sim@n[dim(sim@n)[1],1,],col="blue")
 plot(params@w,true_sol[8,],log="xy",type="l")
 lines(params@w,sim@n[dim(sim@n)[1],8,],col="blue")
 
+for (i in 1:10){
+    plot(params@w,true_sol[i,],log="xy",type="l")
+    lines(params@w,sim@n[dim(sim@n)[1],i,],col="blue")
+}
 
 plot(params@w,sim@n[dim(sim@n)[1],1,],log="xy",type="l",ylim=c(10^(-20),10^(-5)))
 for (i in 2:dim(sim@n)[2]){
