@@ -1,9 +1,35 @@
-# Methods used for projecting for the size based modelling package
+#' Methods used for projecting
+#'
+#' The methods defined in the file project_methods calculate the various
+#' quantities needed to project the size-spectra forward in time, using the
+#' model described in section 3 of the mizer vignette.
+#'
+#' @section List of Methods:
+#' In this list we relate the methods in this file to the quantities named in
+#' the mizer vignette.
+#' \tabular{llll}{
+#'   Method name \tab Expression \tab Description \tab Section in vignette\cr
+#'   \code{\link{getPhiPrey}} \tab \eqn{E_{a.i}(w)} \tab Available energy \tab 3.2 \cr
+#'   \code{\link{getFeedingLevel}} \tab \eqn{f_i(w)} \tab Feeding level \tab 3.3 \cr
+#'   \code{\link{getPredRate}} \tab \eqn{\phi_i(w_p/w) (1-f_i(w)) \gamma_i w^q N_i(w) dw} \tab Predation \tab 3.7 \cr
+#'   \code{\link{getM2}} \tab \eqn{\mu_{p.i}(w)} \tab Predation mortality \tab 3.7 \cr
+#'   \code{\link{getM2Background}} \tab \eqn{\mu_{p}(w)} \tab Predation mortality on background \tab 3.8 \cr
+#'   \code{\link{getFMortGear}} \tab \eqn{F_{g,i}(w)} \tab Fishing mortality by gear \tab 8.3 \cr
+#'   \code{\link{getFMort}} \tab \eqn{\mu_{f.i}(w)} \tab Total fishing mortality \tab 8.3 \cr
+#'   \code{\link{getZ}} \tab \eqn{\mu_{i}(w)} \tab Total mortality \tab 3.7 \cr
+#'   \code{\link{getEReproAndGrowth}} \tab \eqn{E_{r.i}(w)} \tab Energy put into growth and reproduction \tab 3.4 \cr
+#'   \code{\link{getESpawning}} \tab \eqn{\psi_i(w)E_{r.i}(w)} \tab Energy put reproduction\tab 3.5 \cr
+#'   \code{\link{getEGrowth}} \tab \eqn{g_i(w)} \tab Energy put growth \tab 3.4 \cr
+#'   \code{\link{getRDI}} \tab \eqn{R_{p.i}} \tab Egg production \tab 3.5 \cr
+#'   \code{\link{getRDD}} \tab \eqn{R_i} \tab Recruitment \tab 3.6 \cr
+#' }
+#'
+#' @name project_methods
+NULL
 
-# Copyright 2012 Finlay Scott and Julia Blanchard. Distributed under the GPL 2 or later
-# Maintainer: Finlay Scott, CEFAS
-
-# Calculate the amount of food exposed to each predator by predator size
+# Copyright 2012 Finlay Scott and Julia Blanchard.
+# Distributed under the GPL 3 or later 
+# Maintainer: Gustav Delius, University of York, <gustav.delius@york.ac.uk>
 
 #' getPhiPrey method for the size based model
 #' 
@@ -44,9 +70,6 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='nume
 	if(length(n_pp) != length(object@w_full))
 	    stop("n_pp does not have the right number of size groups")
 
-	# The constant step size in log size
-	dx <- log(object@w[2]/object@w[1])  
-
 	# The object@w vector only gives weights from the egg size up to the max fish size. 
 	# However object@w_full gives more smaller weights and idx_sp are the index 
 	# values of object@w_full such that (object@w_full)[idx_sp]=object@w
@@ -68,7 +91,7 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='nume
 	# mvfft() does a Fourier transform of each column of its argument, but
 	# we need the Fourier transforms of each row, so we need to apply mvfft()
 	# to the transposed matrices and then transpose again at the end.
-	fullEnergy <- dx*Re(t(mvfft(t(object@ft_pred_kernel_e) * mvfft(t(f2)), inverse=TRUE)))/length(object@w_full)
+	fullEnergy <- Re(t(mvfft(t(object@ft_pred_kernel_e) * mvfft(t(f2)), inverse=TRUE)))/length(object@w_full)
 
 	return(fullEnergy[, idx_sp, drop=FALSE])
 })
@@ -221,14 +244,6 @@ setMethod('getPredRate', signature(object='MizerParams', n = 'matrix',
             stop("feeding_level argument must have dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),")")
         }
         noSpecies <- dim(object@interaction)[1]
-        
-        # Obtain weight vector wfull, and the corresponding vector xfull in log-space
-        wfull <- object@w_full
-        xfull <- log(wfull)
-        xfull <- xfull - xfull[1]
-        # Values of xFull are evenly spaced, with a difference of dx, starting with zero
-        dx <- xfull[2]-xfull[1]
-        
         # Get indices of w_full that give w
         idx_sp <- (length(object@w_full) - length(object@w) + 1):length(object@w_full)
         # get period used in spectral integration
@@ -245,7 +260,7 @@ setMethod('getPredRate', signature(object='MizerParams', n = 'matrix',
         Q[, idx_sp] <- sweep((1-feeding_level)*object@search_vol*n, 2, object@w, "*")
         
         # We do our spectral integration in parallel over the different species 
-        mortLonger <- dx*Re(t(mvfft(t(object@ft_pred_kernel_p) * mvfft(t(Q)), inverse=TRUE)))/no_P
+        mortLonger <- Re(t(mvfft(t(object@ft_pred_kernel_p) * mvfft(t(Q)), inverse=TRUE)))/no_P
         # We drop some of the final columns to get our output
         return(mortLonger[, 1:length(object@w_full), drop = FALSE])
     }
@@ -269,7 +284,7 @@ setMethod('getPredRate', signature(object='MizerParams', n = 'matrix', n_pp='num
 
 #' getM2 method for the size based model
 #'
-#' Calculates the total predation mortality \eqn{\mu_{p,i}(w_p)} on each prey
+#' Calculates the total predation mortality rate \eqn{\mu_{p,i}(w_p)} on each prey
 #' species by prey size. This method is used by the \code{\link{project}} method
 #' for performing simulations.
 #' @param object A \code{MizerParams} or \code{MizerSim} object.
@@ -369,7 +384,7 @@ setMethod('getM2', signature(object='MizerSim', n = 'missing', n_pp='missing', p
 
 #' getM2Background method for the size based model
 #'
-#' Calculates the predation mortality \eqn{\mu_p(w)} on the background spectrum
+#' Calculates the predation mortality rate \eqn{\mu_p(w)} on the background spectrum
 #' by prey size. Used by the \code{project} method for running size based
 #' simulations.
 #' @param object A \code{MizerParams} object.
@@ -429,9 +444,9 @@ setMethod('getM2Background', signature(object='MizerParams', n = 'matrix',
 # getFMortGear
 #' Get the fishing mortality by time, gear, species and size
 #'
-#' Calculates the fishing mortality by gear, species and size at each time step
-#' in the \code{effort} argument. Used by the \code{project} method to perform
-#' simulations.
+#' Calculates the fishing mortality rate \eqn{F_{g,i,w}} by gear, species and
+#' size at each time step in the \code{effort} argument. 
+#' Used by the \code{project} method to perform simulations.
 #' 
 #' @param object A \code{MizerParams} object or a \code{MizerSim} object.
 #' @param effort The effort of each fishing gear. Only needed if the object
@@ -538,13 +553,13 @@ setMethod('getFMortGear', signature(object='MizerSim', effort='missing'),
 # Total fishing mortality from all gears
 # species x size and maybe also by time if effort is time based
 
-#' Get the total fishing mortality from all fishing gears by time, species and
+#' Get the total fishing mortality rate from all fishing gears by time, species and
 #' size.
 #' 
-#' Calculates the fishing mortality from all gears by species and size at each
-#' time step in the \code{effort} argument.
+#' Calculates the total fishing mortality from all gears by species and size at 
+#' each time step in the \code{effort} argument.
 #' The total fishing mortality is just the sum of the fishing mortalities
-#' imposed by each gear.
+#' imposed by each gear, \eqn{\mu_{f.i}(w)=\sum_g F_{g,i,w}}.
 #' 
 #' @param object A \code{MizerParams} object or a \code{MizerSim} object
 #' @param effort The effort of each fishing gear. Only needed if the object
@@ -635,7 +650,7 @@ setMethod('getFMort', signature(object='MizerSim', effort='missing'),
 # get total Z
 #' getZ method for the size based model
 #'
-#' Calculates the total mortality \eqn{\mu_i(w)} on each species by size from
+#' Calculates the total mortality rate \eqn{\mu_i(w)} on each species by size from
 #' predation mortality (M2), background mortality (M) and fishing mortality for
 #' a single time step.
 #' @param object A \code{MizerParams} object.
@@ -694,9 +709,9 @@ setMethod('getZ', signature(object='MizerParams', n = 'matrix',
 # Energy after metabolism and movement
 #' getEReproAndGrowth method for the size based model
 #'
-#' Calculates the energy available by species and size for reproduction and
-#' growth after metabolism and movement have been accounted for. Used by the
-#' \code{project} method for performing simulations.
+#' Calculates the energy rate available by species and size for reproduction and
+#' growth after metabolism and movement have been accounted for: \eqn{E_{r.i}(w)}.
+#' Used by the \code{project} method for performing simulations.
 #' @param object A \code{MizerParams} object.
 #' @param n A matrix of species abundance (species x size).
 #' @param n_pp A vector of the background abundance by size.
@@ -753,8 +768,8 @@ setMethod('getEReproAndGrowth', signature(object='MizerParams', n = 'matrix',
 
 #' getESpawning method for the size based model
 #'
-#' Calculates the energy available by species and size for reproduction after
-#' metabolism and movement have been accounted for.
+#' Calculates the energy rate available by species and size for reproduction after
+#' metabolism and movement have been accounted for: \eqn{\psi_i(w)E_{r.i}(w)}.
 #' Used by the \code{project} method for performing simulations.
 #' @param object A \code{MizerParams} object.
 #' @param n A matrix of species abundance (species x size).
@@ -805,7 +820,7 @@ setMethod('getESpawning', signature(object='MizerParams', n = 'matrix',
 
 #' getEGrowth method for the size based model
 #'
-#' Calculates the energy \eqn{g_i(w)} available by species and size for growth
+#' Calculates the energy rate \eqn{g_i(w)} available by species and size for growth
 #' after metabolism, movement and reproduction have been accounted for. Used by
 #' the \code{\link{project}} method for performing simulations.
 #' @param object A \linkS4class{MizerParams} object.
@@ -871,7 +886,7 @@ setMethod('getEGrowth', signature(object='MizerParams', n = 'matrix',
 #' getRDI method for the size based model
 #'
 #' Calculates the density independent recruitment (total egg production)
-#' \eqn{R_{p,i}} before density dependence, by species. Used by the
+#' \eqn{R_{p.i}} before density dependence, by species. Used by the
 #' \code{project} method for performing simulations.
 #' @param object A \code{MizerParams} object.
 #' @param n A matrix of species abundance (species x size).
@@ -907,9 +922,6 @@ setMethod('getRDI', signature(object='MizerParams', n = 'matrix',
         if (!all(dim(e_spawning) == c(nrow(object@species_params),length(object@w)))){
             stop("e_spawning argument must have dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),")")
         }
-        # Should we put this in the class as part of species_params?
-        # Index of the smallest size class for each species
-        #w0_idx <- as.vector(tapply(object@species_params$w_min,1:length(object@species_params$w_min),function(w_min,wx) max(which(wx<=w_min)),wx=params@w))
         e_spawning_pop <- (e_spawning*n) %*% object@dw
         rdi <- sex_ratio*(e_spawning_pop * object@species_params$erepro)/object@w[object@species_params$w_min_idx] 
         return(rdi)
@@ -921,13 +933,11 @@ setMethod('getRDI', signature(object='MizerParams', n = 'matrix',
 setMethod('getRDI', signature(object='MizerParams', n = 'matrix', 
                               n_pp = 'numeric', e_spawning='missing'),
     function(object, n, n_pp, sex_ratio = 0.5){
-	# Should we put this in the class as part of species_params?
-	# Index of the smallest size class for each species
-	#w0_idx <- as.vector(tapply(object@species_params$w_min,1:length(object@species_params$w_min),function(w_min,wx) max(which(wx<=w_min)),wx=params@w))
-	e_spawning <- getESpawning(object, n=n, n_pp=n_pp)
-    rdi <- getRDI(object, n=n, n_pp=n_pp, e_spawning=e_spawning, sex_ratio=sex_ratio)
-	return(rdi)
-})
+        e_spawning <- getESpawning(object, n=n, n_pp=n_pp)
+        rdi <- getRDI(object, n=n, n_pp=n_pp, e_spawning=e_spawning, sex_ratio=sex_ratio)
+        return(rdi)
+    }
+)
 
 #' getRDD method for the size based model
 #'

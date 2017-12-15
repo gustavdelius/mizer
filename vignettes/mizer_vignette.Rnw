@@ -132,7 +132,7 @@ After installing \pkg{mizer}, to actually use it you need to load the package us
 library(mizer)
 @
 
-The source code for \pkg{mizer} is currently hosted at Github (\url{https://github.com/drfinlayscott/mizer}). If you are feeling brave and wish to try out a development version of \pkg{mizer} you can install the package from here using the \R package \pkg{devtools} (which was used extensively in putting together \pkg{mizer}).
+The source code for \pkg{mizer} is hosted on Github (\url{https://github.com/sizespectrum/mizer}). If you are feeling brave and wish to try out a development version of \pkg{mizer} you can install the package from here using the \R package \pkg{devtools} (which was used extensively in putting together \pkg{mizer}).
 
 \subsection{Getting help}
 
@@ -244,23 +244,41 @@ The encountered food is consumed subjected to a standard Holling functional resp
   f_i(w) = \frac{E_{e.i}}{E_{e.i} + h_i w^n},
 \end{equation}
 
-where $h_i w^n$ is the maximum consumption rate.
+where $h_i w^n$ is the maximum consumption rate. The rate at which food is
+consumed is then $f_i(w) h_i w^n$.
 
 \subsection{Growth}
 \label{sec:growth}
-The consumed food $f_i(w) h_i w^n$ is assimilated by an efficiency $\alpha$ and used to fuel the needs for standard metabolism and activity $k_{s.i} w^p$. The remaining available energy, $\alpha f_i(w) h_i w^n - k_{s.i} w^p$, is divided between growth and reproduction by a function of weight changing between zero around the weight of maturation to one at the asymptotic weight where all available energy is used for reproduction:
+The consumed food is assimilated with an efficiency $\alpha$ and 
+used to fuel the needs for standard metabolism (at a rate $k_{s.i} w^p$) and 
+activity and movement (at a rate $k_i w$). The remaining rate, if any,
+\begin{equation}
+  \label{eq:Er}
+  E_{r.i}(w) = \max(0, \alpha f_i(w) h_i w^n - k_{s.i} w^p - k_i w)
+\end{equation}
+is used for growth and reproduction.
+When food supply does not cover the requirements of metabolism and activity, 
+growth and reproduction stops, i.e.~there is no negative growth\footnote{
+The individual would then be subjected to a starvation mortality.
+Starvation is usually not an important process in the multispecies model with Beverton-Holt recruitment.
+It is therefore not implemented in mizer at the moment.}.
 
+The proportion of $E_{r.i}(w)$ that is used for reproduction is given by
+a function $\psi_i(w)$ that changes between 
+zero around the weight of maturation $w_{m.i}$ to one at the asymptotic weight 
+$W_i$ where all available energy is used for reproduction:
 \begin{equation}
   \label{eq:psi}
   \psi_i(w) = \left[ 1 + \left( \frac{w}{w_{m.i}} \right)^{-10} \right]^{-1} \left( \frac{w}{W_i} \right)^{1-n},
 \end{equation}
+The term in the square bracket is a function that varies smoothly from 0 to 1 around the weight at maturation.  The last term describes how the relative amount of energy invested in reproduction increases as the weight approaches the asymptotic weight.  
 
-where $w_{m.i}$ is the weight at maturation and $W_i$ is the asymptotic (maximum) size.  The term in the square bracket is a function which varies smoothly from 0 to 1 around the weight at maturation.  The last term describes how the relative amount of energy invested in reproduction increases as the weight approaches the asymptotic weight.  The somatic growth function therefore becomes:
-
+Thus the somatic growth function is given by
 \begin{equation}
   \label{eq:growth}
-  g_i(w) = (\alpha f_i(w) h_i w^n - k_{s.i} w^p)(1-\psi_i(w)).
+  g_i(w) = E_{r.i}(w)\left(1-\psi_i(w)\right).
 \end{equation}
+
 
 \begin{figure}[t]
   \centering
@@ -274,21 +292,24 @@ The form of the allocation function (\ref{eq:psi}) is chosen such that the growt
 
 \begin{equation}
   \label{eq:fc}
-  f_{c.i}(w) = k_{s.i} w^p/(\alpha h_i w^n).
+  f_{c.i}(w) = \frac{k_{s.i} w^p+k_i w}{\alpha h_i w^n}.
 \end{equation}
 
-If $n=p$ (which is the case for the set of default parameters chosen here), $f_c$ is independent of $w$.
+If $n=p$ and $k=0$ (which is the case for the set of default parameters chosen here), $f_c$ is independent of $w$.
 
 \subsection{Reproduction}
 \label{sec:reproduction}
-The total production of eggs $R_{p.i}$ (numbers per time) is found by integrating the energy allocated to reproduction over all individuals:
-
+The total production rate of eggs $R_{p.i}$ (numbers per time) is found by 
+integrating the contribution from all individuals:
 \begin{equation}
   \label{eq:Rp}
-  R_{p.i} = \frac{\epsilon}{2 w_0} \int N_i(w)  (\alpha f_i(w) h_i w^n - k_{s.i} w^p) \psi_i(w) \, dw,
+  R_{p.i} = \frac{\epsilon}{2 w_0} \int N_i(w)  E_{r.i}(w) \psi_i(w) \, dw,
 \end{equation}
-
-where $w_0$ is the egg weight, $\epsilon$ is the efficiency of reproduction, and the factor $1/2$ takes into account that only females reproduce.
+where the individual contribution is obtained by multiplying the rate at which the
+individual allocates energy to reproduction by an efficiency factor $\epsilon$ 
+and then dividing by the egg weight $w_0$ to convert the energy into number of eggs.
+The result is multiplied by a factor $1/2$ to take into account that only 
+females reproduce.
 
 \subsection{Recruitment}
 \label{sec:recruitment}
@@ -315,48 +336,58 @@ where $R_{\max.i}$ is the maximum recruitment flux of each trait class (Figure~\
 The ``Beverton-Holt'' type of SRR is not the only density dependence model that \pkg{mizer} can use. Users are able to write their own model so it is possible to set a range of SRRs, e.g. fixed recruitment (as used in the community-type model) or ``hockey-stick''. This is explored in more detail in Section~\ref{sec:srr}.
 
 \subsection{Mortality}
-The mortality rate of an individual $\mu_i(w)$ has three sources: predation mortality $\mu_{p.i}(w)$ , starvation mortality $\mu_{s.i}(w)$, and a constant background mortality $\mu_{b.i}(w)$. The background mortality is needed to ensure that the largest individuals in the community also experience mortality as they are not predated upon by any individuals from the community spectrum.  Predation mortality is calculated such that all that is eaten translates into corresponding predation mortalities on the ingested prey individuals (see \citet[Appendix~A]{hartvig_food_2011-1} for derivation):
+The mortality rate of an individual $\mu_i(w)$ has three sources: predation mortality $\mu_{p.i}(w)$, background mortality $\mu_{b.i}(w)$ and fishing mortality $\mu_{f.i}(w)$. 
+
+Predation mortality is calculated such that all that is eaten translates into corresponding predation mortalities on the ingested prey individuals (see \citet[Appendix~A]{hartvig_food_2011-1} for derivation):
 
 \begin{equation}
   \label{eq:mup}
-  \mu_{p.i}(w_p) = \sum_j \int \phi_j(w_p/w) (1-f_j(w)) \gamma_j w^q \theta_{ji} N_j(w) \, dw.
+  \mu_{p.i}(w_p) = \sum_j \theta_{ji} \int \phi_j(w_p/w) (1-f_j(w)) \gamma_j w^q N_j(w) \, dw
 \end{equation}
 
-When food supply does not cover metabolic requirements $k_{s.i} w^p$, growth stops, i.e.~there is no negative growth, and the individual is subjected to a starvation mortality.  Starvation mortality is assumed proportional to the energy deficiency $k_{s.i} w^p - \alpha f_i(w) h_i w^n$, and is inversely proportional to lipid reserves, which are assumed proportional to body weight:
-\begin{equation}
-  \label{eq:mu_s}
-  \mu_{s.i}(w) = \left\{ \begin{array}{lc}
-0 & \alpha f_i(w) h_i w^n > k_{s.i} w^p \\
- \frac{k_{s.i} w^p - \alpha f_i(w) h_i w^n}{\xi w} & \mathrm{otherwise}
-\end{array} \right. .
-\end{equation}
 
-Starvation is usually not an important process in the multispecies model with Beverton-Holt recruitment.
+% Starvation mortality is assumed proportional to the energy deficiency $k_{s.i} w^p - \alpha f_i(w) h_i w^n$, and is inversely proportional to lipid reserves, which are assumed proportional to body weight:
+% \begin{equation}
+%   \label{eq:mu_s}
+%   \mu_{s.i}(w) = \left\{ \begin{array}{lc}
+% 0 & \alpha f_i(w) h_i w^n > k_{s.i} w^p \\
+%  \frac{k_{s.i} w^p - \alpha f_i(w) h_i w^n}{\xi w} & \mathrm{otherwise}
+% \end{array} \right. .
+% \end{equation}
 
-Mortality from sources other than predation and starvation is assumed to be constant within a species and inversely proportional to generation time \citep{peters_ecological_1986}:
+Background mortality from other sources is assumed to be constant within a species and inversely proportional to generation time \citep{peters_ecological_1986}:
 \begin{equation}
   \label{eq:mu_b}
   \mu_{b.i} = \mu_0 W_i^{n-1}.
 \end{equation}
+The background mortality is needed to ensure that the largest individuals in the community also experience mortality as they are not predated upon by any individuals from the community spectrum.  
+
+Fishing mortality $\mu_{f.i}(w)$ is discussed further in section \ref{sec:fishing_gear}.
+
 
 \subsection{Resource dynamics}
 The background resource spectrum $N_R(w)$ represents food items for the smallest individuals (smaller than $\beta w_0$). The temporal evolution of each size group in the resource spectrum is described using semi-chemostatic growth:
 \begin{equation}
   \label{eq:nb}
-  \frac{\partial N_R(w,t)}{\partial t} = r_0 w^{p-1} \Big[ \kappa_R w^{-\lambda} - N_R(w,t) \Big] - \mu_p(w) N_R(w,t),
+  \frac{\partial N_R(w,t)}{\partial t} = r_0 w^{p-1} \Big[ \kappa w^{-\lambda} - N_R(w,t) \Big] - \mu_p(w) N_R(w,t),
 \end{equation}
-where $r_0 w^{p-1}$ is the population regeneration rate \citep{fenchel_intrinsic_1974,savage_effects_2004} and $\kappa w^{-\lambda} = \kappa w^{-2-q+n}$ the carrying capacity.
+where $r_0 w^{p-1}$ is the population regeneration rate \citep{fenchel_intrinsic_1974,savage_effects_2004} and $\kappa w^{-\lambda} = \kappa w^{-2-q+n}$ the carrying capacity. 
+The predation mortality rate is given by a similar expression as in \eqref{eq:mup}:
+\begin{equation}
+  \label{eq:mupp}
+  \mu_{p}(w_p) = \sum_j \int \phi_j(w_p/w) (1-f_j(w)) \gamma_j w^q N_j(w) \, dw.
+\end{equation}
 
 \subsection{Parameters}
 \label{sec:parameters}
 
 The default parameter values for the model have been derived on the basis of meta-analyses of data on marine fish (Table~\ref{tab:parameters}). Two parameters deserving special mention are the initial and critical feeding levels. These are used as physiological measures characterizing the productivity of the system and the metabolic requirements of the individuals.
 
-The system is driven by the production of the resource. The ratio between the production and the maximum consumption will determine the feeding level $f_0$ of small individuals feeding mainly on the background resource. If $f_0$ is close to 1 the individuals are satiated, and growth will be largely independent of changes in food availability. If $f_0$ is in the linear range of the functional response, growth will be dependent on available food. If $f_0$ is close to the critical feeding level $f_c$, where the available food is only sufficient to cover standard metabolism, growth will be stunted. The initial feeding level $f_0$, calculated as the feeding level of an individual feeding on the resource at carrying capacity, is used as the control parameter for the resource productivity. The initial feeding level is then used to calculate the search rate parameter $\gamma$:
+The system is driven by the production of the resource. The ratio between the production and the maximum consumption will determine the feeding level $f_0$ of small individuals feeding mainly on the background resource. If $f_0$ is close to 1 the individuals are satiated, and growth will be largely independent of changes in food availability. If $f_0$ is in the linear range of the functional response, growth will be dependent on available food. If $f_0$ is close to the critical feeding level $f_c$, where the available food is only sufficient to cover standard metabolism, growth will be stunted. The initial feeding level $f_0$, calculated as the feeding level of an individual feeding on the resource at carrying capacity, is used as the control parameter for the resource productivity. The initial feeding level is then used to calculate the search rate parameter $\gamma$, see \citep[Appendix B]{andersen_asymptotic_2006}:
 
 \begin{equation}
   \label{eq:gamma}
-  \gamma_i(f_0) = \frac{f_0 h_i \beta_i^{2-\lambda}}{(1-f_0)\sqrt{2\pi}\kappa \sigma_i}.
+  \gamma_i(f_0) = \frac{f_0 h_i \beta_i^{2-\lambda}\exp(-(\lambda-2)^2 \sigma_i^2/2)}{(1-f_0)\sqrt{2\pi}\kappa \sigma_i}.
 \end{equation}
 
 Similar to the way the initial feeding level $f_0$ is used to describe the relation between the production and the maximum consumption, the critical feeding level $f_c$ (Equation~\ref{eq:fc}) is used to describe the relation between the factors for standard metabolism $k_s$ and maximum consumption $h$. A critical feeding level of $f_c \approx 0.2$ seems to be reasonable \citep{hartvig_food_2011-1}.
@@ -368,11 +399,11 @@ However, the depletion of resources makes it difficult to find an analytical app
   \centering
   \caption{Parameters in the model with dimensions and ``default'' values. For a detailed explanation of the determination of the values see \protect\citep[App.~E]{hartvig_food_2011-1}.}
   \label{tab:parameters}
-  \begin{tabular}{llllp{7cm}}
+  \begin{tabular}{llllp{8.5cm}}
     %&  & Value & Units & Description \\
     \hline
     \multicolumn{5}{l}{ Resource spectrum} \\
-    & $\kappa_R$ & $5\cdot{}10^{-3}$ & g$^{\lambda-1}/$m$^3$ & Magnitude of the resource spectrum \\
+    & $\kappa$ & $5\cdot{}10^{-3}$ & g$^{\lambda-1}/$m$^3$ & Magnitude of the resource spectrum \\
     & $\lambda$ & 2.05 & - & Exponent of resource spectrum ($=2-n+q$)\\
     & $r_0$ & 4 & g$^{1-p}$/yr & Constant for regeneration rate of resources \\
     & $w_{cut}$ & 0.5 & g & Upper weight limit of the resource spectrum \\
@@ -385,7 +416,7 @@ However, the depletion of resources makes it difficult to find an analytical app
     & $p$ & 0.75 & - & Exponent of standard metabolism* \\
     & $\beta$ & 100 & - & Preferred predator-prey mass ratio \\
     & $\sigma$ & 1.3$^\P$ & - & Width of size selection function \\
-    & $\gamma$ & Eq.~(\protect \ref{eq:gamma}) & g$^{-q}$/yr & Constant for volumetric search rate \\
+    & $\gamma$ & Eq.~(\protect \ref{eq:gamma}) & g$^{-q}m^3$/yr & Constant for volumetric search rate \\
     & $q$ & 0.8$^\S$ & - & Exponent for volumetric search rate \\
     \multicolumn{5}{l}{ Mortality} \\
     & $\xi$ & 0.1 & - & Fraction of body weight containing reserves \\
@@ -394,7 +425,7 @@ However, the depletion of resources makes it difficult to find an analytical app
     & $w_0$ & 0.5 & mg & Offspring weight \\
 %   & $\eta$ & 0.25 & - & Weight at maturation divided by  $W$  \\
     & $\epsilon$ & 0.1 & - & Efficiency of offspring production \\
-    & $\kappa$ & 50$^\ddagger$ & - & Factor for maximum recruitment. \\
+    & $k_0$ & 50$^\ddagger$ & - & Factor for maximum recruitment in trait-based model \\
     \hline
     \multicolumn{5}{p{\textwidth}}{\footnotesize *Laboratory experiments on fish indicate that the exponent of standard metabolism should be higher, around $p=0.86$ \protect\citep{winberg_rate_1956,killen_little_2007}. The practical implication of choosing $p>n$ is that a maximum weight for individuals at which all energy, even if $f=1$, is used for standard metabolism at $W_+ = [ (\alpha h)/k_s ]^{1/(p-n)}$ \citep[Eq.~8]{andersen_life-history_2008}. Here a value of $p=n$ is used to make the analysis of the model output easier. }\\
 \multicolumn{5}{p{\textwidth}}{\footnotesize $^\dagger$Adjusted to a different value than in \protect\citep{hartvig_food_2011-1} to give growth rates similar to growth rates of species in the North Sea. }\\
@@ -711,7 +742,7 @@ The main parameters of interest are the number of the species in the model (\arg
 One of the key differences between the community type model described above and the trait-based model is that reproduction and egg production are considered.
 In the community model, recruitment is constant and there is no relationship between the abundance in the community and egg production.
 In the trait-based model, the egg production is modeled using a ``Beverton-Holt'' type function (the default in \pkg{mizer}, see Section~\ref{sec:recruitment}) where the recruitment flux $R_i$ (numbers per time) approaches a maximum recruitment as the egg production increases.
-The maximum recruitment flux is calculated using equilibrium theory and a recruitment multiplier \citep[see][]{andersen_damped_2010}, $\kappa$ (see Equation~\ref{eq:gamma}), which can be passed in as an argument (\args{k0}) to the \code{set\_trait\_model()} function. \args{k0} has a default value of 50. 
+The maximum recruitment flux is calculated using equilibrium theory \citep[see][]{andersen_damped_2010} and a recruitment multiplier $k_0$, which can be passed in as an argument (\args{k0}) to the \code{set\_trait\_model()} function. \args{k0} has a default value of 50. 
 
 Here we set up the model to have 10 species, with asymptotic sizes ranging from 10 g to 100 kg. All the other parameters have default values. 
 
@@ -1170,14 +1201,17 @@ These are explained further in Sections~\ref{sec:fishing_gear} and \ref{sec:srr}
 In this section we take a look at how fishing is implemented and how fishing gears are set up within
 \pkg{mizer}.
 
-In \pkg{mizer}, fishing mortality is imposed on species by fishing gears.
-The fishing mortality $F$ imposed by gear $g$ on species $s$ at size $w$ is calculated as:
-
+In \pkg{mizer}, fishing mortality is imposed on species by fishing gears. The total fishing
+mortality is obtained by summing over the mortality from all gears,
+\begin{equation}
+    \label{eq:muf}
+    \mu_{f.i}(w) = \sum_g F_{g,i}(w),
+\end{equation}
+where the fishing mortality $F_{g,i}(w)$ imposed by gear $g$ on species $i$ at size $w$ is calculated as:
 \begin{equation}
     \label{eq:sel}
-    F_{s,g,w} = S_{s,g,w} Q_{s,g} E_{g}
+    F_{g,i}(w) = S_{g,i}(w) Q_{g,i} E_{g}
 \end{equation}
-
 where $S$ is the selectivity by species, gear and size, $Q$ is the catchability by species
 and gear and $E$ is the fishing effort by gear.
 The selectivity at size has a range between 0 (not selected at that size) to 1 (fully selected at
@@ -1325,7 +1359,7 @@ In the rest of this section we demonstrate how to pull these elements together t
 
 The first step is to prepare the species specific parameter data.frame.
 As mentioned above, one way of doing this is to use a spreadsheet and save it as a .csv file. We will use this approach here.
-An example .csv file has been included in the package. This contains the species parameters for a multispecies North Sea model \citep{blanchard_multispecies_2013}.
+An example .csv file has been included in the package. This contains the species parameters for a multispecies North Sea model \citep{blanchard_multispecies_2014}.
 This file is placed in the \code{doc} folder of the package installation.
 The location of the file can be found by running:
 
@@ -1963,12 +1997,12 @@ plot(sim)
 In this section we try to pull everything together with an extended example of a multispecies model for the North Sea.
 First we will set up the model, project it through time using historical levels of fishing effort, and then examine the results.
 We then run two different future projection scenarios.
-This example is based on the multispecies model in \citet{blanchard_multispecies_2013}.
+This example is based on the multispecies model in \citet{blanchard_multispecies_2014}.
 
 \subsection{Setting up the North Sea model}
 
 The first job is to set up the \class{MizerParams} object for the North Sea model.
-In the previous multispecies examples we have already been using the life-history parameters and the interaction matrix for the North Sea model used in \citet{blanchard_multispecies_2013}.
+In the previous multispecies examples we have already been using the life-history parameters and the interaction matrix for the North Sea model used in \citet{blanchard_multispecies_2014}.
 We will use them again here but will make some changes. In particular we set up the fishing gears differently.
 
 The parameters and the interaction matrix are stored as *.csv files that need to be read in. We can use the \code{system.file()} function to tell us the location of the files.
@@ -1994,7 +2028,7 @@ The \args{params\_data} object is a data.frame with columns for \args{species}, 
 We have seen before that only having these columns in the species data.frame is sufficient to make a \class{MizerParams} object. Any missing columns will be added by the default values and relationships in the \class{MizerParams} constructor.
 For example, the data.frame does not include columns for \args{h} or \args{gamma}. This means that they will be estimated using the \args{k\_vb} column (see Section~\ref{sec:species_parameters_dataframe}).
 
-We will use the default stock-recruitment relationship, which is the Beverton-Holt shape. As we saw in Section~\ref{sec:srr}, this requires a column \args{r\_max} in the species data.frame which contains the maximum recruitment flux for each species. This column is already in the \args{params\_data} data.frame. The values for \args{r\_max} are taken from \citet{blanchard_multispecies_2013}.
+We will use the default stock-recruitment relationship, which is the Beverton-Holt shape. As we saw in Section~\ref{sec:srr}, this requires a column \args{r\_max} in the species data.frame which contains the maximum recruitment flux for each species. This column is already in the \args{params\_data} data.frame. The values for \args{r\_max} are taken from \citet{blanchard_multispecies_2014}.
 The values were found through a calibration process which is not covered here but will be added to a later version of this manual. 
 
 At the moment, the species data.frame does not contain any information on the selectivity of the species.
@@ -2015,7 +2049,7 @@ This is because the sigmoid selectivity function is defined in terms of length, 
 As explained in Section~\ref{sec:fishing_gear}, all arguments of the selectivity function need to be in the species parameter data.frame.
 Therefore, columns for \args{l25}, \args{l50}, \args{a} and \args{b} need to be added to \args{params\_data}.
 We also add a column specifying the name of the selectivity function we wish to use.
-The data is taken from \citet{blanchard_multispecies_2013}.
+The data is taken from \citet{blanchard_multispecies_2014}.
 Note it would probably be easier to add this data directly to the *.csv file and then read it in rather than type it in by hand like we do here:
 
 <<label=adding_sel_params>>=
@@ -2072,7 +2106,7 @@ params_data$catchability <- as.numeric(f_history["1990",])
 @
 
 Considering the other model parameters, we will use default values for all of the other parameters apart from \args{kappa}, the carrying capacity of the resource spectrum (see Section~\ref{sec:parameters}).
-This was estimated along with the values \args{r\_max} as part of the calibration process described in \citet{blanchard_multispecies_2013}.
+This was estimated along with the values \args{r\_max} as part of the calibration process described in \citet{blanchard_multispecies_2014}.
 
 We now have all the information we need to create the \code{MizerParams} object using the species parameters data.frame.
 
@@ -2167,7 +2201,7 @@ We also compare the simulated values of the LFI to a community target based on a
 %Yield time series (Figure 3) These plots go all the way to 2050 after scenarios
 
 The indicators are calculated using the methods described in see Table~\ref{tab:indicator_methods} and Section~\ref{sec:summaries}.
-Here we calculate the LFI and the other community indicators for the unexploited community. As in \citet{blanchard_multispecies_2013}, when calculating these indicators we only include demersal species and individuals in the size range 10 g to 100 kg, and the LFI is based on species larger than 40 cm.
+Here we calculate the LFI and the other community indicators for the unexploited community. As in \citet{blanchard_multispecies_2014}, when calculating these indicators we only include demersal species and individuals in the size range 10 g to 100 kg, and the LFI is based on species larger than 40 cm.
 Each of these methods returns a time series. We are interested only in the equilibrium unexploited values so we just select the final time step (year = \args{100}).
 
 <<label=ns_comm_ref_point>>=
@@ -2353,6 +2387,7 @@ p + theme(legend.position = "none")
 \section{Acknowledgements}
 
 Finlay Scott would like to thank the Cefas Seedcorn Project DP266 and the Defra project MF1225 for supporting this work.
+This project has received funding from the European Union's Horizon 2020 Research and Innovation programme under Grant Agreement No 634495 (MINOUW).
 
 %-------------------------------------------------------------------------
 % References

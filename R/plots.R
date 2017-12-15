@@ -1,8 +1,8 @@
 # Plotting methods for the MizerSim class
 
 # Copyright 2012 Finlay Scott and Julia Blanchard. 
-# Distributed under the GPL 2 or later
-# Maintainer: Finlay Scott, CEFAS
+# Distributed under the GPL 3 or later 
+# Maintainer: Gustav Delius, University of York, <gustav.delius@york.ac.uk>
 
 # Hackiness to get past the 'no visible binding ... ' warning when running check
  utils::globalVariables(c("time", "value", "Species", "w", "gear"))
@@ -393,12 +393,12 @@ setMethod("plot", signature(x="MizerSim", y="missing"),
 	p3 <- plotBiomass(x,print_it = FALSE,...)
 	p4 <- plotM2(x,print_it = FALSE,...)
 	p5 <- plotFMort(x,print_it = FALSE,...)
-	grid.newpage()
-	glayout <- grid.layout(3,2) # widths and heights arguments
-	vp <- viewport(layout = glayout)
-	pushViewport(vp)
+	grid::grid.newpage()
+	glayout <- grid::grid.layout(3,2) # widths and heights arguments
+	vp <- grid::viewport(layout = glayout)
+	grid::pushViewport(vp)
 	vplayout <- function(x,y)
-	    viewport(layout.pos.row=x, layout.pos.col = y)
+	  grid::viewport(layout.pos.row=x, layout.pos.col = y)
 	print(p1+ theme(legend.position="none"), vp = vplayout(1,1))
 	print(p3+ theme(legend.position="none"), vp = vplayout(1,2))
 	print(p4+ theme(legend.position="none"), vp = vplayout(2,1))

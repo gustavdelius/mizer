@@ -1,9 +1,9 @@
 # Class outline for sbm base parameters class
 # Class has members to store parameters of size based model
 
-# Copyright 2012 Finlay Scott and Julia Blanchard. 
-# Distributed under the GPL 2 or later
-# Maintainer: Finlay Scott, CEFAS. finlay.scott@cefas.co.uk
+# Copyright 2012 Finlay Scott and Julia Blanchard.
+# Distributed under the GPL 3 or later 
+# Maintainer: Gustav Delius, University of York, <gustav.delius@york.ac.uk>
 
 #Naming conventions:
 #S4 classes and constructors: AClass
@@ -219,16 +219,17 @@ valid_MizerParams <- function(object) {
 #'   w_full slot. A vector the same length as the w_full slot. The final value
 #'   is the same as the second to last value
 #' @slot psi An array (species x size) that holds the allocation to reproduction
-#'   for each species at size
+#'   for each species at size, \eqn{\psi_i(w)}
 #' @slot mu_ext An array (species x size) that holds an extra mortality rate
-#' @slot intake_max An array (species x size) that holds the maximum intake for
-#'   each species at size
-#' @slot search_vol An array (species x size) that holds the search volume for
-#'   each species at size
-#' @slot activity An array (species x size) that holds the activity for each
-#'   species at size
-#' @slot std_metab An array (species x size) that holds the standard metabolism
 #'   for each species at size
+#' @slot intake_max An array (species x size) that holds the maximum intake for
+#'   each species at size, \eqn{h_i w^n}
+#' @slot search_vol An array (species x size) that holds the search volume for
+#'   each species at size, \eqn{\gamma_i w^q}
+#' @slot activity An array (species x size) that holds the activity for each
+#'   species at size, \eqn{k_i w}
+#' @slot std_metab An array (species x size) that holds the standard metabolism
+#'   for each species at size, \eqn{k_{s.i} w^p}
 #' @slot ft_pred_kernel_e An array (species x log of predator/prey size ratio) that holds 
 #'   the Fourier transform of the feeding kernel in a form appropriate for
 #'   evaluating the available energy integral
@@ -236,18 +237,18 @@ valid_MizerParams <- function(object) {
 #'   the Fourier transform of the feeding kernel in a form appropriate for
 #'   evaluating the predation mortality integral
 #' @slot rr_pp A vector the same length as the w_full slot. The size specific
-#'   growth rate of the background spectrum
+#'   growth rate of the background spectrum, \eqn{r_0 w^{p-1}}
 #' @slot cc_pp A vector the same length as the w_full slot. The size specific
-#'   carrying capacity of the background spectrum
+#'   carrying capacity of the background spectrum, \eqn{\kappa w^{-\lambda}}
 #' @slot species_params A data.frame to hold the species specific parameters
 #'   (see the mizer vignette, Table 2, for details)
-#' @slot interaction The species specific interaction matrix.
+#' @slot interaction The species specific interaction matrix, \eqn{\theta_{ij}}
 #' @slot srr Function to calculate the realised (density dependent) recruitment.
 #'   Has two arguments which are rdi and species_params
 #' @slot selectivity An array (gear x species x w) that holds the selectivity of
-#'   each species by gear and species size
+#'   each gear for species and size, \eqn{S_{g,i,w}}
 #' @slot catchability An array (gear x species) that holds the catchability of
-#'   each species by each gear
+#'   each species by each gear, \eqn{Q_{g,i}}
 #'   
 #' @note The \code{MizerParams} class is fairly complex with a large number of
 #'   slots, many of which are multidimensional arrays. The dimensions of these
@@ -568,9 +569,9 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	res@kappa <- kappa
 
 	# If not w_min column in species_params, set to w_min of community
-	# Check min_w argument is not > w_min in species_params
 	if (!("w_min" %in% colnames(object)))
 	    object$w_min <- min(res@w)
+	# Check min_w argument is not > w_min in species_params
 	if(any(object$w_min < min(res@w)))
 	    stop("One or more of your w_min values is less than the smallest size of the community spectrum")
 
@@ -611,18 +612,19 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
             
 	Beta <- log(res@species_params$beta)
 	sigma <- res@species_params$sigma
+	Dx <- res@w[2]/res@w[1] - 1  # dw = w Dx
 	# w_full has the weights from the smallest relevant plankton, to the largest fish
 	xFull <- log(res@w_full)
 	xFull <- xFull - xFull[1]
-	# smat ends up as the feeding kernel values appropriate for the available energy integral
-	smat <- matrix(0, nrow = dim(res@interaction)[1], ncol=length(xFull))
-	# We also form ft_pred_kernel_e, in which we pre-compute the fft of the rows of smat
+
+	# ft_pred_kernel_e is an array (species x log of predator/prey size ratio) 
+	# that holds the Fourier transform of the feeding kernel in a form 
+	# appropriate for evaluating the available energy integral
 	res@ft_pred_kernel_e <- matrix(0, nrow = dim(res@interaction)[1], ncol=length(xFull))
 	noSpecies <- dim(res@interaction)[1]
 	for(i in 1:noSpecies){
-	    # Inside the loop we compute the feeding kernel terms, and the fft of them.
-	    smat[i, ] <- exp(-(xFull - Beta[i])^2/(2*sigma[i]^2))
-	    res@ft_pred_kernel_e[i, ] <- fft(smat[i, ])
+	    # We compute the feeding kernel terms and their fft.
+	    res@ft_pred_kernel_e[i, ] <- Dx*fft(exp(-(xFull - Beta[i])^2/(2*sigma[i]^2)))
 	}
 
 	# rr is the log of the maximal predator/prey mass ratio
@@ -636,7 +638,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	# Determine number of x points used in period
 	no_P <- 1+ceiling(P/dx)  # P/dx should already be integer
     # vector of values for log predator/prey mass ratio
-	x_P <- (0:(no_P-1))*dx
+	x_P <- (-1:(no_P-2))*dx
 	
 	# The dimension of ft_pred_kernel_p was not know at the time the res object
 	# was initialised. Hence we need to create it with the right dimension here.
@@ -650,7 +652,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	    # value of the period P extension of phi, since support(phi)=[-rr,0]
 	    phi[x_P-P >= -rr[j]] <- exp(-(Beta[j]-P+x_P[x_P-P >= -rr[j]])^2/(2*sigma[j]^2))
 	    # We also save the fft of this vector, so we don't have to use too many fft s in the time evolution
-	    res@ft_pred_kernel_p[j, ] <- fft(phi)
+	    res@ft_pred_kernel_p[j, ] <- Dx*fft(phi)
 	}
 
 	# Background spectrum

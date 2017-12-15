@@ -1,11 +1,15 @@
 # Project method for the size based modelling package mizer
 
 # Copyright 2012 Finlay Scott and Julia Blanchard. 
-# Distributed under the GPL 2 or later 
-# Maintainer: Finlay Scott, CEFAS
+# Distributed under the GPL 3 or later 
+# Maintainer: Gustav Delius, University of York, <gustav.delius@york.ac.uk>
 
 # project can dispatch with effort being different classes (missing, numeric,
 # array).
+
+#' @useDynLib mizer
+#' @importFrom Rcpp sourceCpp
+NULL
 
 #' project method for the size based modelling
 #' 
@@ -178,9 +182,10 @@ setMethod('project', signature(object='MizerParams', effort='array'),
         no_sp <- nrow(sim@params@species_params) # number of species
         no_w <- length(sim@params@w) # number of fish size bins
         idx <- 2:no_w
-        # If no w_min_idx column in species_params, add one
-        if (!("w_min_idx" %in% names(sim@params@species_params)))
-            sim@params@species_params$w_min_idx <- 1
+        # If no w_min_idx column in species_params, issue error
+        if (!("w_min_idx" %in% names(sim@params@species_params))) {
+            stop("w_min_idx column missing in species params")
+        }
         # Hacky shortcut to access the correct element of a 2D array using 1D notation
         # This references the egg size bracket for all species, so for example
         # n[w_minidx_array_ref] = n[,w_min_idx]
@@ -239,9 +244,12 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             # Update first size group of n
             n[w_min_idx_array_ref] <- (n[w_min_idx_array_ref] + rdd*dt/sim@params@dw[sim@params@species_params$w_min_idx]) / B[w_min_idx_array_ref]
             # Update n
-            for (i in 1:no_sp) # number of species assumed small, so no need to vectorize this loop over species
-                for (j in (sim@params@species_params$w_min_idx[i]+1):no_w)
-                    n[i,j] <- (S[i,j] - A[i,j]*n[i,j-1]) / B[i,j]
+            # for (i in 1:no_sp) # number of species assumed small, so no need to vectorize this loop over species
+            #     for (j in (sim@params@species_params$w_min_idx[i]+1):no_w)
+            #         n[i,j] <- (S[i,j] - A[i,j]*n[i,j-1]) / B[i,j]
+            
+            n <- inner_project_loop(no_sp=no_sp, no_w=no_w, n=n, A=A, B=B, S=S,
+                                    w_min_idx=sim@params@species_params$w_min_idx)
 
             # Dynamics of background spectrum uses a semi-chemostat model (de Roos - ask Ken)
             # We use the exact solution under the assumption of constant mortality during timestep
