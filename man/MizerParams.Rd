@@ -17,7 +17,7 @@ MizerParams(object, interaction, ...)
 \S4method{MizerParams}{data.frame,matrix}(object, interaction, n = 2/3,
   p = 0.7, q = 0.8, r_pp = 10, kappa = 1e+11, lambda = (2 + q - n),
   w_pp_cutoff = 10, max_w = max(object$w_inf) * 1.1, f0 = 0.6,
-  z0pre = 0.6, z0exp = n - 1, ...)
+  z0pre = 0.6, z0exp = n - 1, chi = 0, ...)
 
 \S4method{MizerParams}{data.frame,missing}(object, interaction, ...)
 }
@@ -87,6 +87,9 @@ z0pre * w_inf ^ z0exp. Default value is 0.6.}
 \item{z0exp}{If \code{z0}, the mortality from other sources, is not
 a column in the species data frame, it is calculated as 
 z0pre * w_inf ^ z0exp. Default value is n-1.}
+
+\item{chi}{Exponent of density dependence in per-capita mortality rate.
+Default value is 0.}
 }
 \value{
 An object of type \code{MizerParams}

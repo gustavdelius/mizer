@@ -249,6 +249,7 @@ valid_MizerParams <- function(object) {
 #' @slot interaction The species specific interaction matrix, \eqn{\theta_{ij}}
 #' @slot srr Function to calculate the realised (density dependent) recruitment.
 #'   Has two arguments which are rdi and species_params
+#' @slot chi Exponent of density dependence in per-capita mortality
 #' @slot selectivity An array (gear x species x w) that holds the selectivity of
 #'   each gear for species and size, \eqn{S_{g,i,w}}
 #' @slot catchability An array (gear x species) that holds the catchability of
@@ -286,6 +287,7 @@ setClass(
         cc_pp = "numeric", # was NinPP, carrying capacity of background
         species_params = "data.frame",
         interaction = "array",
+        chi = "numeric",
         srr  = "function",
         selectivity = "array",
         catchability = "array"
@@ -308,7 +310,8 @@ setClass(
         #speciesParams = data.frame(),
         interaction = array(
             NA,dim = c(1,1), dimnames = list(predator = NULL, prey = NULL)
-        ), # which dimension is prey and which is prey?
+        ),
+        chi = NA_real_,
         selectivity = array(
             NA, dim = c(1,1,1), dimnames = list(gear = NULL, sp = NULL, w = NULL)
         ),
@@ -368,6 +371,8 @@ setClass(
 #' @param z0exp If \code{z0}, the mortality from other sources, is not
 #'       a column in the species data frame, it is calculated as 
 #'       z0pre * w_inf ^ z0exp. Default value is n-1.
+#' @param chi Exponent of density dependence in per-capita mortality rate.
+#'       Default value is 0.
 #' @param species_names Names of the species. Generally not needed as normally
 #'   taken from the \code{object} data.frame.
 #' @param gear_names Names of the gears that catch each species. Generally not
@@ -474,7 +479,7 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	    ft_pred_kernel_p = ft_pred_kernel_p,
 	    selectivity=selectivity, catchability=catchability,
 	    rr_pp = vec1, cc_pp = vec1, species_params = species_params,
-	    interaction = interaction, srr = srr) 
+	    interaction = interaction, srr = srr, chi = 0) 
 	return(res)
     }
 )
@@ -485,7 +490,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
     function(object, interaction,  n = 2/3, p = 0.7, q = 0.8, r_pp = 10, 
              kappa = 1e11, lambda = (2+q-n), w_pp_cutoff = 10, 
              max_w = max(object$w_inf)*1.1, f0 = 0.6, 
-             z0pre = 0.6, z0exp = n-1, ...){
+             z0pre = 0.6, z0exp = n-1, chi = 0, ...){
 
 	# Set default values for column values if missing
 	# If no gear_name column in object, then named after species
@@ -591,6 +596,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	res@activity[] <-  unlist(tapply(res@w,1:length(res@w),function(wx,k)k * wx,k=object$k))
 	res@std_metab[] <-  unlist(tapply(res@w,1:length(res@w),function(wx,ks,p)ks * wx^p, ks=object$ks,p=p))
 	res@mu_b[] <- res@species_params$z0
+	res@chi <- chi
             
 	Beta <- log(res@species_params$beta)
 	sigma <- res@species_params$sigma
