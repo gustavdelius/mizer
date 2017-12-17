@@ -173,8 +173,32 @@ lines(w, n_exact[1,]*w, col="blue")
 #' biomass is no longer approximately constant for juveniles but changes
 #' over several orders of magnitude.
 #' 
+#' It is clear from the shape of the mature spectrum that the system has not
+#' yet had time to reach steady-state. So we run it for longer.
+sim <- project(params, t_max=50, effort = 0, initial_n = n_exact)
+plot(w, sim@n[dim(sim@n)[1],1,]*w, log="xy", type="l", ylab="Biomass density")
+lines(w, n_exact[1,]*w, col="blue")
 #' We plot the relative error in the juvenile region
-relative_error <- abs((n_exact[1,]-sim@n[dim(sim@n)[1],1,])/n_exact[1,])
+relative_error <- (n_exact[1,]-sim@n[dim(sim@n)[1],1,])/n_exact[1,]
 plot(w[w<w_mat], relative_error[w<w_mat], type="l", log="x",
      xlab="w", ylab="Relative error")
-#' There is an interesting kink in this error, which I do not yet understand.
+
+#' The number of eggs produced is close to the number of eggs R used.
+rdi <- getRDI(params, matrix(sim@n[dim(sim@n)[1], , ], nrow = 1), params@cc_pp)[1,1]
+rdi/R
+#' Let us see what happens when we take away the restriction to the number
+#' of eggs and instead use all eggs.
+params@srr <- function(rdi, species_params) {return(rdi)}
+sim <- project(params, t_max=200, effort = 0, initial_n = n_exact)
+#' We use the biomass plot to judge whether steady-state has been reached
+plotBiomass(sim, print_it=FALSE)
+#' This has settled down nicely at a higher abundance.
+#' 
+#' We plot the solution (in black) together with the analytic juvenile solution
+#' appropriate for the new rate of egg production
+rdi <- getRDI(params, matrix(sim@n[dim(sim@n)[1], , ], nrow = 1), params@cc_pp)[1,1]
+n_exact[] <- 1/(hbar * w^n) * (
+  rdi^(-chi) - mu0/(n*hbar^(chi+1)) * (w^(-n*chi)-w_min^(-n*chi))
+    )^(-1/chi)
+plot(w, sim@n[dim(sim@n)[1],1,]*w, log="xy", type="l", ylab="Biomass density")
+lines(w, n_exact[1,]*w, col="blue")
