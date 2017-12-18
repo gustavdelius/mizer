@@ -154,7 +154,7 @@ plot(w[1:(no_w-1)], relative_error[1:(no_w-1)], type="l", log="x",
 #' Now we repeat the same calculation with the same parameters, except that
 #' we turn on density dependence
 chi <- 0.05
-params@chi <- chi
+params@chi_b <- chi
 #' Now there is no elementary analytic solution for the abundance of mature 
 #' fish (the solution involves a hypergeometric function), but for juvenile
 #' fish we have
@@ -243,7 +243,7 @@ species_params <- data.frame(
 params <- MizerParams(species_params, p=p, n=n, q=q, lambda = lambda, f0 = f0,
                       kappa = kappa, min_w = min_w, max_w = max_w, no_w = no_w, 
                       min_w_pp = min_w_pp, w_pp_cutoff = max_w, r_pp = r_pp,
-                      chi = chi)
+                      chi_b = chi)
 
 w <- params@w
 params@srr <- function(rdi, species_params) {return(rdi)}
