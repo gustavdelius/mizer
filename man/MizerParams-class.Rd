@@ -73,7 +73,9 @@ carrying capacity of the background spectrum, \eqn{\kappa w^{-\lambda}}}
 \item{\code{srr}}{Function to calculate the realised (density dependent) recruitment.
 Has two arguments which are rdi and species_params}
 
-\item{\code{chi}}{Exponent of density dependence in per-capita mortality}
+\item{\code{chi_b}}{Exponent of density dependence in per-capita background mortality}
+
+\item{\code{chi_p}}{Exponent of density dependence in per-capita predation mortality}
 
 \item{\code{selectivity}}{An array (gear x species x w) that holds the selectivity of
 each gear for species and size, \eqn{S_{g,i,w}}}

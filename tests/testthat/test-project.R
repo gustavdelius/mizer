@@ -342,7 +342,7 @@ test_that("Analytic steady-state solution is well approximated",{
   # When chi>0 then elementary expression for steady state solution exists
   # only for w<w_mat
   chi <- 0.05
-  params@chi <- chi
+  params@chi_b <- chi
   n_exact <- params@psi  # Just to get array with correct dimensions and names
   n_exact[] <- (R^(-chi) -mu0/n/hbar^(chi+1)*(w^(-n*chi)-w_min^(-n*chi)))^(-1/chi) / (hbar * w^n)
   sim <- project(params, t_max=5, effort = 0, initial_n = n_exact)
