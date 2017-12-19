@@ -47,8 +47,7 @@ species_params <- data.frame(
     alpha = alpha,
     erepro = erepro,
     sel_func = "knife_edge", # not used but required
-    knife_edge_size = 1000,
-    R = R
+    knife_edge_size = 1000
 )
 
 params <- MizerParams(species_params, p=p, n=n, q=q, lambda = lambda, f0 = f0,
@@ -87,6 +86,17 @@ n_exact <- params@psi  # Just to get array with correct dimensions and names
 n_exact[] <- 1/(hbar * w^n) * (
     R^(-chi) - mu0/(n*hbar^(chi+1)) * (w^(-n*chi)-w_min^(-n*chi))
 )^(-1/chi)
+
+#' Make sure that the rate of reproduction is R
+params@srr <- function(rdi, species_params) {return(species_params$R)}
+params@species_params$R <- R
+#' We use a step function for the maturity function
+params@psi[1, ] <- (w/w_inf)^(1-n)
+params@psi[1, w < w_mat] <- 0
+params@psi[1, w > w_inf] <- 1
+#' We switch off the self-interaction
+params@interaction[] <- 0
+
 #' We run the simulation and compare the results (in black) to the above exact
 #' solution (in blue)
 params@srr <- function(rdi, species_params) {return(species_params$R)}
