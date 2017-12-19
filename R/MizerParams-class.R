@@ -250,6 +250,7 @@ valid_MizerParams <- function(object) {
 #' @slot srr Function to calculate the realised (density dependent) recruitment.
 #'   Has two arguments which are rdi and species_params
 #' @slot chi Exponent of density dependence in per-capita mortality
+#' @slot ddd Denominator of density dependence
 #' @slot selectivity An array (gear x species x w) that holds the selectivity of
 #'   each gear for species and size, \eqn{S_{g,i,w}}
 #' @slot catchability An array (gear x species) that holds the catchability of
@@ -288,6 +289,7 @@ setClass(
         species_params = "data.frame",
         interaction = "array",
         chi = "numeric",
+        ddd = "numeric",
         srr  = "function",
         selectivity = "array",
         catchability = "array"
@@ -312,6 +314,7 @@ setClass(
             NA,dim = c(1,1), dimnames = list(predator = NULL, prey = NULL)
         ),
         chi = NA_real_,
+        ddd = NA_real_,
         selectivity = array(
             NA, dim = c(1,1,1), dimnames = list(gear = NULL, sp = NULL, w = NULL)
         ),
@@ -597,6 +600,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	res@std_metab[] <-  unlist(tapply(res@w,1:length(res@w),function(wx,ks,p)ks * wx^p, ks=object$ks,p=p))
 	res@mu_b[] <- res@species_params$z0
 	res@chi <- chi
+	res@ddd <- (kappa * object$w_mat^(-lambda))^chi
             
 	Beta <- log(res@species_params$beta)
 	sigma <- res@species_params$sigma
