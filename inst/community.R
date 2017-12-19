@@ -144,6 +144,28 @@ species_params <- data.frame(
     knife_edge_size = 1000
 )
 
+#' First without interaction
+params <- MizerParams(species_params, p=p, n=n, q=q, lambda = lambda, f0 = f0,
+                      kappa = kappa, min_w = min_w, max_w = max_w, no_w = no_w, 
+                      min_w_pp = min_w_pp, w_pp_cutoff = max_w, r_pp = r_pp,
+                      chi = chi)
+
+w <- params@w
+params@srr <- function(rdi, species_params) {return(rdi)}
+params@interaction[] <- 0
+initial_n <- params@psi
+for (i in 1:no_sp) {
+    initial_n[i, params@species_params$w_min_idx[i]:(params@species_params$w_min_idx[i]+length(n_init)-1)] <-
+        n_init * (w_min[no_sp]/w_min[i])^lambda
+    params@psi[i, ] <- (w/w_inf[i])^(1-n)
+    params@psi[i, w < w_mat[i]] <- 0
+    params@psi[i, w > w_inf[i]] <- 1
+    params@mu_b[i, ] <- mu0 * w^(n-1) * params@ddd
+}
+sim <- project(params, t_max=5 ,effort = 0, initial_n = initial_n)
+#' We plot the species biomass over time to see that we are in the steady state.
+plotBiomass(sim, print_it = FALSE)
+
 params <- MizerParams(species_params, p=p, n=n, q=q, lambda = lambda, f0 = f0,
                       kappa = kappa, min_w = min_w, max_w = max_w, no_w = no_w, 
                       min_w_pp = min_w_pp, w_pp_cutoff = min(w_mat), r_pp = r_pp,
@@ -162,7 +184,7 @@ for (i in 1:no_sp) {
 }
 m2 <- getM2(params, initial_n, params@cc_pp)
 for (i in 1:no_sp) {
-    params@mu_b[i, ] <- mu0 * w^(n-1) * ddd - m2[i, ]
+    params@mu_b[i, ] <- mu0 * w^(n-1) * params@ddd - m2[i, ]
 }
 
 sim <- project(params, t_max=5 ,effort = 0, initial_n = initial_n)
@@ -178,3 +200,8 @@ for (i in 2:no_sp){
     lines(w, sim@n[t,i,])
     lines(w, sim@n[1,i,], col="blue")
 }
+lines(w, sim@n_pp[1, 401:1101], col="green")
+lines(w, colSums(sim@n[1,,])+sim@n_pp[1, 401:1101], col="red") 
+
+plot(w, params@mu_b[1, ], log="xy", type="l")
+lines(w, mu0 * w^(n-1) * params@ddd, col="blue")

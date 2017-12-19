@@ -154,7 +154,7 @@ plot(w[1:(no_w-1)], relative_error[1:(no_w-1)], type="l", log="x",
 #' Now we repeat the same calculation with the same parameters, except that
 #' we turn on density dependence
 chi <- 0.05
-ddd <- (kappa * w_mat^(-lambda*chi))^chi
+ddd <- (kappa * w_mat^(-lambda))^chi
 params@chi <- chi
 params@ddd <- ddd
 params@mu_b[1, ] <- mu0 * w^(n-1) * ddd
