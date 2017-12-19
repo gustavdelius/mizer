@@ -203,5 +203,187 @@ If
  then 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+X(w,t)=I\left[s(w,t)\right]s(w,t)^{\frac{\mu_{0}}{\hbar}}w^{-\frac{\mu_{0}}{\hbar}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula 
+\begin{equation}
+s(w,t)=\left[\hbar(1-n)(L(w)-t)\right]^{\frac{1}{1-n}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is such that 
+\begin_inset Formula $L(w)-t=L(s(w,t))-0$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+so that characteristic curve through 
+\begin_inset Formula $w,t$
+\end_inset
+
+ crosses the intial condittion 
+\begin_inset Formula $I(v)=X(v,0)$
+\end_inset
+
+ at 
+\begin_inset Formula $v=s(w,t).$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Next we suppose that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\bar{t}<\frac{w_{*}^{1-n}-w_{e}^{1-n}}{\hbar(1-n)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So 
+\begin_inset Formula 
+\begin{equation}
+X(w*,\bar{t})=I\left[s(w_{*},\bar{t})\right]s(w_{*},\bar{t})^{\frac{\mu_{0}}{\hbar}}w_{*}^{-\frac{\mu_{0}}{\hbar}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is known, we can subsitute this into our delay ODE, changing it into a normal
+ ODE with solution
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+X(w_{e},\bar{t})=e^{-\bar{\mu}\bar{t}}\left(c_{1}+\Delta(\bar{t})\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $c_{1}=X(w_{e},0)=I(w_{e})$
+\end_inset
+
+ and
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Delta(\bar{t})=\int_{0}^{\bar{t}}e^{\bar{\mu}t'}KX(w*,t')dt'
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now, in addition to our inequality for 
+\begin_inset Formula $\bar{t},$
+\end_inset
+
+ if 
+\begin_inset Formula $w,t$
+\end_inset
+
+ are such that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+L(w)-t=L(w_{*})-\bar{t}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then since 
+\begin_inset Formula $F(L(w)-t)=F(L(w_{*})-\bar{t})$
+\end_inset
+
+ we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+X(w,t)=\left(\frac{w}{w_{e}}\right)^{-\frac{\mu_{0}}{\hbar}}X(w,\bar{t})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hence 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+X(w,t)=\left(\frac{w}{w_{e}}\right)^{-\frac{\mu_{0}}{\hbar}}e^{-\bar{\mu}\bar{t}}\left(c_{1}+\Delta(\bar{t})\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\bar{t}=t+L(w_{*})-L(w)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Try initial condition 
+\begin_inset Formula $I(w)=w^{1-n-\alpha}$
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
