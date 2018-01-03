@@ -19,7 +19,7 @@ r_pp <- 10^18  # Choosing a high value because we want the plankton to stay
 # at its power-law steady state
 n <- 2/3
 p <- n
-q <- 0.95
+q <- 0.7
 lambda <- 2+q-n
 #erepro <- 0.1
 R <- 1e10  # The rate of reproduction
@@ -55,7 +55,7 @@ f0 <- gamma/(gamma+h*exp(-((lambda-2)^2)*sigma*sigma/2)*(beta^(2-lambda))/(sqrt(
 
 # # # # weight specifiers
 
-no_w <- 1000
+no_w <- 2000
 w_min <- 1e-3
 w_inf <- 668
 w_mat <- 39
@@ -215,4 +215,17 @@ lines(w, n_exact[1,], col="blue")
 #' document this with a nice markdown doc, including pde solution details too
 #' 
 
-#'
+g <- getEGrowth(params, matrix(sim@n[dim(sim@n)[1], , ], nrow = 1), params@cc_pp)[1,]
+
+#' calculate growth curve using ODE solving routine
+g_fn <- approxfun(w, g)
+myodefun <- function(t, state, parameters){
+  return(list(g_fn(state)))
+}
+age <- (0:500)
+library(deSolve)
+weight <- ode(y = w[1], times = age, func = myodefun, parms = 1)[,2]
+plot(age,weight)
+#' calculate growth curve in another way via direct integration
+#lines(cumsum((w[2:no_w]-w[1:(no_w-1)])/g[1:(no_w-1)]),w[1:(no_w-1)],xlab="age",ylab="weight",col="red")
+
