@@ -79,8 +79,8 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='nume
 	# Looking at Equation (3.4), for available energy in the mizer vignette, 
 	# we have, for our predator species i, that fishEaten[k] equals 
 	# the sum over all species j of fish, of theta_{i,j}*N_j(wFull[k])        
-	#fishEaten[, idx_sp] <- object@interaction %*% n^(1+object@chi) / object@ddd
-	fishEaten[, idx_sp] <- sweep(object@interaction %*% n^(1+object@chi), 2, object@ddd, "/")
+	fishEaten[, idx_sp] <- object@interaction %*% n^(1+object@chi) / object@ddd
+	##fishEaten[, idx_sp] <- sweep(object@interaction %*% n^(1+object@chi), 2, object@ddd, "/")
 	# The vector f2 equals everything inside integral (3.4) except the feeding 
 	# kernel phi_i(w_p/w). 
 	# We work in log-space so an extra multiplier w_p is introduced.
@@ -694,8 +694,8 @@ setMethod('getZ', signature(object='MizerParams', n = 'matrix',
         if (!all(dim(m2) == c(nrow(object@species_params),length(object@w)))){
             stop("m2 argument must have dimensions: no. species (",nrow(object@species_params),") x no. size bins (",length(object@w),")")
         }
-        #return((m2 + object@mu_b) * n^object@chi / object@ddd + getFMort(object, effort = effort))
-      return(sweep((m2 + object@mu_b) * n^object@chi, 2, object@ddd, "/") + getFMort(object, effort = effort))
+        return((m2 + object@mu_b) * n^object@chi / object@ddd + getFMort(object, effort = effort))
+     ## return(sweep((m2 + object@mu_b) * n^object@chi, 2, object@ddd, "/") + getFMort(object, effort = effort))
     }
 )
 

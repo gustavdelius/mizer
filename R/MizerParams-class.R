@@ -388,6 +388,9 @@ setClass(
 #'       z0pre * w_inf ^ z0exp. Default value is n-1.
 #' @param chi Exponent of density dependence in per-capita mortality rate.
 #'       Default value is 0.
+#' @param no_background The number of background species, which are summed over 
+#'        when renormalising the solution used to construct the denominator ddd 
+#'        used within the density dependence.
 #' @param species_names Names of the species. Generally not needed as normally
 #'   taken from the \code{object} data.frame.
 #' @param gear_names Names of the gears that catch each species. Generally not
@@ -505,7 +508,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
     function(object, interaction,  n = 2/3, p = 0.7, q = 0.8, r_pp = 10, 
              kappa = 1e11, lambda = (2+q-n), w_pp_cutoff = 10, 
              max_w = max(object$w_inf)*1.1, f0 = 0.6, 
-             z0pre = 0.6, z0exp = n-1, chi = 0, ...){
+             z0pre = 0.6, z0exp = n-1, chi = 0, no_background=dim(object)[1], ...){
 
 	# Set default values for column values if missing
 	# If no gear_name column in object, then named after species
@@ -721,11 +724,23 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	  n_mult[i,] <- (1 - (res@w/res@species_params$w_inf[i])^(1-res@n))^(pow[i]-1) *
 	    (1 - (res@species_params$w_mat[i]/res@species_params$w_inf[i])^(1-res@n))^(-pow[i])
 	  n_mult[i,res@w < res@species_params$w_mat[i]] <- 1
-	  n_exact[i, ] <- (res@species_params$w_min[i]/res@w)^(mu0[i]/hbar[i]) / (hbar[i] * res@w^res@n) * n_mult[i,]
-	  
+	  #n_exact[i,](res@species_params$w_min[i]/res@w)^(mu0[i]/hbar[i]) / (hbar[i] * res@w^res@n) * n_mult[i,]
+	  XX <- (res@species_params$w_min[i]/res@w)^(mu0[i]/hbar[i]) / (hbar[i] * res@w^res@n) * n_mult[i,]
+	  XX[is.nan(XX)] <- 0
+	  n_exact[i,] <- XX
 	}
-	solu <- n_exact*(res@kappa*res@w[w_mid_idx]^(-res@lambda))/colSums(n_exact)[w_mid_idx]
-	res@ddd <- solu^chi 
+	#solu <- n_exact*(res@kappa*res@w[w_mid_idx]^(-res@lambda))/colSums(n_exact[1:no_background,,drop=FALSE])[w_mid_idx]
+	solu <- n_exact*(res@kappa*res@w[w_mid_idx]^(-res@lambda))/sum(n_exact[1:no_background,w_mid_idx])
+	#solu <- n_exact*(res@kappa*res@w[w_mid_idx]^(-res@lambda))/sum(n_exact[,w_mid_idx])
+	ddd_out <- solu^res@chi 
+	# zeroes in solution cause errors,rewrite them with 1's
+	for (i in 1:dim(res@search_vol)[1]){
+	  YY <- ddd_out[i,]
+	  YY[YY==0] <- 1
+	#YY[which(YY==0)] <- 1
+	  ddd_out[i,] <- YY
+	}
+	res@ddd <- ddd_out
 	#n_mult <- (1 - (res@w/res@species_params$w_inf)^(1-res@n))^(pow-1) *
 	#  (1 - (res@species_params$w_mat/res@species_params$w_inf)^(1-res@n))^(-pow)
 	#n_mult[w < w_mat] <- 1
