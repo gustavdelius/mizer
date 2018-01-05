@@ -289,7 +289,7 @@ setClass(
         species_params = "data.frame",
         interaction = "array",
         chi = "numeric",
-        ddd = "numeric",
+        ddd = "array",
         srr  = "function",
         selectivity = "array",
         catchability = "array",
@@ -326,7 +326,7 @@ setClass(
             NA,dim = c(1,1), dimnames = list(predator = NULL, prey = NULL)
         ),
         chi = NA_real_,
-        ddd = NA_real_,
+        ddd = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         selectivity = array(
             NA, dim = c(1,1,1), dimnames = list(gear = NULL, sp = NULL, w = NULL)
         ),
@@ -618,8 +618,11 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	res@std_metab[] <-  unlist(tapply(res@w,1:length(res@w),function(wx,ks,p)ks * wx^p, ks=object$ks,p=p))
 	res@mu_b[] <- res@species_params$z0
 	res@chi <- chi
-	res@ddd <- (kappa * object$w_mat^(-lambda))^chi
-            
+	#res@ddd <- (kappa * object$w_mat^(-lambda))^chi
+	res@ddd <- res@search_vol
+	for (i in (1:dim(res@search_vol)[1])){
+	  res@ddd[i,] <- (kappa[i] * object$w_mat[i]^(-lambda))^chi
+	}
 	Beta <- log(res@species_params$beta)
 	sigma <- res@species_params$sigma
 	Dx <- res@w[2]/res@w[1] - 1  # dw = w Dx
