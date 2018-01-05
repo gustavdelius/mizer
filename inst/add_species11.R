@@ -19,7 +19,7 @@ r_pp <- 10^18  # Choosing a high value because we want the plankton to stay
 # at its power-law steady state
 n <- 2/3
 p <- n
-q <- 0.7
+q <- 0.8
 lambda <- 2+q-n
 #erepro <- 0.1
 R <- 1e10  # The rate of reproduction
@@ -228,4 +228,12 @@ weight <- ode(y = w[1], times = age, func = myodefun, parms = 1)[,2]
 plot(age,weight)
 #' calculate growth curve in another way via direct integration
 #lines(cumsum((w[2:no_w]-w[1:(no_w-1)])/g[1:(no_w-1)]),w[1:(no_w-1)],xlab="age",ylab="weight",col="red")
+f0
+params@species_params$erepro
 
+#' Next step
+#' Put f0 into mizerparams
+#' 
+#' Program in exact soln as ddd slot
+#' Repeat community construction
+#'
