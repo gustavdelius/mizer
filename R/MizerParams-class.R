@@ -618,11 +618,6 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	res@std_metab[] <-  unlist(tapply(res@w,1:length(res@w),function(wx,ks,p)ks * wx^p, ks=object$ks,p=p))
 	res@mu_b[] <- res@species_params$z0
 	res@chi <- chi
-	#res@ddd <- (kappa * object$w_mat^(-lambda))^chi
-	res@ddd <- res@search_vol
-	for (i in (1:dim(res@search_vol)[1])){
-	  res@ddd[i,] <- (kappa[i] * object$w_mat[i]^(-lambda))^chi
-	}
 	Beta <- log(res@species_params$beta)
 	sigma <- res@species_params$sigma
 	Dx <- res@w[2]/res@w[1] - 1  # dw = w Dx
@@ -706,6 +701,44 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	# Remove catchabiliy from species data.frame, now stored in slot
 	#params@species_params[,names(params@species_params) != "catchability"]
 	res@species_params <- res@species_params[,-which(names(res@species_params)=="catchability")]
+	# # # #
+	res@ddd <- res@search_vol
+	for (i in (1:dim(res@search_vol)[1])){
+	  res@ddd[i,] <- (kappa[i] * object$w_mat[i]^(-lambda))^chi
+	}
+	###############
+	hbar <- res@species_params$alpha*res@species_params$h*res@f0-res@species_params$ks
+	
+	mu0 <- (1-res@f0) * sqrt(2*pi) * res@kappa * res@species_params$gamma * res@species_params$sigma *
+	  (res@species_params$beta^(res@n-1)) * exp(res@species_params$sigma^2 * (res@n-1)^2 / 2)
+	
+	pow <- mu0/hbar/(1-res@n)
+	w_mid_idx <- length(res@w[res@w<sqrt(min(res@species_params$w_mat)*max(res@species_params$w_mat))])
+	n_mult <- res@search_vol
+	n_exact <- res@search_vol
+	
+	for (i in 1:dim(res@search_vol)[1]){
+	  n_mult[i,] <- (1 - (res@w/res@species_params$w_inf[i])^(1-res@n))^(pow[i]-1) *
+	    (1 - (res@species_params$w_mat[i]/res@species_params$w_inf[i])^(1-res@n))^(-pow[i])
+	  n_mult[i,res@w < res@species_params$w_mat[i]] <- 1
+	  n_exact[i, ] <- (res@species_params$w_min[i]/res@w)^(mu0[i]/hbar[i]) / (hbar[i] * res@w^res@n) * n_mult[i,]
+	  
+	}
+	solu <- n_exact*(res@kappa*res@w[w_mid_idx]^(-res@lambda))/colSums(n_exact)[w_mid_idx]
+	res@ddd <- solu^chi 
+	#n_mult <- (1 - (res@w/res@species_params$w_inf)^(1-res@n))^(pow-1) *
+	#  (1 - (res@species_params$w_mat/res@species_params$w_inf)^(1-res@n))^(-pow)
+	#n_mult[w < w_mat] <- 1
+	#n_exact <- params@psi  # Just to get array with correct dimensions and names
+	#n_exact[] <- R * (w_min/w)^(mu0/hbar) / (hbar * w^n) * n_mult
+	
+	
+	#w_mid_idx <- length(w[w<sqrt(min(w_mat)*max(w_mat))])
+	#initial_n <- initial_n*(kappa*w[w_mid_idx]^(-lambda))/colSums(initial_n)[w_mid_idx]
+	#initial_n <- initial_n*(kappa*w[w_mid_idx]^(-lambda))/colSums(initial_n)[w_mid_idx]
+	###############
+	#res@ddd <- (kappa * object$w_mat^(-lambda))^chi
+	# # # #
 	return(res)
     }
 )
