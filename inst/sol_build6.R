@@ -221,3 +221,24 @@ for (i in (1:11)){
   lines(w,sim@n[dim(sim@n)[1],i,],col="blue")
 }
 
+########## growth curves ###############
+
+speci <- 1
+gNS <- getEGrowth(params2, sim@n[dim(sim@n)[1],,], sim@n_pp[dim(sim@n_pp)[1],])[speci,]
+
+g_fnNS <- approxfun(w, gNS)
+myodefunNS <- function(t, state, parameters){
+  return(list(g_fnNS(state)))
+}
+ageNS <- (0:30)
+library(deSolve)
+weightNS <- ode(y = params2@species_params$w_min[speci], times = ageNS, func = myodefunNS, parms = 1)[,2]
+plot(ageNS,weightNS)
+
+
+####################################
+
+params2@species_params$erepro
+
+# try and change q by 0.1
+
