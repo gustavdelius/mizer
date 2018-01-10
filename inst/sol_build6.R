@@ -170,7 +170,7 @@ nn
 
 params2@chi <- 0.05
 params2@ddd <- nn^(params2@chi)
-sim <- project(params2, t_max=100 ,effort = 0, initial_n = n_output)
+sim <- project(params2, t_max=300 ,effort = 0, initial_n = n_output)
 plot(sim)
 
 #' This code looks like it stablizes the community at close to the input. The overall community 
