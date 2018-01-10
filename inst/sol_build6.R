@@ -173,3 +173,22 @@ params2@ddd <- nn^(params2@chi)
 sim <- project(params2, t_max=100 ,effort = 0, initial_n = n_output)
 plot(sim)
 
+#' This code looks like it stablizes the community at close to the input. The overall community 
+#' weighting (red line) might be a bit off. We should use the average of multiple v on the
+#'  spectrum to renormalize. In the chi_den_sol2 branch: so far the params object is as it
+#'   was in chi_d, except with added slots. I think Gustav modified the project file to turn
+#'    off the plankton dynamics. We are unsure about the reprocusions of replacing negative 
+#'    numbers with zeroes when decoding upon the plankton spectrum cc_pp. In solbuild2b, we 
+#'    got ready a community. The next step is to setup a new params object, with chi>0, and 
+#'    make it otherwise analogous to before. Then we replace ddd with n_output^chi. In order
+#'     to do this we had to change mizer params so that ddd is now an array. Analalous 
+#'     modifications must be made 
+#' within community and analytic_numerical_comparisons.R in order for them to be able to run.
+
+plot(w,sim@n[1,1,],log="xy",type="l",ylim=c(10^3,10^18))
+lines(w,sim@n[dim(sim@n)[1],1,],col="blue")
+for (i in (1:11)){
+  lines(w,sim@n[1,i,],col="black")
+  lines(w,sim@n[dim(sim@n)[1],i,],col="blue")
+}
+
