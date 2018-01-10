@@ -39,7 +39,35 @@ max_w <- max(w_inf)
 no_w <- log10(max_w/min_w)*100+1
 min_w_pp <- 1e-8
 # gamma was set up in a wierd way in analytic_numerical_comparison, and calulated via Mizerparams
-gamma <- 4.999819e-11
+#gamma <- 4.999819e-11
+
+########## preliminary params creation for gamma setup ########
+
+species_params <- data.frame(
+  species = 1:no_sp,
+  w_min = w_min,
+  w_inf = w_inf,
+  w_mat = w_mat,
+  h = h,
+  ks = ks,
+  beta = beta,
+  sigma = sigma,
+  z0 = 0,
+  alpha = alpha,
+  erepro = erepro,
+  sel_func = "knife_edge", # not used but required
+  knife_edge_size = 1000
+)
+
+params <- MizerParams(species_params, p=p, n=n, q=q, lambda = lambda, f0 = f0,
+                      kappa = kappa, min_w = min_w, max_w = max_w, no_w = no_w, 
+                      min_w_pp = min_w_pp, w_pp_cutoff = max_w, r_pp = r_pp,
+                      chi = 0)
+
+gamma <- params@species_params$gamma[1]
+##########
+
+
 species_params <- data.frame(
   species = 1:no_sp,
   w_min = w_min,
@@ -150,6 +178,7 @@ for (i in 1:no_sp) {
 #params2@cc_pp[params2@cc_pp<0] <- 0
 plankton_vec <- (kappa*w^(-lambda))-colSums(n_output)
 plankton_vec[plankton_vec<0] <- 0
+plankton_vec[min(which(plankton_vec==0)):length(plankton_vec)] <- 0
 params2@cc_pp[sum(params2@w_full<=w[1]):length(params2@cc_pp)] <- plankton_vec
 
 params2@srr <- function(rdi, species_params) {return(rdi)}
