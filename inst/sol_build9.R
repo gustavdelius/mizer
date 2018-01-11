@@ -13,7 +13,7 @@ alpha <- 0.4
 r_pp <- 1  # Not used because we commented out the plankton dynamics
 n <- 2/3
 p <- n
-q <- 0.95
+q <- 3/4
 lambda <- 2+q-n
 erepro <- 0.1 # Will be changed later
 
@@ -121,8 +121,8 @@ m2 <- getM2(params, n_output, params@cc_pp)
 
 for (i in 1:no_sp) {
     params@psi[i, ] <- (w/w_inf[i])^(1-n)
-    params@psi[i, w < w_mat[i]] <- 0
-    params@psi[i, w > w_inf[i]] <- 1
+    params@psi[i, w < (w_mat[i]-1e-10)] <- 0
+    params@psi[i, w > (w_inf[i]-1e-10)] <- 1
     params@mu_b[i, ] <- mu0 * w^(n-1) - m2[i,]
 }
 
