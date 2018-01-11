@@ -79,7 +79,7 @@ setMethod('getPhiPrey', signature(object='MizerParams', n = 'matrix', n_pp='nume
 	# Looking at Equation (3.4), for available energy in the mizer vignette, 
 	# we have, for our predator species i, that fishEaten[k] equals 
 	# the sum over all species j of fish, of theta_{i,j}*N_j(wFull[k])        
-	fishEaten[, idx_sp] <- object@interaction %*% n^(1+object@chi) / object@ddd
+	fishEaten[, idx_sp] <- object@interaction %*% (n^(1+object@chi) / object@ddd)
 	# The vector f2 equals everything inside integral (3.4) except the feeding 
 	# kernel phi_i(w_p/w). 
 	# We work in log-space so an extra multiplier w_p is introduced.
