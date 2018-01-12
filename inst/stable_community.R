@@ -164,7 +164,7 @@ params@species_params$erepro <- erepro_final
 
 params@srr <- function(rdi, species_params) {return(rdi)}
 params@chi <- 0.0
-sim <- project(params, t_max=300 ,effort = 0, initial_n = n_output)
+sim <- project(params, t_max=100 ,effort = 0, initial_n = n_output)
 plot(sim)
 
 plot(params@w_full, params@w_full*params@cc_pp, type="l", log="xy")
@@ -224,4 +224,38 @@ for (speci in (2:no_sp)){
 
 params@species_params$erepro
 
+#' setup gurnard
+#params_data_NS <- read.csv("./vignettes/NS_species_params.csv")
+#paramsNS <- MizerParams(params_data_NS,p=p, n=n, q=q, lambda = lambda, f0 = f0,
+#                        kappa = kappa, min_w = min_w, max_w = max_w, no_w = no_w, 
+#                        min_w_pp = min_w_pp, w_pp_cutoff = max_w, r_pp = r_pp,
+#                        chi = 0)
+#params@species_params[no_sp,] <- paramsNS@species_params[8,]
 
+#' Stabilization from small random inputs
+n_output_mod <- n_output
+for (i in 1:no_sp){
+  n_output_mod[i,] <- rep(0,length(n_output_mod[i,]))
+  n_output_mod[i,params@species_params$w_min_idx[i]:w_inf_idx[i]] <- runif(1+w_inf_idx[i]-params@species_params$w_min_idx[i])
+}
+sim <- project(params, t_max=100 ,effort = 0, initial_n = n_output_mod)
+plot(sim)
+
+
+#' Stabilization from large random inputs
+n_output_mod <- n_output
+for (i in 1:no_sp){
+n_output_mod[i,] <- rep(0,length(n_output_mod[i,]))
+n_output_mod[i,params@species_params$w_min_idx[i]:w_inf_idx[i]] <- (10^20)*runif(1+w_inf_idx[i]-params@species_params$w_min_idx[i])
+}
+sim <- project(params, t_max=100 ,effort = 0, initial_n = n_output_mod)
+plot(sim)
+
+#' Stabilization from initial eggs
+n_output_mod <- n_output
+for (i in 1:no_sp){
+  n_output_mod[i,] <- rep(0,length(n_output_mod[i,]))
+  n_output_mod[i,params@species_params$w_min_idx[i]] <- 1
+}
+sim <- project(params, t_max=100 ,effort = 0, initial_n = n_output_mod)
+plot(sim)
