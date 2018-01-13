@@ -216,3 +216,10 @@ gb2 <- getBiomass(sim)
 gb[dim(gb)[1]]/gb[1,]
 
 gb2[dim(gb2)[1]]/gb2[1,]
+
+#'changed no_sp to 0.4, and am investigating deviations away
+#' from the steady state when the prey switching denominator
+#'  has been doubled. Here we do seem to see some knock on effect
+#'   on other species, but also it seems in this large weight width
+#'    regime there is more 
+#'substantial deviation between the analytic solution and mizer's steady state.
