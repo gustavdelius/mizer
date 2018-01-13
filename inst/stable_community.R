@@ -18,7 +18,7 @@ library(mizer)
 #' Global Parameters
 f0 <- 0.6
 alpha <- 0.4
-r_pp <- 1  # Not used because we commented out the plankton dynamics
+r_pp <- 1e-1
 n <- 2/3
 p <- n
 q <- 3/4
@@ -120,18 +120,20 @@ lines(w, colSums(n_output), col="red")
 # ----
 #' ### Setup plankton
 
-
-
 plankton_vec <- (kappa*w^(-lambda))-colSums(n_output)
 plankton_vec[plankton_vec<0] <- 0
 plankton_vec[min(which(plankton_vec==0)):length(plankton_vec)] <- 0
 params@cc_pp[sum(params@w_full<=w[1]):length(params@cc_pp)] <- plankton_vec
+initial_n_pp <- params@cc_pp
+# The cc_pp factor needs to be higher than the desired steady state in
+# order to compensate for predation mortality
+m2_background <- getM2Background(params, n_output, initial_n_pp)
+params@cc_pp <- (1+m2_background/params@rr_pp) * initial_n_pp
 
 # ----
 #' ### Setup background death and steplike psi
 
-
-m2 <- getM2(params, n_output, params@cc_pp)
+m2 <- getM2(params, n_output, initial_n_pp)
 
 for (i in 1:no_sp) {
     params@psi[i, ] <- (w/w_inf[i])^(1-n)
@@ -143,10 +145,10 @@ for (i in 1:no_sp) {
 # ----
 #' ### Set erepro to meet boundary condition
 
-rdi <- getRDI(params, n_output, params@cc_pp)
-gg <- getEGrowth(params, n_output, params@cc_pp)
+rdi <- getRDI(params, n_output, initial_n_pp)
+gg <- getEGrowth(params, n_output, initial_n_pp)
 effort <- 0
-mumu <- getZ(params, n_output, params@cc_pp,effort = effort)
+mumu <- getZ(params, n_output, initial_n_pp, effort = effort)
 erepro_final <- rdi
 for (i in (1:no_sp)){
 #  erepro_final[i] <- erepro*(gg[i,params@species_params$w_min_idx[i]]*n_output[i,params@species_params$w_min_idx[i]])/
@@ -164,11 +166,10 @@ params@species_params$erepro <- erepro_final
 
 params@srr <- function(rdi, species_params) {return(rdi)}
 params@chi <- 0.0
-sim <- project(params, t_max=100 ,effort = 0, initial_n = n_output)
+t_max <- 1000
+sim <- project(params, t_max=t_max, dt=0.1, t_save=t_max/100 ,effort = 0, 
+               initial_n = n_output, initial_n_pp = initial_n_pp)
 plot(sim)
-
-plot(params@w_full, params@w_full*params@cc_pp, type="l", log="xy")
-lines(params@w_full, params@w_full*sim@n_pp[dim(sim@n)[1],], col="blue")
 
 # ----
 #' ### Setup density dependence
@@ -176,23 +177,29 @@ lines(params@w_full, params@w_full*sim@n_pp[dim(sim@n)[1],], col="blue")
 
 nn <- n_output
 nn[nn==0] <- 1
-params@chi <- 0.05
+params@chi <- 0.005
 params@ddd <- nn^(params@chi)
 
 # ----
 #' ### Simulate stable case
 
-
-sim <- project(params, t_max=100 ,effort = 0, initial_n = n_output)
+t_max <- 200
+sim <- project(params, t_max=t_max ,dt=0.1, t_save=t_max/100, effort = 0, 
+               initial_n = n_output, initial_n_pp = initial_n_pp)
 plot(sim)
 
-
-plot(w,sim@n[1,1,],log="xy",type="l",ylim=c(10^3,10^18))
-lines(w,sim@n[dim(sim@n)[1],1,],col="blue")
-for (i in (1:11)){
-  lines(w,sim@n[1,i,],col="black")
-  lines(w,sim@n[dim(sim@n)[1],i,],col="blue")
+#' Compare the final state (in blue and green) to the initial condition (in black and grey).
+plot(w,w^2*sim@n[1,1,],log="xy",type="l",ylim=c(10^7,10^11), 
+     ylab="Biomass in logged bins")
+lines(w,w^2*sim@n[dim(sim@n)[1],1,],col="blue")
+for (i in (2:no_sp)){
+  lines(w,w^2*sim@n[1,i,],col="black")
+  lines(w,w^2*sim@n[dim(sim@n)[1],i,],col="blue")
 }
+fish_indices <- (length(params@w_full)-length(w)+1):length(params@w_full)
+lines(w,w^2*sim@n_pp[1, fish_indices],col="grey")
+lines(w,w^2*sim@n_pp[dim(sim@n)[1], fish_indices],col="green")
+
 
 # ----
 #' ### Show growth curves
@@ -238,7 +245,7 @@ for (i in 1:no_sp){
   n_output_mod[i,] <- rep(0,length(n_output_mod[i,]))
   n_output_mod[i,params@species_params$w_min_idx[i]:w_inf_idx[i]] <- runif(1+w_inf_idx[i]-params@species_params$w_min_idx[i])
 }
-sim <- project(params, t_max=100 ,effort = 0, initial_n = n_output_mod)
+sim <- project(params, t_max=100 ,effort = 0, initial_n = n_output_mod, initial_n_pp = initial_n_pp)
 plot(sim)
 
 
@@ -248,7 +255,7 @@ for (i in 1:no_sp){
 n_output_mod[i,] <- rep(0,length(n_output_mod[i,]))
 n_output_mod[i,params@species_params$w_min_idx[i]:w_inf_idx[i]] <- (10^20)*runif(1+w_inf_idx[i]-params@species_params$w_min_idx[i])
 }
-sim <- project(params, t_max=100 ,effort = 0, initial_n = n_output_mod)
+sim <- project(params, t_max=100 ,effort = 0, initial_n = n_output_mod, initial_n_pp = initial_n_pp)
 plot(sim)
 
 #' Stabilization from initial eggs
@@ -257,5 +264,5 @@ for (i in 1:no_sp){
   n_output_mod[i,] <- rep(0,length(n_output_mod[i,]))
   n_output_mod[i,params@species_params$w_min_idx[i]] <- 1
 }
-sim <- project(params, t_max=100 ,effort = 0, initial_n = n_output_mod)
+sim <- project(params, t_max=100 ,effort = 0, initial_n = n_output_mod, initial_n_pp = initial_n_pp)
 plot(sim)
