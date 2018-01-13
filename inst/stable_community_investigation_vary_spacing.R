@@ -199,7 +199,9 @@ for (i in (1:11)){
 
 ###############
 
-nn <- n_output
+#@@#nn <- n_output
+# use mizer's last found steady state to construct new denominator
+nn <- sim@n[dim(sim@n)[1],,]
 nn[nn==0] <- 1
 mm <- nn
 mm[8,] <- 2*mm[8,]
@@ -223,3 +225,14 @@ gb2[dim(gb2)[1]]/gb2[1,]
 #'   on other species, but also it seems in this large weight width
 #'    regime there is more 
 #'substantial deviation between the analytic solution and mizer's steady state.
+plot(gb2[,1],type="l",ylim=c(min(gb2),max(gb2)))
+for (i in (1:no_sp)){
+  lines(gb2[,i])
+}
+lines(gb2[,8],col="red")
+#
+plot(gb[,1],type="l",ylim=c(min(gb),max(gb)))
+for (i in (1:no_sp)){
+  lines(gb[,i])
+}
+lines(gb[,8],col="red")
