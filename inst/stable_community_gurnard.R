@@ -243,7 +243,9 @@ plot(sim)
 
 nn <- n_output
 nn[nn==0] <- 1
-params@chi <- 0.005
+#params@chi <- 0.005
+params@chi <- 0.05
+
 params@ddd <- nn^(params@chi)
 
 # ----
