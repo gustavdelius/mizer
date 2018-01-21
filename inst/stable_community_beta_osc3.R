@@ -48,8 +48,8 @@ erepro <- 0.1 # Will be changed later
 # mortality rates, because in this regime the stability only depends upon the plankton
 # if 1< no_trophic_levels < 2 then any initial condition will be stable
 
-beta <- 100
-#beta <- 10^9
+#beta <- 100
+beta <- 10^9
 sigma <- 1.3
 h <- 30
 ks <- 4
@@ -232,3 +232,5 @@ lines(w,finals1[1,])
 lines(w,finals1[1,])
 plot(w,finals2[1,],log="xy")
 lines(w,finals1[1,],col="red")
+
+#' I have a question about building mizer steady states in general. Suppose the parameters are such that the reproduction boundary condition is satisfied and the plankton and background death are as in stable_community.R. Solving the MVF for a particular species only gives us that solution A_i*N_i, up to a multiplier A_i. If the abundance multipliers A_i>0 are chosen arbitrarily so that sum_i[A_i * N_i(w)]=kappa*w^(-lambda), for w in [min(w_mat),max(w_mat)] then will we certainly have a steady state of mizer ? Does this mean we have a set of many steady states corresponding to the partitions (A_1,..,A_{no_sp}) such that  sum_i[A_i * N_i(w)]=kappa*w^(-lambda).
