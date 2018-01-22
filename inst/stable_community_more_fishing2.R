@@ -211,7 +211,7 @@ lines(w,w^2*sim@n_pp[dim(sim@n)[1], fish_indices],col="green")
 
 ### try with density dependence
 
-# chi =0.5 is enough to keep the system coexisting, but chi=0.005 is too low
+# chi =0.5 is enough to keep the system coexisting, but chi=0.005 is too small
 
 nn <- n_output
 nn[nn==0] <- 1

@@ -223,3 +223,10 @@ n_output2[1,] <- 10*n_output[1,]
 sim2 <- project(params, t_max=t_max, dt=0.05, t_save=t_max/100 ,effort = 0, 
                 initial_n = n_output2, initial_n_pp = initial_n_pp)
 plot(sim2)
+
+#' when we make the beta large enough so that all the species jst feed on the plankton then 
+#' we have the case where the relative abundances of the different solutions can be chosen 
+#' arbitrarily, like in the non-interacting case. The analogy would be proper if the 
+#' plankton dynamics were off, although there still seems to be some effect where the 
+#' details of the initial condition influences which of the many stable states mizer ends up in. 
+#' This effect does however seem to disappear when we include prey switching
