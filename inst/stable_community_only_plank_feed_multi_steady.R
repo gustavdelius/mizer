@@ -23,7 +23,8 @@ alpha <- 0.4
 r_pp <- 1e-1
 n <- 2/3
 p <- n
-q <- 3/4
+#q <- 3/4
+q <- 0.6
 lambda <- 2+q-n
 kappa <- 7e10
 #' Species Parameters
@@ -171,11 +172,11 @@ params@species_params$erepro <- erepro_final
 
 params@srr <- function(rdi, species_params) {return(rdi)}
 params@chi <- 0.0
-t_max <- 5
+t_max <- 150
 sim <- project(params, t_max=t_max, dt=0.05, t_save=t_max/100 ,effort = 0, 
                initial_n = n_output, initial_n_pp = initial_n_pp)
 plot(sim)
-t_max <- 15
+t_max <- 150
 n_output2 <- n_output
 n_output2[1,] <- 10*n_output[1,]
 sim2 <- project(params, t_max=t_max, dt=0.05, t_save=t_max/100 ,effort = 0, 
