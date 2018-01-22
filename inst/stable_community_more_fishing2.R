@@ -57,7 +57,7 @@ fished_species <- 7
 knife_edge_size <- rep(100,no_sp)
 #knife_edge_size[fished_species] <- w_mat[fished_species]
 #knife_edge_size <- 10^2
-effort <- 0.05
+effort <- 1
 
 
 species_params <- data.frame(
@@ -175,20 +175,12 @@ params@species_params$erepro <- erepro_final
 
 params@srr <- function(rdi, species_params) {return(rdi)}
 params@chi <- 0.0
-t_max <- 1550
+t_max <- 50
 sim <- project(params, t_max=t_max, dt=0.05, t_save=t_max/100 ,effort = effort, 
                initial_n = n_output, initial_n_pp = initial_n_pp)
 plot(sim)
 
-##################
-params@srr <- function(rdi, species_params) {return(rdi)}
-params@chi <- 0.0
-t_max <- 1550
-n_output2 <- n_output
-n_output2[1,] <- 10*n_output[1,]
-sim2 <- project(params, t_max=t_max, dt=0.05, t_save=t_max/100 ,effort = effort, 
-               initial_n = n_output2, initial_n_pp = initial_n_pp)
-plot(sim2)
+
 
 ##################
 
@@ -215,3 +207,19 @@ lines(w,w^2*sim@n_pp[dim(sim@n)[1], fish_indices],col="green")
 #' sensible way, allowing for z0 >0, and perhaps some extra knive edge shaped 
 #' background death term (background death associated with reproduction, that is only active 
 #' for mature fish).
+#' 
+
+### try with density dependence
+
+# chi =0.5 is enough to keep the system coexisting, but chi=0.005 is too low
+
+nn <- n_output
+nn[nn==0] <- 1
+params@chi <- 0.5
+params@ddd <- nn^(params@chi)
+
+
+t_max <- 50
+sim <- project(params, t_max=t_max, dt=0.05, t_save=t_max/100 ,effort = effort, 
+               initial_n = n_output, initial_n_pp = initial_n_pp)
+plot(sim)
