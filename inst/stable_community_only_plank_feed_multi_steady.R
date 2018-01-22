@@ -206,3 +206,20 @@ lines(w,w^2*sim@n_pp[dim(sim@n)[1], fish_indices],col="green")
 abline(v=min(w_min)/beta)
 abline(v=max(params@species_params$w_inf)/beta)
 
+############# with density dependence ##############
+
+nn <- n_output
+nn[nn==0] <- 1
+params@chi <- 0.5
+params@ddd <- nn^(params@chi)
+
+t_max <- 150
+sim <- project(params, t_max=t_max, dt=0.05, t_save=t_max/100 ,effort = 0, 
+               initial_n = n_output, initial_n_pp = initial_n_pp)
+plot(sim)
+t_max <- 150
+n_output2 <- n_output
+n_output2[1,] <- 10*n_output[1,]
+sim2 <- project(params, t_max=t_max, dt=0.05, t_save=t_max/100 ,effort = 0, 
+                initial_n = n_output2, initial_n_pp = initial_n_pp)
+plot(sim2)
