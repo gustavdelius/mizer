@@ -223,3 +223,11 @@ for (i in (2:no_sp)){
 fish_indices <- (length(params@w_full)-length(w)+1):length(params@w_full)
 lines(w,w^2*sim@n_pp[1, fish_indices],col="grey")
 lines(w,w^2*sim@n_pp[dim(sim@n)[1], fish_indices],col="green")
+
+#' Programed in quadratic minimization procedure to get the multipliers so that 
+#' the sum of the abundances of the species at the solution is as close to a power law 
+#' as possible. However, unfortunatly, this procedure ends up making some of the 
+#' multipliers A_i negative. We had the idea that, since we know how to construct the
+#' background community, when we add, say a gurnard, we can retune the abundances so that 
+#' the resultant aggregation looks similar to the initial aggregation of the species.
+#' 
