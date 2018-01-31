@@ -210,7 +210,12 @@ for (i in 1:no_sp) {
   params@psi[i, ] <- (w/w_inf[i])^(1-n)
   params@psi[i, w < (w_mat[i]-1e-10)] <- 0
   params@psi[i, w > (w_inf[i]-1e-10)] <- 1
-  params@mu_b[i, ] <- mu0 * w^(n-1) - m2[i,]
+  #params@mu_b[i, ] <- mu0 * w^(n-1) - m2[i,]
+  # modify this so gurnard experiences death as it would from background
+  params@mu_b[i, ] <- mu0[1] * w^(n-1) - m2[i,]
+  # This code which inclides the gurnard with the background has been altered. 
+  #Now we choose the background mortality of the
+  #  gurnard so that its total mortality is mu0((background species)) *w^(n-1). 
 }
 params@mu_b[rep_idx, ] <- mu0_g * w^(n-1) - m2[rep_idx,]
 
@@ -238,7 +243,7 @@ params@species_params$erepro <- erepro_final
 
 params@srr <- function(rdi, species_params) {return(rdi)}
 params@chi <- 0.0
-t_max <- 600
+t_max <- 30
 n_output2 <- n_output
 n_output2[1,] <- 10*n_output[1,]
 sim <- project(params, t_max=t_max, dt=0.01, t_save=t_max/100 ,effort = 0, 
