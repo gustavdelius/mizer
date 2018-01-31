@@ -1,0 +1,296 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Constructing Steady States Of Multispecies Size Spectrum Models
+\end_layout
+
+\begin_layout Author
+Richard Southwell
+\end_layout
+
+\begin_layout Standard
+We have a multispecies size spectrum model as described in the mizer vignette
+ except
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\psi_{i}(w)=\begin{cases}
+0 & \text{if }w<w_{*i}\\
+\left(\frac{w}{W_{\infty.i}}\right)^{1-n} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+we also suppose our parameters are such that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $n=p$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda=q+2-n$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mu_{f}(w)=k=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Given that, here is my attempted recipe for constructing a steady state
+ for some size spectrum setups:
+\end_layout
+
+\begin_layout Standard
+Choose any value of 
+\begin_inset Formula $\mu_{0}>0$
+\end_inset
+
+ .
+ 
+\end_layout
+
+\begin_layout Standard
+We explicitly model 
+\begin_inset Formula $s$
+\end_inset
+
+ species, which may have any different species specific parameters.
+ For each species 
+\begin_inset Formula $i$
+\end_inset
+
+ let 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f_{0i}=\frac{\gamma_{i}}{\frac{h_{i}\beta_{i}^{2-\lambda}\exp(-(\lambda-2)^{2}\sigma_{i}^{2}/2)}{\sqrt{2\pi}\kappa\sigma_{i}}+\gamma_{i}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+be the feeding level, and let 
+\begin_inset Formula $\hbar{}_{i}=\alpha_{i}h_{i}f_{0i}-k_{si}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $N_{i}(w)$
+\end_inset
+
+ be a steady state of the MvF equation of species 
+\begin_inset Formula $i$
+\end_inset
+
+ with growth rate 
+\begin_inset Formula $\hbar_{i}w^{n}(1-\psi_{i}(w))$
+\end_inset
+
+ and death rate 
+\begin_inset Formula $\mu_{0}w^{n-1}.$
+\end_inset
+
+ In particular 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{i}(w)=\frac{1}{\hbar_{i}w^{n}}(w_{ei}/w)^{\mu_{0}/\hbar_{i}}\times\begin{cases}
+1 & w<w_{*i}\\
+\frac{\left(1-(w/W_{\infty_{i}})^{1-n}\right)^{(\mu_{0}/(\hbar_{i}(1-n)))-1}}{\left(1-(w_{*i}/W_{\infty i})^{1-n}\right)^{\mu_{0}/(\hbar_{i}(1-n))}} & w>w_{*i}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Any multiple of 
+\begin_inset Formula $N_{i}(w)$
+\end_inset
+
+ is also a steady state of the Mvf, and for our community construction,
+ we can choose any abundance multipliers 
+\begin_inset Formula $A_{i}\geq0$
+\end_inset
+
+ and 
+\begin_inset Formula $A_{i}N_{i}(w)$
+\end_inset
+
+ is also a steady state of the Mvf.
+ We suppose that the abundance of background resource at weight 
+\begin_inset Formula $w$
+\end_inset
+
+ is 
+\begin_inset Formula $N_{R}(w)=\kappa w^{-\lambda}-\sum_{i=1}^{s}A_{i}N_{i}(w).$
+\end_inset
+
+ In this resulting system, where species 
+\begin_inset Formula $i$
+\end_inset
+
+ has an abundance 
+\begin_inset Formula $A_{i}N_{i}(w)$
+\end_inset
+
+ at weight 
+\begin_inset Formula $w,$
+\end_inset
+
+ and the background resource abundance is present at abundance 
+\begin_inset Formula $N_{R}(w),$
+\end_inset
+
+ let 
+\begin_inset Formula $\mu_{pi}(w)$
+\end_inset
+
+ denote the predation mortality level on species 
+\begin_inset Formula $i$
+\end_inset
+
+ from the explicitly modeled species 
+\begin_inset Formula $j\in{1,..,s}.$
+\end_inset
+
+ Now if we choose a background mortality rate of 
+\begin_inset Formula $\mu_{bi}(w)=\mu_{0}w^{n-1}-\mu_{p.i}(w)$
+\end_inset
+
+ for the 
+\begin_inset Formula $i$
+\end_inset
+
+th species, then its total mortality rate will be 
+\begin_inset Formula $\mu_{i}(w)=\mu_{p.i}(w)+\mu_{b.i}(w)=\mu_{0}w^{n-1}.$
+\end_inset
+
+ Including the background resources and death term like this should result
+ in the same growth and death terms as we assumed in construction of our
+ abundance curves, so this should lead to a steady state of the Mvf.
+ We also have to choose parameters e.g., the reproductive efficiencies 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ so that the reproduction boundary condition 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g_{i}(w_{e.i})N_{i}(w_{e.i})=\frac{\epsilon_{i}}{2w_{e.i}}\int_{0}^{\infty}N_{i}(w)E_{r.i}(w)\psi(w).dw
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is met for each species.
+ This should result in a steady state of the size spectrum dynamics.
+\end_layout
+
+\end_body
+\end_document
