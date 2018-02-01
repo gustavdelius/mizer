@@ -123,6 +123,13 @@ we also suppose our parameters are such that
 \end_layout
 
 \begin_layout Standard
+\begin_inset Formula $\theta_{ij}=1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Given that, here is my attempted recipe for constructing a steady state
  for some size spectrum setups:
 \end_layout
@@ -161,7 +168,15 @@ f_{0i}=\frac{\gamma_{i}}{\frac{h_{i}\beta_{i}^{2-\lambda}\exp(-(\lambda-2)^{2}\s
 \end_layout
 
 \begin_layout Standard
-be the feeding level, and let 
+be the feeding level (as experienced by species 
+\begin_inset Formula $i$
+\end_inset
+
+ individuals feeding upon a community at abundance 
+\begin_inset Formula $\kappa w^{-\lambda}$
+\end_inset
+
+) , and let 
 \begin_inset Formula $\hbar{}_{i}=\alpha_{i}h_{i}f_{0i}-k_{si}$
 \end_inset
 
@@ -290,6 +305,45 @@ g_{i}(w_{e.i})N_{i}(w_{e.i})=\frac{\epsilon_{i}}{2w_{e.i}}\int_{0}^{\infty}N_{i}
 \begin_layout Standard
 is met for each species.
  This should result in a steady state of the size spectrum dynamics.
+\end_layout
+
+\begin_layout Standard
+The mizer code [stable_community_gurnard_really.R] we did to include the
+ gurnard corresponds to this type of setup where 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mu_{0}=(1-f_{0B})\sqrt{2\pi}\kappa\gamma_{B}\sigma_{B}\beta_{B}^{n-1}\exp(\sigma_{B}^{2}(n-1)^{2}/2)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is constructed using the background parameters for the first 
+\begin_inset Formula $s-1$
+\end_inset
+
+ species, and the 
+\begin_inset Formula $s$
+\end_inset
+
+th and final species is the gurnard with its own parameters.
+ Except this case has plankton dynamics, and we cut the plankton off at
+ the first zero.
+ 
+\end_layout
+
+\begin_layout Standard
+If one wants to they can explicitly include background species within the
+ size regime of interest, that feed in a similar way to the unmodeled large
+ predators (like the homogeneous background we introduced the gurnard into),
+ and then a steady state (which in that case also seemed to be locally stable),
+ can be constructed according to this type of setup.
+ And in that case one can limit the amount of corrective adjustment of the
+ background death and resources that are required to stabilize the system
+ to sensible levels.
+ 
 \end_layout
 
 \end_body
