@@ -320,29 +320,191 @@ The mizer code [stable_community_gurnard_really.R] we did to include the
 \end_layout
 
 \begin_layout Standard
-is constructed using the background parameters for the first 
+in this case the the first 
 \begin_inset Formula $s-1$
 \end_inset
 
- species, and the 
+ species are the background species so 
+\begin_inset Formula $\beta_{1}=..=\beta_{s-1}=\beta_{B}\neq\beta_{s}$
+\end_inset
+
+ etc, and the 
 \begin_inset Formula $s$
 \end_inset
 
-th and final species is the gurnard with its own parameters.
- Except this case has plankton dynamics, and we cut the plankton off at
+th and final species is the gurnard with its own different parameters.
+ Except this code has plankton dynamics, and we cut the plankton off at
  the first zero.
- 
+ We still need to test if we cut the cut the background mortality term off,
+ will it still work.
 \end_layout
 
 \begin_layout Standard
+More generally if we have two mizer steady states 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ of different systems with different parameters if we can choose a subset
+ 
+\begin_inset Formula $x$
+\end_inset
+
+ of species from 
+\begin_inset Formula $X$
+\end_inset
+
+ and a subset 
+\begin_inset Formula $y$
+\end_inset
+
+ of species from 
+\begin_inset Formula $Y$
+\end_inset
+
+ then we can sometimes transplant/swap populations 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ around in their ecosystems, (cutting their abundances our and swapping
+ them round).
+ The conditions required for the resulting two 
+\begin_inset Quotes eld
+\end_inset
+
+post transplant" states to be steady states are: 
+\end_layout
+
+\begin_layout Standard
+(1) members of 
+\begin_inset Formula $x$
+\end_inset
+
+ expecience the same growth and death rate as a result of their contact
+ with 
+\begin_inset Formula $X\setminus x$
+\end_inset
+
+ before the tranplant, as they experience with the new surroundings (post-transp
+lant) via their contact with 
+\begin_inset Formula $Y\setminus y$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+(2) members of 
+\begin_inset Formula $X\setminus x$
+\end_inset
+
+ expecience the same growth and death rate as a result of their contact
+ with 
+\begin_inset Formula $x$
+\end_inset
+
+ before the tranplant, as they experience with the new surroundings (post-transp
+lant) via their contact with 
+\begin_inset Formula $y$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+(3) members of 
+\begin_inset Formula $y$
+\end_inset
+
+ expecience the same growth and death rate as a result of their contact
+ with 
+\begin_inset Formula $Y\setminus y$
+\end_inset
+
+ before the tranplant, as they experience with the new surroundings (post-transp
+lant) via their contact with 
+\begin_inset Formula $X\setminus x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+(4) members of 
+\begin_inset Formula $Y\setminus y$
+\end_inset
+
+ expecience the same growth and death rate as a result of their contact
+ with 
+\begin_inset Formula $y$
+\end_inset
+
+ before the tranplant, as they experience with the new surroundings (post-transp
+lant) via their contact with 
+\begin_inset Formula $x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+The underlying reason this sort of stuff works is that if we have a subset
+ of an ecosystem which is stable, and we remove the other species, and replace
+ them with a different configuration of species, that (A) induce the same
+ kinds of growth and death rates on the individuals within our subset as
+ they experienced in their original ecosystem, and (B) the newly switched
+ in surrounding species experience the same death and growth rates as they
+\end_layout
+
+\begin_layout Plain Layout
+If X and Y are steady states, and A is a subset of 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $A\subset X$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $B\subset Y$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+More generally in a size spectrum steady state, one can transplant some
+ of the species from one type of steady state/enviorment to another, and
+ provided one carefully sets it up so that the growth rate and mortality
+ rates are preserved, the result will be a steady state.
+\end_layout
+
+\begin_layout Plain Layout
 If one wants to they can explicitly include background species within the
  size regime of interest, that feed in a similar way to the unmodeled large
  predators (like the homogeneous background we introduced the gurnard into),
  and then a steady state (which in that case also seemed to be locally stable),
  can be constructed according to this type of setup.
  And in that case one can limit the amount of corrective adjustment of the
- background death and resources that are required to stabilize the system
- to sensible levels.
+ background death and resources that are required to create a system without
+ artifially chosen mortality and background resource rates.
+\end_layout
+
+\end_inset
+
  
 \end_layout
 
