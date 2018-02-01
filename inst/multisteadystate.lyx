@@ -369,6 +369,19 @@ etc.
 \end_layout
 
 \begin_layout Standard
+There are more general ways to make new steady states from old by making
+ sub population transplants that preserve death and growth rates.
+ If we have a pair of steady states of a size spectrum model (perhaps with
+ different species extinct in either state), and then we do transplant surgery
+ -cutting away some of the individuals from the second steady state, and
+ replacing them with a subset of individuals from the first steady state,
+ that are grafted on.
+ If the growth and death rates are the same for the incumbent and grafted
+ individuals before and after this type of population transplant then it
+ will result in a new steady state.
+\end_layout
+
+\begin_layout Standard
 More generally if we have two mizer steady states 
 \begin_inset Formula $X$
 \end_inset
