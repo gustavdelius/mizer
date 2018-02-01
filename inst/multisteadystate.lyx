@@ -79,7 +79,7 @@ Richard Southwell
 \end_layout
 
 \begin_layout Standard
-We have a multispecies size spectrum model as described in the mizer vignette
+We have a multispecies size spectrum model as described in the mizer vignette,
  except
 \end_layout
 
@@ -253,7 +253,7 @@ Any multiple of
 \begin_inset Formula $w,$
 \end_inset
 
- and the background resource abundance is present at abundance 
+ and the background resource abundance has abundance 
 \begin_inset Formula $N_{R}(w),$
 \end_inset
 
@@ -281,9 +281,16 @@ th species, then its total mortality rate will be
 \begin_inset Formula $\mu_{i}(w)=\mu_{p.i}(w)+\mu_{b.i}(w)=\mu_{0}w^{n-1}.$
 \end_inset
 
- Including the background resources and death term like this should result
- in the same growth and death terms as we assumed in construction of our
- abundance curves, so this should lead to a steady state of the Mvf.
+ Also, the growth rate will be 
+\begin_inset Formula $g_{i}(w)=\hbar_{i}w^{n}(1-\psi_{i}(w)).$
+\end_inset
+
+ Since these are the same death and growth rates that we assumed in construction
+ of our solutions 
+\begin_inset Formula $A_{i}N_{i}(w)$
+\end_inset
+
+, we must have a steady state of the Mvf.
  We also have to choose parameters e.g., the reproductive efficiencies 
 \begin_inset Formula $\epsilon_{i}$
 \end_inset
@@ -308,8 +315,9 @@ is met for each species.
 \end_layout
 
 \begin_layout Standard
-The mizer code [stable_community_gurnard_really.R] we did to include the
- gurnard corresponds to this type of setup where 
+The mizer code [stable_community_gurnard_really.R] we did before involves
+ gurnard and background species.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -320,7 +328,11 @@ The mizer code [stable_community_gurnard_really.R] we did to include the
 \end_layout
 
 \begin_layout Standard
-in this case the the first 
+describes the mortality rate induced by the background species.
+\end_layout
+
+\begin_layout Standard
+In this case the the first 
 \begin_inset Formula $s-1$
 \end_inset
 
@@ -333,10 +345,10 @@ in this case the the first
 \end_inset
 
 th and final species is the gurnard with its own different parameters.
- Except this code has plankton dynamics, and we cut the plankton off at
- the first zero.
- We still need to test if we cut the cut the background mortality term off,
- will it still work.
+ I guess this code works in a similar way to the above recipe, except this
+ code has plankton dynamics, and we cut the plankton off at the first zero.
+ We still need to test if things will work if we cut the background mortality
+ term off.
 \end_layout
 
 \begin_layout Standard
