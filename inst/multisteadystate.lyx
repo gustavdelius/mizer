@@ -340,6 +340,23 @@ th and final species is the gurnard with its own different parameters.
 \end_layout
 
 \begin_layout Standard
+Returning to the general steady state construction problem.
+ If one is interested in modeling a multispecies ecosystem without so much
+ artificial background death and mortality rates, one can include extra
+ background species that are explicitly modeled, with parameters like 
+\begin_inset Formula $\beta_{B}$
+\end_inset
+
+etc.
+ above.
+ Setting such modeled background species to the proper abundances to model
+ induce the proper growth and death rates, then allows us to reduce the
+ amount of artificial background death and background resource abundance
+ we have to add to create a steady state according to the above recipe.
+ 
+\end_layout
+
+\begin_layout Standard
 More generally if we have two mizer steady states 
 \begin_inset Formula $X$
 \end_inset
@@ -387,13 +404,13 @@ post transplant" states to be steady states are:
 \begin_inset Formula $x$
 \end_inset
 
- expecience the same growth and death rate as a result of their contact
+ experience the same growth and death rate as a result of their contact
  with 
 \begin_inset Formula $X\setminus x$
 \end_inset
 
- before the tranplant, as they experience with the new surroundings (post-transp
-lant) via their contact with 
+ before the transplant, as they experience with the new surroundings (post-trans
+plant) via their contact with 
 \begin_inset Formula $Y\setminus y$
 \end_inset
 
@@ -405,13 +422,13 @@ lant) via their contact with
 \begin_inset Formula $X\setminus x$
 \end_inset
 
- expecience the same growth and death rate as a result of their contact
+ experience the same growth and death rate as a result of their contact
  with 
 \begin_inset Formula $x$
 \end_inset
 
- before the tranplant, as they experience with the new surroundings (post-transp
-lant) via their contact with 
+ before the transplant, as they experience with the new surroundings (post-trans
+plant) via their contact with 
 \begin_inset Formula $y$
 \end_inset
 
@@ -423,13 +440,13 @@ lant) via their contact with
 \begin_inset Formula $y$
 \end_inset
 
- expecience the same growth and death rate as a result of their contact
+ experience the same growth and death rate as a result of their contact
  with 
 \begin_inset Formula $Y\setminus y$
 \end_inset
 
- before the tranplant, as they experience with the new surroundings (post-transp
-lant) via their contact with 
+ before the transplant, as they experience with the new surroundings (post-trans
+plant) via their contact with 
 \begin_inset Formula $X\setminus x$
 \end_inset
 
@@ -441,13 +458,13 @@ lant) via their contact with
 \begin_inset Formula $Y\setminus y$
 \end_inset
 
- expecience the same growth and death rate as a result of their contact
+ experience the same growth and death rate as a result of their contact
  with 
 \begin_inset Formula $y$
 \end_inset
 
- before the tranplant, as they experience with the new surroundings (post-transp
-lant) via their contact with 
+ before the transplant, as they experience with the new surroundings (post-trans
+plant) via their contact with 
 \begin_inset Formula $x$
 \end_inset
 
