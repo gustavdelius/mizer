@@ -207,3 +207,23 @@ lines(w,w^2*sim2@n[dim(sim2@n)[1],1,],col="blue")
 #' been turned off
 #' 
 #' found many steady states of two species case.
+#' 
+#' 
+
+n_output2 <- n_output
+n_output2[1,] <- (10^5)*n_output[1,]
+t_max <- 10
+sim5 <- project(params, t_max=t_max ,dt=0.01, t_save=t_max/100, effort = 0, 
+                initial_n = n_output2, initial_n_pp = initial_n_pp)
+plot(sim5)
+getBiomass(sim5)[dim(getBiomass(sim5))[1],]
+###########
+
+n_output2 <- n_output
+n_output2[1,] <- (10^(-5))*n_output[1,]
+t_max <- 10
+simm5 <- project(params, t_max=t_max ,dt=0.01, t_save=t_max/100, effort = 0, 
+                initial_n = n_output2, initial_n_pp = initial_n_pp)
+plot(simm5)
+getBiomass(simm5)[dim(getBiomass(simm5))[1],]
+
