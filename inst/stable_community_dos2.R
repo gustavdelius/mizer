@@ -186,21 +186,21 @@ plot(sim2)
 multipliers1 <- 10^((-5):5)
 multipliers2 <- 10^((-5):5)
 res <- array(dim = c(length(multipliers1),4))
-for (i in (1:length(multipliers1))){
-  for (j in (1:length(multipliers2))){
-  n_output2 <- n_output
-  n_output2[1,] <- multipliers1[i]*n_output[1,]
-  n_output2[2,] <- multipliers2[i]*n_output[2,]
-  
-  t_max <- 10
-  sim2 <- project(params, t_max=t_max ,dt=0.01, t_save=t_max/100, effort = 0, 
-                  initial_n = n_output2, initial_n_pp = initial_n_pp)
-  
-  gb <- getBiomass(sim2)[dim(getBiomass(sim2))[1],]
-  res[i,] <- c(multipliers1[i],multipliers2[j],gb[1],gb[2])
-}
-}
-  plot(res[,3],res[,4],log="xy")
+#for (i in (1:length(multipliers1))){
+#  for (j in (1:length(multipliers2))){
+#  n_output2 <- n_output
+#  n_output2[1,] <- multipliers1[i]*n_output[1,]
+#  n_output2[2,] <- multipliers2[i]*n_output[2,]
+#  
+#  t_max <- 10
+#  sim2 <- project(params, t_max=t_max ,dt=0.01, t_save=t_max/100, effort = 0, 
+#                  initial_n = n_output2, initial_n_pp = initial_n_pp)
+#  
+#  gb <- getBiomass(sim2)[dim(getBiomass(sim2))[1],]
+#  res[i,] <- c(multipliers1[i],multipliers2[j],gb[1],gb[2])
+#}
+#}
+#  plot(res[,3],res[,4],log="xy")
 
 #' Compare the final state (in blue and green) to the initial condition (in black and grey).
 plot(w,w^2*sim@n[1,1,],log="xy",type="l",ylim=c(10^7,10^11), 
@@ -254,3 +254,7 @@ for (i in 1:NPTS){
   points(gb[1],gb[2],col="red")
   lines(c(rr[1],gb[1]),c(rr[2],gb[2]))
 }
+
+#'This phase portrait (from stable_community_dos2.R) suggests the states
+#' differ in the extent of their basins of attraction. I guess the largest 
+#' basin of attraction belongs to our analytic steady state.
