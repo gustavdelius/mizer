@@ -232,3 +232,25 @@ simm5 <- project(params, t_max=t_max ,dt=0.01, t_save=t_max/100, effort = 0,
 plot(simm5)
 getBiomass(simm5)[dim(getBiomass(simm5))[1],]
 
+##########
+########### phase portrait
+###########
+
+low <- 10^8
+high <- 2*10^11
+NPTS <- 1000
+res <- array(dim = c(NPTS,4))
+plot(low,low,ylim=c(low,high),xlim=c(low,high))
+for (i in 1:NPTS){
+  rr <- low+runif(2)*(high-low)
+  n_output2 <- n_output
+  n_output2[1,] <- n_output[1,]*rr[1]/sum((n_output[1,]*w*params@dw)[1:(length(w)-1)])
+  n_output2[2,] <- n_output[2,]*rr[2]/sum((n_output[2,]*w*params@dw)[1:(length(w)-1)])
+  sim2 <- project(params, t_max=t_max ,dt=0.1, t_save=t_max/100, effort = 0, 
+                  initial_n = n_output2, initial_n_pp = initial_n_pp)
+  gb <- getBiomass(sim2)[dim(getBiomass(sim2))[1],]
+  res[i,] <- c(rr[1],rr[2],gb[1],gb[2])
+  points(rr[1],rr[2])
+  points(gb[1],gb[2],col="red")
+  lines(c(rr[1],gb[1]),c(rr[2],gb[2]))
+}
