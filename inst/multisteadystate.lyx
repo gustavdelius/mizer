@@ -71,7 +71,7 @@
 \begin_body
 
 \begin_layout Title
-Constructing Steady States Of Multispecies Size Spectrum Models
+Constructing Steady States Of Multi-species Size Spectrum Models
 \end_layout
 
 \begin_layout Author
@@ -79,7 +79,7 @@ Richard Southwell
 \end_layout
 
 \begin_layout Standard
-We have a multispecies size spectrum model as described in the mizer vignette,
+We have a multi species size spectrum model as described in the mizer vignette,
  except
 \end_layout
 
@@ -353,7 +353,7 @@ th and final species is the gurnard with its own different parameters.
 
 \begin_layout Standard
 Returning to the general steady state construction problem.
- If one is interested in modeling a multispecies ecosystem without so much
+ If one is interested in modeling a multi species ecosystem without so much
  artificial background death and mortality rates, one can include extra
  background species that are explicitly modeled, with parameters like 
 \begin_inset Formula $\beta_{B}$
@@ -547,6 +547,365 @@ If one wants to they can explicitly include background species within the
 
 \end_inset
 
+
+\end_layout
+
+\begin_layout Subsection*
+Time Dependent Transplant Principal
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\overline{N^{1}}=(N_{1}^{1},..,N_{s}^{1})$
+\end_inset
+
+ be a state of an 
+\begin_inset Formula $s$
+\end_inset
+
+ species size spectrum model.
+ Here 
+\begin_inset Formula $N_{i}^{1}:\mathbb{R}_{+}\rightarrow\mathbb{R}_{+}$
+\end_inset
+
+ is such that 
+\begin_inset Formula $N_{i}^{1}(w)$
+\end_inset
+
+ represents the density of species 
+\begin_inset Formula $i$
+\end_inset
+
+ individuals of weight 
+\begin_inset Formula $w.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\overline{N^{2}}=(N_{1}^{2},..,N_{s}^{2})$
+\end_inset
+
+ be another state of our size spectrum model.
+ Let 
+\begin_inset Formula $T>0.$
+\end_inset
+
+ Let 
+\begin_inset Formula $K\subseteq\left\{ 1,..,s\right\} $
+\end_inset
+
+ be a subset of species.
+ Let 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\overline{N^{*}}=\overline{N^{1}}-\left(\sum_{i\in K}(\delta_{1i}N_{1}^{1},\delta_{2i}N_{2}^{1},..,\delta_{si}N_{s}^{1})\right)+\left(\sum_{i\in K}(\delta_{1i}N_{1}^{2},\delta_{2i}N_{2}^{2},..,\delta_{si}N_{s}^{2})\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+denote the state obtained by replacing all the individuals in 
+\begin_inset Formula $\overline{N^{1}}$
+\end_inset
+
+ with a species in 
+\begin_inset Formula $K,$
+\end_inset
+
+ with the set of individuals from 
+\begin_inset Formula $\overline{N^{2}}$
+\end_inset
+
+ with a species in 
+\begin_inset Formula $K.$
+\end_inset
+
+ Here 
+\begin_inset Formula $\delta_{ij}$
+\end_inset
+
+ is the Kronecker delta.
+\end_layout
+
+\begin_layout Standard
+For 
+\begin_inset Formula $t\geq0$
+\end_inset
+
+ let 
+\begin_inset Formula $\tau_{t}[\overline{N^{1}}]$
+\end_inset
+
+ denote the state obtained by evolving 
+\begin_inset Formula $\overline{N^{1}}$
+\end_inset
+
+ for a time 
+\begin_inset Formula $t$
+\end_inset
+
+ under the MvF equation.
+ 
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $g_{i}[\overline{N^{1}}](w)$
+\end_inset
+
+ denote the growth rate that a species 
+\begin_inset Formula $i$
+\end_inset
+
+ individual of weight 
+\begin_inset Formula $w$
+\end_inset
+
+ has when the system is in state 
+\begin_inset Formula $\overline{N^{1}}.$
+\end_inset
+
+ Similarly let 
+\begin_inset Formula $\mu_{i}[\overline{N^{1}}](w)$
+\end_inset
+
+ denote the mortality rate that a species 
+\begin_inset Formula $i$
+\end_inset
+
+ individual of weight 
+\begin_inset Formula $w$
+\end_inset
+
+ has when the system is in state 
+\begin_inset Formula $\overline{N^{1}}.$
+\end_inset
+
+ Suppose 
+\begin_inset Formula $T>0.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\forall t\in[0,T],\forall w>0,\forall i\notin K$
+\end_inset
+
+ we have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\left(\tau_{t}[\overline{N^{1}}]\right)_{i}(w)>0\Rightarrow & g_{i}[\tau_{t}[\overline{N^{1}}]](w)=g_{i}[\tau_{t}[\overline{N^{*}}]](w),\\
+ & \mu_{i}[\tau_{t}[\overline{N^{1}}]](w)=\mu_{i}[\tau_{t}[\overline{N^{*}}]](w)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and 
+\begin_inset Formula $\forall t\in[0,T],\forall w>0,\forall i\in K$
+\end_inset
+
+ we have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\left(\tau_{t}[\overline{N^{2}}]\right)_{i}(w)>0\Rightarrow & g_{i}[\tau_{t}[\overline{N^{2}}]](w)=g_{i}[\tau_{t}[\overline{N^{*}}]](w),\\
+ & \mu_{i}[\tau_{t}[\overline{N^{2}}]](w)=\mu_{i}[\tau_{t}[\overline{N^{*}}]](w)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+then 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t\in[0,T],\forall w>0,\forall i\notin K$
+\end_inset
+
+ we have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\tau_{t}[\overline{N^{1}}]\right)_{i}(w)=\left(\tau_{t}[\overline{N^{*}}]\right)_{i}(w)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and 
+\begin_inset Formula $\forall t\in[0,T],\forall w>0,\forall i\in K$
+\end_inset
+
+ we have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\tau_{t}[\overline{N^{2}}]\right)_{i}(w)=\left(\tau_{t}[\overline{N^{*}}]\right)_{i}(w).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Essentially the principal says if you transplant species in set 
+\begin_inset Formula $K$
+\end_inset
+
+ from 
+\begin_inset Formula $\overline{N^{2}}$
+\end_inset
+
+ into 
+\begin_inset Formula $\overline{N^{1}}$
+\end_inset
+
+ in such a way that all individuals involved encounter the same time dependent
+ death and growth rates, both before and after the transplant, then the
+ dynamics of the abundances of such species will be the same in the pre
+ and post transplant systems.
+ A species case of the time dependent transplant principal is the case where
+ 
+\begin_inset Formula $\overline{N^{1}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\overline{N^{2}}$
+\end_inset
+
+ are steady states.
+ In this case, if the transplant can be performed in a way that preserves
+ mortality and growth rates then the post transplant state 
+\begin_inset Formula $\overline{N^{*}}$
+\end_inset
+
+ will also be a steady state.
+ This steady state transplant principal is used when we build systems with
+ power law based death and growth.
+ The steady state transplant principal may also shed light on neutrality
+ like effects we often see when considering the set of all steady states
+ of systems with near homogeneous species, by showing how one can move around
+ in the near affine set of all steady states by performing growth and death
+ preserving transplants.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Speculation
+\end_layout
+
+\begin_layout Itemize
+In the case where the death and growth rates are fixed, any linear combination
+ of steady states is a steady state,
+\end_layout
+
+\begin_layout Itemize
+In general multi species size spectrum models, the set of steady states
+ is approximately an affine set.
+\end_layout
+
+\begin_layout Itemize
+The volumes of the basins of attraction of steady states vary, and the affine
+ set may hold a mixture of stable and unstable steady states.
+\end_layout
+
+\begin_layout Itemize
+If S is the set of steady states of the system and one introduces an extra
+ mortality term then the set of steady states of the new system is homeomorphic
+ to a subset of S or S is homeomorphic to a subset of the steady states
+ of the new system.
+\end_layout
+
+\begin_layout Itemize
+Introducing an extra mortality term mu_e (w) that does not have the form
+ A*w^(n-1) breaks up the affine structure of the steady states
+\end_layout
+
+\begin_layout Itemize
+In a system with sufficiently heterogeneous species, there is just one steady
+ state.
+\end_layout
+
+\begin_layout Itemize
+Often heterogeneous systems are unstable, but adding a chi>0 makes them
+ stable and shrinks the set of attractors towards the symmetric solution
+\end_layout
+
+\begin_layout Subsection*
+Questions
+\end_layout
+
+\begin_layout Itemize
+How does the set of steady states change when we continuously vary the backgroun
+d death rate, or the plankton spectrum ?
+\end_layout
+
+\begin_layout Itemize
+Can convex sets of steady states with more than one element occur in systems
+ where all species have rather different parameters ?
+\end_layout
+
+\begin_layout Itemize
+In what sense is the affine/convex structure of steady states only approximate
+ when the growth and death rates are not fixed ?
+\end_layout
+
+\begin_layout Subsection*
+Objectives
+\end_layout
+
+\begin_layout Itemize
+Prepare Barcelona talk.
+\end_layout
+
+\begin_layout Itemize
+Retry getting the gurnard stable - I made a correction to the code, as found
+ in stable_community_gurnard_post_comp.R, but now, so far, it seems hard
+ to get the background+gurnard system to stabilize without using chi.
+\end_layout
+
+\begin_layout Itemize
+Write newton raphson scheme and explore structure and stability of steady
+ states
+\end_layout
+
+\begin_layout Itemize
+formally organize results so far with proofs etc.
+\end_layout
+
+\begin_layout Itemize
+I just pushed an update of multisteadystate.pdf.
  
 \end_layout
 
