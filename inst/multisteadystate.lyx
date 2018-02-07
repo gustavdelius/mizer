@@ -909,5 +909,71 @@ I just pushed an update of multisteadystate.pdf.
  
 \end_layout
 
+\begin_layout Subsection*
+More Speculation
+\end_layout
+
+\begin_layout Standard
+We have an s species multi species size spectrum model.
+ A transplant is where one replaces some individuals from one state with
+ individuals from another state in a way that preserves growth and death
+ rates.
+ The transplant hull H(S) of a set of states S that can be obtained by repeatedl
+y performing transplants, starting with the members of S.
+ We say a set of states S is transplant independent if each member x of
+ S lies outside the transplant hull H(S-{x}) of the other members.
+\end_layout
+
+\begin_layout Standard
+Conjecture If N_1,N_2,..,N_s are transplant independent steady states then
+ the transplant hull H(N_1,N_2,..,N_s) of these states is the set of all steady
+ states of the system.
+\end_layout
+
+\begin_layout Standard
+Conjecture The transplant hull of a set of states is equal to the affine
+ set of such steady states.
+\end_layout
+
+\begin_layout Standard
+To prove conjecture note that the set of steady states must be connected
+ by transplant paths, because for any two steady states Brouwer's fixed
+ point theorem proves the existence of species transplants that preserve
+ death and growth rates, therefore the problem of finding the set of all
+ steady states reduced to the problem of finding a large enough set of steady
+ states such that their transplant hull is the set of all steady states
+ of the entire system.
+ The face that transplant hull is equivalent to affine hull can be seen
+ by noting that, since they are the sane, under growth and death preserving
+ transformations, the transplant hull H(S) of a set S of steady states are
+ also steady states of the system p which has its growth and death rates
+ held fixed at these values, and we know from the linearity of p, that H(S)
+ is an affine set.
+\end_layout
+
+\begin_layout Standard
+If this is indeed true, then the set of all steady states of a general s
+ species size spectrum model is just equal to the set of all affine combinations
+ of any s linearly independent steady states.
+ 
+\end_layout
+
+\begin_layout Standard
+To prove this we have to show the equivalence of transplant and affine hulls,
+ and we have to show that a transplant can always be done between two steady
+ states.
+\end_layout
+
+\begin_layout Standard
+At least, it seems the set of steady states equals the union of one or more
+ disjoint subsets, each of which is the transplant hull of collections of
+ steady states.
+ I suspect the entire set of steady states is organized into one transplant
+ hull, but to see this we may need to use something like a fixed point theorem
+ to (try and) prove that it is always possible to do a transplant between
+ any two different steady states to make another steady state (if that is
+ true).
+\end_layout
+
 \end_body
 \end_document
