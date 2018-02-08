@@ -4,12 +4,12 @@ library(mizer)
 params_data_NS <- read.csv("./vignettes/NS_species_params.csv")
 params <- MizerParams(params_data_NS)
 no_sp <- dim(params@interaction)[1]
-mu_0 <- 1
+mu0 <- 10
 #mu0 <- ((1-f0) * sqrt(2*pi) * kappa * gamma * sigma *
 #          (beta^(n-1)) * exp(sigma^2 * (n-1)^2 / 2))[ii]
 hbar <- params@species_params$alpha*params@species_params$h*params@f0-params@species_params$ks
 # set these abundance multipliers later
-sol_mult <- (1:no_sp)
+sol_mult <- (1:no_sp)*10^(1)
 
 pow <- (mu0/hbar/(1-params@n))
 
@@ -20,7 +20,7 @@ n_mult[params@w < params@species_params$w_mat[rep_idx]] <- 1
 n_mult[params@w >= params@species_params$w_inf[rep_idx]] <- 0
 n_exact <- params@w  # Just to get array with correct dimensions and names
 n_exact <- ((params@species_params$w_min[rep_idx]/params@w)^(mu0/hbar[rep_idx]) / (hbar[rep_idx] * params@w^params@n)) * n_mult
-n_exact[w < params@species_params$w_min[rep_idx]] <- 0
+n_exact[params@w < params@species_params$w_min[rep_idx]] <- 0
 n_output[rep_idx,] <- sol_mult[rep_idx]*n_exact
 }
 
@@ -62,7 +62,14 @@ params@ddd <- nn^(params@chi)
 # run simulation
 n_output2 <- n_output
 n_output2[no_sp,] <- 10*n_output[no_sp,]
-t_max <- 40
+t_max <- 400
 sim <- project(params, t_max=t_max ,dt=0.1, t_save=t_max/100, effort = 0, 
                initial_n = n_output2, initial_n_pp = initial_n_pp)
 plot(sim)
+
+plot(params@w,plankton_vec,log="xy")
+plot(params@w,n_output[1,],log="xy")
+plot(params@w,n_exact,log="xy")
+
+sum(params@mu_b<0)
+sum(plankton_vec<0)
