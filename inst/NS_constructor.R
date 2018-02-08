@@ -4,7 +4,8 @@ library(mizer)
 params_data_NS <- read.csv("./vignettes/NS_species_params.csv")
 params <- MizerParams(params_data_NS)
 no_sp <- dim(params@interaction)[1]
-mu0 <- 10
+#mu0 <- 10
+mu0 <- 100
 #mu0 <- ((1-f0) * sqrt(2*pi) * kappa * gamma * sigma *
 #          (beta^(n-1)) * exp(sigma^2 * (n-1)^2 / 2))[ii]
 hbar <- params@species_params$alpha*params@species_params$h*params@f0-params@species_params$ks
