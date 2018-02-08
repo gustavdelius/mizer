@@ -93,8 +93,9 @@ plot(params@w,n_exact,log="xy")
 sum(params@mu_b<0)
 sum(plankton_vec<0)
 
-plot(params@w,sim@n[dim(sim@n)[1],1,],log="xy")
-for (i in 2:no_sp){
+plot(params@w,sim@n[dim(sim@n)[1],1,],log="xy",col="white")
+for (i in 1:no_sp){
   lines(params@w,sim@n[dim(sim@n)[1],i,])
+  lines(params@w,n_output[i,],col="blue")
 }
 # plotSpectra(sim) fails since min(sim@n[sim@n>0]) is so small
