@@ -130,7 +130,7 @@ hbar_g <- (alpha * h * f0 - ks)[rep_idx]
 #pow <- (mu0/hbar/(1-n))[1]
 pow <- (mu0/hbar/(1-n))
 
-pow_g <- (mu0_g/hbar_g/(1-n))
+pow_g <- (mu0/hbar_g/(1-n))
 
 
 n_mult <- (1 - (w/w_inf[1])^(1-n))^(pow-1) * (1 - (w_mat[1]/w_inf[1])^(1-n))^(-pow)
@@ -157,7 +157,9 @@ for (i in 1:no_sp) {
 w_mat_old <- (w_mat[2]/w_mat[1])*w_mat[length(w_mat)-1]
 w_mat_old_idx <- sum(w <= w_mat_old)
 #target_mat_abund <- initial_n[rep_idx,w_mat_old_idx]
-target_mat_abund <- 3.368058e-09
+#target_mat_abund <- 3.368058e-09
+target_mat_abund <- 10*3.368058e-09
+
 w_mat_g <- w_mat[length(w_mat)]
 w_mat_g_idx <- sum(w <= w_mat_g)
 
@@ -165,7 +167,7 @@ n_mult_g <- (1 - (w/w_inf[rep_idx])^(1-n))^(pow_g-1) * (1 - (w_mat[rep_idx]/w_in
 n_mult_g[w < w_mat[rep_idx]] <- 1
 n_mult_g[w >= w_inf[rep_idx]] <- 0
 n_exact_g <- w  # Just to get array with correct dimensions and names
-n_exact_g <- ((w_min[rep_idx]/w)^(mu0_g/hbar_g) / (hbar_g * w^n)) * n_mult_g
+n_exact_g <- ((w_min[rep_idx]/w)^(mu0/hbar_g) / (hbar_g * w^n)) * n_mult_g
 n_exact_g[w < w_min[rep_idx]] <- 0
 n_exact_g <- n_exact_g*target_mat_abund/n_exact_g[w_mat_g_idx]
 
@@ -209,7 +211,9 @@ for (i in 1:no_sp) {
   params@psi[i, w > (w_inf[i]-1e-10)] <- 1
   params@mu_b[i, ] <- mu0 * w^(n-1) - m2[i,]
 }
-params@mu_b[rep_idx, ] <- mu0_g * w^(n-1) - m2[rep_idx,]
+#params@mu_b[rep_idx, ] <- mu0_g * w^(n-1) - m2[rep_idx,]
+params@mu_b[rep_idx, ] <- mu0 * w^(n-1) - m2[rep_idx,]
+
 
 # ----
 #' ### Set erepro to meet boundary condition
@@ -235,19 +239,20 @@ params@species_params$erepro <- erepro_final
 
 params@srr <- function(rdi, species_params) {return(rdi)}
 params@chi <- 0.0
-t_max <- 500
+#t_max <- 500
+#n_output2 <- n_output
+#n_output2[no_sp,] <- 1*n_output[no_sp,]
+#sim <- project(params, t_max=t_max, dt=0.01, t_save=t_max/100 ,effort = 0, 
+#               initial_n = n_output2, initial_n_pp = initial_n_pp)
+#plot(sim)
+
+
 n_output2 <- n_output
-n_output2[no_sp,] <- 1*n_output[no_sp,]
-sim <- project(params, t_max=t_max, dt=0.1, t_save=t_max/100 ,effort = 0, 
+n_output2[no_sp,] <- n_output[no_sp,]*10^(1)
+t_max <- 5
+sim <- project(params, t_max=t_max ,dt=0.01, t_save=t_max/100, effort = 0, 
                initial_n = n_output2, initial_n_pp = initial_n_pp)
 plot(sim)
-
-
-
-t_max <- 40
-sim_s <- project(params, t_max=t_max ,dt=0.1, t_save=t_max/100, effort = 0, 
-               initial_n = n_output, initial_n_pp = initial_n_pp)
-plot(sim_s)
 
 #' Compare the final state (in blue and green) to the initial condition (in black and grey).
 plot(w,w^2*sim@n[1,1,],log="xy",type="l",ylim=c(10^7,10^11), 
@@ -272,9 +277,15 @@ params@chi <- 0.5
 params@ddd <- nn^(params@chi)
 n_output2 <- n_output
 n_output2[no_sp,] <- 10*n_output[no_sp,]
-t_max <- 40
-sim <- project(params, t_max=t_max ,dt=0.1, t_save=t_max/100, effort = 0, 
+t_max <- 10
+sim <- project(params, t_max=t_max ,dt=0.01, t_save=t_max/100, effort = 0, 
                  initial_n = n_output2, initial_n_pp = initial_n_pp)
 plot(sim)
 
 #' added in density dependence, so now we see the gurnard is stable
+#' 
+#' made corrections where mu0_g was used instead of mu0 when building solution, 
+#' the resultant code has gurnard that slope down, however when we add density dependence
+#' things stablize. We can turn on densitry dependence, but there is no need. Behaivour with 
+#' initial gurnard multiplier is strange - if abundance is low its auto stable, 
+#' if abundance is too high then the system reorganizes.
