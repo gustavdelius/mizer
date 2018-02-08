@@ -51,6 +51,24 @@ for (i in 1:no_sp) {
 
 ## better check mu0 is large enough that mu_b has no negative entries
 
+
+#' ### Set erepro to meet boundary condition
+
+rdi <- getRDI(params, n_output, initial_n_pp)
+gg <- getEGrowth(params, n_output, initial_n_pp)
+mumu <- getZ(params, n_output, initial_n_pp, effort = 0)
+erepro_final <- rdi
+for (i in (1:no_sp)){
+  #  erepro_final[i] <- erepro*(gg[i,params@species_params$w_min_idx[i]]*n_output[i,params@species_params$w_min_idx[i]])/
+  #    rdi[i]
+  gg0 <- gg[i,params@species_params$w_min_idx[i]]
+  mumu0 <- mumu[i,params@species_params$w_min_idx[i]]
+  DW <- params@dw[params@species_params$w_min_idx[i]]
+  erepro_final[i] <- params@species_params$erepro[i]*(n_output[i,params@species_params$w_min_idx[i]]*(gg0+DW*mumu0))/rdi[i]
+}
+
+
+
 # turn on density dependence 
 
 # add density dependence
@@ -73,3 +91,9 @@ plot(params@w,n_exact,log="xy")
 
 sum(params@mu_b<0)
 sum(plankton_vec<0)
+
+plot(params@w,sim@n[dim(sim@n)[1],1,],log="xy")
+for (i in 2:no_sp){
+  lines(params@w,sim@n[dim(sim@n)[1],i,])
+}
+# plotSpectra(sim) fails since min(sim@n[sim@n>0]) is so small
