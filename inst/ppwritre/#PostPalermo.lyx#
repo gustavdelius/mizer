@@ -1,0 +1,663 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+We have a set of 
+\begin_inset Formula $s$
+\end_inset
+
+ species, for each species 
+\begin_inset Formula $i\in\left\{ 1,2,..,s\right\} ,$
+\end_inset
+
+ and each 
+\begin_inset Formula $w>w_{e.i},$
+\end_inset
+
+ the abundance 
+\begin_inset Formula $N_{i}(w)$
+\end_inset
+
+ satisfies the McKendrik-von Foerster equation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial N_{i}(w)}{\partial t}=-\frac{\partial[N_{i}(w)g_{i}(w)]}{\partial w}-\mu_{i}(w)N_{i}(w)\label{eq:MVF}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(steady state solution is 
+\begin_inset Formula $N_{i}(w)\propto\frac{1}{g_{i(w)}}\exp\left(-\int_{w_{e.i}}^{w}\frac{\mu(w')}{g(w')}.dw'\right)$
+\end_inset
+
+ ),
+\end_layout
+
+\begin_layout Standard
+also, reproduction is modeled by the boundary condition
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g_{i}(w_{e.i})N_{i}(w_{e.i})=\frac{\epsilon_{i}}{2w_{e.i}}\int_{0}^{\infty}N_{i}(w)E_{r.i}(w)\psi(w).dw.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g_{i}(w)=g_{i}[N](w)=\begin{cases}
+\left(1-\psi_{i}(w)\right)E_{g.i}[N](w) & \text{if }E_{g.i}[N](w)>0\\
+0 & \text{otherwise.}
+\end{cases}\label{eq:growth}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+denotes the growth rate of a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ member of species 
+\begin_inset Formula $i$
+\end_inset
+
+ when the system is in state 
+\begin_inset Formula $N.$
+\end_inset
+
+ Here 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E_{g}[N](w)=\alpha_{i}h_{i}w^{n}\left(\frac{E_{e.i}[N](w)}{E_{e.i}[N](w)+h_{i}w^{n}}\right)-k_{s.i}w^{p}-k_{i}w.\label{eq:growthAndRepro-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+denotes the energy available for growth and reproduction, and 
+\begin_inset Formula $hw^{n}$
+\end_inset
+
+ is the maximum food intake rate of a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ individual.
+ The total energy intake 
+\begin_inset Formula $f(w)hw^{n},$
+\end_inset
+
+ however we suppose energy is only assimilated with an efficiency 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ individual must spend energy 
+\begin_inset Formula $kw^{p}$
+\end_inset
+
+ in order to satisfy its metabolic needs or else it will be subject to potential
+ starvation.
+ Often we assume 
+\begin_inset Formula $n=p$
+\end_inset
+
+ and 
+\begin_inset Formula $k=0.$
+\end_inset
+
+ Here 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E_{e.i}[N](w)=\gamma_{i}w^{q}\int_{0}^{\infty}w'\phi_{i}\left(\frac{w'}{w}\right)\left(N_{R}(w')+\sum_{j=1}^{s}\theta_{ij}N_{j}(w')\right)dw'\label{eq:avail}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+denotes the energy encountered and
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\phi_{i}\left(\frac{w'}{w}\right)=\exp\left[-\left(\ln\left(\frac{\beta_{i}w'}{w}\right)\right)^{2}/\left(2\sigma_{i}^{2}\right)\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+represents the preference that a predator of weight 
+\begin_inset Formula $w$
+\end_inset
+
+ has for a prey of weight 
+\begin_inset Formula $w'.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The mortality rate is given by 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{i}(w)=\mu_{b.i}(w)+\mu_{F.i}(w)+\mu_{p.i}(w)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where the predation mortality rate is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{p}(w)=\int_{0}^{\infty}\sum_{j}\left(\frac{hw'^{n}}{E_{e}(w')}\right)\left(\frac{E_{e.i}[N](w)}{E_{e.i}[N](w)+h_{i}w^{n}}\right)N_{j}(w',t)\phi_{i}\left(\frac{w}{w'}\right)\gamma w'^{q}dw'\label{eq:mort}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A state 
+\begin_inset Formula $N$
+\end_inset
+
+ is a specification of 
+\begin_inset Formula $N_{i}(w)\in\mathbb{R}$
+\end_inset
+
+ for each 
+\begin_inset Formula $i\in\left\{ 1,..,s\right\} ,$
+\end_inset
+
+ and each 
+\begin_inset Formula $w>0.$
+\end_inset
+
+ This is said to be a steady state if 
+\begin_inset Formula $\frac{\partial N_{i}(w)}{\partial t}=0,$
+\end_inset
+
+ for each 
+\begin_inset Formula $i\in\left\{ 1,..,s\right\} ,$
+\end_inset
+
+ and each 
+\begin_inset Formula $w>0.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Transplant Principle
+\end_layout
+
+\begin_layout Standard
+We can construct an equilibria where 
+\begin_inset Formula $g_{i}(w)=P_{i}(w)(1-\psi_{i}(w)),$
+\end_inset
+
+ and 
+\begin_inset Formula $P_{i}(w)=\hbar_{i}w^{n},$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu_{i}(w)=\mu_{0}w^{n-1}$
+\end_inset
+
+.
+ Any abundance multipliers, dodgy background and resource setup
+\end_layout
+
+\begin_layout Standard
+We should also consider the case where 
+\begin_inset Formula $P_{i}(w)=\sum_{k}a_{i,k}w^{\alpha_{k}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu_{i}(w)=\sum_{k}b_{i,k}w^{\beta_{k}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+because we can solve the MvF exactly for such growth and death rates, I
+ presume, and it should be possible to reconstruct size spectra so that
+ (for certain parameter choices at least), we can consider 
+\end_layout
+
+\begin_layout Standard
+*I'm wondering if it might be possible to get the analytic form of a steady
+ state N such that such that aggregate abundance equals the sum of two powers
+ (so 
+\begin_inset Formula $\sum_{i}N_{i}(w)=\kappa_{1}w^{-\lambda_{1}}+\kappa_{2}w^{-\lambda_{2}},$
+\end_inset
+
+ which consists of a combination of two stable_community.R style assemblages
+ of background species which use different parameters to each other.
+ If we have the case where growth and death are given by sums of powers,
+ we could solve the Mvf in this case, and if we have two background assemblages
+ which vary over continuua of characteristic size then perhaps we can combine
+ them to produce the above size spectrum, the associated death and growth
+ rates would also be described by sums of powers, and we can solve the Mvf
+ in such a case, and we will have two different solution shapes, but since
+ each is associated with a continuua of charactertic sizes, and can set
+ the abundances so that the integral over the abundances of the two assemblages
+ is the sum of the two power laws.
+ This seems to be possible if we make the exponents, 
+\begin_inset Formula $n,p,q$
+\end_inset
+
+ species specific.
+ Indeed it would be good to explore generalizations of the single homogeneous
+ steady state construction procedure in this regard, of adding extra collections
+ of background species, associated with different exponents, so that the
+ aggregation of abundance over all species equals a sum of power laws.
+\end_layout
+
+\begin_layout Standard
+*We assume 
+\begin_inset Formula $h_{i}=\infty,\forall i$
+\end_inset
+
+ so that growth and death are linear, so 
+\begin_inset Formula $g_{i}[N^{1}+N^{2}](w)=g_{i}[N^{1}]+g_{i}[N^{2}](w)$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu_{i}[N^{1}+N^{2}](w)=\mu_{i}[N^{1}]+\mu_{i}[N^{2}](w)$
+\end_inset
+
+ (do we also have to assume 
+\begin_inset Formula $\phi_{1}=..=\phi_{s}$
+\end_inset
+
+ in order to get the death rates to act linearly.
+\end_layout
+
+\begin_layout Standard
+*It is important to distiguish two different type of steady states in multi-spec
+ies hetrogenous size spectrum models.
+ A uniform steady state is a steady state 
+\begin_inset Formula $N$
+\end_inset
+
+ such that for any pair of species 
+\begin_inset Formula $i,j\in\left\{ 1,..,s\right\} $
+\end_inset
+
+ there exists a rescaling constant 
+\begin_inset Formula $Q_{ij}$
+\end_inset
+
+ such that 
+\begin_inset Formula $N_{j}(w)=Q_{ij}N_{i}(w).$
+\end_inset
+
+ In this case, we can find all the solutions are the same, if we then set
+ things up so there are similar species accross many characteristic sizes,
+ then we may be able to demonstrate that we can setup equilibria which have
+ something 
+\end_layout
+
+\begin_layout Standard
+* simplified form of transplant principal in this linear case: If 
+\begin_inset Formula $N^{1}+N^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $M^{1}+M^{2}$
+\end_inset
+
+ are steady states, each composed into two parts (with disjoint species
+ sets 
+\begin_inset Formula $sp$
+\end_inset
+
+), and for each species 
+\begin_inset Formula $i\in sp(N^{1})=sp(M^{1})$
+\end_inset
+
+ we have 
+\begin_inset Formula $g_{i}[N^{2}](w)=g_{i}[M^{2}](w),$
+\end_inset
+
+ 
+\begin_inset Formula $\mu_{i}[N^{2}](w)=\mu_{i}[M^{2}](w)$
+\end_inset
+
+ and for each species 
+\begin_inset Formula $j\in sp(N^{2})=sp(M^{2})$
+\end_inset
+
+ we have 
+\begin_inset Formula $g_{j}[N^{1}](w)=g_{j}[M^{1}](w),$
+\end_inset
+
+ 
+\begin_inset Formula $\mu_{j}[N^{1}](w)=\mu_{j}[M^{1}](w)$
+\end_inset
+
+ then 
+\begin_inset Formula $N^{1}+M^{2}$
+\end_inset
+
+ and 
+\begin_inset Formula $N^{2}+M^{1}$
+\end_inset
+
+ are steady states
+\end_layout
+
+\begin_layout Standard
+*If there are all these extra steady states/neutrality that could be created
+ by including extra species with different parameters, then it could be
+ quite important to properly model the presence of rare species, which could
+ increase their abundance in various combinations to replace a common species
+ that goes extinct.
+ I guess there there will be cases where common species goes extinct and
+ is replaced with a rather non-trivial combination of many other species.
+\end_layout
+
+\begin_layout Standard
+* if you have a steady state, and then you replace one species with another
+ new species, at half the abundance which has twice the gamma, and pre-existing
+ species have twice the theta preference, for the new species, then that
+ will lead to another steady state.
+\end_layout
+
+\begin_layout Standard
+* under the further assumptions that phi_1=phi_2=..=phi_s, and [N_1,N_2,..,N_s
+ are all proportional to one another], we can actively describe the affine
+ set of steady states, by considering the linear algebra problem involving
+ theta.
+\end_layout
+
+\begin_layout Standard
+* homogeneous case as a special case of the above
+\end_layout
+
+\begin_layout Standard
+* special system where all species are identical, apart from that we can
+ have arbitrary theta values
+\end_layout
+
+\begin_layout Standard
+* Transplants using tricks with alpha, gamma, theta and A_i
+\end_layout
+
+\begin_layout Standard
+* demonstrate why we saw a bunch of steady states in our work on steady
+ states by converting the code 
+\end_layout
+
+\begin_layout Standard
+* We say a size spectrum model has unlimited intake if 
+\begin_inset Formula $h_{i}=\infty,\forall i$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+* We say an unlimited intake size spectrum model in state 
+\begin_inset Formula $N$
+\end_inset
+
+ has `power law sum aggregate abundance` if 
+\begin_inset Formula $\exists\lambda_{1},..\lambda_{k},$
+\end_inset
+
+ 
+\begin_inset Formula $\exists\kappa_{1},..,\kappa_{k}$
+\end_inset
+
+,
+\begin_inset Formula $\exists B_{1},..,B_{s}$
+\end_inset
+
+ such that 
+\begin_inset Formula $N_{R}(w)+\sum_{j}\theta_{ij}N_{j}(w)=B_{i}\sum_{e=1}^{k}\kappa_{e}w^{-\lambda_{e}},$
+\end_inset
+
+ and 
+\begin_inset Formula $\exists D_{1},..,D_{s},\exists\mu_{0.1},..,\mu_{0.k},$
+\end_inset
+
+ 
+\begin_inset Formula $\exists n_{1},..,n_{k}$
+\end_inset
+
+ such that
+\begin_inset Formula $\mu_{i}(w)=\mu_{p.i}[N](w)+\mu_{b.i}(w)=D_{i}\sum_{e=1}^{k}\mu_{0.e}w^{n_{e}-1}$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+* An unlimited intake size spectrum model in state 
+\begin_inset Formula $N$
+\end_inset
+
+ has `species-scaled power law aggregate abundance` if it has power law
+ sum aggregate abundance with 
+\begin_inset Formula $k=1.$
+\end_inset
+
+ In this case 
+\begin_inset Formula $\exists\kappa^{(1)},..,\kappa^{(s)},\exists\mu_{0}^{(1)},..,\mu_{0}^{(s)}:$
+\end_inset
+
+ such that 
+\begin_inset Formula $N_{R}(w)+\sum_{j}\theta_{ij}N_{j}(w)=\kappa^{(i)}w^{-\lambda}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu_{p.i}[N](w)+\mu_{b.i}(w)=\mu_{0}^{(i)}w^{n-1}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+* An unlimited intake size spectrum model in state 
+\begin_inset Formula $N$
+\end_inset
+
+ has ` power law aggregate abundance` if it has `species-scaled power law
+ aggregate abundance` with 
+\begin_inset Formula $\kappa^{(1)}=..=\kappa^{(s)}=\kappa,$
+\end_inset
+
+ 
+\begin_inset Formula $\mu_{0}^{(1)}=..=\mu_{0}^{(s)}=\mu_{0}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+* A spectrum model is [gamma,theta,alpha,feeding-kernel,..etc.] homogenous,
+ if every species has the same parameter/function [gamma,theta,alpha,feeding-ker
+nel,..etc.]
+\end_layout
+
+\begin_layout Standard
+* A state 
+\begin_inset Formula $N$
+\end_inset
+
+ is `single shaped ` if 
+\begin_inset Formula $\forall i,j$
+\end_inset
+
+ 
+\begin_inset Formula $\exists Q_{i,j}:Q_{i,j}N_{i}(w)=N_{j}(w),\forall j$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For a feeding kernel homogen
+\end_layout
+
+\begin_layout Standard
+* An unlimited intake size spectrum model in state 
+\begin_inset Formula $N$
+\end_inset
+
+ has `power law aggregate abundance` when it has power law sum aggregate
+ abundance and when 
+\begin_inset Formula $k=1,$
+\end_inset
+
+
+\begin_inset Formula $B_{1}=..=B_{s}=1,\theta_{ij}=1,D_{1}=..=D_{s}=1.$
+\end_inset
+
+ This is the standard power law case for which we can obtain a complete
+ analytic solution.
+ In other words, an unlimited intake size spectrum model in state 
+\begin_inset Formula $N$
+\end_inset
+
+ has `power law aggregate abundance` if 
+\begin_inset Formula $\theta_{ij}=1,$
+\end_inset
+
+ and 
+\end_layout
+
+\begin_layout Standard
+* A generalization of the above case is to allow 
+\begin_inset Formula $B_{1},..,B_{s},D_{1},..,D_{s}$
+\end_inset
+
+ to take general values.
+\end_layout
+
+\end_body
+\end_document

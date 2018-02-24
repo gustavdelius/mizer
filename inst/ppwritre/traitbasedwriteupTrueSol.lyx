@@ -1,0 +1,4578 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+A Trait Based Model From Scale Free Assumptions
+\end_layout
+
+\begin_layout Author
+Richard Southwell
+\end_layout
+
+\begin_layout Section
+Model Definition
+\end_layout
+
+\begin_layout Subsection
+The Basics 
+\end_layout
+
+\begin_layout Standard
+We model our ecosystem by keeping track of the abundance 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ of fish of weight 
+\begin_inset Formula $w$
+\end_inset
+
+ at time 
+\begin_inset Formula $t.$
+\end_inset
+
+ Here 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+ denotes the weight of the fish at maturity.
+ We suppose the maturity weight 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+represents the species of the fish, in the sense that fish of the same weight
+ can act differently in our model, only if they have different maturity
+ weights.
+ We allow 
+\begin_inset Formula $w$
+\end_inset
+
+ and 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+to vary continuously, and to take any positive values, and hence we are
+ assuming a continuum of species, characterized by different size traits
+ 
+\begin_inset Formula $w_{*}.$
+\end_inset
+
+ The abundance 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ is defined such that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\int_{w_{1}}^{w_{2}}\int_{w_{*1}}^{w_{*2}}N(w,w_{*},t).dw.dw_{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is the number of fish per unit volume which have a weight 
+\begin_inset Formula $w\in[w_{1},w_{2}]$
+\end_inset
+
+ and a maturity weight 
+\begin_inset Formula $w_{*}\in[w_{*1},w_{*2}].$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The abundance 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ of fish with a particular maturity weight 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+vary according to the McKendrick–von Foerster equation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial N(w,w_{*},t)}{\partial t}=-\frac{\partial[N(w,w_{*},t)g(w,w_{*},t)]}{\partial w}-\overline{\mu}(w,w_{*},t)N(w,w_{*},t)\label{eq:MVF}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+for time 
+\begin_inset Formula $t\in\mathbb{R},$
+\end_inset
+
+ and weight 
+\begin_inset Formula $w\in\left[w_{e}(w_{*}),\frac{w_{*}}{\eta}\right].$
+\end_inset
+
+ In general, the growth rate 
+\begin_inset Formula $g$
+\end_inset
+
+ and mortality rate 
+\begin_inset Formula $\bar{\mu}$
+\end_inset
+
+ at time 
+\begin_inset Formula $t$
+\end_inset
+
+ depend integrals over abundances, and these abundances may change with
+ time.
+ However, for notational simplicity we often neglect to notate the time
+ dependence, and write these terms as 
+\begin_inset Formula $g(w,w_{*})$
+\end_inset
+
+ and 
+\begin_inset Formula $\bar{\mu}(w,w_{*})$
+\end_inset
+
+ respectively, as the only time dependence in these terms come from their
+ dependence upon abundances.
+ We insist that the abundance 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ of fish with weight 
+\begin_inset Formula $w\notin\left[w_{e}(w_{*}),\frac{w_{*}}{\eta}\right]$
+\end_inset
+
+ must be zero.
+\end_layout
+
+\begin_layout Standard
+We further insist that our abundances 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ must satisfy the boundary condition:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g(w_{e}(w_{*}),w_{*})N(w_{e}(w_{*}),w_{*},t)=\frac{\epsilon}{2w_{e}(w_{*})}\int_{0}^{\infty}N(w,w_{*},t)E_{g}(w)\psi(w,w_{*}).dw,\label{eq:BC}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+the left hand side of which represents the flux of new offspring into the
+ system, and the right hand side of which represents how the amount of such
+ new offspring is obtained by integrating over the reproducing fish of different
+ weights.
+ An abundance function 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ is a solution to our system if and only if it satisfies (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF"
+
+\end_inset
+
+) and (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BC"
+
+\end_inset
+
+) for each 
+\begin_inset Formula $w_{*}>0,$
+\end_inset
+
+ 
+\begin_inset Formula $t\in\mathbb{R},$
+\end_inset
+
+ and 
+\begin_inset Formula $w\in\left[w_{e}(w_{*}),\frac{w_{*}}{\eta}\right],$
+\end_inset
+
+ while 
+\begin_inset Formula $w\notin\left[w_{e}(w_{*}),\frac{w_{*}}{\eta}\right]\Rightarrow N(w,w_{*},t)=0.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here 
+\begin_inset Formula $g(w,w_{*})$
+\end_inset
+
+ is the growth rate, 
+\begin_inset Formula $\bar{\mu}(w,w_{*})$
+\end_inset
+
+ is the mortality rate,
+\begin_inset Formula $w_{e}(w_{*})$
+\end_inset
+
+ is the egg size of species with 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+ as their maturity weight, 
+\begin_inset Formula $\frac{w_{*}}{\eta}$
+\end_inset
+
+ is the asymptotic weight of such a species, 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ is the reproductive efficiency, 
+\begin_inset Formula $E_{g}(w)$
+\end_inset
+
+ is the energy available for reproduction and growth, and 
+\begin_inset Formula $\psi(w,w_{*})$
+\end_inset
+
+ is the fraction of such energy which a fish uses for reproduction.
+ We shall describe these quantities in more detail later.
+\end_layout
+
+\begin_layout Subsection
+Scale Free Assumption
+\end_layout
+
+\begin_layout Standard
+Setting up a size spectrum model required the definition of many functions
+ representing features of the feeding, growth, death and reproduction of
+ fish.
+ Often the real world nature of these functions is poorly understood, or
+ the model becomes analytically intractable once there are modeled in sufficient
+ detail.
+ Therefore various assumptions are often introduced, such as the assumption
+ of constant feeding level in Hartvig, Instead of this, our main simplifying
+ assumption is that our model should be scale invariant, in the sense that
+ if we apply particular kinds of rescaling upon the units of weight, maturity
+ weight, time, and abundance, we get another solution to our system.
+ Using this assumption gives us natural constraints on the forms of functions
+ we should use which are often in remarkable agreement to function forms
+ justified by other researchers for other reasons.
+ Applying our particular type of rescaling to an abundance function 
+\begin_inset Formula $N:\mathbb{R}_{+}\times\mathbb{R}_{+}\times\mathbb{R}\rightarrow\mathbb{R}$
+\end_inset
+
+ using a scaling constant 
+\begin_inset Formula $c>0$
+\end_inset
+
+ yields a new abundance function 
+\begin_inset Formula $F_{c}[N]=\widetilde{N}$
+\end_inset
+
+ where 
+\begin_inset Formula $\widetilde{N}:\mathbb{R}_{+}\times\mathbb{R}_{+}\times\mathbb{R}\rightarrow\mathbb{R}$
+\end_inset
+
+ is defined such that 
+\begin_inset Formula $\widetilde{N}(w,w_{*},t)=c^{\Lambda}N(cw,c^{A}w_{*},c^{B}t)$
+\end_inset
+
+ for each 
+\begin_inset Formula $w,w_{*}>0$
+\end_inset
+
+ and each 
+\begin_inset Formula $t\in\mathbb{R}.$
+\end_inset
+
+ Here 
+\begin_inset Formula $\mathbb{R}_{+}$
+\end_inset
+
+ denotes the set of positive reals.
+ Sometimes we call 
+\begin_inset Formula $F_{C}$
+\end_inset
+
+ a symmetry transform because it represents a type of rescaling that we
+ require the key features of our model to be invariant under.
+ Formally, our scale free assumption is that: if the abundance function
+ 
+\begin_inset Formula $N$
+\end_inset
+
+ satisfies our system, then we require the rescaled abundance function 
+\begin_inset Formula $F_{c}[N]$
+\end_inset
+
+ to also be a solution to the system, for each 
+\begin_inset Formula $c>0.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsection
+Prey Switching
+\end_layout
+
+\begin_layout Standard
+The problem of coexistence, is the problem of making an ecological model
+ where multiple different species competing for common resources can coexist.
+ Coexistence is not generally possible in the classical size spectrum models
+ of [Hartvig] for example, and this can be seen by noting that there are
+ no steady state of the McKendrick–von Foerster equation they use, where
+ all species coexist, that satisfies the boundary conditions for each maturity
+ weight 
+\begin_inset Formula $w_{*}.$
+\end_inset
+
+ We resolve this problem by adding a small amount of extra density dependence
+ into the dynamics of predation and mortality.
+ In the classical theory, the total mortality rate of individuals with mass
+ 
+\begin_inset Formula $w$
+\end_inset
+
+ and maturity weight 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+ is 
+\begin_inset Formula $\mu(w,w_{*})N(w,w_{*},t),$
+\end_inset
+
+ where 
+\begin_inset Formula $\mu(w,w_{*})$
+\end_inset
+
+ is the per capita mortality rate.
+ In our model, the total mortality rate is instead
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*},t)\overline{\mu}(w,w_{*}):=N(w,w_{*},t)\mu(w,w_{*})\hat{N}(w,w_{*},t)^{\chi}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\mu(w,w_{*})$
+\end_inset
+
+ is the unadjusted mortality rate (before we include prey switching), and
+ the prey switching constant 
+\begin_inset Formula $\chi\geq0$
+\end_inset
+
+ is some (typically small) number which abstractly represents the amount
+ of prey switching.
+ Also
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{N}(w,w_{*},t)=N(w,w_{*},t)w^{\Omega}w_{*}^{\Gamma}\Delta
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\Delta,\Omega$
+\end_inset
+
+ and 
+\begin_inset Formula $\Gamma$
+\end_inset
+
+ are constants.
+ We do not give a direct ecological interpretation to this new prey switching
+ factor, but the result of adding the factor is that it makes the total
+ mortality rate into a super linear function of the individuals density
+ in a way which works well with our scale free assumption.
+ Adding such density dependence seems justified ecologically since large
+ groups of prey are more likely to be targeted by predators.
+ This assumption that predation occurs at a rate superlinear to the preys
+ density will be adjusted for when we consider the energy input to predators.
+ Also, the unadjusted mortality rate 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu(w,w_{*})=\mu_{p}(w)+\mu_{s}(w)+\mu_{b}(w_{*})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+can be written as the sum of the predation mortality rate 
+\begin_inset Formula $\mu_{p}(w),$
+\end_inset
+
+ the starvation mortality rate 
+\begin_inset Formula $\mu_{s}(w)$
+\end_inset
+
+ and the background mortality rate 
+\begin_inset Formula $\mu_{b}(w_{*}),$
+\end_inset
+
+ and so we are assuming that there is also density dependence upon the death
+ of individuals due to starvation and background effects.
+ Only a small amount of prey switching (e.g., 
+\begin_inset Formula $\chi=0.05$
+\end_inset
+
+) is often required to make it possible for a solution of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF"
+
+\end_inset
+
+) to satisfy the boundary conditions (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BC"
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+Perhaps the simplest form of prey switching would be to pick 
+\begin_inset Formula $\Omega=\Gamma=0,$
+\end_inset
+
+ in which case the prey switching corresponds to a simple additional dependence
+ upon the abundance.
+ Similar biomass based prey switching can be encoded by setting 
+\begin_inset Formula $\Omega=1,$
+\end_inset
+
+ 
+\begin_inset Formula $\Gamma=0.$
+\end_inset
+
+ If one lets 
+\begin_inset Formula $\Omega=1,$
+\end_inset
+
+ 
+\begin_inset Formula $\Gamma=1$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta=\delta\delta_{*}$
+\end_inset
+
+then the prey switching term approximates the number of individuals (per
+ unit volume) with nearby weights and maturity weights, in the sense that
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{N}(w,w_{*},t)\thickapprox\int_{w}^{(\delta+1)w}\int_{w_{*}}^{\left(\delta_{*}+1\right)w_{*}}N(w',w'_{*},t).dw'.dw'_{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+in this case.
+ If one lets 
+\begin_inset Formula $\Omega=2,$
+\end_inset
+
+ 
+\begin_inset Formula $\Gamma=1$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta=\delta\delta_{*}$
+\end_inset
+
+then the prey switching term approximates the total biomass (per unit volume)
+ of individuals with nearby weights and maturity weights, in the sense that
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{N}(w,w_{*},t)\thickapprox\int_{w}^{(\delta+1)w}\int_{w_{*}}^{\left(\delta_{*}+1\right)w_{*}}w'N(w',w'_{*},t).dw'.dw'_{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+in this case.
+\end_layout
+
+\begin_layout Standard
+Since adding a prey switching term 
+\begin_inset Formula $\hat{N}(w,w_{*},t)$
+\end_inset
+
+ (of whatever form) will effect the total predation mortality rate, there
+ will be a corresponding modification to the term 
+\begin_inset Formula $\phi(w)$
+\end_inset
+
+ which denotes the total amount of energy available to a size 
+\begin_inset Formula $w$
+\end_inset
+
+ predator.
+ The classical expression for available energy in [Hartvig] was essentially
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\int_{0}^{\infty}\int_{0}^{\infty}w'N(w',w'_{*},t)s(w',w)dw'dw'_{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+s(w',w)=\exp\left[-\left(\ln\left(\frac{\beta w'}{w}\right)\right)^{2}/\left(2\sigma^{2}\right)\right]
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+represents the preference that a predator of weight 
+\begin_inset Formula $w$
+\end_inset
+
+ has for a prey of weight 
+\begin_inset Formula $w'.$
+\end_inset
+
+ Here 
+\begin_inset Formula $\beta$
+\end_inset
+
+ is the preferred predator-prey mass ratio, and 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ represents the width of sizes of prey which the predator will tolerate.
+ When we include our prey switching, the expression for available energy
+ changes to 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\phi(w)=\int_{0}^{\infty}\int_{0}^{\infty}w'N(w',w'_{*},t)\hat{N}(w',w'_{*},t)^{\chi}s(w',w)dw'dw'_{*}\label{eq:avail}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so when prey switching is present (i.e., when 
+\begin_inset Formula $\chi>0$
+\end_inset
+
+) the amount of food extracted from the prey goes up super-linearly with
+ their abundance.
+\end_layout
+
+\begin_layout Subsection
+Growth Rate
+\end_layout
+
+\begin_layout Standard
+The available energy (i.e., the food available) 
+\begin_inset Formula $\phi(w)$
+\end_inset
+
+ to a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ predator is given by Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:avail"
+
+\end_inset
+
+).
+ To get the energy encountered 
+\begin_inset Formula $E_{e}(w)$
+\end_inset
+
+ by such a predator 
+\begin_inset Formula $\phi(w)$
+\end_inset
+
+ must be multiplied by the volumetric search rate 
+\begin_inset Formula $\gamma w^{q}$
+\end_inset
+
+ so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E_{e}(w)=\phi(w)\gamma w^{q}.\label{eq:enc}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The feeding level of an individual is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f(w)=\frac{E_{e}(w)}{E_{e}(w)+hw^{n}}\label{eq:feed}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $hw^{n}$
+\end_inset
+
+ is the maximum food intake rate of a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ individual.
+ The total energy intake 
+\begin_inset Formula $f(w)hw^{n},$
+\end_inset
+
+ however we suppose energy is only assimilated with an efficiency 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ individual must spend energy 
+\begin_inset Formula $kw^{p}$
+\end_inset
+
+ in order to satisfy its metabolic needs or else it will be subject to potential
+ starvation.
+ It follows that the energy available for growth and reproduction is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E_{g}(w)=\alpha f(w)hw^{n}-kw^{p}.\label{eq:growthAndRepro}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The growth rate is now defined as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g(w,w_{*})=\begin{cases}
+\left(1-\psi(w,w_{*})\right)E_{g}(w) & \text{if }E_{g}(w)>0\\
+0 & \text{otherwise.}
+\end{cases}\label{eq:growth}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Mortality Rate
+\end_layout
+
+\begin_layout Standard
+When we have taken account of prey switching the (per capita) mortality
+ rate of individuals is 
+\begin_inset Formula $\overline{\mu}(w,w_{*})=\mu(w,w_{*})\hat{N}(w,w_{*},t)^{\chi},$
+\end_inset
+
+ where the unadjusted (per capita) mortality rate is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu(w,w_{*})=\mu_{b}(w_{*})+\mu_{s}(w)+\mu_{p}(w)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is the sum of the background mortality rate 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{b}(w_{*})=\mu_{0}w_{*}^{Q}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(note in [Hartvig] they chose 
+\begin_inset Formula $Q=n-1,$
+\end_inset
+
+ constraining the rescaling exponent choices 
+\begin_inset Formula $A,B,\Lambda$
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Standard
+and the starvation mortality rate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{s}(w)=\begin{cases}
+\frac{-E_{g}(w)}{\xi} & \text{if }E_{g}(w)<0\\
+0 & \text{otherwise.}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the predation mortality rate 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{p}(w)=\int_{0}^{\infty}\int_{0}^{\infty}\left(\frac{f(w')hw'^{n}}{E_{e}(w')}\right)N(w',w'_{*},t)s(w,w')\gamma w'^{q}dw'dw'_{*}\label{eq:mort}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\left(\frac{f(w')hw'^{n}}{E_{e}(w')}\right)$
+\end_inset
+
+ is the energy income of the weight 
+\begin_inset Formula $w'$
+\end_inset
+
+ predators, divided by the total energy encountered.
+ This equals the fraction of encountered individuals they consume.
+ The remaining terms inside the integral represent the amount of weight
+ 
+\begin_inset Formula $w$
+\end_inset
+
+ prey encountered by predators.
+ Rearranging (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:feed"
+
+\end_inset
+
+) into an equation for 
+\begin_inset Formula $E_{e}(w)$
+\end_inset
+
+ and substituting it into (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:mort"
+
+\end_inset
+
+) yields
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{p}(w)=\int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(w')\right)N(w',w'_{*},t)s(w,w')\gamma w'^{q}dw'dw'_{*}\label{eq:mort-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which is the same as the expression appearing in [Hartvig].
+\end_layout
+
+\begin_layout Section
+Using Scale Invariance
+\end_layout
+
+\begin_layout Standard
+The McKendrick–von Foerster equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF"
+
+\end_inset
+
+) can be rewritten as 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial N(w,w_{*},t)}{\partial t}=-\frac{\partial[N(w,w_{*},t)g(w,w_{*})]}{\partial w}-\left(\mu_{b}(w_{*})+\mu_{s}(w)+\mu_{p}(w)\right)\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}N(w,w_{*},t)^{\chi+1}\label{eq:MVF-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this section we shall demonstrate how particular choices of parameters
+ can lead to a model that satisfies our scale free assumption.
+ We shall assume that 
+\begin_inset Formula $N:\mathbb{R}_{+}\times\mathbb{R}_{+}\times\mathbb{R}$
+\end_inset
+
+ is a solution to our system (so it satisfies (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BC"
+
+\end_inset
+
+) and (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+)).
+ In this section, we write 
+\begin_inset Formula $\mathcal{A}\mapsto\mathcal{B}$
+\end_inset
+
+ to denote that expression 
+\begin_inset Formula $\mathcal{B}$
+\end_inset
+
+ is obtained by taking expression 
+\begin_inset Formula $\mathcal{A}$
+\end_inset
+
+ and replacing each 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ with 
+\begin_inset Formula $c^{\Lambda}N(cw,c^{A}w_{*},c^{B}t).$
+\end_inset
+
+ Essentially the notation 
+\begin_inset Formula $\mathcal{A}\mapsto\mathcal{B}$
+\end_inset
+
+ denotes that expression 
+\begin_inset Formula $A$
+\end_inset
+
+ transforms to expression 
+\begin_inset Formula $B$
+\end_inset
+
+ when we apply the symmetry transform 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ for generic 
+\begin_inset Formula $c>0.$
+\end_inset
+
+ We shall now demonstrate that (for appropriate parameter choices) our scale
+ free assumption holds, in the sense that after we replace the 
+\begin_inset Formula $N$
+\end_inset
+
+'s with 
+\begin_inset Formula $F_{c}[N]$
+\end_inset
+
+'s the resulting expression still satisfies (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BC"
+
+\end_inset
+
+) and (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Subsection
+Time
+\end_layout
+
+\begin_layout Standard
+To demonstrate the scale free assumption, we shall first consider how our
+ symmetry transform alters the different terms of Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+), starting with the left hand side:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial N(w,w_{*},t)}{\partial t}\mapsto\frac{\partial[c^{\Lambda}N(cw,c^{A}w_{*},c^{B}t)]}{\partial t}=c^{\Lambda}\frac{\partial N(\tilde{w},\tilde{w}_{*},\tilde{t})}{\partial\tilde{t}}\frac{\partial\tilde{t}}{\partial t}=c^{\Lambda+B}\frac{\partial N(\tilde{w},\tilde{w}_{*},\tilde{t})}{\partial\tilde{t}}\label{eq:timeC}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we use notation 
+\begin_inset Formula $\tilde{w}=cw,$
+\end_inset
+
+ 
+\begin_inset Formula $\tilde{w}_{*}=c^{A}w_{*}$
+\end_inset
+
+and 
+\begin_inset Formula $\tilde{t}=c^{B}t.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Prey Switching Term
+\end_layout
+
+\begin_layout Standard
+In order to demonstrate the scale free assumption, we wish to show that
+ the symmetry transform has the same type of effect upon each additive term
+ of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+).
+ So for example, we hope that when we apply the 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ transformation upon the term 
+\begin_inset Formula $\mu_{b}(w_{*})\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}N(w,w_{*},t)^{\chi+1}$
+\end_inset
+
+ within Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+), we get 
+\begin_inset Formula $c^{Y}\mu_{b}(\tilde{w}_{*})N(\tilde{w},\tilde{w}_{*},\tilde{t})$
+\end_inset
+
+, where (we hope) 
+\begin_inset Formula $Y=\Lambda+B$
+\end_inset
+
+, so that the new factors 
+\begin_inset Formula $c^{\Lambda+B}$
+\end_inset
+
+ we introduce into Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+) will cancel.
+ Our strategy will be to show that this type of effect occurs for all terms
+ of Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+), and so after we have performed our 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ transformation we are left with a new expression that satisfies an equation
+ of the same form as Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+), expect in terms of the new, rescaled variables 
+\begin_inset Formula $\tilde{w}=cw,$
+\end_inset
+
+ 
+\begin_inset Formula $\tilde{w}_{*}=c^{A}w_{*}$
+\end_inset
+
+and 
+\begin_inset Formula $\tilde{t}=c^{B}t.$
+\end_inset
+
+ In order to other terms change when we apply our 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ transform, and since these terms are mostly written in terms of different
+ functions of integrals, we shall consider how the more elementary functions
+ describing energy transfer etc.
+ change under the 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ transform.
+ We start by how the `prey switching modification factor'
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\hat{N}(w,w'_{*},t)^{\chi}=\left(N(w,w_{*},t)w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+gets transformed under the 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ symmetry transform, this gives
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\label{eq:preyswitchtransform}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\hat{N}(w,w'_{*},t)^{\chi} & \mapsto & \left(c^{\Lambda}N(cw,c^{A}w_{*},c^{B}t)w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}\\
+c^{\Lambda}N(cw,c^{A}w_{*},c^{B}t)\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi} & = & \left(c^{\Lambda}N(\tilde{w},\tilde{w}_{*},\tilde{t})\left(\frac{\tilde{w}}{c}\right)^{\Omega}\left(\frac{\tilde{w}_{*}}{c^{A}}\right)^{\Gamma}\Delta\right)^{\chi}\\
+ & = & c^{\chi\Lambda-\chi\Omega-\chi\Gamma}\hat{N}(\tilde{w},\tilde{w}_{*},\tilde{t})^{\chi}\\
+ & = & c^{r}\hat{N}(\tilde{w},\tilde{w}_{*},\tilde{t})^{\chi},
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we define 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+r=\chi\Lambda-\chi\Omega-\chi\Gamma\label{eq:rdfn}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We shall use expression (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:preyswitchtransform"
+
+\end_inset
+
+) for the transformation of the prey switching modification factor a few
+ times.
+ For example, we can use it to determine how the factor 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}N(w,w_{*},t)^{\chi+1}=N(w,w_{*},t)\hat{N}(w,w'_{*},t)^{\chi}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(which multiplies the specific mortality rates in Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+)) is transformed under the 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ operation.
+ In this case we see
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}N(w,w_{*},t)^{\chi+1}=N(w,w_{*},t)\hat{N}(w,w'_{*},t)^{\chi}\mapsto c^{\Lambda+r}N(\tilde{w},\tilde{w}_{*},\tilde{t})\hat{N}(\tilde{w},\tilde{w}_{*},\tilde{t})^{\chi}\label{eq:fullswitchtransform}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+c^{\Lambda+r}N(\tilde{w},\tilde{w}_{*},\tilde{t})\hat{N}(\tilde{w},\tilde{w}_{*},\tilde{t})^{\chi}=c^{\Lambda+r}\left(\tilde{w}^{\Omega}\tilde{w}_{*}^{\Gamma}\Delta\right)^{\chi}N(\tilde{w},\tilde{w}_{*},\tilde{t}){}^{\chi+1}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Background Mortality
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Background-Mortality"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Applying the symmetry transform to the background mortality rate gives
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{b}(w_{*})\mapsto\mu_{0}w_{*}^{Q}=\mu_{0}\frac{\tilde{w}_{*}^{Q}}{c^{AQ}}=c^{-AQ}\mu_{b}(\tilde{w}_{*}).\label{eq:backgroundmort}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can use hence use expressions (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:fullswitchtransform"
+
+\end_inset
+
+) and (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:backgroundmort"
+
+\end_inset
+
+) together to get the following expression for how the total background
+ mortality is transformed under 
+\begin_inset Formula $F_{c}:$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{b}(w_{*})\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}N(w,w_{*},t)^{\chi+1}\mapsto c^{\Lambda+r-AQ}\mu_{b}(\tilde{w}_{*})\left(\tilde{w}^{\Omega}\tilde{w}_{*}^{\Gamma}\Delta\right)^{\chi}N(\tilde{w},\tilde{w}_{*},\tilde{t}){}^{\chi+1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hence the effect of the 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ transformation is to convert the additive terms 
+\begin_inset Formula $\frac{\partial N(w,w_{*},t)}{\partial t}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu_{b}(w_{*})\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}N(w,w_{*},t)^{\chi+1}$
+\end_inset
+
+ of Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+ into the additive terms 
+\begin_inset Formula $c^{\Lambda+B}\frac{\partial N(\tilde{w},\tilde{w}_{*},\tilde{t})}{\partial\tilde{t}}$
+\end_inset
+
+ and 
+\begin_inset Formula $c^{\Lambda+r-AQ}\mu_{b}(\tilde{w}_{*})\left(\tilde{w}^{\Omega}\tilde{w}_{*}^{\Gamma}\Delta\right)^{\chi}N(\tilde{w},\tilde{w}_{*},\tilde{t}){}^{\chi+1}$
+\end_inset
+
+ respectively.
+ In order for the transformed function to satisfy 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+, with respect to the rescaled variables 
+\begin_inset Formula $\tilde{w}=cw,\tilde{w}_{*}=c^{A}w_{*}\tilde{t}=c^{B}t$
+\end_inset
+
+ the new factors, multiplying these terms, that our symmetry transform introduce
+d, must cancel out.
+ In other words, we must have 
+\begin_inset Formula $c^{\Lambda+B}=c^{\Lambda+r-AQ},$
+\end_inset
+
+ for each 
+\begin_inset Formula $c>0,$
+\end_inset
+
+ so we must have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Lambda+B=\Lambda+r-AQ\label{eq:expbal1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We refer to refer to equations like (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:expbal1"
+
+\end_inset
+
+) as `exponent balancing equations'.
+ This one implies
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q=\frac{r-B}{A}.\label{eq:Q}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Available Energy
+\end_layout
+
+\begin_layout Standard
+Before we consider how the rest of the mortality terms transform, we shall
+ consider how the available energy transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ as follows
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\label{eq:availtransforrm}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\phi(w) & \mapsto & \int_{0}^{\infty}\int_{0}^{\infty}w'c^{\Lambda+r}N(\tilde{w'},\tilde{w}'_{*},\tilde{t})\hat{N}(\tilde{w'},\tilde{w}'_{*},\tilde{t})^{\chi}s(w',w)dw'dw'_{*}\\
+ &  & =\int_{0}^{\infty}\int_{0}^{\infty}\frac{\tilde{w}'}{c}c^{\Lambda+r}N(\tilde{w'},\tilde{w}'_{*},\tilde{t})\hat{N}(\tilde{w'},\tilde{w}'_{*},\tilde{t})^{\chi}s(\tilde{w}',\tilde{w})\frac{d\tilde{w}'}{c}\frac{d\tilde{w}'_{*}}{c^{A}}\\
+ &  & =c^{\Lambda+r-2-A}\phi(\tilde{w})
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we changed our integration variables to 
+\begin_inset Formula $\tilde{w}'=cw'$
+\end_inset
+
+ and 
+\begin_inset Formula $\tilde{w}'_{*}=c^{A}w'_{*}$
+\end_inset
+
+ and used the fact 
+\begin_inset Formula $s(w',w)=s(cw',cw)=s(\tilde{w}',\tilde{w}).$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Encountered Energy
+\end_layout
+
+\begin_layout Standard
+The encountered energy 
+\begin_inset Formula $E_{e}(w)$
+\end_inset
+
+ transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ as 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E_{e}(w)\mapsto c^{\Lambda+r-2-A}\phi(\tilde{w})\gamma w^{q}=c^{\Lambda+r-2-A-q}E_{e}(\tilde{w})=c^{\hat{e}}E_{e}(\tilde{w}),
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we define 
+\begin_inset Formula $\hat{e}=\Lambda+r-2-A-q.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Feeding level
+\end_layout
+
+\begin_layout Standard
+The feeding level 
+\begin_inset Formula $f(w)$
+\end_inset
+
+ transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ as 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f(w)\mapsto\frac{c^{\hat{e}}E_{e}(\tilde{w})}{c^{\hat{e}}E_{e}(\tilde{w})+c^{-n}h\tilde{w}^{n}},\label{eq:transformedfeed}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and by looking at where 
+\begin_inset Formula $f(w)$
+\end_inset
+
+ appears in our different terms, we come to the conclusion that our scale
+ free assumption implies that we must have 
+\begin_inset Formula $f(w)\mapsto c^{Z}f(\tilde{w})$
+\end_inset
+
+ for some 
+\begin_inset Formula $Z.$
+\end_inset
+
+ However, by looking at the transformed expression (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:transformedfeed"
+
+\end_inset
+
+), we see that this can only be so if all our multipliers cancel out.
+ In other words, we must have 
+\begin_inset Formula $\hat{e}=-n,$
+\end_inset
+
+ and this implies that we simply have that 
+\begin_inset Formula $f(w)\mapsto f(\tilde{w}).$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Energy For Growth And Reproduction
+\end_layout
+
+\begin_layout Standard
+The energy for growth and reproduction 
+\begin_inset Formula $E_{g}(w)$
+\end_inset
+
+ transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E_{g}(w)\mapsto\alpha f(\tilde{w})h\frac{\tilde{w}^{n}}{c^{n}}-k\frac{\tilde{w}^{p}}{c^{p}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so our scale invariance assumption implies that we must have 
+\begin_inset Formula $n=p$
+\end_inset
+
+ and
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E_{g}(w)\mapsto c^{-n}E_{g}(\tilde{w})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Growth Rate
+\end_layout
+
+\begin_layout Standard
+The growth rate 
+\begin_inset Formula $g(w,w_{*})$
+\end_inset
+
+ is zero when 
+\begin_inset Formula $E_{g}(w)\leq0$
+\end_inset
+
+ and otherwise, the growth rate has the form 
+\begin_inset Formula $g(w,w_{*})=\left(1-\psi(w,w_{*})\right)E_{g}(w).$
+\end_inset
+
+ In order for this to satisfy our scale invariance assumption, the reproduction
+ function 
+\begin_inset Formula $\psi(w,w_{*})$
+\end_inset
+
+ must transform under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ so that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\psi(w,w_{*})\mapsto\psi(\tilde{w},\tilde{w}_{*})
+\end{equation}
+
+\end_inset
+
+ and it follows that our growth rate transforms so (in general, irrespective
+ of the sign of 
+\begin_inset Formula $E_{g}(w)$
+\end_inset
+
+), we have that the growth rate transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ so that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g(w,w_{*})\mapsto c^{-n}g(\tilde{w,}\tilde{w}_{*}).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can now see that the term of our central equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+) involving a weight derivative transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial[g(w,w_{*})N(w,w_{*},t)]}{\partial w}\mapsto c^{\Lambda-n}\frac{\partial[g(\tilde{w,}\tilde{w}_{*})N(\tilde{w,}\tilde{w}_{*},t)]}{\partial w}=c^{\Lambda-n+1}\frac{\partial[g(\tilde{w,}\tilde{w}_{*})N(\tilde{w,}\tilde{w}_{*},t)]}{\partial\tilde{w}}\label{eq:weightdiff}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We want the new factor 
+\begin_inset Formula $c^{\Lambda-n+1}$
+\end_inset
+
+ that is introduced here to cancel with the factor 
+\begin_inset Formula $c^{\Lambda+B}$
+\end_inset
+
+ that was introduced when we transformed the time derivative (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:timeC"
+
+\end_inset
+
+).
+ This leads to our next exponent balancing equation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Lambda+B=\Lambda-n+1\label{eq:expbal2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+hence we require 
+\begin_inset Formula $n=1-B.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Starvation Mortality Rate
+\end_layout
+
+\begin_layout Standard
+The per capita starvation mortality rate 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{s}(w)=\begin{cases}
+0 & \text{if \ensuremath{E_{g}(w)>0}}\\
+-\frac{E_{g}(w)}{\xi w^{d}} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+this transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{s}(w)\mapsto\begin{cases}
+0 & \text{if \ensuremath{E_{g}(\tilde{w})>0}}\\
+-\frac{c^{-n}E_{g}(\tilde{w})}{\xi}\frac{c^{d}}{\tilde{w^{d}}} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so we have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{s}(w)\mapsto c^{d-n}\mu_{s}(\tilde{w})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So the total starvation rate appearing as a term in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+) 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\mu_{s}(w)\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}N(w,w_{*},t)^{\chi+1}=\mu_{s}(w)N(w,w_{*},t)\hat{N}(w,w'_{*},t)^{\chi}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\mu_{s}(w)N(w,w_{*},t)\hat{N}(w,w'_{*},t)^{\chi} & \mapsto & c^{d-n}\mu_{s}(\tilde{w})c^{\Lambda+r}N(\tilde{w},\tilde{w}_{*},\tilde{t})\hat{N}(\tilde{w},\tilde{w}_{*},\tilde{t})^{\chi}\\
+ &  & =c^{\Lambda+r+d-n}\mu_{s}(\tilde{w})\left(\tilde{w}^{\Omega}\tilde{w}_{*}^{\Gamma}\Delta\right)^{\chi}N(\tilde{w},\tilde{w}_{*},\tilde{t})^{\chi+1}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so, since the same factor must be introduced here as in our considerations
+ of the time derivative (Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:timeC"
+
+\end_inset
+
+)), so we get our next exponent balancing equation: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Lambda+B=\Lambda+r+d-n\label{eq:expbal3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is interesting to compare this to our previous observation that 
+\begin_inset Formula $c^{\Lambda+B}=c^{\Lambda+r-AQ},$
+\end_inset
+
+ since this means
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Lambda+r+d-n=\Lambda+r-AQ
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and hence 
+\begin_inset Formula $n-d=AQ.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If one chooses exponents 
+\begin_inset Formula $d=A=1,$
+\end_inset
+
+ as they do in [Harvig], you get 
+\begin_inset Formula $Q=n-1,$
+\end_inset
+
+ which is the value they use in [Harvig].
+\end_layout
+
+\begin_layout Subsection
+Predation Mortality
+\end_layout
+
+\begin_layout Standard
+The per capita predation mortality rate 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{p}(w)=\int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(w')\right)N(w',w'_{*},t)s(w,w')\gamma w'^{q}dw'dw'_{*}\label{eq:mort-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\mu_{p}(w) & \mapsto & \int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(\tilde{w}')\right)c^{\Lambda}N(\tilde{w}',\tilde{w}'_{*},t)s(\tilde{w},\tilde{w}')\gamma\frac{\tilde{w}'^{q}}{c^{q}}\frac{d\tilde{w}'}{c}\frac{d\tilde{w}'_{*}}{c^{A}}\\
+ &  & =c^{\Lambda-q-1-A}\mu_{p}(\tilde{w})
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So the total predation rate appearing as a term in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+) 
+\end_layout
+
+\begin_layout Standard
+transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\mu_{p}(w)\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}N(w,w_{*},t)^{\chi+1} & \mapsto & c^{\Lambda+r}N(\tilde{w},\tilde{w}_{*},\tilde{t})\hat{N}(\tilde{w},\tilde{w}_{*},\tilde{t})^{\chi}=c^{\Lambda-q-1-A}\mu_{p}(\tilde{w})c^{\Lambda+r}\left(\tilde{w}^{\Omega}\tilde{w}_{*}^{\Gamma}\Delta\right)^{\chi}N(\tilde{w},\tilde{w}_{*},\tilde{t}){}^{\chi+1}.\\
+ &  & =c^{2\Lambda+r-q-1-A}\mu_{p}(\tilde{w})\left(\tilde{w}^{\Omega}\tilde{w}_{*}^{\Gamma}\Delta\right)^{\chi}N(\tilde{w},\tilde{w}_{*},\tilde{t}){}^{\chi+1}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the factor balancing we require in order for the scale invariance assumption
+ to hold we need the following exponent balancing Equation to hold
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Lambda+B=2\Lambda+r-q-1-A\label{eq:expbal4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and hence if we choose 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q=\Lambda+r-1-A-B
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Rearranging Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Q"
+
+\end_inset
+
+) into terms of 
+\begin_inset Formula $B$
+\end_inset
+
+ gives
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+B=r-AQ
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+In [Harvig] they choose 
+\begin_inset Formula $A=1,r=0,Q=n-1,$
+\end_inset
+
+ and 
+\begin_inset Formula $\Lambda=\mathring{\lambda}+1$
+\end_inset
+
+ and in this case we get the familiar 
+\begin_inset Formula $B=1-n$
+\end_inset
+
+ and 
+\begin_inset Formula $q=\mathring{\lambda}+1-2+n-1,$
+\end_inset
+
+ so we get 
+\begin_inset Formula $\mathring{\lambda}=2+q-n$
+\end_inset
+
+ as is used in classical mizer.
+\end_layout
+
+\begin_layout Plain Layout
+((Note that in Harvig, they use 
+\begin_inset Formula $\Lambda=\lambda+1,$
+\end_inset
+
+ 
+\begin_inset Formula $r=0,A=1$
+\end_inset
+
+ and 
+\begin_inset Formula $B=1-n,$
+\end_inset
+
+ so this expression gives the familiar 
+\begin_inset Formula $q=\lambda-1-(1-n)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+In [Harvig] they use 
+\begin_inset Formula $Q=n-1,$
+\end_inset
+
+ and so Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Q"
+
+\end_inset
+
+) becomes 
+\begin_inset Formula $Q=\frac{r-B}{A}=n-1.$
+\end_inset
+
+ and in Harvig, they also use 
+\begin_inset Formula $r=0$
+\end_inset
+
+ and 
+\begin_inset Formula $A=1$
+\end_inset
+
+ and so this becomes 
+\begin_inset Formula $B=1-n$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Exponent Balancing
+\end_layout
+
+\begin_layout Standard
+Gathering together the different exponent balancing equations which have
+ to hold to get our scale invariance assumption gives us
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\Lambda+B=\Lambda-n+1=\Lambda+r-AQ=\Lambda+r+d-n=2\Lambda+r-q-1-A\label{eq:exptogether}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where the equated quantities correspond to the exponents of 
+\begin_inset Formula $c$
+\end_inset
+
+ which the respective terms of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+) get multiplied by when we apply the 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ transform.
+ These equations hold if and only if
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\label{eq:list}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+n & = & 1-B\\
+d & = & 1-r\\
+Q & = & \frac{n-d}{A}=\frac{r-B}{A}\\
+q & = & \Lambda+r-1-A-B
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Clearly then for any choice of 
+\begin_inset Formula $A,B,\Lambda,$
+\end_inset
+
+ and whatever value 
+\begin_inset Formula $r$
+\end_inset
+
+ takes (according to its definition 
+\begin_inset Formula $r=\chi\Lambda-\chi\Omega-\chi\Gamma$
+\end_inset
+
+), we can select exponents 
+\begin_inset Formula $n,d,Q,q$
+\end_inset
+
+ that lead to a satisfaction of the scale free assumption (at least, with
+ respect to Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+), and we will show the boundary condition is also satisfied.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+12,24,34,45
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+\Lambda+r+d-n & = & 2\Lambda+r-q-1-A\\
+B-r=d-n & = & \Lambda-q-1-A
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since 
+\begin_inset Formula $B=1-n,$
+\end_inset
+
+ if we introduce a new constant defined as 
+\begin_inset Formula $\Lambda-1=\mathring{\lambda}$
+\end_inset
+
+ then the final Equation of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:list"
+
+\end_inset
+
+) can be rewritten as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+q=\mathring{\lambda}+r-A-(1-n)\Leftrightarrow\mathring{\lambda}=1+A+q-n-r
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and when 
+\begin_inset Formula $A=1$
+\end_inset
+
+ and 
+\begin_inset Formula $r=0,$
+\end_inset
+
+ as is done in [Hartvig], this gives us the familiar expression 
+\begin_inset Formula $\mathring{\lambda}=2+q-n.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+PDE obeys symmetry
+\end_layout
+
+\begin_layout Standard
+So we have applied our 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ transformation to each term of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+), and shown that for appropriately chosen exponents, the result of performing
+ the 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ transform is that that the newly introduced 
+\begin_inset Formula $c^{?}$
+\end_inset
+
+ factors cancel, and this results in a new partial differential equation,
+ in terms of 
+\begin_inset Formula $\tilde{w},\tilde{w}_{*}$
+\end_inset
+
+ and 
+\begin_inset Formula $\tilde{t},$
+\end_inset
+
+ which has precisely the same form as (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+), except with new variable names.
+ It follows that the transformed solution also satisfies equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+), and hence we only have to show that the boundary condition is still satisfied
+ after the symmetry transform, and we will have finished demonstrating that
+ the scale invariance assumption holds.
+\end_layout
+
+\begin_layout Subsection
+Boundary Condition
+\end_layout
+
+\begin_layout Standard
+We shall suppose that individuals of weight 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+lay eggs of weight
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+w_{e}(w_{*})=Gw_{*}^{\frac{1}{A}}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that this function has the property that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+cw_{e}(w_{*})=w_{e}(\tilde{w}_{*})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Under The left hand side of the boundary condition (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BC"
+
+\end_inset
+
+) transforms under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ so that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+g(w_{e}(w_{*}),w_{*})N(w_{e}(w_{*}),w_{*},t) & \mapsto & c^{\Lambda-n}g(cw_{e}(w_{*}),\tilde{w}_{*})N(w_{e}(\tilde{w}_{*}),\tilde{w}_{*},\tilde{t})\\
+ &  & =c^{\Lambda-n}g(w_{e}(\tilde{w}_{*}),\tilde{w}_{*})N(w_{e}(\tilde{w}_{*}),\tilde{w}_{*},\tilde{t})
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the right hand side transforms so that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\frac{\epsilon}{2w_{e}(w_{*})}\int_{0}^{\infty}N(w,w_{*},t)E_{g}(w)\psi(w,w_{*}).dw & \mapsto & \frac{\epsilon c}{2w_{e}(\tilde{w}_{*})}\int_{0}^{\infty}c^{\Lambda}N(\tilde{w},\tilde{w}_{*},\tilde{t})c^{-n}E_{g}(\tilde{w})\psi(\tilde{w},\tilde{w}_{*}).\frac{d\tilde{w}}{c}\\
+ &  & =c^{\Lambda-n}\frac{\epsilon}{2w_{e}(\tilde{w}_{*})}\int_{0}^{\infty}N(\tilde{w},\tilde{w}_{*},\tilde{t})E_{g}(\tilde{w})\psi(\tilde{w},\tilde{w}_{*}).d\tilde{w}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and hence our factors balance, and the boundary condition is satisfied,
+ so we have shown that our system satisfies the scale invariance assumption.
+\end_layout
+
+\begin_layout Section
+A Steady State Solution
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\widehat{\mu}(w,w_{*})=\left(\mu_{b}(w_{*})+\mu_{s}(w)+\mu_{p}(w)\right)\left(w^{\Omega}w_{*}^{\Gamma}\Delta\right)^{\chi}.$
+\end_inset
+
+ We shall rewrite Equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MVF-1"
+
+\end_inset
+
+) as 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial N(w,w_{*},t)}{\partial t}=-\frac{\partial[N(w,w_{*},t)g(w,w_{*})]}{\partial w}-\widehat{\mu}(w,w_{*})N(w,w_{*},t)^{\chi+1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We shall assume that the system is at steady state, so that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial[N(w,w_{*})g(w,w_{*})]}{\partial w}=-\widehat{\mu}(w,w_{*})N(w,w_{*})^{\chi+1}.\label{eq:steadystate}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we neglect to write the 
+\begin_inset Formula $t$
+\end_inset
+
+'s because 
+\begin_inset Formula $N$
+\end_inset
+
+ is time invariant in this case.
+ To solve ODE (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:steadystate"
+
+\end_inset
+
+), we rewrite it in terms of 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+X(w,w_{*})=N(w,w_{*})g(w,w_{*})
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to get
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+-\frac{1}{\chi}\frac{\partial[X(w,w_{*})^{-\chi}]}{\partial w}=\frac{\partial X(w,w_{*})}{\partial w}X(w,w_{*})^{-\chi-1}=-\frac{\widehat{\mu}(w,w_{*})}{g(w,w_{*})^{\chi+1}}.\label{eq:steadystate-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hence 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\partial[X(w,w_{*})^{-\chi}]}{\partial w}=\frac{\chi\widehat{\mu}(w,w_{*})}{g(w,w_{*})^{\chi+1}},
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so there exists 
+\begin_inset Formula $w_{0}\in\mathbb{R}$
+\end_inset
+
+ such that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{X(w,w_{*})}{g(w,w_{*})}=N(w,w_{*})=\frac{1}{g(w,w_{*})}\left(\chi\int_{w_{0}}^{w}\frac{\widehat{\mu}(w',w_{*})}{g(w',w_{*})^{\chi+1}}.dw'\right)^{-1/\chi}\label{eq:ODEsol}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Another way to express this solution is to say that there exists a constant
+ 
+\begin_inset Formula $D(w_{*})$
+\end_inset
+
+ such that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*})=\frac{1}{g(w,w_{*})}\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*})}^{w}\frac{\widehat{\mu}(w',w_{*})}{g(w',w_{*})^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+A Scale Free Steady State
+\end_layout
+
+\begin_layout Standard
+In order to be able to evaluate the terms within the steady state solution
+ (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ODEsol"
+
+\end_inset
+
+), we shall assume that our abundance function 
+\begin_inset Formula $N$
+\end_inset
+
+ is unaltered by the symmetry transform 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ for any 
+\begin_inset Formula $c>0.$
+\end_inset
+
+ It follows that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*},t)=c^{\Lambda}N(cw,c^{A}w_{*},c^{B}t),
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+since we are at steady state, there is no time dependence, so we can write
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(cw,c^{A}w_{*})=c^{-\Lambda}N(w,w_{*}),
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and choosing 
+\begin_inset Formula $w_{*}=1,c^{A}=v_{*}$
+\end_inset
+
+ we get
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(wv_{*}^{\frac{1}{A}},v_{*})=c^{-\Lambda}N(w,1),\label{eq:soltransform}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so if we can solve (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:steadystate"
+
+\end_inset
+
+) for 
+\begin_inset Formula $N(w,w_{*},t)$
+\end_inset
+
+ for a particular maturity weight 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+ we can use (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:soltransform"
+
+\end_inset
+
+) to give us the form of the abundance function on different maturity weights.
+\end_layout
+
+\begin_layout Standard
+The assumption that our solution is unaltered by any symmetry transform
+ 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ constraints the forms of 
+\begin_inset Formula $g(w,w_{*})$
+\end_inset
+
+ and 
+\begin_inset Formula $\widehat{\mu}(w,w_{*})$
+\end_inset
+
+ so that we can write down an expression for the solution to (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:steadystate"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection
+The prey community spectrum
+\end_layout
+
+\begin_layout Standard
+The prey community spectrum, modified by prey switching, as encountered
+ by a predator is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\int_{0}^{\infty}\left(w^{\Omega}\left(w_{*}'\right)^{\Gamma}\Delta\right)^{\chi}N(w,w'_{*},t)^{\chi+1}dw'_{*},
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since we are assuming that 
+\begin_inset Formula $N$
+\end_inset
+
+ is invariant under 
+\begin_inset Formula $F_{c},$
+\end_inset
+
+ we must have that 
+\begin_inset Formula $N_{prey}(w)$
+\end_inset
+
+ is invariant under 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ and so 
+\begin_inset Formula $N_{prey}\mapsto J$
+\end_inset
+
+ where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{prey}(w) & = & J(w)=\int_{0}^{\infty}\left(w^{\Omega}\left(w_{*}'\right)^{\Gamma}\Delta\right)^{\chi}c^{\Lambda(\chi+1)}N(cw,c^{A}w'_{*},c^{B}t)^{\chi+1}dw'_{*}\\
+ &  & =\int_{0}^{\infty}\left(\left(\frac{\tilde{w}}{c}\right)^{\Omega}\left(\frac{\tilde{w}'_{*}}{c^{A}}\right)^{\Gamma}\Delta\right)^{\chi}c^{\chi\Lambda+\Lambda}N(\tilde{w},\tilde{w}'_{*},\tilde{t})^{\chi+1}\frac{d\tilde{w}'_{*}}{c^{A}}\\
+ &  & =c^{r+\Lambda-A}N_{prey}(cw)
+\end{eqnarray*}
+
+\end_inset
+
+where 
+\begin_inset Formula $r=\chi\Lambda-\chi\Omega-\chi\Gamma,$
+\end_inset
+
+ 
+\begin_inset Formula $\tilde{w}=cw,$
+\end_inset
+
+
+\begin_inset Formula $\tilde{w}'_{*}=c^{A}w'_{*}$
+\end_inset
+
+ and 
+\begin_inset Formula $\tilde{t}=c^{B}t.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Letting 
+\begin_inset Formula $w=1$
+\end_inset
+
+ and 
+\begin_inset Formula $c=v$
+\end_inset
+
+ in the expression 
+\begin_inset Formula $N_{prey}(cw)=c^{A-r-\Lambda}N_{prey}(w)$
+\end_inset
+
+ gives us 
+\begin_inset Formula $N_{prey}(v)=v^{A-r-\Lambda}N_{prey}(1)$
+\end_inset
+
+ so we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=w^{A-r-\Lambda}N_{prey}(1)=\kappa_{R}^{*}w^{-\lambda_{*}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we define 
+\begin_inset Formula $\lambda_{*}=\Lambda+r-A$
+\end_inset
+
+ to be the exponent of the 
+\begin_inset Formula $\chi$
+\end_inset
+
+ modified community spectrum, and 
+\begin_inset Formula $\kappa_{R}^{*}=N_{prey}(1)$
+\end_inset
+
+ is the associated prefactor.
+\end_layout
+
+\begin_layout Standard
+Now note that since 
+\begin_inset Formula $q=\Lambda+r-1-A-B,$
+\end_inset
+
+ we have 
+\begin_inset Formula $q+1+A+B=\Lambda+r$
+\end_inset
+
+ and so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\lambda_{*} & = & q+1+B\\
+ & = & q+2-n
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which is the same as the value it gets in [Hartvig].
+\end_layout
+
+\begin_layout Subsection
+The unaltered community spectrum
+\end_layout
+
+\begin_layout Standard
+The community spectrum in the absence of prey switching, is the spectrum
+ of the community of predators in the predation mortality equations.
+ This is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{pred}(w)=w^{A-\Lambda}N_{pred}(1)=\kappa_{R}w^{-\lambda}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we define 
+\begin_inset Formula $\lambda=\Lambda-A$
+\end_inset
+
+ to be the exponent of the unmodified community spectrum, and 
+\begin_inset Formula $\kappa_{R}=N_{pred}(1)$
+\end_inset
+
+ is the associated prefactor.
+ Hence
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\lambda_{*} & = & \lambda+r\\
+ & = & \lambda+\chi\Lambda-\chi\Omega-\chi\Gamma\\
+ & = & \lambda+\chi(\lambda+A)-\chi\Omega-\chi\Gamma\\
+ & = & (\chi+1)(\lambda+A)-A-\chi\Omega-\chi\Gamma
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Growth Rate At Steady State
+\end_layout
+
+\begin_layout Standard
+When we are at a 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ invariant steady state, we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+E_{g}(w)\mapsto c^{-n}E_{g}(cw)= & E_{g}(w)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so we get 
+\begin_inset Formula $E_{g}(w)=E_{g}(1)w^{n}=\alpha f(w)hw^{n}-kw^{n}=\hbar w^{n}$
+\end_inset
+
+ and 
+\begin_inset Formula $g(w,w_{*})=\hbar w^{n}(1-\psi(w,w_{*})),$
+\end_inset
+
+ where 
+\begin_inset Formula $\alpha\bar{f}h-k$
+\end_inset
+
+ and 
+\begin_inset Formula $\bar{f}$
+\end_inset
+
+ is the feeding level (which must be constant at such an 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ invariant state).
+\end_layout
+
+\begin_layout Subsection
+Predation Mortality Rate
+\end_layout
+
+\begin_layout Standard
+At our 
+\begin_inset Formula $F_{c}$
+\end_inset
+
+ invariant steady state the predation mortality rate is such that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\mu_{p}(w) & = & \int_{0}^{\infty}\int_{0}^{\infty}\left(1-f(w')\right)N(w',w'_{*},t)s(w,w')\gamma w'^{q}dw'dw'_{*}\\
+ &  & =c^{\Lambda-q-1-A}\mu_{p}(cw)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Letting 
+\begin_inset Formula $c=\frac{1}{w}$
+\end_inset
+
+ gives
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\mu_{p}(w) & = & w^{1+q+A-\Lambda}\mu_{p}(1)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The prefactor was determined Equations (A.2) and (A.3) of [Hartvig] for there
+ case, where prey switching was absent.
+ Also see Appendix B of [Andersen].
+ We can modify approach.
+\end_layout
+
+\begin_layout Subsection
+Case Without Starvation Or Background Mortality
+\end_layout
+
+\begin_layout Standard
+We shall suppose that 
+\begin_inset Formula $\mu_{0}=0$
+\end_inset
+
+ and that there is no starvation mortality so 
+\begin_inset Formula $\mu_{s}(w)=0,\forall w.$
+\end_inset
+
+ In this case we have 
+\begin_inset Formula $\widehat{\mu}(w',w_{*})=\alpha_{p}w^{n-1}$
+\end_inset
+
+ and 
+\begin_inset Formula $g(w,w_{*})=\hbar w^{n}(1-\psi(w,w_{*})),$
+\end_inset
+
+ and so the expression for our solution is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*})=\frac{1}{g(w,w_{*})}\left(\chi\left(D(w_{*})+\int_{w_{e}(w_{*})}^{w}\frac{\alpha_{p}w^{n-1}}{\left(\hbar w^{n}(1-\psi(w,w_{*}))\right)^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we wish to choose 
+\begin_inset Formula $D(w_{*})$
+\end_inset
+
+ so that the boundary condition 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g(w_{e}(w_{*}),w_{*})N(w_{e}(w_{*}),w_{*})=\frac{\epsilon}{2w_{e}(w_{*})}\int_{0}^{\infty}N(w,w_{*})\hbar w^{n}\psi(w,w_{*}).dw,\label{eq:BC-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is satisfied.
+\end_layout
+
+\begin_layout Subsection
+Solution in a specific case
+\end_layout
+
+\begin_layout Standard
+We shall here consider a specific case, with realistic parameter settings,
+ within which we can numerically determine 
+\begin_inset Formula $D(w_{*})$
+\end_inset
+
+ such that the expression in (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ODEsol-1-1"
+
+\end_inset
+
+) satisfies (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BC-1"
+
+\end_inset
+
+).
+ For this case we shall assume 
+\begin_inset Formula $A=1$
+\end_inset
+
+ and 
+\begin_inset Formula $k=0$
+\end_inset
+
+ (so there is no metabolic cost or starvation) and use a reproduction function
+ of the form
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\psi(w,w_{*}) & = & \left[1+\left(\frac{w}{w_{*}}\right)^{-u}\right]^{-1}\left(\frac{w_{*}}{w}\right)^{n-1}\eta^{1-n}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+as they do in [Hartvig], where 
+\begin_inset Formula $u$
+\end_inset
+
+ determines the width of the step function which the square bracketed factor
+ acts like.
+ We shall assume 
+\begin_inset Formula $u\gg1$
+\end_inset
+
+ so 
+\begin_inset Formula $\psi$
+\end_inset
+
+ raises initially like an abrupt step.
+ We also use additional parameter values as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\bar{f} & = & 0.4\\
+A & = & 1\\
+\alpha & = & 0.6\\
+h & = & 30\\
+q & = & 0.9\\
+k & = & 0\\
+\mu_{0} & = & 0\\
+\chi & = & 0.05\\
+\Delta & = & 1\\
+\Omega=\Gamma & = & 0\\
+\kappa_{R} & = & 0.005\\
+\gamma & = & 600.4424\\
+\beta & = & 100\\
+\sigma & = & 1.3\\
+w_{*} & = & 149.871063\\
+w_{e} & = & 0.001\\
+\epsilon & = & 0.1
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we use formulas
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\hbar=\alpha h\bar{f}-k$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda_{*}=q+2-n$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda+\chi(\lambda+A)-\chi\Omega-\chi\Gamma$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda+\chi(\lambda+A)-\chi\Omega-\chi\Gamma$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda_{*}=\lambda(1+\chi)+A\chi-\chi\Omega-\chi\Gamma$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda=\frac{\lambda_{*}-A\chi+\Omega\chi+\Gamma\chi}{(1+\chi)}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Also note
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $B=$
+\end_inset
+
+
+\begin_inset Formula $1-n$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $r=\chi\Lambda-\chi\Omega-\chi\Gamma$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $n=p$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $Q$
+\end_inset
+
+ and 
+\begin_inset Formula $d$
+\end_inset
+
+ are irrelevant 
+\end_layout
+
+\begin_layout Standard
+also note
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\Lambda=\lambda_{*}+A-r.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+library(mizer) library(plyr) paramsConst <- set_trait_model(no_sp = 10,
+ min_w_inf = 10) simConst <- project(paramsConst, t_max=150, effort = 0)
+ plot(simConst)
+\end_layout
+
+\begin_layout Plain Layout
+paramsConst@species_params$h
+\end_layout
+
+\begin_layout Plain Layout
+fbar <- 0.4 hbar <- (paramsConst@species_params$alpha*paramsConst@species_params$
+h*fbar)[1] # perhaps better to let hbar=10 ? #paramsConst@species_params$k
+ myspno <- 5 psi <- paramsConst@psi[myspno,] nval <- 2/3 wvec <- paramsConst@w
+ growth_rate <- (1-psi)*hbar*(wvec^nval) 
+\end_layout
+
+\begin_layout Plain Layout
+qval <- 0.9 lambdastar <- 2+qval-nval chi <- 0.05 lambda <- ((lambdastar+1)/(chi+1
+))-1 thetabar <- 1 beta <- paramsConst@species_params$beta[1] sigmaval <-
+ paramsConst@species_params$sigma[1] kappaRval <- 0.005 gammaval <- paramsConst@s
+pecies_params$gamma[1] alpha_p <- thetabar*(1-fbar)*sqrt(2*pi)*kappaRval*gammava
+l*sigmaval*(beta^(1+qval-lambda))* exp(((sigmaval^2)*(1+qval-lambda)^2)/2)
+ alpha_p mu_p <- alpha_p*wvec^(nval-1)
+\end_layout
+
+\begin_layout Plain Layout
+integrand <- mu_p/(growth_rate^(chi+1))
+\end_layout
+
+\begin_layout Plain Layout
+determine_int <- function(w){ L <- length(wvec[wvec<w]) within <- sum(((wvec[2:L
++1]-wvec[1:L])*integrand[1:L])) return(within) }
+\end_layout
+
+\begin_layout Plain Layout
+intvals <- sapply(wvec,determine_int) intvals2 <- rep(2,length(wvec)) intvals2[1
+:72] <- intvals[1:72]
+\end_layout
+
+\begin_layout Plain Layout
+result_n <- function(C){ return(((chi*(intvals2+C))^(-1/chi))/growth_rate)
+ } plot(wvec[1:71],result_n(1)[1:71],log="xy")
+\end_layout
+
+\begin_layout Plain Layout
+repro_eff <- 0.1 egg_size <- wvec[1]
+\end_layout
+
+\begin_layout Plain Layout
+is_zero <- function(C){ result_nn <- result_n(C) result_nnn <- rep(0,length(wvec
+)) result_nnn[1:71] <- result_nn[1:71] LHS <- result_nnn[1]*growth_rate[1]
+ RHS <- sum(((result_nnn*psi*hbar*wvec^nval)[1:(length(wvec)-1)])*(wvec[2:length
+(wvec)]-wvec[1:(length(wvec)-1)]))*repro_eff/(2*egg_size) return(RHS-LHS)
+ }
+\end_layout
+
+\begin_layout Plain Layout
+plot(10:20,sapply(10:20,is_zero))
+\end_layout
+
+\begin_layout Plain Layout
+plot(wvec[1:71],result_n(11.5)[1:71]*wvec[1:71],log="xy") abline(v=149)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this case numerical simulations at
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/gustavdelius/mizer/blob/aggregate/R/Experimental%20Code/soluti
+on_testing.R
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+show that the boundary condition is satisfied for integration constant 
+\begin_inset Formula $D=11.73,$
+\end_inset
+
+ and this leads to the resulting plot of 
+\begin_inset Formula $w$
+\end_inset
+
+ vs 
+\begin_inset Formula $N(w,w_{*}).$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename solplot.PNG
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Evaluation strategy
+\end_layout
+
+\begin_layout Standard
+In order to use the above procedure, we must select 
+\begin_inset Formula $\kappa$
+\end_inset
+
+ and 
+\begin_inset Formula $\kappa^{*},$
+\end_inset
+
+ (inputs) which will lead to a particular value of 
+\begin_inset Formula $f$
+\end_inset
+
+ (which we should have computed, rather than assumed, via numeric evaluation
+ of 
+\begin_inset Formula $E_{g}$
+\end_inset
+
+ using the community power law).
+ Having done this we can determine our growth and mortality rates, and then
+ perform the integrals, and solve for the boundary condition to get a particular
+ value of 
+\begin_inset Formula $N(w,w_{*}^{\#}),$
+\end_inset
+
+ for some particular maturity weight 
+\begin_inset Formula $w_{*}^{\#}.$
+\end_inset
+
+ Say we know function for 
+\begin_inset Formula $w_{*}^{\#}=1.$
+\end_inset
+
+ In this case we use the relation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*})=\left(w_{*}\right)^{-\Lambda/A}N\left(\frac{w}{w_{*}^{1/A}},1\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to evaluate 
+\begin_inset Formula 
+\begin{equation}
+N_{pred}(w)=\int_{0}^{\infty}N(w,w_{*}).dw_{*}=\kappa w^{-\lambda}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and to determine 
+\begin_inset Formula $\kappa$
+\end_inset
+
+ output.
+ Similarly we should evaluate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\kappa_{*}w^{-\lambda_{*}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to determine 
+\begin_inset Formula $\kappa_{*}$
+\end_inset
+
+ output.
+\end_layout
+
+\begin_layout Standard
+We wish to find a case where 
+\begin_inset Formula $\kappa_{input}=\kappa_{output}$
+\end_inset
+
+ and 
+\begin_inset Formula $\kappa_{*input}=\kappa_{*output}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Practical Procedure
+\end_layout
+
+\begin_layout Standard
+Choose 
+\begin_inset Formula $\kappa_{*},$
+\end_inset
+
+ and 
+\begin_inset Formula $\kappa$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+(&)
+\end_layout
+
+\begin_layout Standard
+Choose 
+\begin_inset Formula $n$
+\end_inset
+
+ and 
+\begin_inset Formula $q.$
+\end_inset
+
+ Let 
+\begin_inset Formula $\lambda_{*}=q+2-n.$
+\end_inset
+
+ Choose 
+\begin_inset Formula $\beta,\sigma$
+\end_inset
+
+ so that 
+\begin_inset Formula $s(,)$
+\end_inset
+
+ is defined.
+ evaluate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\phi(w)=\int_{0}^{\infty}\int_{0}^{\infty}w'N(w',w'_{*},t)\hat{N}(w',w'_{*},t)^{\chi}s(w',w)dw'dw'_{*}=\int_{0}^{\infty}w's(w',w)N_{prey}(w').dw'\label{eq:avail-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\kappa_{*}w^{-\lambda_{*}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Choose a constant feeding level of 
+\begin_inset Formula $\bar{f}=0.5$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Choose 
+\begin_inset Formula $\gamma,$
+\end_inset
+
+ evaluate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+h=\frac{1}{w^{n}}\left(\frac{\gamma w^{q}\phi(w)}{\bar{f}}-\gamma w^{q}\phi(w)\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to find 
+\begin_inset Formula $h$
+\end_inset
+
+ that reproduces 
+\begin_inset Formula $\bar{f}$
+\end_inset
+
+ via definition 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{\gamma w^{q}\phi(w)}{\gamma w^{q}\phi(w)+hw^{n}}=\bar{f}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Choose 
+\begin_inset Formula $\alpha,\psi$
+\end_inset
+
+ define 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g(w,w_{*})=\alpha\bar{f}hw^{n}(1-\psi(w,w_{*}))
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Use
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\mu_{p}(w) & = & \mu_{p}(w)=w^{1+q+A-\Lambda}\mu_{p}(1)\\
+ & = & \int_{0}^{\infty}\left(1-f(w')\right)N_{pred}(w')s(w,w')\gamma w'^{q}dw'
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+to evaluate predation mortality, by finding 
+\begin_inset Formula $\mu_{p}(1)$
+\end_inset
+
+ by evaluating the integral and note that
+\end_layout
+
+\begin_layout Standard
+In our case 
+\begin_inset Formula $\Omega=\Gamma=0$
+\end_inset
+
+ so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\Lambda+r=\Lambda(1+\chi)=\lambda_{*}+A$
+\end_inset
+
+ so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\Lambda=\frac{\lambda_{*}+A}{1+\chi}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+[[This agrees with simulation, but we need to extend support of community
+ spectrum]].
+\end_layout
+
+\begin_layout Standard
+Pick 
+\begin_inset Formula $w_{e}(w_{*}^{\#})$
+\end_inset
+
+ to be typical egg size,
+\end_layout
+
+\begin_layout Standard
+For 
+\begin_inset Formula $w_{*}^{\#},$
+\end_inset
+
+ evaluate 
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*}^{\#})=\frac{1}{g(w,w_{*}^{\#})}\left(\chi\left(D(w_{*}^{\#})+\int_{w_{e}(w_{*}^{\#})}^{w}\frac{\widehat{\mu}(w',w_{*}^{\#})}{g(w',w_{*}^{\#})^{\chi+1}}.dw'\right)\right)^{-1/\chi}\label{eq:ODEsol-1-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Determine 
+\begin_inset Formula $D(w_{*})$
+\end_inset
+
+ so that boundary condition
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{equation}
+g(w_{e}(w_{*}^{\#}),w_{*}^{\#})N(w_{e}(w_{*}^{\#}),w_{*},t)=\frac{\epsilon}{2w_{e}(w_{*}^{\#})}\int_{0}^{\infty}N(w,w_{*}^{\#},t)E_{g}(w)\psi(w,w_{*}^{\#}).dw,\label{eq:BC-2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Pick 
+\begin_inset Formula $D(w_{*}^{\#})=1,$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+we satisfy the boundary condition by choosing a reproductive efficiency
+ of
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\epsilon=\frac{g(w_{e}(w_{*}^{\#}),w_{*}^{\#})N(w_{e}(w_{*}^{\#}),w_{*},t)}{\frac{1}{2w_{e}(w_{*}^{\#})}\int_{0}^{\infty}N(w,w_{*}^{\#},t)E_{g}(w)\psi(w,w_{*}^{\#}).dw}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Use 
+\begin_inset Formula $N$
+\end_inset
+
+ to evaluate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{pred}(w)=\int_{0}^{\infty}N(w,w_{*}).dw_{*}=\kappa'w^{-\lambda}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+using
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*})=\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\frac{\Lambda}{A}}N\left(w\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\frac{1}{A}},w_{*}^{\#}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and determine output 
+\begin_inset Formula $\kappa'.$
+\end_inset
+
+ Similarly, evaluate 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)\hat{N}(w,w'_{*},t)^{\chi}dw'_{*}=\kappa_{*}'w^{-\lambda_{*}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In our case with 
+\begin_inset Formula $\Omega=\Gamma=0$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta=A=1$
+\end_inset
+
+ we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{prey}(w)=\int_{0}^{\infty}N(w,w'_{*},t)^{\chi+1}dw'_{*}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{prey}(w) & = & \int_{0}^{\infty}N(w,w'_{*},t)^{\chi+1}dw'_{*}\\
+ & = & \int_{0}^{\infty}\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\Lambda(\chi+1)}N\left(w\left(\frac{w_{*}^{\#}}{w_{*}}\right),w_{*}^{\#}\right)^{\chi+1}dw'_{*}\\
+ & = & ww_{*}^{\#}\int_{0}^{\infty}\left(\frac{y}{w}\right)^{\Lambda(\chi+1)}N\left(y,w_{*}^{\#}\right)^{\chi+1}y^{-2}dy\\
+ & = & w_{*}^{\#}w^{1-\Lambda(\chi+1)}\int_{0}^{\infty}y^{\Lambda(\chi+1)}N\left(y,w_{*}^{\#}\right)^{\chi+1}y^{-2}dy\\
+ & = & w^{1-\Lambda(\chi+1)}\kappa_{*}'
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we use
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $y=w\left(\frac{w_{*}^{\#}}{w_{*}}\right)$
+\end_inset
+
+ and 
+\begin_inset Formula $\frac{dy}{dw_{*}}=-ww_{*}^{\#}w_{*}^{-2}=-\frac{y^{2}}{ww_{*}^{\#}}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Use these results to determine 
+\begin_inset Formula $\kappa_{*}'.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Our result seems to work since 
+\begin_inset Formula $1-\Lambda(\chi+1)=-\lambda_{*}$
+\end_inset
+
+ and we get our expression
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\kappa_{*}'=w_{*}^{\#}\int_{0}^{\infty}y^{\Lambda(\chi+1)}N\left(y,w_{*}^{\#}\right)^{\chi+1}y^{-2}dy.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now using similar logic, we can write
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{pred}(w)=\int_{0}^{\infty}N(w,w'_{*},t)dw'_{*}=\kappa'w^{-\lambda}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and we can evaluate this to be
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{pred}(w)=w_{*}^{\#}w^{1-\Lambda}\int_{0}^{\infty}y^{\Lambda}N\left(y,w_{*}^{\#}\right)y^{-2}dy
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\kappa'=w_{*}^{\#}\int_{0}^{\infty}y^{\Lambda}N\left(y,w_{*}^{\#}\right)y^{-2}dy
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where indeed 
+\begin_inset Formula $1-\Lambda=-\lambda$
+\end_inset
+
+ in this case.
+\end_layout
+
+\begin_layout Standard
+Go to (&) and iterate round until the same kappa values are outputted as
+ were inputted.
+\end_layout
+
+\begin_layout Subsection
+Iteration and true solution
+\end_layout
+
+\begin_layout Standard
+In order to be a self consistent solution, the map 
+\begin_inset Formula $(\kappa,\kappa_{*})\mapsto(\kappa',\kappa_{*}')$
+\end_inset
+
+ described in the previous subsection must be at a fixed point, in the sense
+ that the kappas used in the supposed community spectrums that generate
+ the N solutions are the same as the kappas found by integrating over the
+ N solutions.
+ 
+\end_layout
+
+\begin_layout Standard
+By repeatedly iterating this map, starting with 
+\begin_inset Formula $(\kappa,\kappa_{*})=(1,1)$
+\end_inset
+
+ we found the values 
+\begin_inset Formula $(\kappa,\kappa_{*})=(0.2184406,0.1141175),$
+\end_inset
+
+ that are a fixed point of this map.
+ 
+\end_layout
+
+\begin_layout Standard
+To summarize, our solution uses parameter values
+\end_layout
+
+\begin_layout Standard
+We also use additional parameter values as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\bar{f} & = & 0.5\\
+A & = & 1\\
+\alpha & = & 0.6\\
+q & = & 1.9\\
+k & = & 0\\
+\mu_{0} & = & 0\\
+\chi & = & 0.5\\
+\Delta & = & 1\\
+\Omega=\Gamma & = & 0\\
+\kappa & = & 0.2184406\\
+\kappa_{*} & = & 0.1141175\\
+\gamma & = & 600.4424\\
+\beta & = & 100\\
+\sigma & = & 1.3\\
+w_{*}^{\#} & = & 19.356\\
+w_{e} & = & 0.001\\
+D(w_{*}) & = & 1
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And this system was found to satisfy the boundary condition when reproductive
+ efficiency is 
+\begin_inset Formula $\epsilon=2.270658\times10^{-5}.$
+\end_inset
+
+ Also note that since we chose 
+\begin_inset Formula $q=1.9,$
+\end_inset
+
+ we get 
+\begin_inset Formula $\lambda=1.822222.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here is a plot of the solution
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename truesolplot.PNG
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Proper generative code is at
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/gustavdelius/mizer/blob/aggregate/R/Experimental%20Code/soltes
+tingtruesol.R
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Here is a plot of the associated growth rate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename growthrate.PNG
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and mortality rate
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename mortrate.PNG
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and reproduction function
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename psi.PNG
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And, for 
+\begin_inset Formula $w=1,$
+\end_inset
+
+ we can use our formula
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(w,w_{*})=\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\frac{\Lambda}{A}}N\left(w\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\frac{1}{A}},w_{*}^{\#}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To give us the following plot of 
+\begin_inset Formula $w_{*}$
+\end_inset
+
+ vs 
+\begin_inset Formula $N(1,w_{*})$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+In addition we can make a surface, or contour, plot of how 
+\begin_inset Formula $N(w,w_{*})$
+\end_inset
+
+ varies with 
+\begin_inset Formula $w,w_{*}.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+In our case with 
+\begin_inset Formula $A=1,$
+\end_inset
+
+ we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N(1,w_{*})=\left(\frac{w_{*}^{\#}}{w_{*}}\right)^{\Lambda}N\left(\frac{w_{*}^{\#}}{w_{*}},w_{*}^{\#}\right),
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and evaluating this gives
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename wsdep.PNG
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Analytic Solution Without Prey Switching
+\end_layout
+
+\begin_layout Standard
+Suppose 
+\begin_inset Formula $u>>1$
+\end_inset
+
+ so the fraction of energy diverted to the reproduction becomes the step
+ function
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\psi(w,w_{*})=\begin{cases}
+0 & \text{if \ensuremath{w<w_{*}}}\\
+\left(\frac{w_{*}}{\eta}\right)^{n-1}w^{1-n} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\psi(w,w_{*})=\begin{cases}
+0 & \text{if \ensuremath{w<w_{*}}}\\
+\left(\frac{w}{W}\right)^{1-n} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $W=\frac{w_{*}}{\eta}$
+\end_inset
+
+ is the asymptotic size.
+\end_layout
+
+\begin_layout Standard
+We also suppose 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\chi=0$
+\end_inset
+
+.
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+the steady state to the Mckendric von-Foerster Equation is
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{H}(w,w_{*}) & = & H\frac{\exp(-I)}{\hbar w^{n}(1-\psi(w,w_{*}))}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+where 
+\begin_inset Formula $H$
+\end_inset
+
+ is a constant from integration.
+ We suppose 
+\begin_inset Formula $w>w_{*}$
+\end_inset
+
+ so
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+I & = & \int_{w_{e}}^{w}\frac{\mu(w')}{g(w')}.dw'\\
+ & = & \frac{\mu_{0}}{\hbar}\int_{w_{e}}^{w}\frac{1}{w'\left(1-\left(\frac{w'}{W}\right)^{1-n}\right)}.dw'
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Changing the variable of integration to 
+\begin_inset Formula $v=\frac{w'}{W}$
+\end_inset
+
+ gives us
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{eqnarray*}
+I & = & \frac{\mu_{0}}{\hbar}\int_{\frac{w_{e}}{W}}^{\frac{w}{W}}\frac{1}{v(1-v^{(1-n)})}.dv\\
+ & = & \frac{\mu_{0}}{\hbar}\left(\left(\ln\left(\frac{w}{W}\right)-\frac{\ln\left(1-\left(\frac{w}{W}\right)^{1-n}\right)}{1-n}\right)-\left(\ln\left(\frac{w_{e}}{W}\right)-\frac{\ln\left(1-\left(\frac{w_{e}}{W}\right)^{1-n}\right)}{1-n}\right)\right)\\
+ & = & \frac{\mu_{0}}{\hbar}\ln\left(\frac{w}{w_{e}}\left(\frac{1-\left(\frac{w_{e}}{W}\right)^{1-n}}{1-\left(\frac{w}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+So, the solution is 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula 
+\begin{equation}
+N_{H}(w,w_{*})=\frac{H}{\hbar w^{n}\left(1-\left(\frac{w}{W}\right)^{1-n}\right)}\left(\frac{w_{e}}{w}\right)^{\frac{\mu_{0}}{\hbar}}\left(\frac{1-\left(\frac{w}{W}\right)^{1-n}}{1-\left(\frac{w_{e}}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}\left(\frac{\mu_{0}}{\hbar}\right)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+for our case where 
+\begin_inset Formula $w>w_{*}.$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Solution for juveniles
+\end_layout
+
+\begin_layout Standard
+Now we shall solve the Mckendric von-Foerster Equation, for the case where
+ 
+\begin_inset Formula $w\leq w_{*},$
+\end_inset
+
+ so 
+\begin_inset Formula $\psi(w,w_{*})=0,$
+\end_inset
+
+ the solution is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{H}(w,w_{*}) & = & H\frac{\exp(-J)}{\hbar w^{n}}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+J & = & \int_{w_{e}}^{w}\frac{\mu_{0}w'^{n-1}}{\hbar w'^{n}}dw'\\
+ & = & \ln\left(\left(\frac{w}{w_{e}}\right)^{\frac{\mu_{0}}{\hbar}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{H}(w,w_{*})=\frac{H}{\hbar w^{n}}\left(\frac{w_{e}}{w}\right)^{\frac{\mu_{0}}{\hbar}}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Solution for mature fish
+\end_layout
+
+\begin_layout Standard
+Since 
+\begin_inset Formula $\psi(w,w_{*})=\begin{cases}
+0 & \text{if \ensuremath{w<w_{*}}}\\
+\left(\frac{w}{W}\right)^{1-n} & \text{otherwise}
+\end{cases}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+there is a discontinuity in 
+\begin_inset Formula $g$
+\end_inset
+
+ so when 
+\begin_inset Formula $w>w_{*}$
+\end_inset
+
+we must use peicewise integration to solve our ODE, so we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{H}(w,w_{*}) & = & H\frac{\exp(-I)}{\hbar w^{n}\left(1-\left(\frac{w}{W}\right)^{1-n}\right)}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+I & = & \left(\int_{w_{e}}^{w_{*}}\frac{\mu_{0}w'^{n-1}}{\hbar w'^{n}}.dw'\right)+\int_{w_{*}}^{w}\frac{\mu_{0}w'^{n-1}}{\hbar w'^{n}\left(1-\left(\frac{w'}{W}\right)^{1-n}\right)}.dw'
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Changing the variable of integration to 
+\begin_inset Formula $v=\frac{w'}{W}$
+\end_inset
+
+ gives us
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+ &  & \int_{w_{*}}^{w}\frac{\mu_{0}w'^{n-1}}{\hbar w'^{n}\left(1-\left(\frac{w'}{W}\right)^{1-n}\right)}.dw'=\frac{\mu_{0}}{\hbar}\int_{\frac{w_{*}}{W}}^{\frac{w}{W}}\frac{1}{v(1-v^{(1-n)})}.dv\\
+ & = & \frac{\mu_{0}}{\hbar}\left(\left(\ln\left(\frac{w}{W}\right)-\frac{\ln\left(1-\left(\frac{w}{W}\right)^{1-n}\right)}{1-n}\right)-\left(\ln\left(\frac{w_{*}}{W}\right)-\frac{\ln\left(1-\left(\frac{w_{*}}{W}\right)^{1-n}\right)}{1-n}\right)\right)\\
+ & = & \frac{\mu_{0}}{\hbar}\ln\left(\frac{w}{w_{*}}\left(\frac{1-\left(\frac{w_{*}}{W}\right)^{1-n}}{1-\left(\frac{w}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+I & = & \ln\left(\left(\frac{w_{*}}{w_{e}}\right)^{\frac{\mu_{0}}{\hbar}}\right)+\frac{\mu_{0}}{\hbar}\ln\left(\frac{w}{w_{*}}\left(\frac{1-\left(\frac{w_{*}}{W}\right)^{1-n}}{1-\left(\frac{w}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}}\right)\\
+ & = & \frac{\mu_{0}}{\hbar}\ln\left(\frac{w}{w_{e}}\left(\frac{1-\left(\frac{w_{*}}{W}\right)^{1-n}}{1-\left(\frac{w}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}}\right)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{H}(w,w_{*})=\frac{H}{\hbar w^{n}\left(1-\left(\frac{w}{W}\right)^{1-n}\right)}\left(\frac{w_{e}}{w}\right)^{\frac{\mu_{0}}{\hbar}}\left(\frac{1-\left(\frac{w}{W}\right)^{1-n}}{1-\left(\frac{w_{*}}{W}\right)^{1-n}}\right)^{\frac{1}{1-n}\left(\frac{\mu_{0}}{\hbar}\right)}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+References
+\end_layout
+
+\begin_layout Standard
+[Harvig]=Martin Hartvig, K.
+ H.
+ Andersen, and Jan E.
+ Beyer.
+ Food web framework for size-structured populations RID c-4303-2011.
+ Journal of Theoretical Biology, 272(1):113{122, March 2011.
+ ISSN 0022-5193.
+ doi: 10.1016/j.jtbi.2010.12.006.
+ WOS
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://arxiv.org/pdf/1004.4138.pdf
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+[Andersen]=K.
+ H.
+ Andersen and J.
+ E.
+ Beyer, “Asymptotic Size Determines Species Abundance in the Marine Size
+ Spectrum” (Am.
+ Nat., vol.
+ 168, no.
+ 1, p.
+ 54)
+\end_layout
+
+\begin_layout Subsection
+To Do
+\end_layout
+
+\begin_layout Standard
+Make surface plot of whole community
+\end_layout
+
+\begin_layout Standard
+generalize kappa solver and use newton raphson
+\end_layout
+
+\begin_layout Standard
+find other solutions, and constraints by which we can tune the system
+\end_layout
+
+\end_body
+\end_document

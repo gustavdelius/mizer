@@ -1,0 +1,979 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Constructing Steady States Of Multi-species Size Spectrum Models
+\end_layout
+
+\begin_layout Author
+Richard Southwell
+\end_layout
+
+\begin_layout Standard
+We have a multi species size spectrum model as described in the mizer vignette,
+ except
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\psi_{i}(w)=\begin{cases}
+0 & \text{if }w<w_{*i}\\
+\left(\frac{w}{W_{\infty.i}}\right)^{1-n} & \text{otherwise}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+we also suppose our parameters are such that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $n=p$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\lambda=q+2-n$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mu_{f}(w)=k=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\theta_{ij}=1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Given that, here is my attempted recipe for constructing a steady state
+ for some size spectrum setups:
+\end_layout
+
+\begin_layout Standard
+Choose any value of 
+\begin_inset Formula $\mu_{0}>0$
+\end_inset
+
+ .
+ 
+\end_layout
+
+\begin_layout Standard
+We explicitly model 
+\begin_inset Formula $s$
+\end_inset
+
+ species, which may have any different species specific parameters.
+ For each species 
+\begin_inset Formula $i$
+\end_inset
+
+ let 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+f_{0i}=\frac{\gamma_{i}}{\frac{h_{i}\beta_{i}^{2-\lambda}\exp(-(\lambda-2)^{2}\sigma_{i}^{2}/2)}{\sqrt{2\pi}\kappa\sigma_{i}}+\gamma_{i}}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+be the feeding level (as experienced by species 
+\begin_inset Formula $i$
+\end_inset
+
+ individuals feeding upon a community at abundance 
+\begin_inset Formula $\kappa w^{-\lambda}$
+\end_inset
+
+) , and let 
+\begin_inset Formula $\hbar{}_{i}=\alpha_{i}h_{i}f_{0i}-k_{si}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $N_{i}(w)$
+\end_inset
+
+ be a steady state of the MvF equation of species 
+\begin_inset Formula $i$
+\end_inset
+
+ with growth rate 
+\begin_inset Formula $\hbar_{i}w^{n}(1-\psi_{i}(w))$
+\end_inset
+
+ and death rate 
+\begin_inset Formula $\mu_{0}w^{n-1}.$
+\end_inset
+
+ In particular 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{i}(w)=\frac{1}{\hbar_{i}w^{n}}(w_{ei}/w)^{\mu_{0}/\hbar_{i}}\times\begin{cases}
+1 & w<w_{*i}\\
+\frac{\left(1-(w/W_{\infty_{i}})^{1-n}\right)^{(\mu_{0}/(\hbar_{i}(1-n)))-1}}{\left(1-(w_{*i}/W_{\infty i})^{1-n}\right)^{\mu_{0}/(\hbar_{i}(1-n))}} & w>w_{*i}
+\end{cases}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Any multiple of 
+\begin_inset Formula $N_{i}(w)$
+\end_inset
+
+ is also a steady state of the Mvf, and for our community construction,
+ we can choose any abundance multipliers 
+\begin_inset Formula $A_{i}\geq0$
+\end_inset
+
+ and 
+\begin_inset Formula $A_{i}N_{i}(w)$
+\end_inset
+
+ is also a steady state of the Mvf.
+ We suppose that the abundance of background resource at weight 
+\begin_inset Formula $w$
+\end_inset
+
+ is 
+\begin_inset Formula $N_{R}(w)=\kappa w^{-\lambda}-\sum_{i=1}^{s}A_{i}N_{i}(w).$
+\end_inset
+
+ In this resulting system, where species 
+\begin_inset Formula $i$
+\end_inset
+
+ has an abundance 
+\begin_inset Formula $A_{i}N_{i}(w)$
+\end_inset
+
+ at weight 
+\begin_inset Formula $w,$
+\end_inset
+
+ and the background resource abundance has abundance 
+\begin_inset Formula $N_{R}(w),$
+\end_inset
+
+ let 
+\begin_inset Formula $\mu_{pi}(w)$
+\end_inset
+
+ denote the predation mortality level on species 
+\begin_inset Formula $i$
+\end_inset
+
+ from the explicitly modeled species 
+\begin_inset Formula $j\in{1,..,s}.$
+\end_inset
+
+ Now if we choose a background mortality rate of 
+\begin_inset Formula $\mu_{bi}(w)=\mu_{0}w^{n-1}-\mu_{p.i}(w)$
+\end_inset
+
+ for the 
+\begin_inset Formula $i$
+\end_inset
+
+th species, then its total mortality rate will be 
+\begin_inset Formula $\mu_{i}(w)=\mu_{p.i}(w)+\mu_{b.i}(w)=\mu_{0}w^{n-1}.$
+\end_inset
+
+ Also, the growth rate will be 
+\begin_inset Formula $g_{i}(w)=\hbar_{i}w^{n}(1-\psi_{i}(w)).$
+\end_inset
+
+ Since these are the same death and growth rates that we assumed in construction
+ of our solutions 
+\begin_inset Formula $A_{i}N_{i}(w)$
+\end_inset
+
+, we must have a steady state of the Mvf.
+ We also have to choose parameters e.g., the reproductive efficiencies 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ so that the reproduction boundary condition 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g_{i}(w_{e.i})N_{i}(w_{e.i})=\frac{\epsilon_{i}}{2w_{e.i}}\int_{0}^{\infty}N_{i}(w)E_{r.i}(w)\psi(w).dw
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is met for each species.
+ This should result in a steady state of the size spectrum dynamics.
+\end_layout
+
+\begin_layout Standard
+The mizer code [stable_community_gurnard_really.R] we did before involves
+ gurnard and background species.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\mu_{0}=(1-f_{0B})\sqrt{2\pi}\kappa\gamma_{B}\sigma_{B}\beta_{B}^{n-1}\exp(\sigma_{B}^{2}(n-1)^{2}/2)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+describes the mortality rate induced by the background species.
+\end_layout
+
+\begin_layout Standard
+In this case the the first 
+\begin_inset Formula $s-1$
+\end_inset
+
+ species are the background species so 
+\begin_inset Formula $\beta_{1}=..=\beta_{s-1}=\beta_{B}\neq\beta_{s}$
+\end_inset
+
+ etc, and the 
+\begin_inset Formula $s$
+\end_inset
+
+th and final species is the gurnard with its own different parameters.
+ I guess this code works in a similar way to the above recipe, except this
+ code has plankton dynamics, and we cut the plankton off at the first zero.
+ We still need to test if things will work if we cut the background mortality
+ term off.
+\end_layout
+
+\begin_layout Standard
+Returning to the general steady state construction problem.
+ If one is interested in modeling a multi species ecosystem without so much
+ artificial background death and mortality rates, one can include extra
+ background species that are explicitly modeled, with parameters like 
+\begin_inset Formula $\beta_{B}$
+\end_inset
+
+etc.
+ above.
+ Setting such modeled background species to the proper abundances to model
+ induce the proper growth and death rates, then allows us to reduce the
+ amount of artificial background death and background resource abundance
+ we have to add to create a steady state according to the above recipe.
+ 
+\end_layout
+
+\begin_layout Standard
+There are more general ways to make new steady states from old by making
+ sub population transplants that preserve death and growth rates.
+ If we have a pair of steady states of a size spectrum model (perhaps with
+ different species extinct in either state), and then we do transplant surgery
+ -cutting away some of the individuals from the second steady state, and
+ replacing them with a subset of individuals from the first steady state,
+ that are grafted on.
+ If the growth and death rates are the same for the incumbent and grafted
+ individuals before and after this type of population transplant then it
+ will result in a new steady state.
+\end_layout
+
+\begin_layout Standard
+More generally if we have two mizer steady states 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ of different systems with different parameters if we can choose a subset
+ 
+\begin_inset Formula $x$
+\end_inset
+
+ of species from 
+\begin_inset Formula $X$
+\end_inset
+
+ and a subset 
+\begin_inset Formula $y$
+\end_inset
+
+ of species from 
+\begin_inset Formula $Y$
+\end_inset
+
+ then we can sometimes transplant/swap populations 
+\begin_inset Formula $x$
+\end_inset
+
+ and 
+\begin_inset Formula $y$
+\end_inset
+
+ around in their ecosystems, (cutting their abundances out and swapping
+ them round).
+ The conditions required for the resulting two 
+\begin_inset Quotes eld
+\end_inset
+
+post transplant" states to be steady states are: 
+\end_layout
+
+\begin_layout Standard
+(1) members of 
+\begin_inset Formula $x$
+\end_inset
+
+ experience the same growth and death rate as a result of their contact
+ with 
+\begin_inset Formula $X\setminus x$
+\end_inset
+
+ before the transplant, as they experience with the new surroundings (post-trans
+plant) via their contact with 
+\begin_inset Formula $Y\setminus y$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+(2) members of 
+\begin_inset Formula $X\setminus x$
+\end_inset
+
+ experience the same growth and death rate as a result of their contact
+ with 
+\begin_inset Formula $x$
+\end_inset
+
+ before the transplant, as they experience with the new surroundings (post-trans
+plant) via their contact with 
+\begin_inset Formula $y$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+(3) members of 
+\begin_inset Formula $y$
+\end_inset
+
+ experience the same growth and death rate as a result of their contact
+ with 
+\begin_inset Formula $Y\setminus y$
+\end_inset
+
+ before the transplant, as they experience with the new surroundings (post-trans
+plant) via their contact with 
+\begin_inset Formula $X\setminus x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+(4) members of 
+\begin_inset Formula $Y\setminus y$
+\end_inset
+
+ experience the same growth and death rate as a result of their contact
+ with 
+\begin_inset Formula $y$
+\end_inset
+
+ before the transplant, as they experience with the new surroundings (post-trans
+plant) via their contact with 
+\begin_inset Formula $x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+The underlying reason this sort of stuff works is that if we have a subset
+ of an ecosystem which is stable, and we remove the other species, and replace
+ them with a different configuration of species, that (A) induce the same
+ kinds of growth and death rates on the individuals within our subset as
+ they experienced in their original ecosystem, and (B) the newly switched
+ in surrounding species experience the same death and growth rates as they
+\end_layout
+
+\begin_layout Plain Layout
+If X and Y are steady states, and A is a subset of 
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $A\subset X$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $B\subset Y$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+More generally in a size spectrum steady state, one can transplant some
+ of the species from one type of steady state/enviorment to another, and
+ provided one carefully sets it up so that the growth rate and mortality
+ rates are preserved, the result will be a steady state.
+\end_layout
+
+\begin_layout Plain Layout
+If one wants to they can explicitly include background species within the
+ size regime of interest, that feed in a similar way to the unmodeled large
+ predators (like the homogeneous background we introduced the gurnard into),
+ and then a steady state (which in that case also seemed to be locally stable),
+ can be constructed according to this type of setup.
+ And in that case one can limit the amount of corrective adjustment of the
+ background death and resources that are required to create a system without
+ artifially chosen mortality and background resource rates.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Time Dependent Transplant Principal
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\overline{N^{1}}=(N_{1}^{1},..,N_{s}^{1})$
+\end_inset
+
+ be a state of an 
+\begin_inset Formula $s$
+\end_inset
+
+ species size spectrum model.
+ Here 
+\begin_inset Formula $N_{i}^{1}:\mathbb{R}_{+}\rightarrow\mathbb{R}_{+}$
+\end_inset
+
+ is such that 
+\begin_inset Formula $N_{i}^{1}(w)$
+\end_inset
+
+ represents the density of species 
+\begin_inset Formula $i$
+\end_inset
+
+ individuals of weight 
+\begin_inset Formula $w.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\overline{N^{2}}=(N_{1}^{2},..,N_{s}^{2})$
+\end_inset
+
+ be another state of our size spectrum model.
+ Let 
+\begin_inset Formula $T>0.$
+\end_inset
+
+ Let 
+\begin_inset Formula $K\subseteq\left\{ 1,..,s\right\} $
+\end_inset
+
+ be a subset of species.
+ Let 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\overline{N^{*}}=\overline{N^{1}}-\left(\sum_{i\in K}(\delta_{1i}N_{1}^{1},\delta_{2i}N_{2}^{1},..,\delta_{si}N_{s}^{1})\right)+\left(\sum_{i\in K}(\delta_{1i}N_{1}^{2},\delta_{2i}N_{2}^{2},..,\delta_{si}N_{s}^{2})\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+denote the state obtained by replacing all the individuals in 
+\begin_inset Formula $\overline{N^{1}}$
+\end_inset
+
+ with a species in 
+\begin_inset Formula $K,$
+\end_inset
+
+ with the set of individuals from 
+\begin_inset Formula $\overline{N^{2}}$
+\end_inset
+
+ with a species in 
+\begin_inset Formula $K.$
+\end_inset
+
+ Here 
+\begin_inset Formula $\delta_{ij}$
+\end_inset
+
+ is the Kronecker delta.
+\end_layout
+
+\begin_layout Standard
+For 
+\begin_inset Formula $t\geq0$
+\end_inset
+
+ let 
+\begin_inset Formula $\tau_{t}[\overline{N^{1}}]$
+\end_inset
+
+ denote the state obtained by evolving 
+\begin_inset Formula $\overline{N^{1}}$
+\end_inset
+
+ for a time 
+\begin_inset Formula $t$
+\end_inset
+
+ under the MvF equation.
+ 
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $g_{i}[\overline{N^{1}}](w)$
+\end_inset
+
+ denote the growth rate that a species 
+\begin_inset Formula $i$
+\end_inset
+
+ individual of weight 
+\begin_inset Formula $w$
+\end_inset
+
+ has when the system is in state 
+\begin_inset Formula $\overline{N^{1}}.$
+\end_inset
+
+ Similarly let 
+\begin_inset Formula $\mu_{i}[\overline{N^{1}}](w)$
+\end_inset
+
+ denote the mortality rate that a species 
+\begin_inset Formula $i$
+\end_inset
+
+ individual of weight 
+\begin_inset Formula $w$
+\end_inset
+
+ has when the system is in state 
+\begin_inset Formula $\overline{N^{1}}.$
+\end_inset
+
+ Suppose 
+\begin_inset Formula $T>0.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\forall t\in[0,T],\forall w>0,\forall i\notin K$
+\end_inset
+
+ we have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\left(\tau_{t}[\overline{N^{1}}]\right)_{i}(w)>0\Rightarrow & g_{i}[\tau_{t}[\overline{N^{1}}]](w)=g_{i}[\tau_{t}[\overline{N^{*}}]](w),\\
+ & \mu_{i}[\tau_{t}[\overline{N^{1}}]](w)=\mu_{i}[\tau_{t}[\overline{N^{*}}]](w)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and 
+\begin_inset Formula $\forall t\in[0,T],\forall w>0,\forall i\in K$
+\end_inset
+
+ we have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+\left(\tau_{t}[\overline{N^{2}}]\right)_{i}(w)>0\Rightarrow & g_{i}[\tau_{t}[\overline{N^{2}}]](w)=g_{i}[\tau_{t}[\overline{N^{*}}]](w),\\
+ & \mu_{i}[\tau_{t}[\overline{N^{2}}]](w)=\mu_{i}[\tau_{t}[\overline{N^{*}}]](w)
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+then 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall t\in[0,T],\forall w>0,\forall i\notin K$
+\end_inset
+
+ we have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\tau_{t}[\overline{N^{1}}]\right)_{i}(w)=\left(\tau_{t}[\overline{N^{*}}]\right)_{i}(w)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and 
+\begin_inset Formula $\forall t\in[0,T],\forall w>0,\forall i\in K$
+\end_inset
+
+ we have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(\tau_{t}[\overline{N^{2}}]\right)_{i}(w)=\left(\tau_{t}[\overline{N^{*}}]\right)_{i}(w).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Essentially the principal says if you transplant species in set 
+\begin_inset Formula $K$
+\end_inset
+
+ from 
+\begin_inset Formula $\overline{N^{2}}$
+\end_inset
+
+ into 
+\begin_inset Formula $\overline{N^{1}}$
+\end_inset
+
+ in such a way that all individuals involved encounter the same time dependent
+ death and growth rates, both before and after the transplant, then the
+ dynamics of the abundances of such species will be the same in the pre
+ and post transplant systems.
+ A species case of the time dependent transplant principal is the case where
+ 
+\begin_inset Formula $\overline{N^{1}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\overline{N^{2}}$
+\end_inset
+
+ are steady states.
+ In this case, if the transplant can be performed in a way that preserves
+ mortality and growth rates then the post transplant state 
+\begin_inset Formula $\overline{N^{*}}$
+\end_inset
+
+ will also be a steady state.
+ This steady state transplant principal is used when we build systems with
+ power law based death and growth.
+ The steady state transplant principal may also shed light on neutrality
+ like effects we often see when considering the set of all steady states
+ of systems with near homogeneous species, by showing how one can move around
+ in the near affine set of all steady states by performing growth and death
+ preserving transplants.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Speculation
+\end_layout
+
+\begin_layout Itemize
+In the case where the death and growth rates are fixed, any linear combination
+ of steady states is a steady state,
+\end_layout
+
+\begin_layout Itemize
+In general multi species size spectrum models, the set of steady states
+ is approximately an affine set.
+\end_layout
+
+\begin_layout Itemize
+The volumes of the basins of attraction of steady states vary, and the affine
+ set may hold a mixture of stable and unstable steady states.
+\end_layout
+
+\begin_layout Itemize
+If S is the set of steady states of the system and one introduces an extra
+ mortality term then the set of steady states of the new system is homeomorphic
+ to a subset of S or S is homeomorphic to a subset of the steady states
+ of the new system.
+\end_layout
+
+\begin_layout Itemize
+Introducing an extra mortality term mu_e (w) that does not have the form
+ A*w^(n-1) breaks up the affine structure of the steady states
+\end_layout
+
+\begin_layout Itemize
+In a system with sufficiently heterogeneous species, there is just one steady
+ state.
+\end_layout
+
+\begin_layout Itemize
+Often heterogeneous systems are unstable, but adding a chi>0 makes them
+ stable and shrinks the set of attractors towards the symmetric solution
+\end_layout
+
+\begin_layout Subsection*
+Questions
+\end_layout
+
+\begin_layout Itemize
+How does the set of steady states change when we continuously vary the backgroun
+d death rate, or the plankton spectrum ?
+\end_layout
+
+\begin_layout Itemize
+Can convex sets of steady states with more than one element occur in systems
+ where all species have rather different parameters ?
+\end_layout
+
+\begin_layout Itemize
+In what sense is the affine/convex structure of steady states only approximate
+ when the growth and death rates are not fixed ?
+\end_layout
+
+\begin_layout Subsection*
+Objectives
+\end_layout
+
+\begin_layout Itemize
+Prepare Barcelona talk.
+\end_layout
+
+\begin_layout Itemize
+Retry getting the gurnard stable - I made a correction to the code, as found
+ in stable_community_gurnard_post_comp.R, but now, so far, it seems hard
+ to get the background+gurnard system to stabilize without using chi.
+\end_layout
+
+\begin_layout Itemize
+Write newton raphson scheme and explore structure and stability of steady
+ states
+\end_layout
+
+\begin_layout Itemize
+formally organize results so far with proofs etc.
+\end_layout
+
+\begin_layout Itemize
+I just pushed an update of multisteadystate.pdf.
+ 
+\end_layout
+
+\begin_layout Subsection*
+More Speculation
+\end_layout
+
+\begin_layout Standard
+We have an s species multi species size spectrum model.
+ A transplant is where one replaces some individuals from one state with
+ individuals from another state in a way that preserves growth and death
+ rates.
+ The transplant hull H(S) of a set of states S that can be obtained by repeatedl
+y performing transplants, starting with the members of S.
+ We say a set of states S is transplant independent if each member x of
+ S lies outside the transplant hull H(S-{x}) of the other members.
+\end_layout
+
+\begin_layout Standard
+Conjecture If N_1,N_2,..,N_s are transplant independent steady states then
+ the transplant hull H(N_1,N_2,..,N_s) of these states is the set of all steady
+ states of the system.
+\end_layout
+
+\begin_layout Standard
+Conjecture The transplant hull of a set of states is equal to the affine
+ set of such steady states.
+\end_layout
+
+\begin_layout Standard
+To prove conjecture note that the set of steady states must be connected
+ by transplant paths, because for any two steady states Brouwer's fixed
+ point theorem proves the existence of species transplants that preserve
+ death and growth rates, therefore the problem of finding the set of all
+ steady states reduced to the problem of finding a large enough set of steady
+ states such that their transplant hull is the set of all steady states
+ of the entire system.
+ The face that transplant hull is equivalent to affine hull can be seen
+ by noting that, since they are the sane, under growth and death preserving
+ transformations, the transplant hull H(S) of a set S of steady states are
+ also steady states of the system p which has its growth and death rates
+ held fixed at these values, and we know from the linearity of p, that H(S)
+ is an affine set.
+\end_layout
+
+\begin_layout Standard
+If this is indeed true, then the set of all steady states of a general s
+ species size spectrum model is just equal to the set of all affine combinations
+ of any s linearly independent steady states.
+ 
+\end_layout
+
+\begin_layout Standard
+To prove this we have to show the equivalence of transplant and affine hulls,
+ and we have to show that a transplant can always be done between two steady
+ states.
+\end_layout
+
+\begin_layout Standard
+At least, it seems the set of steady states equals the union of one or more
+ disjoint subsets, each of which is the transplant hull of collections of
+ steady states.
+ I suspect the entire set of steady states is organized into one transplant
+ hull, but to see this we may need to use something like a fixed point theorem
+ to (try and) prove that it is always possible to do a transplant between
+ any two different steady states to make another steady state (if that is
+ true).
+\end_layout
+
+\end_body
+\end_document
