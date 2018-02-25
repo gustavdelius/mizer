@@ -495,7 +495,275 @@ ies hetrogenous size spectrum models.
 \end_layout
 
 \begin_layout Standard
-* homogeneous case as a special case of the above
+*Suppose we have a size spectrum model (say for simplicity the resource
+ dynamics are turned off), and suppose we have an unlimited feeding level
+ (so 
+\begin_inset Formula $h_{i}\rightarrow\infty,\forall i$
+\end_inset
+
+), and also suppose 
+\begin_inset Formula $k_{i}=k_{s.i}=0,$
+\end_inset
+
+ and suppose each species has the same feeding kernel function (i.e., 
+\begin_inset Formula $\beta_{1}=..=\beta_{s}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{1}=..=\sigma_{s}$
+\end_inset
+
+), so 
+\begin_inset Formula $\phi_{1}=..=\phi_{s}=\phi.$
+\end_inset
+
+ It follows that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{p.i}[N](w)=\int_{0}^{\infty}\phi\left(\frac{w}{w'}\right)w'^{q}\left(\sum_{j}\gamma_{j}\theta_{ji}N_{j}(w',t)\right)dw'
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g_{i}[N](w)=(1-\psi_{i}(w))\alpha_{i}w^{q}\int_{0}^{\infty}\phi\left(\frac{w'}{w}\right)w'\left(\gamma_{i}\left(N_{R}(w')+\sum_{j}\theta_{ij}N_{j}(w')\right)\right)dw'.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+are the expressions for the predation mortality, and growth rates in such
+ a system.
+ Suppose 
+\begin_inset Formula $N$
+\end_inset
+
+ is a steady state of such a system, and suppose 
+\begin_inset Formula $N'$
+\end_inset
+
+ is another system state, with the abundances of different species rescaled,
+ so for each species 
+\begin_inset Formula $i$
+\end_inset
+
+ there exists a multiplier 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+ such that species 
+\begin_inset Formula $i$
+\end_inset
+
+ has abundance 
+\begin_inset Formula $N'_{i}(w)=A_{i}N_{i}(w),$
+\end_inset
+
+ for each 
+\begin_inset Formula $w,$
+\end_inset
+
+ in the new system state.
+ Now, if this new system state 
+\begin_inset Formula $N'$
+\end_inset
+
+ is such that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{j=1}^{s}\gamma_{j}\theta_{ji}N_{j}(w',t)=\sum_{j=1}^{s}\gamma_{j}\theta_{ji}A_{j}N_{j}(w',t)=\sum_{j=1}^{s}\gamma_{j}\theta_{ji}N_{j}'(w',t)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\gamma_{i}\left(N_{R}(w')+\sum_{j=1}^{s}\theta_{ij}N_{j}(w')\right)=\gamma_{i}\left(N_{R}(w')+\sum_{j=1}^{s}\theta_{ij}A_{j}N_{j}(w')\right)=\gamma_{i}\left(N_{R}(w')+\sum_{j=1}^{s}\theta_{ij}N_{j}'(w')\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+for each species 
+\begin_inset Formula $i$
+\end_inset
+
+ and weight 
+\begin_inset Formula $w$
+\end_inset
+
+ then this new state 
+\begin_inset Formula $N'$
+\end_inset
+
+ will also be a steady state of our system.
+\end_layout
+
+\begin_layout Standard
+* A corrallary of the above, is that, for such a size spectrum system S,
+ where the growth rate and death rates are purely governed by the form of
+ the functions 
+\begin_inset Formula $a_{i}[N](w):=\sum_{j=1}^{s}\gamma_{j}\theta_{ji}N_{j}(w',t)$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{i}[N](w):=\gamma_{i}\left(N_{R}(w')+\sum_{j=1}^{s}\theta_{ij}N_{j}(w')\right),$
+\end_inset
+
+ is that is we have a set of
+\begin_inset Formula $k$
+\end_inset
+
+ steady states 
+\begin_inset Formula $N^{1},..N^{k}$
+\end_inset
+
+ of the type of system described above, then any new state 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ formed by an affine combination of these steady states (in the sense that
+ 
+\begin_inset Formula $\exists\lambda_{1},..,\lambda_{k}:$
+\end_inset
+
+ 
+\begin_inset Formula $N^{*}=\sum_{e=1}^{k}\lambda_{e}N^{e}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sum_{e}\lambda_{e}=1`)$
+\end_inset
+
+ must be also be a steady state.
+ To see this note that our linearity, and the fact that 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ is an affine combination implies 
+\begin_inset Formula $a_{i}[N^{1}](w)=..=a_{i}[N^{k}](w)=a_{i}[N*](w)$
+\end_inset
+
+ and 
+\begin_inset Formula $b_{i}[N^{1}](w)=..=b_{i}[N^{k}](w)=b_{i}[N*](w),$
+\end_inset
+
+ 
+\begin_inset Formula $\forall w$
+\end_inset
+
+ and so 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $g_{i}[N^{1}](w)=..=g_{i}[N^{k}](w)=g_{i}[N*](w)$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu_{i}[N^{1}](w)=..=\mu_{i}[N^{k}](w)=\mu_{i}[N*](w),$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+and so each of the states 
+\begin_inset Formula $N^{1},..,N^{k}$
+\end_inset
+
+ have the same death and growth rates, and, so they all correspond to steady
+ states of the simplified MvF system SS where death and growth are held
+ fixed at these rates.
+ 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ is a linear combination of the steady states 
+\begin_inset Formula $N^{1},..,N^{k}$
+\end_inset
+
+ and so 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ is another steady state of the simplified system SS (because any linear
+ combination of steady states if SS is a steady state of SS), but also,
+ when reconsidering state 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ within the full system 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ (i.e., the proper system where 
+\begin_inset Formula $g$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu$
+\end_inset
+
+ are given by integrals iver abundance), we still have that 
+\begin_inset Formula $\mu[N^{*}]=\mu[N^{1}]=..=\mu[N^{k}]$
+\end_inset
+
+ and 
+\begin_inset Formula $g[N^{*}]=g[N^{1}]=..=g[N^{k}]$
+\end_inset
+
+ and so 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ will
+\end_layout
+
+\begin_layout Standard
+* homogeneous case as a special case of the above 
+\end_layout
+
+\begin_layout Standard
+* Let N be a steady state of an unlimited feeding rate size spectrum model
+ within which the form of each growth rate is just governed by the form
+ of 
+\begin_inset Formula $N_{R}(w)+\sum_{i=1}^{s}N_{i}(w),$
+\end_inset
+
+ now if growth rates and mortality rates can be linearly recombined, we
+ can prove that any redistribution of abundances produces another steady
+ state of the same system.
+ In the scale free model, a similar phonemenon occurs, but this time the
+ solutions have the same shape but are shifted.
 \end_layout
 
 \begin_layout Standard
@@ -599,7 +867,7 @@ ies hetrogenous size spectrum models.
 \end_layout
 
 \begin_layout Standard
-* A spectrum model is [gamma,theta,alpha,feeding-kernel,..etc.] homogenous,
+* A spectrum model is [gamma,theta,alpha,feeding-kernel,..etc.] homogeneous,
  if every species has the same parameter/function [gamma,theta,alpha,feeding-ker
 nel,..etc.]
 \end_layout
@@ -621,7 +889,31 @@ nel,..etc.]
 \end_layout
 
 \begin_layout Standard
-For a feeding kernel homogen
+*If the intake is unlimited, and the feeding-kernels are homogeneous, then
+ the set of steady states that can be converted between by altering the
+ steady state in such a way that the death and growth rates of individuals
+ can be preserved, corresponds to an affine set (the same I observed with
+ R.L.).
+\end_layout
+
+\begin_layout Standard
+* The above can be generalized to allow different species to be associated
+ with different death rates, and therefore to have different solutions,
+ but one can still describe the affine structure of the steady states, but
+ now it corresponds to a `species-scaled power law aggregate abundance`
+ with 
+\begin_inset Formula $\kappa^{(1)}=..=\kappa^{(s)}=\kappa,$
+\end_inset
+
+ and it no longer has single shaped solutions, but by tuning the species
+ specific background mortality, we can set things up.
+\end_layout
+
+\begin_layout Standard
+*For a feeding kernel homogeneous, unlimited intake, size spectrum model,
+ we know how to construct a power law aggregate abundance steady state that
+ is single shaped (stable_community.R does this type of thing).
+ Using the linearity of the growth and death rates in this case
 \end_layout
 
 \begin_layout Standard

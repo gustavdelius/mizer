@@ -495,7 +495,21 @@ ies hetrogenous size spectrum models.
 \end_layout
 
 \begin_layout Standard
-* homogeneous case as a special case of the above
+* homogeneous case as a special case of the above 
+\end_layout
+
+\begin_layout Standard
+* Let N be a steady state of an unlimited feeding rate size spectrum model
+ within which the form of each growth rate is just governed by the form
+ of 
+\begin_inset Formula $N_{R}(w)+\sum_{i=1}^{s}N_{i}(w),$
+\end_inset
+
+ now if growth rates and mortality rates can be linearly recombined, we
+ can prove that any redistribution of abundances produces another steady
+ state of the same system.
+ In the scale free model, a similar phonemenon occurs, but this time the
+ solutions have the same shape but are shifted.
 \end_layout
 
 \begin_layout Standard
@@ -599,7 +613,7 @@ ies hetrogenous size spectrum models.
 \end_layout
 
 \begin_layout Standard
-* A spectrum model is [gamma,theta,alpha,feeding-kernel,..etc.] homogenous,
+* A spectrum model is [gamma,theta,alpha,feeding-kernel,..etc.] homogeneous,
  if every species has the same parameter/function [gamma,theta,alpha,feeding-ker
 nel,..etc.]
 \end_layout
@@ -621,10 +635,10 @@ nel,..etc.]
 \end_layout
 
 \begin_layout Standard
-*If the intake is unlimited, and the feeding-kernels are homogenous, then
+*If the intake is unlimited, and the feeding-kernels are homogeneous, then
  the set of steady states that can be converted between by altering the
  steady state in such a way that the death and growth rates of individuals
- can be presevred, corresponds to an affine set (the same I observed with
+ can be preserved, corresponds to an affine set (the same I observed with
  R.L.).
 \end_layout
 
@@ -642,7 +656,7 @@ nel,..etc.]
 \end_layout
 
 \begin_layout Standard
-*For a feeding kernel homogenous, unliminited intake, size spectrum model,
+*For a feeding kernel homogeneous, unlimited intake, size spectrum model,
  we know how to construct a power law aggregate abundance steady state that
  is single shaped (stable_community.R does this type of thing).
  Using the linearity of the growth and death rates in this case
