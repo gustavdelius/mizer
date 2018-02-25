@@ -71,7 +71,143 @@
 \begin_body
 
 \begin_layout Standard
-We have a set of 
+We shall consider heterogeneous multispecies size spectrum models as described
+ in the mizer vignette, except with 
+\begin_inset Formula $\theta_{ij}=1$
+\end_inset
+
+ the resource dynamics turned off.
+ For simplity suppose we have an unlimited feeding level (so 
+\begin_inset Formula $h_{i}\rightarrow\infty,\forall i$
+\end_inset
+
+).
+ Suppose we have such a system, and we have free choice over all the usual
+ system parameters we want to use, except for the background resource level
+ 
+\begin_inset Formula $N_{R}(w)$
+\end_inset
+
+ and the background death rate 
+\begin_inset Formula $\mu_{b.i}(w)$
+\end_inset
+
+ and the reproctive efficiency 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ which we shall pick to take specific values later in order to construct
+ a steady state.
+ 
+\end_layout
+
+\begin_layout Standard
+The steady state 
+\begin_inset Formula $N$
+\end_inset
+
+ we shall construct has the following properties:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{i}N_{i}(w)+N_{R}(w)=\kappa w^{-\lambda}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{i}[N](w)=\mu_{0.i}w^{n-1}=\mu_{b.i}[N](w)+\mu_{p.i}[N](w)=\mu_{b.i}[N](w)+\int_{0}^{\infty}\phi_{i}\left(\frac{w}{w'}\right)w'^{q}\left(\sum_{j}\gamma_{j}\theta_{ji}N_{j}(w',t)\right)dw',\forall i
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\kappa$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu_{0.1},..,\mu_{0.s}$
+\end_inset
+
+ are chosen by us initially.
+ The construction is as follows:
+\end_layout
+
+\begin_layout Enumerate
+Let be the unscaled steady state solution of the Mvf, for each species 
+\begin_inset Formula $i.$
+\end_inset
+
+ Here 
+\begin_inset Formula $g_{i}^{*}(w)$
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{equation}
+g_{i}^{*}(w)=\hbar_{i}w^{n}(1-\psi_{i}(w))
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\mu_{i}^{*}(w)=\hbar w^{n}(1-\psi_{i}(w))
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+f_{i}(w)=\frac{1}{g_{i}^{*}(w)}\exp\left(-\int_{w_{e.i}}^{w}\frac{\mu_{i}^{*}(w')}{g_{i}^{*}(w')}.dw'\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Choose any abundance multipliers 
+\begin_inset Formula $A_{1},..,A_{s}\geq0$
+\end_inset
+
+ such that 
+\begin_inset Formula $\sum_{i}A_{i}f_{i}(w)\leq\kappa w^{-\lambda},\forall w>0.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Suppose we have a size spectrum model with 
+\begin_inset Formula $s$
+\end_inset
+
+ heterogeneous species.
+ 
+\end_layout
+
+\begin_layout Standard
+***
+\end_layout
+
+\begin_layout Standard
+Let us restart.
+ We have a set of 
 \begin_inset Formula $s$
 \end_inset
 
@@ -604,7 +740,7 @@ and
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\gamma_{i}\left(N_{R}(w')+\sum_{j=1}^{s}\theta_{ij}N_{j}(w')\right)=\gamma_{i}\left(N_{R}(w')+\sum_{j=1}^{s}\theta_{ij}A_{j}N_{j}(w')\right)=\gamma_{i}\left(N_{R}(w')+\sum_{j=1}^{s}\theta_{ij}N_{j}'(w')\right)
+\gamma_{i}\left(N_{R}(w')+\sum_{j=1}^{s}\theta_{ij}N_{j}(w')\right)=\gamma_{i}\left(N_{R}'(w')+\sum_{j=1}^{s}\theta_{ij}A_{j}N_{j}(w')\right)=\gamma_{i}\left(N_{R}'(w')+\sum_{j=1}^{s}\theta_{ij}N_{j}'(w')\right)
 \end{equation}
 
 \end_inset
@@ -626,6 +762,14 @@ for each species
 \end_inset
 
  will also be a steady state of our system.
+\end_layout
+
+\begin_layout Standard
+Note, above we may turn off the plankton dynamics, or simply assume 
+\begin_inset Formula $N_{R}'(w')=N_{R}(w').$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -721,11 +865,7 @@ and so each of the states
 \begin_inset Formula $N^{*}$
 \end_inset
 
- within the full system 
-\begin_inset Formula $N^{*}$
-\end_inset
-
- (i.e., the proper system where 
+ within the full system S (i.e., the proper system where 
 \begin_inset Formula $g$
 \end_inset
 
@@ -745,7 +885,21 @@ and so each of the states
 \begin_inset Formula $N^{*}$
 \end_inset
 
- will
+ will also be a steady state of S.
+ To summarise: If feeding level is unlimited, and feeding kernels are the
+ same for each species then the set of steady states 
+\begin_inset Formula $N$
+\end_inset
+
+ which have a particular form of the functions 
+\begin_inset Formula $\sum_{j=1}^{s}\gamma_{j}\theta_{ji}N_{j}(w',t)$
+\end_inset
+
+ and 
+\begin_inset Formula $\gamma_{i}\left(N_{R}(w')+\sum_{j=1}^{s}\theta_{ij}N_{j}(w')\right)$
+\end_inset
+
+ form an affine set of steady states,
 \end_layout
 
 \begin_layout Standard
