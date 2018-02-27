@@ -1108,5 +1108,257 @@ Suppose we have a size spectrum model with
 ***
 \end_layout
 
+\begin_layout Subsection*
+Affine Structure Result
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $N^{1},..,N^{k}$
+\end_inset
+
+ are steady states of an unlimited intake (
+\begin_inset Formula $h_{i}\rightarrow\infty,\forall i)$
+\end_inset
+
+ size spectrum model that all induce the same death and growth rates (in
+ the sense that 
+\begin_inset Formula $\mu_{i}[N^{1}](w)=..=\mu_{i}[N^{k}](w)=:M_{i}(w)$
+\end_inset
+
+ and 
+\begin_inset Formula $g_{i}[N^{1}](w)=..=g_{i}[N^{k}](w)=:G_{i}(w)$
+\end_inset
+
+) and 
+\begin_inset Formula $N^{*}=\lambda_{1}N^{1}+..+\lambda_{k}N^{k}:\lambda_{1}+..,+\lambda_{k}=1$
+\end_inset
+
+ is an affine combination of the steady states then 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ is a steady state.
+\end_layout
+
+\begin_layout Standard
+Proof
+\end_layout
+
+\begin_layout Standard
+In this type of system, for any state 
+\begin_inset Formula $N,$
+\end_inset
+
+ the death and growth rates are
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mu_{p.i}[N](w)=\int_{0}^{\infty}w'^{q}\left(\sum_{j}\phi_{j}\left(\frac{w}{w'}\right)\gamma_{j}\theta_{ji}N_{j}(w',t)\right)dw'
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g_{i}[N](w)=(1-\psi_{i}(w))\alpha_{i}w^{q}\int_{0}^{\infty}\phi_{i}\left(\frac{w'}{w}\right)w'\left(\gamma_{i}\left(N_{R}(w')+\sum_{j}\theta_{ij}N_{j}(w')\right)\right)dw'.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+are linear in 
+\begin_inset Formula $N,$
+\end_inset
+
+ so that for any pair of states 
+\begin_inset Formula $N$
+\end_inset
+
+ and 
+\begin_inset Formula $N'$
+\end_inset
+
+ we have 
+\begin_inset Formula $g_{i}[N+N'](w)=g_{i}[N'](w)+g_{i}[N](w).$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Since the growth rates 
+\begin_inset Formula $G$
+\end_inset
+
+ and death rates 
+\begin_inset Formula $M$
+\end_inset
+
+ are the same for all steady states, 
+\begin_inset Formula $N^{1},..,N^{k}$
+\end_inset
+
+ they must satisfy the MvF steady state condition for such growth and death
+ rates and so 
+\begin_inset Formula $\forall e\in\left\{ 1,..,k\right\} \forall i\in\left\{ 1,..,s\right\} $
+\end_inset
+
+ there exists 
+\begin_inset Formula $A_{i}^{e}$
+\end_inset
+
+ such that 
+\begin_inset Formula $N_{i}^{e}(w)=A_{i}^{e}\frac{1}{G_{i}(w)}\exp\left(-\int_{w_{e.i}}^{w}\frac{M_{i}(w')}{G_{i}(w')}.dw'\right).$
+\end_inset
+
+ Now note that since 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ is written as an affine combination of such states, it must also have a
+ similar form, in the sense that 
+\begin_inset Formula $\forall e\in\left\{ 1,..,k\right\} \forall i\in\left\{ 1,..,s\right\} $
+\end_inset
+
+ there exists 
+\begin_inset Formula $B_{i}^{e}$
+\end_inset
+
+ such that
+\begin_inset Formula 
+\begin{equation}
+N_{i}^{*e}(w)=B_{i}^{e}\frac{1}{G_{i}(w)}\exp\left(-\int_{w_{e.i}}^{w}\frac{M_{i}(w')}{G_{i}(w')}.dw'\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+And so all we have to do is to show that the death and growth rates 
+\begin_inset Formula $\mu_{i}[N^{*}](w)$
+\end_inset
+
+ and 
+\begin_inset Formula $g_{i}[N^{*}](w)$
+\end_inset
+
+ induced by state 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ are the same as those death and growth rates 
+\begin_inset Formula $M_{i}(w)=\mu_{i}[N^{1}]=..=\mu_{i}[N^{k}]$
+\end_inset
+
+ and 
+\begin_inset Formula $G(w)=g_{i}[N^{1}]=..=g_{i}[N^{k}]$
+\end_inset
+
+ which are experienced in each of our steady states 
+\begin_inset Formula $N^{1},..,N^{k}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+To see that 
+\begin_inset Formula $g[N^{*}]=G$
+\end_inset
+
+ note that since 
+\begin_inset Formula $g[N^{1}]=..=g[N^{k}]=:G$
+\end_inset
+
+ we have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+g[N^{*}]=g[\lambda_{1}N^{1}+..+\lambda_{k}N^{k}]=\lambda_{1}g[N^{1}]+..+\lambda_{k}g[N^{k}]=(\lambda_{1}+..+\lambda_{k})G=G
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+a similar argument shows that the death rates in 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ are the same as those that were in the steady states 
+\begin_inset Formula $N^{1},..,N^{k}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It follows that 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ can be written in the form 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+N_{i}^{*e}(w)=B_{i}^{e}\frac{1}{g_{i}[N^{*}](w)}\exp\left(-\int_{w_{e.i}}^{w}\frac{\mu_{i}[N^{*}](w')}{g_{i}[N^{*}](w')}.dw'\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so it is also a steady state.
+ 
+\begin_inset Formula $\Box$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Loose ends
+\end_layout
+
+\begin_layout Standard
+need to demonstrate (and similiarly for mortality rates) that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $g_{i}[N^{1}+N^{2}](w)=g_{i}[N^{1}]+g[N^{2}](w)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and 
+\begin_inset Formula $\lambda g_{i}[N](w)=g_{i}[\lambda N](w)$
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
