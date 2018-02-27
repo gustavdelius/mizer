@@ -358,11 +358,11 @@ because we can solve the MvF exactly for such growth and death rates, I
  of background species which use different parameters to each other.
  If we have the case where growth and death are given by sums of powers,
  we could solve the Mvf in this case, and if we have two background assemblages
- which vary over continuua of characteristic size then perhaps we can combine
+ which vary over continua of characteristic size then perhaps we can combine
  them to produce the above size spectrum, the associated death and growth
  rates would also be described by sums of powers, and we can solve the Mvf
  in such a case, and we will have two different solution shapes, but since
- each is associated with a continuua of charactertic sizes, and can set
+ each is associated with a continua of characteristic sizes, and can set
  the abundances so that the integral over the abundances of the two assemblages
  is the sum of the two power laws.
  This seems to be possible if we make the exponents, 
@@ -397,8 +397,8 @@ because we can solve the MvF exactly for such growth and death rates, I
 \end_layout
 
 \begin_layout Standard
-*It is important to distiguish two different type of steady states in multi-spec
-ies hetrogenous size spectrum models.
+*It is important to distinguish two different type of steady states in multi-spe
+cies heterogeneous size spectrum models.
  A uniform steady state is a steady state 
 \begin_inset Formula $N$
 \end_inset
@@ -416,7 +416,7 @@ ies hetrogenous size spectrum models.
 \end_inset
 
  In this case, we can find all the solutions are the same, if we then set
- things up so there are similar species accross many characteristic sizes,
+ things up so there are similar species across many characteristic sizes,
  then we may be able to demonstrate that we can setup equilibria which have
  something 
 \end_layout
@@ -637,7 +637,7 @@ Note, above we may turn off the plankton dynamics, or simply assume
 \end_layout
 
 \begin_layout Standard
-* A corrallary of the above, is that, for such a size spectrum system S,
+* A corollary of the above, is that, for such a size spectrum system S,
  where the growth rate and death rates are purely governed by the form of
  the functions 
 \begin_inset Formula $a_{i}[N](w):=\sum_{j=1}^{s}\gamma_{j}\theta_{ji}N_{j}(w',t)$
@@ -737,7 +737,7 @@ and so each of the states
 \begin_inset Formula $\mu$
 \end_inset
 
- are given by integrals iver abundance), we still have that 
+ are given by integrals over abundance), we still have that 
 \begin_inset Formula $\mu[N^{*}]=\mu[N^{1}]=..=\mu[N^{k}]$
 \end_inset
 
@@ -750,7 +750,7 @@ and so each of the states
 \end_inset
 
  will also be a steady state of S.
- To summarise: If feeding level is unlimited, and feeding kernels are the
+ To summarize: If feeding level is unlimited, and feeding kernels are the
  same for each species then the set of steady states 
 \begin_inset Formula $N$
 \end_inset
@@ -780,7 +780,7 @@ and so each of the states
  now if growth rates and mortality rates can be linearly recombined, we
  can prove that any redistribution of abundances produces another steady
  state of the same system.
- In the scale free model, a similar phonemenon occurs, but this time the
+ In the scale free model, a similar phenomenon occurs, but this time the
  solutions have the same shape but are shifted.
 \end_layout
 
@@ -974,13 +974,13 @@ nel,..etc.]
 \end_layout
 
 \begin_layout Standard
-We shall consider heterogeneous multispecies size spectrum models as described
+We shall consider heterogeneous multi species size spectrum models as described
  in the mizer vignette, except with 
 \begin_inset Formula $\theta_{ij}=1$
 \end_inset
 
  the resource dynamics turned off.
- For simplity suppose we have an unlimited feeding level (so 
+ For simplicity suppose we have an unlimited feeding level (so 
 \begin_inset Formula $h_{i}\rightarrow\infty,\forall i$
 \end_inset
 
@@ -995,7 +995,7 @@ We shall consider heterogeneous multispecies size spectrum models as described
 \begin_inset Formula $\mu_{b.i}(w)$
 \end_inset
 
- and the reproctive efficiency 
+ and the reproductive efficiency 
 \begin_inset Formula $\epsilon_{i}$
 \end_inset
 
@@ -1338,11 +1338,11 @@ and so it is also a steady state.
 \end_layout
 
 \begin_layout Standard
-Loose ends
+***Loose ends***
 \end_layout
 
 \begin_layout Standard
-need to demonstrate (and similiarly for mortality rates) that
+*need to demonstrate (and similarly for mortality rates) that
 \end_layout
 
 \begin_layout Standard
@@ -1358,6 +1358,304 @@ and
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+* demonstrate how these kind of affine combos correspond to death and growth
+ rate preserving population transplants
+\end_layout
+
+\begin_layout Standard
+***
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $N$
+\end_inset
+
+ be a steady state.
+ We wish to consider the set 
+\begin_inset Formula $E(N)$
+\end_inset
+
+ of all steady states within which have death and growth rates the same
+ as in 
+\begin_inset Formula $N,$
+\end_inset
+
+ and which have abundance functions proportional to those of 
+\begin_inset Formula $N.$
+\end_inset
+
+ Formally we define 
+\begin_inset Formula $E(N)$
+\end_inset
+
+ to be the set of states 
+\begin_inset Formula $M$
+\end_inset
+
+ such that
+\end_layout
+
+\begin_layout Enumerate
+For each species 
+\begin_inset Formula $i$
+\end_inset
+
+ there exists 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+ such that 
+\begin_inset Formula $M_{i}(w)=N_{i}(w)A_{i},$
+\end_inset
+
+ for all 
+\begin_inset Formula $w.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+We have 
+\begin_inset Formula $g_{i}[N](w)=g_{i}[M](w),\mu_{i}[N](w)=\mu_{i}[M](w)$
+\end_inset
+
+, for all 
+\begin_inset Formula $w$
+\end_inset
+
+ and 
+\begin_inset Formula $i$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It follows from arguments similar to those above that, if 
+\begin_inset Formula $N$
+\end_inset
+
+ is a steady state then each member of 
+\begin_inset Formula $E(N)$
+\end_inset
+
+ will be a steady state, and that 
+\begin_inset Formula $E(N)$
+\end_inset
+
+ is an affine set.
+ We can describe the structure of the set 
+\begin_inset Formula $E(N)$
+\end_inset
+
+ of equivalent steady states in more detail for special cases.
+\end_layout
+
+\begin_layout Standard
+Now we shall consider the case where the feeding kernels are the same for
+ each species, so 
+\begin_inset Formula $\phi_{1}=..=\phi_{s}.$
+\end_inset
+
+ In this case 
+\begin_inset Formula $E(N)$
+\end_inset
+
+ equals (or at least, contains) the set of all steady states 
+\begin_inset Formula $M$
+\end_inset
+
+ with the property that for each species 
+\begin_inset Formula $i$
+\end_inset
+
+ there exists 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+ such that 
+\begin_inset Formula $M_{i}(w)=N_{i}(w)A_{i},$
+\end_inset
+
+ for all 
+\begin_inset Formula $w.$
+\end_inset
+
+ Where the abundance multipliers 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+ could take any values such that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{j}\gamma_{j}\theta_{ji}N_{j}(w)=\sum_{j}\gamma_{j}\theta_{ji}A_{j}N_{j}(w)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\gamma_{i}\left(N_{R}(w)+\sum_{j}\theta_{ij}N_{j}(w)\right)=\gamma_{i}\left(M_{R}(w)+\sum_{j}\theta_{ij}A_{j}N_{j}(w)\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\forall i,\forall w.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+This describes the set 
+\begin_inset Formula $E(N).$
+\end_inset
+
+ It is interesting to note that the gammas play very similar roles to the
+ abundance multipliers.
+\end_layout
+
+\begin_layout Standard
+Here 
+\begin_inset Formula $M_{R}(w)$
+\end_inset
+
+ describes the background resource abundance rate in state 
+\begin_inset Formula $M.$
+\end_inset
+
+ We could suppose the resource dynamics are turned off, or we could suppose
+ that 
+\begin_inset Formula $N_{R}(w)=M_{R}(w).$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A very special case of the above result is when the steady state 
+\begin_inset Formula $N$
+\end_inset
+
+ for which we want to determine 
+\begin_inset Formula $E(N)$
+\end_inset
+
+ of, has the property that the abundance curve for every species has the
+ same shape, but perhaps a different scaling.
+ In particular, we shall suppose that our steady state 
+\begin_inset Formula $N$
+\end_inset
+
+ has the property that there exists a function 
+\begin_inset Formula $f:\mathbb{R\rightarrow\mathbb{R}}$
+\end_inset
+
+ and a constant 
+\begin_inset Formula $Q_{i}$
+\end_inset
+
+ for each species 
+\begin_inset Formula $i$
+\end_inset
+
+ such that 
+\begin_inset Formula $N_{i}(w)=Q_{i}f(w),$
+\end_inset
+
+ for each 
+\begin_inset Formula $w$
+\end_inset
+
+.
+ In this case, the set of all equivalent steady states 
+\begin_inset Formula $M\in E(N)$
+\end_inset
+
+ such that 
+\begin_inset Formula $N_{R}(w)=M_{R}(w)$
+\end_inset
+
+ equals the set of all states 
+\begin_inset Formula $M$
+\end_inset
+
+ such that [[for each species 
+\begin_inset Formula $i$
+\end_inset
+
+ there exists 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+ such that 
+\begin_inset Formula $M_{i}(w)=N_{i}(w)A_{i},$
+\end_inset
+
+ for all 
+\begin_inset Formula $w$
+\end_inset
+
+]] where 
+\begin_inset Formula $A_{1},..,A_{s}$
+\end_inset
+
+ are chosen such that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{j}\gamma_{j}\theta_{ji}=\sum_{j}\gamma_{j}\theta_{ji}A_{j}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\gamma_{i}\left(\sum_{j}\theta_{ij}\right)=\gamma_{i}\left(\sum_{j}\theta_{ij}A_{j}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The case where all species have identical parameters is an obvious example
+ of such a scenario.
+ 
+\end_layout
+
+\begin_layout Standard
+There is also some relationship with the homogeneous solutions with variable
+ characteristic sizes, where the abundance curves has the same basic shape
+ for each species, although they were shifted as well as rescaled.
+ We still have to understand how to relate to systems like that.
 \end_layout
 
 \end_body

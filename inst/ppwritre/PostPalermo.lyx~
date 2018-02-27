@@ -1108,8 +1108,8 @@ Suppose we have a size spectrum model with
 ***
 \end_layout
 
-\begin_layout Standard
-Theorem
+\begin_layout Subsection*
+Affine Structure Result
 \end_layout
 
 \begin_layout Standard
@@ -1117,13 +1117,17 @@ If
 \begin_inset Formula $N^{1},..,N^{k}$
 \end_inset
 
- are steady states of an unlimited intake size spectrum model that all induce
- the same death and growth rates (in the sense that 
-\begin_inset Formula $\mu_{i}[N^{1}](w)=..=\mu_{i}[N^{k}](w)$
+ are steady states of an unlimited intake (
+\begin_inset Formula $h_{i}\rightarrow\infty,\forall i)$
+\end_inset
+
+ size spectrum model that all induce the same death and growth rates (in
+ the sense that 
+\begin_inset Formula $\mu_{i}[N^{1}](w)=..=\mu_{i}[N^{k}](w)=:M_{i}(w)$
 \end_inset
 
  and 
-\begin_inset Formula $g_{i}[N^{1}](w)=..=g_{i}[N^{k}](w)$
+\begin_inset Formula $g_{i}[N^{1}](w)=..=g_{i}[N^{k}](w)=:G_{i}(w)$
 \end_inset
 
 ) and 
@@ -1185,21 +1189,27 @@ are linear in
 \end_inset
 
  we have 
-\begin_inset Formula $g_{i}[N+N'](w)=g_{i}[N'](w)+g_{i}[N](w)$
+\begin_inset Formula $g_{i}[N+N'](w)=g_{i}[N'](w)+g_{i}[N](w).$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Standard
-Since the growth rates and death rates are the same for all steady states,
- 
+Since the growth rates 
+\begin_inset Formula $G$
+\end_inset
+
+ and death rates 
+\begin_inset Formula $M$
+\end_inset
+
+ are the same for all steady states, 
 \begin_inset Formula $N^{1},..,N^{k}$
 \end_inset
 
- must also be steady states of the MvF system where these growth rates and
- death rates were held fixed.
- It follows (from the details of solving such a system) that 
+ they must satisfy the MvF steady state condition for such growth and death
+ rates and so 
 \begin_inset Formula $\forall e\in\left\{ 1,..,k\right\} \forall i\in\left\{ 1,..,s\right\} $
 \end_inset
 
@@ -1208,13 +1218,26 @@ Since the growth rates and death rates are the same for all steady states,
 \end_inset
 
  such that 
-\begin_inset Formula $N_{i}^{e}(w)=A_{i}^{e}\frac{1}{g_{i}(w)}\exp\left(-\int_{w_{e.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'\right).$
+\begin_inset Formula $N_{i}^{e}(w)=A_{i}^{e}\frac{1}{G_{i}(w)}\exp\left(-\int_{w_{e.i}}^{w}\frac{M_{i}(w')}{G_{i}(w')}.dw'\right).$
 \end_inset
 
- It also follows that any other state of this form, 
+ Now note that since 
+\begin_inset Formula $N^{*}$
+\end_inset
+
+ is written as an affine combination of such states, it must also have a
+ similar form, in the sense that 
+\begin_inset Formula $\forall e\in\left\{ 1,..,k\right\} \forall i\in\left\{ 1,..,s\right\} $
+\end_inset
+
+ there exists 
+\begin_inset Formula $B_{i}^{e}$
+\end_inset
+
+ such that
 \begin_inset Formula 
 \begin{equation}
-N_{i}^{*e}(w)=B_{i}^{e}\frac{1}{g_{i}(w)}\exp\left(-\int_{w_{e.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'\right)
+N_{i}^{*e}(w)=B_{i}^{e}\frac{1}{G_{i}(w)}\exp\left(-\int_{w_{e.i}}^{w}\frac{M_{i}(w')}{G_{i}(w')}.dw'\right)
 \end{equation}
 
 \end_inset
@@ -1223,23 +1246,41 @@ N_{i}^{*e}(w)=B_{i}^{e}\frac{1}{g_{i}(w)}\exp\left(-\int_{w_{e.i}}^{w}\frac{\mu_
 \end_layout
 
 \begin_layout Standard
-which is similarly proportional, which also preserves growth and death rates
- will also be a steady state of the original system.
- Our affine conmbination 
+And so all we have to do is to show that the death and growth rates 
+\begin_inset Formula $\mu_{i}[N^{*}](w)$
+\end_inset
+
+ and 
+\begin_inset Formula $g_{i}[N^{*}](w)$
+\end_inset
+
+ induced by state 
 \begin_inset Formula $N^{*}$
 \end_inset
 
- is similarly proportional, so now we just have to show that the growth
- rates and death rates are the same in 
-\begin_inset Formula $N^{*}$
+ are the same as those death and growth rates 
+\begin_inset Formula $M_{i}(w)=\mu_{i}[N^{1}]=..=\mu_{i}[N^{k}]$
 \end_inset
 
- as they were in states 
-\begin_inset Formula $N^{1},..,N^{k}.$
+ and 
+\begin_inset Formula $G(w)=g_{i}[N^{1}]=..=g_{i}[N^{k}]$
 \end_inset
 
- To see this note that since 
-\begin_inset Formula $g[N^{1}]=..=g[N^{k}]=:g^{*}$
+ which are experienced in each of our steady states 
+\begin_inset Formula $N^{1},..,N^{k}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+To see that 
+\begin_inset Formula $g[N^{*}]=G$
+\end_inset
+
+ note that since 
+\begin_inset Formula $g[N^{1}]=..=g[N^{k}]=:G$
 \end_inset
 
  we have 
@@ -1248,7 +1289,7 @@ which is similarly proportional, which also preserves growth and death rates
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-g[N^{*}]=g[\lambda_{1}N^{1}+..+\lambda_{k}N^{k}]=\lambda_{1}g[N^{1}]+..+\lambda_{k}g[N^{k}]=(\lambda_{1}+..+\lambda_{k})g^{*}=g^{*}
+g[N^{*}]=g[\lambda_{1}N^{1}+..+\lambda_{k}N^{k}]=\lambda_{1}g[N^{1}]+..+\lambda_{k}g[N^{k}]=(\lambda_{1}+..+\lambda_{k})G=G
 \end{equation}
 
 \end_inset
@@ -1269,40 +1310,43 @@ a similar argument shows that the death rates in
 \end_layout
 
 \begin_layout Standard
-****
-\end_layout
-
-\begin_layout Standard
-Suppose we have a size spectrum model (say for simplicity the resource dynamics
- are turned off), and suppose we have an unlimited feeding level (so 
-\begin_inset Formula $h_{i}\rightarrow\infty,\forall i$
+It follows that 
+\begin_inset Formula $N^{*}$
 \end_inset
 
-), and also suppose 
-\begin_inset Formula $k_{i}=k_{s.i}=0,$
-\end_inset
-
- and suppose each species has the same feeding kernel function (i.e., 
-\begin_inset Formula $\beta_{1}=..=\beta_{s}$
-\end_inset
-
- and 
-\begin_inset Formula $\sigma_{1}=..=\sigma_{s}$
-\end_inset
-
-), so 
-\begin_inset Formula $\phi_{1}=..=\phi_{s}=\phi.$
-\end_inset
-
- It follows that 
+ can be written in the form 
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\mu_{p.i}[N](w)=\int_{0}^{\infty}\phi\left(\frac{w}{w'}\right)w'^{q}\left(\sum_{j}\gamma_{j}\theta_{ji}N_{j}(w',t)\right)dw'
+N_{i}^{*e}(w)=B_{i}^{e}\frac{1}{g_{i}[N^{*}](w)}\exp\left(-\int_{w_{e.i}}^{w}\frac{\mu_{i}[N^{*}](w')}{g_{i}[N^{*}](w')}.dw'\right)
 \end{equation}
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so it is also a steady state.
+ 
+\begin_inset Formula $\Box$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Loose ends
+\end_layout
+
+\begin_layout Standard
+need to demonstrate (and similiarly for mortality rates) that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $g_{i}[N^{1}+N^{2}](w)=g_{i}[N^{1}]+g[N^{2}](w)$
 \end_inset
 
 
@@ -1310,14 +1354,7 @@ Suppose we have a size spectrum model (say for simplicity the resource dynamics
 
 \begin_layout Standard
 and 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\begin{equation}
-g_{i}[N](w)=(1-\psi_{i}(w))\alpha_{i}w^{q}\int_{0}^{\infty}\phi\left(\frac{w'}{w}\right)w'\left(\gamma_{i}\left(N_{R}(w')+\sum_{j}\theta_{ij}N_{j}(w')\right)\right)dw'.
-\end{equation}
-
+\begin_inset Formula $\lambda g_{i}[N](w)=g_{i}[\lambda N](w)$
 \end_inset
 
 
