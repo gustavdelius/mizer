@@ -1658,5 +1658,108 @@ There is also some relationship with the homogeneous solutions with variable
  We still have to understand how to relate to systems like that.
 \end_layout
 
+\begin_layout Subsection
+Steady State Construction Procedure
+\end_layout
+
+\begin_layout Standard
+We have a multi-species size spectrum model (as in the mizer vignette).
+ It can have general settings, and fishing mortality, but it must have all
+ entries of the theta interaction matrix equal to 1.
+ We suppose everything in the multi-species size spectrum model is specified
+ except the carrying capacity of the background resource, and the background
+ mortality rate, and the reproductive efficiency of each species.
+ These three pieces of information will be specified later, in order to
+ make sure that the state we shall construct is a steady state.
+ 
+\end_layout
+
+\begin_layout Standard
+In addition to the usual parameters one has to specify the carrying capacity
+ multiplier kappa (such that the sum of abundances of species, plus abundance
+ of background resource is kappa*w^(-lambda)) and a constant mu_0 (such
+ that mu(w)=mu_0 w^(n-1) will be the total mortality rate experienced by
+ each weight w individual, of each species).
+ 
+\end_layout
+
+\begin_layout Standard
+The basic idea is that, for each species i, we solve the MvF, for a steady
+ state N_i(w) under the assumption that the mortality rate is fixed at mu(w)=mu_
+0 w^(n-1) and the growth rate is fixed at g_i (w), where the growth rate
+ g_i (w) is consistent with the assumption that the aggregation of all abundance
+ (over species and the background resource) is kappa*w^(-lambda).
+\end_layout
+
+\begin_layout Standard
+When we solve this MvF for the steady state, we don't worry about trying
+ to satisfy the reproduction boundary condition.
+ In other words, we just start by finding a solution that corresponds to
+ a steady state under the assumption that the abundance of eggs is held
+ fixed.
+ 
+\end_layout
+
+\begin_layout Standard
+The solution N to this MvF gives us an abundance curve for each species.
+ We are free to multiply the abundance curves of different species by different
+ constants (provided they are not too large), to set the overall abundances
+ of the different species in N.
+ 
+\end_layout
+
+\begin_layout Standard
+Our next step is to select the carrying capacity c_p(w) of the background
+ resource to be a specially chosen curve, with the property that when this
+ carrying capacity is used, and the fish species have abundances as described
+ by N, the semi-chemostatic dynamics that govern the abundance of the background
+ resources will be at a steady state within which the background resource
+ has abundance N_R (w), where N_R (w) = kappa*w^(-lambda) - sum_i N_i (w).
+ 
+\end_layout
+
+\begin_layout Standard
+Our next step is to set the background mortality.
+ Since we want the total mortality rate to be mu_0 w^(n-1)=mu_{b.i} (w) +mu_{f.i}
+ (w) + mu_{p.i} (w), being the sum of the background, fishing and predation
+ mortality rates, we shall define the background mortality rate of each
+ species i to be mu_{b.i} (w) := mu_0 w^(n-1) - mu_{f.i} (w) - mu_{p.i} (w)
+ , where mu_{p.i} (w) is the predation mortality rate induced by state N.
+ 
+\end_layout
+
+\begin_layout Standard
+These choices of resource carrying capacity and background mortality rate
+ ensure that the growth rate and death rate induced by the state N we construct
+ are the same as those we used when solving the equation to get N.
+ Now to make sure N is a proper steady state, we finally have to make sure
+ it satisfies the reproductive boundary condition -that the flow of new
+ eggs is balanced by the amount of growth and death away from the egg sized
+ weight class.
+ We insure this boundary condition is satisfied by choosing the reproductive
+ efficiency appropriately.
+ This insures we have a steady state, even when we allow the abundance of
+ eggs to be dynamic in the usual way.
+ 
+\end_layout
+
+\begin_layout Standard
+Note, we are not saying anything about the stability here.
+ Although presumably density dependence could maybe be added to help stabilize
+ many systems of the above construction.
+\end_layout
+
+\begin_layout Standard
+There are further things that should be done.
+ In particular we need to take care in choosing the abundance multipliers
+ of species and the value of mu_0, in order to make the background mortality
+ and background resource shape introduced by the above construction more
+ realistic (so they correspond to predators and resources that are cutoff
+ over the size regime we are modelling).
+ The value of mu_0 could be used that corresponds to the predation induced
+ by an abundance kappa*w^(-lambda) of some predators with parameters similar
+ to those one wishes to model.
+\end_layout
+
 \end_body
 \end_document
