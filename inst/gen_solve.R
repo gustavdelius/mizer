@@ -43,7 +43,8 @@ w_min <- 10^x_min
 w_inf <- 10^(x_min+5)
 w_mat <- 10^(x_min+4.4)  # This is about a quarter of w_inf
 min_w <- min(w_min)
-max_w <- max(w_inf)
+#max_w <- max(w_inf)
+max_w <- max(w_inf)*beta*2
 no_w <- log10(max_w/min_w)*100+1
 min_w_pp <- 1e-8
 
@@ -82,7 +83,7 @@ n_pretend[,] <- 0
 n_pp_pretend <- params@kappa*params@w_full^(-params@lambda)
 gg <- getEGrowth(params,n_pretend,n_pp_pretend)
 # at this point we can compare and check that gg=(1-psi)*hbar*w^(n)
-
+plot(params@w,gg[1,],log="xy")
 # make another pretend solution, and extract death rate
 effort <- 0
 n_pretend2 <- n_pretend
@@ -90,21 +91,25 @@ n_pretend2[1,] <- params@kappa*params@w^(-params@lambda)
 n_pp_pretend2 <- n_pp_pretend
 n_pp_pretend2[] <- 0
 mumu <- getZ(params, n_pretend2, n_pp_pretend2, effort)
+plot(params@w,mumu[1,],log="xy")
+
+# 
+
 # we model by making the background abundances etc,. to realize these growth and death rates
 # we could have fishing effort etc. on if we like, or we could fill to a mu0*w^(n-1) type curve
 
 # now we construct the solutions
 no_sp <- dim(params@psi)[1]
-abundance_multipliers <- rep(10^(-8),no_sp)
+abundance_multipliers <- rep(10^(8),no_sp)
 w_inf_idx <- rep(0,no_sp)
 n_real <- n_pretend
 for (i in (1:no_sp)){
   w_inf_idx[i] <- length(params@w[params@w<=params@species_params$w_inf[i]])
-  integrand <- mumu[i,params@species_params$w_min_idx[i]:w_inf_idx[i]]/gg[i,params@species_params$w_min_idx[i]:w_inf_idx[i]]
+  integrand <- params@dw[params@species_params$w_min_idx[i]:w_inf_idx[i]]*mumu[i,params@species_params$w_min_idx[i]:w_inf_idx[i]]/gg[i,params@species_params$w_min_idx[i]:w_inf_idx[i]]
   n_real[i,params@species_params$w_min_idx[i]:w_inf_idx[i]] <- abundance_multipliers[i]*
     exp(-cumsum(integrand))/gg[i,params@species_params$w_min_idx[i]:w_inf_idx[i]]
 }
-
+plot(w,n_real[i,],log="xy")
 # plot and check above matches with stable_community.R step by step
 
 ##################
@@ -125,28 +130,35 @@ params@cc_pp <- (1+m2_background/params@rr_pp) * initial_n_pp
 
 ################# setup background death
 
-mu_impartial <- getZ(params, n_real, initial_n_pp)
+mu_impartial <- getZ(params, n_real, initial_n_pp,effort)
 
 for (i in 1:no_sp) {
   params@mu_b[i, ] <- mumu[i,] - mu_impartial[i,]
 }
 
-### mmet reproduction boundary condition
+### vary erepro to meet reproduction boundary condition
 
 rdi <- getRDI(params, n_real, initial_n_pp)
 gg_new <- getEGrowth(params, n_real, initial_n_pp)
 # # #
-effort <- 0
-mumu <- getZ(params, n_output, initial_n_pp, effort = effort)
+#effort <- 0
+mumu_new <- getZ(params, n_real, initial_n_pp, effort = effort)
 erepro_final <- rdi
 for (i in (1:no_sp)){
   #  erepro_final[i] <- erepro*(gg[i,params@species_params$w_min_idx[i]]*n_output[i,params@species_params$w_min_idx[i]])/
   #    rdi[i]
-  gg0 <- gg[i,params@species_params$w_min_idx[i]]
-  mumu0 <- mumu[i,params@species_params$w_min_idx[i]]
+  gg0 <- gg_new[i,params@species_params$w_min_idx[i]]
+  mumu0 <- mumu_new[i,params@species_params$w_min_idx[i]]
   DW <- params@dw[params@species_params$w_min_idx[i]]
-  erepro_final[i] <- erepro*(n_output[i,params@species_params$w_min_idx[i]]*(gg0+DW*mumu0))/rdi[i]
+  erepro_final[i] <- params@species_params$erepro[i]*(n_real[i,params@species_params$w_min_idx[i]]*(gg0+DW*mumu0))/rdi[i]
 }
-
 params@species_params$erepro <- erepro_final
 
+########## run without rmax or chi
+
+params@srr <- function(rdi, species_params) {return(rdi)}
+params@chi <- 0.0
+t_max <- 10
+sim <- project(params, t_max=t_max, dt=0.01, t_save=t_max/100 ,effort = 0, 
+               initial_n = n_real, initial_n_pp = initial_n_pp)
+plot(sim)
