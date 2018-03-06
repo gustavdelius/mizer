@@ -134,6 +134,9 @@ mu_impartial <- getZ(params, n_real, initial_n_pp,effort)
 
 for (i in 1:no_sp) {
   params@mu_b[i, ] <- mumu[i,] - mu_impartial[i,]
+  if (length(params@mu_b[i,params@mu_b[i, ]<0])>0){
+    negwarn()
+  }
 }
 
 ### vary erepro to meet reproduction boundary condition
@@ -162,3 +165,10 @@ t_max <- 10
 sim <- project(params, t_max=t_max, dt=0.01, t_save=t_max/100 ,effort = 0, 
                initial_n = n_real, initial_n_pp = initial_n_pp)
 plot(sim)
+
+#I think I've got gen_solve.R working now. I just pushed the debugged version.
+#It does not do exactly what stable_community.R does, and I think/hope the code should be usuable to create steady states, even when fishing mortality is include. Anyhow, you can see that it creates a steady situation without chi here. But that is hardly surprising given how the background resource and mortality were selected. Another challenge will be to automate the process of choosing abundance multipliers so that N_R and mu_b can be cut back
+# the solututions look strange because (1) all the abundance multipliers are set to be the same 
+# (2) I wanted to make max_w>beta*w_inf so that when I define mu_b I consider large 
+# enough background predators (see mumu definition), but am having difficulty setting this up. 
+# This results in the solutions of big species having less mortality at RHS
