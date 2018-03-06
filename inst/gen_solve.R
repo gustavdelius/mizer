@@ -43,8 +43,8 @@ w_min <- 10^x_min
 w_inf <- 10^(x_min+5)
 w_mat <- 10^(x_min+4.4)  # This is about a quarter of w_inf
 min_w <- min(w_min)
-#max_w <- max(w_inf)
-max_w <- max(w_inf)*beta*2
+max_w <- max(w_inf)
+#max_w <- max(w_inf)*beta*2
 no_w <- log10(max_w/min_w)*100+1
 min_w_pp <- 1e-8
 
@@ -100,7 +100,7 @@ plot(params@w,mumu[1,],log="xy")
 
 # now we construct the solutions
 no_sp <- dim(params@psi)[1]
-abundance_multipliers <- rep(10^(8),no_sp)
+abundance_multipliers <- rep(10^(-8),no_sp)
 w_inf_idx <- rep(0,no_sp)
 n_real <- n_pretend
 for (i in (1:no_sp)){
