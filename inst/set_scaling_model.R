@@ -105,4 +105,103 @@ set_scaling_model <- function(no_sp = 11,
   # we have to determine the form of the analytic solution. So we should output that too, 
   # as part of the output of set_scaling_model.R
   
+############### next part just copied from stable_community.R, needs checking #######
+  
+  #' gamma is determined by mizerparams. Note that density dependence is currently off
+  gamma <- params@species_params$gamma[1]
+  w <- params@w
+  
+  
+  # ----
+  #' ### Determine analytic solution
+  
+  
+  mu0 <- (1-f0) * sqrt(2*pi) * kappa * gamma * sigma *
+    (beta^(n-1)) * exp(sigma^2 * (n-1)^2 / 2)
+  hbar <- alpha * h * f0 - ks
+  pow <- mu0/hbar/(1-n)
+  n_mult <- (1 - (w/w_inf[1])^(1-n))^(pow-1) * (1 - (w_mat[1]/w_inf[1])^(1-n))^(-pow)
+  n_mult[w < w_mat[1]] <- 1
+  n_mult[w >= w_inf[1]] <- 0
+  n_exact <- w  # Just to get array with correct dimensions and names
+  n_exact <- ((w_min[1]/w)^(mu0/hbar) / (hbar * w^n)) * n_mult
+  n_exact[w < w_min[1]] <- 0
+  
+  initial_n <- params@psi
+  initial_n[,] <- 0
+  w_inf_idx <- w_inf
+  for (i in 1:no_sp) {
+    w_inf_idx[i] <- length(w[w<=w_inf[i]])
+    initial_n[i, params@species_params$w_min_idx[i]:
+                (params@species_params$w_min_idx[i]+
+                   (w_inf_idx[1]-params@species_params$w_min_idx[1]))] <-
+      n_exact[params@species_params$w_min_idx[1]:
+                (params@species_params$w_min_idx[1]+
+                   (w_inf_idx[1]-params@species_params$w_min_idx[1]))] *
+      (w_min[1]/w_min[i])^lambda
+  }
+  
+  v <- sqrt(min(w_mat)*max(w_mat))
+  v_idx <- length(w[w<v])
+  #n_output <- initial_n*(kappa*w[v_idx]^(-lambda))/sum(sqrt(initial_n[,v_idx]*initial_n[,v_idx+19]))
+  n_output <- initial_n*(kappa*w[v_idx]^(-lambda))/sum(initial_n[,v_idx])
+  
+  ######################################
+  
+  # ----
+  #' ### Setup plankton
+  
+  plankton_vec <- (kappa*w^(-lambda))-colSums(n_output)
+  plankton_vec[plankton_vec<0] <- 0
+  ## need to put a waning here about -ve entries and maybe cutoff
+  plankton_vec[min(which(plankton_vec==0)):length(plankton_vec)] <- 0
+  params@cc_pp[sum(params@w_full<=w[1]):length(params@cc_pp)] <- plankton_vec
+  initial_n_pp <- params@cc_pp
+  # The cc_pp factor needs to be higher than the desired steady state in
+  # order to compensate for predation mortality
+  m2_background <- getM2Background(params, n_output, initial_n_pp)
+  params@cc_pp <- (1+m2_background/params@rr_pp) * initial_n_pp
+  
+  # ----
+  #' ### Setup background death and steplike psi
+  
+  m2 <- getM2(params, n_output, initial_n_pp)
+  
+  for (i in 1:no_sp) {
+    params@psi[i, ] <- (w/w_inf[i])^(1-n)
+    params@psi[i, w < (w_mat[i]-1e-10)] <- 0
+    params@psi[i, w > (w_inf[i]-1e-10)] <- 1
+    params@mu_b[i, ] <- mu0 * w^(n-1) - m2[i,]
+    ## need to put a waning here about -ve entries and maybe cutoff
+    params@mu_b[i,params@mu_b[i, ]<0] <- 0
+  }
+  
+  # ----
+  #' ### Set erepro to meet boundary condition
+  
+  rdi <- getRDI(params, n_output, initial_n_pp)
+  gg <- getEGrowth(params, n_output, initial_n_pp)
+  effort <- 0
+  mumu <- getZ(params, n_output, initial_n_pp, effort = effort)
+  erepro_final <- rdi
+  for (i in (1:no_sp)){
+    #  erepro_final[i] <- erepro*(gg[i,params@species_params$w_min_idx[i]]*n_output[i,params@species_params$w_min_idx[i]])/
+    #    rdi[i]
+    gg0 <- gg[i,params@species_params$w_min_idx[i]]
+    mumu0 <- mumu[i,params@species_params$w_min_idx[i]]
+    DW <- params@dw[params@species_params$w_min_idx[i]]
+    erepro_final[i] <- erepro*(n_output[i,params@species_params$w_min_idx[i]]*(gg0+DW*mumu0))/rdi[i]
+  }
+  
+  params@species_params$erepro <- erepro_final
+  
+  
+  ## params@srr <- function(rdi, species_params) {return(rdi)}
+  ## need to create a new params slots to hold n_output, and initial_n_pp
+  return(params)
 }
+
+#19 have got a basic layout for the set_scaling_model function, but still need to coerce the
+# grid points, include the n_output and initial_n_pp slots, include -ve warnings, add 
+# fishing, and rmax. Next I will do add_species, then work on the system with background + 
+# red mullet and make
