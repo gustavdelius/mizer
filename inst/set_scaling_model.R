@@ -1,3 +1,7 @@
+library(progress)
+library(mizer)
+
+
 ##set_trait_model <- function(no_sp = 10,
 set_scaling_model <- function(no_sp = 11,
                             min_w_inf = 10,
@@ -5,7 +9,7 @@ set_scaling_model <- function(no_sp = 11,
                             max_w_inf = 1000,
                             ## no_w = 100,
                             ## no_w = 701,
-                            min_w = 0.001,
+                            min_w = 1e-04,
                             ## max_w = max_w_inf * 1.1,
                             max_w = max_w_inf,
                             ##min_w_pp = 1e-10,
@@ -195,9 +199,19 @@ set_scaling_model <- function(no_sp = 11,
   
   params@species_params$erepro <- erepro_final
   
-  
-  ## params@srr <- function(rdi, species_params) {return(rdi)}
+  # what do I do with this part when I want to include Rmax
+  params@srr <- function(rdi, species_params) {return(rdi)}
   ## need to create a new params slots to hold n_output, and initial_n_pp
+  
+  params@ddd <- n_output
+  ## this is just to store the solution, for chi>0 we instead need to use code like below 
+  #nn <- n_output
+  #nn[nn==0] <- 1
+  #params@chi <- 0.005
+  #params@ddd <- nn^(params@chi)
+  
+  
+  
   return(params)
 }
 
@@ -205,3 +219,24 @@ set_scaling_model <- function(no_sp = 11,
 # grid points, include the n_output and initial_n_pp slots, include -ve warnings, add 
 # fishing, and rmax. Next I will do add_species, then work on the system with background + 
 # red mullet and make
+
+params_out <- set_scaling_model()
+n_start <- params_out@ddd
+params_out@ddd[,] <- 1
+
+# run stable_community.R first to define initial_n_pp. This is a temp solution, until 
+# a proper slot is made.
+
+t_max <- 200
+sim <- project(params_out, t_max=t_max ,dt=0.01, t_save=t_max/100, effort = 0, 
+               initial_n = n_start, initial_n_pp = initial_n_pp)
+plot(sim)
+
+#19 Have got code that runs something presumably close to stable. 
+#But there are issues such as: (1) currently we need to run stable_community.R 
+#first to define the n_pp because it isnot defined as a slot.
+# We need to add extra slots to mizer params to store the n and n_pp 
+# we should use as initial conditions. (2) why are very low biomass densities present in 
+# plot(sim) ? We need to include code that coerces the characteristic sizes to lie on 
+# grid points. (3) We need to add warnings about -ve N_R, -ve mu_b 
+# and silly erepro values. (4) We should include a better biomass plot.
