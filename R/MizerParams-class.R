@@ -259,6 +259,12 @@ valid_MizerParams <- function(object) {
 #'  at each weight at our candidate steady state solution.
 #' @slot initial_n_pp A vector the same length as the w_full slot that describes
 #'  the abundance of the background background resource at each weight.
+#' @slot n Exponent of maximum intake rate.
+#' @slot p Exponent of metabolic cost.
+#' @slot lambda Exponent of resource spectrum.
+#' @slot q Exponent for volumetric search rate.
+#' @slot f0 Initial feeding level.
+#' @slot kappa Magnitude of resource spectrum.
 #' @note The \code{MizerParams} class is fairly complex with a large number of
 #'   slots, many of which are multidimensional arrays. The dimensions of these
 #'   arrays is strictly enforced so that \code{MizerParams} objects are
