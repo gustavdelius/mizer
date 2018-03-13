@@ -211,7 +211,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
         n_pp <- sim@n_pp[1,]
         t_steps <- dim(effort_dt)[1]-1
         # Set up progress bar
-        pb <- progress_bar$new(
+        pb <- progress::progress_bar$new(
             format = "[:bar] :percent ETA: :eta",
             total = t_steps, width= 60)
         for (i_time in 1:t_steps){
