@@ -249,6 +249,8 @@ valid_MizerParams <- function(object) {
 #' @slot interaction The species specific interaction matrix, \eqn{\theta_{ij}}
 #' @slot srr Function to calculate the realised (density dependent) recruitment.
 #'   Has two arguments which are rdi and species_params
+#' @slot chi Exponent of density dependence in per-capita mortality
+#' @slot ddd Denominator of density dependence
 #' @slot selectivity An array (gear x species x w) that holds the selectivity of
 #'   each gear for species and size, \eqn{S_{g,i,w}}
 #' @slot catchability An array (gear x species) that holds the catchability of
@@ -291,15 +293,29 @@ setClass(
         initial_n_pp = "numeric",
         species_params = "data.frame",
         interaction = "array",
+        chi = "numeric",
+        ddd = "array",
         srr  = "function",
         selectivity = "array",
-        catchability = "array"
+        catchability = "array",
+        n = "numeric",
+        p = "numeric",
+        lambda = "numeric",
+        q = "numeric",
+        f0 = "numeric",
+        kappa = "numeric"
     ),
     prototype = prototype(
         w = NA_real_,
         dw = NA_real_,
         w_full = NA_real_,
         dw_full = NA_real_,
+        n = NA_real_,
+        p = NA_real_,
+        lambda = NA_real_,
+        q = NA_real_,
+        f0 = NA_real_,
+        kappa = NA_real_,
         psi = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         initial_n = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         intake_max = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
@@ -315,7 +331,9 @@ setClass(
         #speciesParams = data.frame(),
         interaction = array(
             NA,dim = c(1,1), dimnames = list(predator = NULL, prey = NULL)
-        ), # which dimension is prey and which is prey?
+        ),
+        chi = NA_real_,
+        ddd = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         selectivity = array(
             NA, dim = c(1,1,1), dimnames = list(gear = NULL, sp = NULL, w = NULL)
         ),
@@ -375,6 +393,8 @@ setClass(
 #' @param z0exp If \code{z0}, the mortality from other sources, is not
 #'       a column in the species data frame, it is calculated as 
 #'       z0pre * w_inf ^ z0exp. Default value is n-1.
+#' @param chi Exponent of density dependence in per-capita mortality rate.
+#'       Default value is 0.
 #' @param species_names Names of the species. Generally not needed as normally
 #'   taken from the \code{object} data.frame.
 #' @param gear_names Names of the gears that catch each species. Generally not
@@ -481,7 +501,7 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	    ft_pred_kernel_p = ft_pred_kernel_p,
 	    selectivity=selectivity, catchability=catchability,
 	    rr_pp = vec1, cc_pp = vec1, initial_n_pp = vec1, species_params = species_params,
-	    interaction = interaction, srr = srr) 
+	    interaction = interaction, srr = srr, chi = 0) 
 	return(res)
     }
 )
@@ -492,7 +512,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
     function(object, interaction,  n = 2/3, p = 0.7, q = 0.8, r_pp = 10, 
              kappa = 1e11, lambda = (2+q-n), w_pp_cutoff = 10, 
              max_w = max(object$w_inf)*1.1, f0 = 0.6, 
-             z0pre = 0.6, z0exp = n-1, ...){
+             z0pre = 0.6, z0exp = n-1, chi = 0, ...){
 
 	# Set default values for column values if missing
 	# If no gear_name column in object, then named after species
@@ -555,6 +575,12 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	# Make an empty object of the right dimensions
 	res <- MizerParams(no_sp, species_names=object$species, 
 	                   gear_names=unique(object$gear), max_w=max_w,...)
+    res@n <- n
+    res@p <- p
+    res@lambda <- lambda
+    res@q <- q
+    res@f0 <- f0
+    res@kappa <- kappa
 
 	# If not w_min column in species_params, set to w_min of community
 	if (!("w_min" %in% colnames(object)))
@@ -592,13 +618,17 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	res@psi[unlist(tapply(res@w,1:length(res@w),function(wx,w_mat)wx<(w_mat*0.1)  ,w_mat=object$w_mat))] <- 0
 	# Set all w > w_inf to 1 # Check this is right...
 	res@psi[unlist(tapply(res@w,1:length(res@w),function(wx,w_inf)(wx/w_inf)>1,w_inf=object$w_inf))] <- 1
-	# note sure what a and n0_mult are in get_initial_n
 
 	res@intake_max[] <- unlist(tapply(res@w,1:length(res@w),function(wx,h,n)h * wx^n,h=object$h,n=n))
 	res@search_vol[] <- unlist(tapply(res@w,1:length(res@w),function(wx,gamma,q)gamma * wx^q, gamma=object$gamma, q=q))
 	res@activity[] <-  unlist(tapply(res@w,1:length(res@w),function(wx,k)k * wx,k=object$k))
 	res@std_metab[] <-  unlist(tapply(res@w,1:length(res@w),function(wx,ks,p)ks * wx^p, ks=object$ks,p=p))
 	res@mu_b[] <- res@species_params$z0
+    res@chi <- chi
+    res@ddd <- res@psi
+    for (i in 1:no_sp){
+       res@ddd[i,] <- (kappa[i] * object$w_mat[i]^(-lambda))^chi
+            }
             
 	Beta <- log(res@species_params$beta)
 	sigma <- res@species_params$sigma
