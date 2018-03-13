@@ -1,6 +1,6 @@
 # This branch
 
-implements slots for steady state n and n_pp
+implements slots for steady state n and n_pp.
 
 # mizer
 
