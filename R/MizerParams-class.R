@@ -253,9 +253,9 @@ valid_MizerParams <- function(object) {
 #'   each gear for species and size, \eqn{S_{g,i,w}}
 #' @slot catchability An array (gear x species) that holds the catchability of
 #'   each species by each gear, \eqn{Q_{g,i}}
-#' @slot steady_n An array (species x size) that holds abundance of each species
+#' @slot initial_n An array (species x size) that holds abundance of each species
 #'  at each weight at our candidate steady state solution.
-#' @slot steady_n_pp A vector the same length as the w_full slot that describes
+#' @slot initial_n_pp A vector the same length as the w_full slot that describes
 #'  the abundance of the background background resource at each weight.
 #' @note The \code{MizerParams} class is fairly complex with a large number of
 #'   slots, many of which are multidimensional arrays. The dimensions of these
@@ -278,7 +278,7 @@ setClass(
         w_full = "numeric",
         dw_full = "numeric",
         psi = "array",
-        steady_n = "array",
+        initial_n = "array",
         intake_max = "array",
         search_vol = "array",
         activity = "array",
@@ -288,7 +288,7 @@ setClass(
         mu_b = "array",
         rr_pp = "numeric",
         cc_pp = "numeric", # was NinPP, carrying capacity of background
-        steady_n_pp = "numeric",
+        initial_n_pp = "numeric",
         species_params = "data.frame",
         interaction = "array",
         srr  = "function",
@@ -301,7 +301,7 @@ setClass(
         w_full = NA_real_,
         dw_full = NA_real_,
         psi = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
-        steady_n = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
+        initial_n = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         intake_max = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         search_vol = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         activity = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
@@ -311,7 +311,7 @@ setClass(
         mu_b = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         rr_pp = NA_real_,
         cc_pp = NA_real_,
-        steady_n_pp = NA_real_,
+        initial_n_pp = NA_real_,
         #speciesParams = data.frame(),
         interaction = array(
             NA,dim = c(1,1), dimnames = list(predator = NULL, prey = NULL)
@@ -476,11 +476,11 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	# Should Z0, rrPP and ccPP have names (species names etc)?
 	res <- new("MizerParams",
 	    w = w, dw = dw, w_full = w_full, dw_full = dw_full,
-	    psi = mat1, steady_n = mat1, intake_max = mat1, search_vol = mat1, activity = mat1, 
+	    psi = mat1, initial_n = mat1, intake_max = mat1, search_vol = mat1, activity = mat1, 
 	    std_metab = mat1, mu_b = mat1, ft_pred_kernel_e = ft_pred_kernel_e, 
 	    ft_pred_kernel_p = ft_pred_kernel_p,
 	    selectivity=selectivity, catchability=catchability,
-	    rr_pp = vec1, cc_pp = vec1, steady_n_pp = vec1, species_params = species_params,
+	    rr_pp = vec1, cc_pp = vec1, initial_n_pp = vec1, species_params = species_params,
 	    interaction = interaction, srr = srr) 
 	return(res)
     }
@@ -651,7 +651,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	res@cc_pp[res@w_full>w_pp_cutoff] <- 0      #set density of sizes < plankton cutoff size
 	# Set the SRR to be a Beverton Holt esque relationship
 	# Can add more functional forms or user specifies own
-	res@steady_n_pp <- res@cc_pp
+	res@initial_n_pp <- res@cc_pp
 	res@srr <- function(rdi, species_params){
 	    return(species_params$r_max * rdi / (species_params$r_max+rdi))
 	}
@@ -684,8 +684,8 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	# Remove catchabiliy from species data.frame, now stored in slot
 	#params@species_params[,names(params@species_params) != "catchability"]
 	res@species_params <- res@species_params[,-which(names(res@species_params)=="catchability")]
-	res@steady_n <- res@psi
-	res@steady_n <- get_initial_n(res)
+	res@initial_n <- res@psi
+	res@initial_n <- get_initial_n(res)
 	return(res)
     }
 )
