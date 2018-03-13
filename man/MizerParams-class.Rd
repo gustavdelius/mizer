@@ -73,6 +73,10 @@ carrying capacity of the background spectrum, \eqn{\kappa w^{-\lambda}}}
 \item{\code{srr}}{Function to calculate the realised (density dependent) recruitment.
 Has two arguments which are rdi and species_params}
 
+\item{\code{chi}}{Exponent of density dependence in per-capita mortality}
+
+\item{\code{ddd}}{Denominator of density dependence}
+
 \item{\code{selectivity}}{An array (gear x species x w) that holds the selectivity of
 each gear for species and size, \eqn{S_{g,i,w}}}
 
@@ -84,6 +88,18 @@ at each weight at our candidate steady state solution.}
 
 \item{\code{initial_n_pp}}{A vector the same length as the w_full slot that describes
 the abundance of the background background resource at each weight.}
+
+\item{\code{n}}{Exponent of maximum intake rate.}
+
+\item{\code{p}}{Exponent of metabolic cost.}
+
+\item{\code{lambda}}{Exponent of resource spectrum.}
+
+\item{\code{q}}{Exponent for volumetric search rate.}
+
+\item{\code{f0}}{Initial feeding level.}
+
+\item{\code{kappa}}{Magnitude of resource spectrum.}
 }}
 
 \note{
