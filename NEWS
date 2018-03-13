@@ -1,3 +1,5 @@
+* Added parameter slots for constants n, p, lambda, q, f0 and kappa.
+* Allow for density dependent death terms.
 * Allow for size- and species-dependent background death
 * Added initial_nand initial_n_pp slots to mizer params.
 
