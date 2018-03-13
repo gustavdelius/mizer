@@ -1,7 +1,3 @@
-# This branch
-
-implements slots for steady state n and n_pp.
-
 # mizer
 
 mizer is a package that implements size-based ecological models.
