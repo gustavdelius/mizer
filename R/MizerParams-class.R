@@ -635,12 +635,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	res@activity[] <-  unlist(tapply(res@w,1:length(res@w),function(wx,k)k * wx,k=object$k))
 	res@std_metab[] <-  unlist(tapply(res@w,1:length(res@w),function(wx,ks,p)ks * wx^p, ks=object$ks,p=p))
 	res@mu_b[] <- res@species_params$z0
-    res@chi <- chi
-    res@ddd <- res@psi
-    for (i in 1:no_sp){
-       res@ddd[i,] <- (kappa[i] * object$w_mat[i]^(-lambda))^chi
-            }
-            
+  res@chi <- chi
 	Beta <- log(res@species_params$beta)
 	sigma <- res@species_params$sigma
 	Dx <- res@w[2]/res@w[1] - 1  # dw = w Dx
@@ -727,6 +722,8 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	res@species_params <- res@species_params[,-which(names(res@species_params)=="catchability")]
 	res@initial_n <- res@psi
 	res@initial_n <- get_initial_n(res)
+	res@ddd <- res@initial_n^(res@chi)
+	res@ddd[res@ddd==0] <- 1
 	return(res)
     }
 )

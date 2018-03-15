@@ -111,6 +111,11 @@ The \code{MizerParams} class is fairly complex with a large number of
   Although it is possible to build a \code{MizerParams} object by hand it is
   not recommended and several constructors are available.
   
+  When \eqn{chi>0} the density dependence is turned on. \eqn{chi} determines 
+  the degree to which individuals with a higher abundance experience 
+  larger death rates. When \eqn{chi>0} the growth rates are also increased 
+  to reflect the higher rates of predation mortality.    
+  
   The \code{MizerParams} class does not hold any dynamic information, e.g.
   abundances or harvest effort through time. These are held in
   \code{\link{MizerSim}} objects.
