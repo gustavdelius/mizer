@@ -8,9 +8,10 @@
 \usage{
 plotBiomass(object, ...)
 
-\S4method{plotBiomass}{MizerSim}(object, print_it = TRUE,
+\S4method{plotBiomass}{MizerSim}(object,
   start_time = as.numeric(dimnames(object@n)[[1]][1]),
-  end_time = as.numeric(dimnames(object@n)[[1]][dim(object@n)[1]]), ...)
+  end_time = as.numeric(dimnames(object@n)[[1]][dim(object@n)[1]]),
+  y_ticks = 6, print_it = TRUE, ...)
 }
 \arguments{
 \item{object}{An object of class \code{MizerSim}.}
@@ -18,14 +19,16 @@ plotBiomass(object, ...)
 \item{...}{Other arguments to pass to \code{getBiomass} method, for example
 \code{min_w} and \code{max_w}}
 
-\item{print_it}{Display the plot, or just return the ggplot2 object. Default
-value is TRUE}
-
 \item{start_time}{The first time to be plotted. Default is the beginning
 of the time series.}
 
 \item{end_time}{The last time to be plotted. Default is the end of the
 time series.}
+
+\item{y_ticks}{The approximate number of ticks desired on the y axis}
+
+\item{print_it}{Display the plot, or just return the ggplot2 object. Default
+value is TRUE}
 }
 \value{
 A ggplot2 object
