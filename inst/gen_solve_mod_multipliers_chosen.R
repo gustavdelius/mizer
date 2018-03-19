@@ -93,6 +93,11 @@ n_pp_pretend2[] <- 0
 #!# mumu <- getM2(params, n_pretend2, n_pp_pretend2)
 mu0 <- ((1-params@f0) * sqrt(2*pi) * params@kappa * params@species_params$gamma * params@species_params$sigma *
   (params@species_params$beta^(params@n-1)) * exp(params@species_params$sigma^2 * (params@n-1)^2 / 2))[1]
+
+mumu <- getM2(params, n_pretend2, n_pp_pretend2)
+for (i in (1:no_sp)){
+  mumu[i,] <- mu0*params@w^(params@n-1)
+}
 plot(params@w,mumu[1,],log="xy")
 
 plot(mumu[1,]/(params@w^(params@n-1)))
