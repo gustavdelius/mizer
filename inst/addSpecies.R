@@ -3,11 +3,23 @@
 #! the code currently breaks under the default rfac=inf case, because it 
 # relies on some values of rmax being passed through
 
-params <- set_scaling_model(rfac = 10^10)
+#params <- set_scaling_model(rfac = 10^10)
+
+params <- set_scaling_model()
+
+if (length(params@species_params$r_max)==0){
+  params@species_params$r_max <- rep(10^(50),length(params@species_params$w_inf))
+}
+
 sim <- project(params, t_max=5, effort = 0)
 plot(sim)
 
 species_params <- params@species_params[10,]
+
+if (length(species_params$r_max)==0){
+  species_params$r_max <- 10^(50)
+}
+
 
 #####################
 
@@ -95,9 +107,14 @@ gg0 <- gg[combi_params@species_params$w_min_idx[new_sp]]
 mumu0 <- mumu[combi_params@species_params$w_min_idx[new_sp]]
 rdi <- getRDI(combi_params, combi_params@initial_n, combi_params@initial_n_pp)[new_sp]
 DW <- combi_params@dw[combi_params@species_params$w_min_idx[new_sp]]
-combi_params@species_params$erepro[new_sp] <- combi_params@species_params$erepro[new_sp]*(
-  combi_params@initial_n[new_sp,combi_params@species_params$w_min_idx[new_sp]]*(gg0+DW*mumu0))/rdi
+#combi_params@species_params$erepro[new_sp] <- combi_params@species_params$erepro[new_sp]*(
+#  combi_params@initial_n[new_sp,combi_params@species_params$w_min_idx[new_sp]]*(gg0+DW*mumu0))/rdi
 
+H <- rdi/combi_params@species_params$erepro[new_sp]
+X <- combi_params@initial_n[new_sp,combi_params@species_params$w_min_idx[new_sp]]*(gg0+DW*mumu0)
+
+combi_params@species_params$erepro[new_sp] <- 
+  combi_params@species_params$r_max[new_sp]*X/(H*combi_params@species_params$r_max[new_sp]+H*X)
 ##################
 sim <- project(combi_params, t_max=5, effort = 0)
 plot(sim)
@@ -140,7 +157,9 @@ plot(sim)
 # seems to have a NAN in the last weight box. (5) this version readjusts erepro in the case where rmax=inf, need to think more 
 # about what to do in general case, and look at wrapper functions.
 
-
+#20 and #42 added code to tune the erepro to compensate for general rmax, 
+# although the code currently breaks when rmax is infinite, at least the code 
+# has been modified to add in a large rmax when none is supplied.
 
 
 
