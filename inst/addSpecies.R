@@ -1,10 +1,11 @@
-params <- set_scaling_model()
+params <- set_scaling_model(rfac = 10^12)
 sim <- project(params, t_max=5, effort = 0)
 plot(sim)
 
-species_params <- params@species_params
+species_params <- params@species_params[11,]
 
 #####################
+
 combi_species_params <- data.frame(
   species = 1:(length(params@species_params$species)+length(species_params$species)),
   w_min = c(params@species_params$w_min,species_params$w_min),
@@ -20,7 +21,8 @@ combi_species_params <- data.frame(
  sel_func = "knife_edge",
   # not used but required
  knife_edge_size = c(params@species_params$knife_edge_size,species_params$knife_edge_size),
- gear = c(params@species_params$gear,species_params$gear)
+ gear = c(params@species_params$gear,species_params$gear),
+ r_max = c(params@species_params$r_max,species_params$r_max)
 )
 
 combi_params <-
@@ -50,3 +52,9 @@ plot(sim)
 # Next step is to use getM2 etc., to generate the initial_n for 
 # the new species.
 
+# #20 Have got params code working without crashing. Next I need to: (1) 
+# add code to pass forward the initial conditions for params, (2) write 
+# getEgrowth and getZ based solver, to get the initial conditions for the 
+# new species, (3) test the code by recombining species [1:(no_sp-1)] and 
+# no_sp, from the scale free trait based model. (4) test code for adding 
+# red mullet.
