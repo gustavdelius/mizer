@@ -1,4 +1,4 @@
-params <- set_scaling_model(rfac = 10^12)
+params <- set_scaling_model()
 sim <- project(params, t_max=5, effort = 0)
 plot(sim)
 
@@ -43,13 +43,27 @@ combi_params <-
   )
 
 
+combi_params@initial_n_pp <- params@initial_n_pp
+combi_params@cc_pp <- params@cc_pp
+
 new_sp <- length(params@species_params$species)+1
 for (i in (1:(new_sp-1))){
-  combi_params@initial_n[i,] <- params@initial_n[i,] 
+  combi_params@initial_n[i,] <- params@initial_n[i,]
+  combi_params@species_params$erepro[i] <- params@species_params$erepro[i] 
+  combi_params@psi[i,] <- params@psi[i,]
+  combi_params@mu_b[i,] <- params@mu_b[i,]
 }
+# other important info to pass through correspond to 
+# the parts of params that got modified after set_scaling made it initially.
+combi_params@species_params$erepro[new_sp] <- params@species_params$erepro[(new_sp-1)]
+combi_params@psi[new_sp,] <- (combi_params@w / combi_params@species_params$w_inf[new_sp]) ^ (1 - combi_params@n)
+combi_params@psi[new_sp, combi_params@w < (combi_params@species_params$w_mat[new_sp] - 1e-10)] <- 0
+combi_params@psi[new_sp, combi_params@w > (combi_params@species_params$w_inf[new_sp] - 1e-10)] <- 1
+combi_params@mu_b[new_sp,] <- params@mu_b[(new_sp-1),]
+# what about params@srr ? do I have to pass this through when rmax is off ?
+# use rest of info to fill out n_new_sp properly
+combi_params@initial_n[new_sp,] <- params@initial_n[(new_sp-1),]
 
-# set n_pp
-# set new n
 
 
 sim <- project(combi_params, t_max=5, effort = 0)
@@ -69,5 +83,16 @@ plot(sim)
 # no_sp, from the scale free trait based model. (4) test code for adding 
 # red mullet.
 
-# #20 pulled some parts of params. Need to do pull to get new setscaling 
-# to build on.
+# #20 Got params combined code working basically.I think we should write 
+# this code, so that if the newly added species is the next largest one 
+# in the set_scaling model then it will work smoothly.
+#The next steps are 
+# (1) to put a new solver into the code to get the un-multiplied form 
+# of the solution using old params data. To do this step, we can use 
+# combi_params at the end of code, and mess with its theta matrix and solve. 
+# Rather than not using an abundance multiplier for the new species, 
+# we could it an abundance multiplier corresponding 
+# to the abundance multiplier which would be associated with such a 
+# species in the set_scaling model. (2) Test code when
+# combining with scale free case. (3) Test code with mullet. (4) 
+# make it as procedure, with help
