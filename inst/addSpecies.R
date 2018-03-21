@@ -1,8 +1,13 @@
-params <- set_scaling_model()
+#! note we are assuming theta_ij=1, for all i,j
+
+#! the code currently breaks under the default rfac=inf case, because it 
+# relies on some values of rmax being passed through
+
+params <- set_scaling_model(rfac = 10^10)
 sim <- project(params, t_max=5, effort = 0)
 plot(sim)
 
-species_params <- params@species_params[11,]
+species_params <- params@species_params[10,]
 
 #####################
 
@@ -56,16 +61,44 @@ for (i in (1:(new_sp-1))){
 # other important info to pass through correspond to 
 # the parts of params that got modified after set_scaling made it initially.
 combi_params@species_params$erepro[new_sp] <- params@species_params$erepro[(new_sp-1)]
+#! maybe we do not have to change psi[new_sp,]
 combi_params@psi[new_sp,] <- (combi_params@w / combi_params@species_params$w_inf[new_sp]) ^ (1 - combi_params@n)
 combi_params@psi[new_sp, combi_params@w < (combi_params@species_params$w_mat[new_sp] - 1e-10)] <- 0
 combi_params@psi[new_sp, combi_params@w > (combi_params@species_params$w_inf[new_sp] - 1e-10)] <- 1
 combi_params@mu_b[new_sp,] <- params@mu_b[(new_sp-1),]
-# what about params@srr ? do I have to pass this through when rmax is off ?
+#! what about params@srr ? do I have to pass this through when rmax is off ?
+#! do I have to set rmax off if it is off in two inputs ?
 # use rest of info to fill out n_new_sp properly
-combi_params@initial_n[new_sp,] <- params@initial_n[(new_sp-1),]
+# combi_params@initial_n[new_sp,] <- params@initial_n[(new_sp-1),]
+################################
+combi_params@initial_n[new_sp,new_sp] <- 0
+mumu <- getZ(combi_params, combi_params@initial_n, combi_params@initial_n_pp,0)[new_sp,]
+gg <- getEGrowth(combi_params, combi_params@initial_n, combi_params@initial_n_pp)[new_sp,]
 
+w_inf_idx <- length(combi_params@w[combi_params@w<=combi_params@species_params$w_inf[new_sp]])
+integrand <- params@dw[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]*mumu[
+  combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]/gg[
+    combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
+combi_params@initial_n[new_sp,] <- 0
+#! Here we are setting the abundance multiplier to 1. More useful to set it 
+# to the value it should be if we were adding in another scale free species.
+combi_params@initial_n[new_sp,combi_params@species_params$w_min_idx[new_sp]:w_inf_idx] <- 
+  exp(-cumsum(integrand))/gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
+#! not really sure why the above seems to create a NAN in the last weight box.
+combi_params@initial_n[is.nan(combi_params@initial_n)] <- 0
 
+combi_params@initial_n[new_sp,new_sp] <- 1
+################## reset erepro
+#! this version readjusts erepro in the case where rmax=inf, need to think more 
+# about what to do in general case, and look at wrapper functions.
+gg0 <- gg[combi_params@species_params$w_min_idx[new_sp]]
+mumu0 <- mumu[combi_params@species_params$w_min_idx[new_sp]]
+rdi <- getRDI(combi_params, combi_params@initial_n, combi_params@initial_n_pp)[new_sp]
+DW <- combi_params@dw[combi_params@species_params$w_min_idx[new_sp]]
+combi_params@species_params$erepro[new_sp] <- combi_params@species_params$erepro[new_sp]*(
+  combi_params@initial_n[new_sp,combi_params@species_params$w_min_idx[new_sp]]*(gg0+DW*mumu0))/rdi
 
+##################
 sim <- project(combi_params, t_max=5, effort = 0)
 plot(sim)
 
@@ -96,3 +129,18 @@ plot(sim)
 # species in the set_scaling model. (2) Test code when
 # combining with scale free case. (3) Test code with mullet. (4) 
 # make it as procedure, with help
+
+# #20 and #42 . Added solver for new species, that determines its 
+# abundance and erepro under the assumption of non-interaction. Marked specific issues with #! in code.
+# Issues are (1)  maybe we do not have to change psi[new_sp,], (2) do we need to change
+# params@srr when rmax off if it is off in two inputs ? The code currently breaks under the default rfac=inf case,
+# because it relies on some values of rmax being passed through (3) Here we are setting the
+# abundance multiplier to 1. More useful to set it to the value it should be if we 
+# were adding in another scale free species. (4) Not really sure why the solution made 
+# seems to have a NAN in the last weight box. (5) this version readjusts erepro in the case where rmax=inf, need to think more 
+# about what to do in general case, and look at wrapper functions.
+
+
+
+
+
