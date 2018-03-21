@@ -84,6 +84,18 @@ at each weight at our candidate steady state solution.}
 
 \item{\code{initial_n_pp}}{A vector the same length as the w_full slot that describes
 the abundance of the background background resource at each weight.}
+
+\item{\code{n}}{Exponent of maximum intake rate.}
+
+\item{\code{p}}{Exponent of metabolic cost.}
+
+\item{\code{lambda}}{Exponent of resource spectrum.}
+
+\item{\code{q}}{Exponent for volumetric search rate.}
+
+\item{\code{f0}}{Initial feeding level.}
+
+\item{\code{kappa}}{Magnitude of resource spectrum.}
 }}
 
 \note{
