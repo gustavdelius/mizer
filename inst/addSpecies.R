@@ -42,6 +42,16 @@ combi_params <-
     r_pp = (params@rr_pp/(params@w_full^(params@p-1)))[1]
   )
 
+
+new_sp <- length(params@species_params$species)+1
+for (i in (1:(new_sp-1))){
+  combi_params@initial_n[i,] <- params@initial_n[i,] 
+}
+
+# set n_pp
+# set new n
+
+
 sim <- project(combi_params, t_max=5, effort = 0)
 plot(sim)
 
@@ -58,3 +68,6 @@ plot(sim)
 # new species, (3) test the code by recombining species [1:(no_sp-1)] and 
 # no_sp, from the scale free trait based model. (4) test code for adding 
 # red mullet.
+
+# #20 pulled some parts of params. Need to do pull to get new setscaling 
+# to build on.
