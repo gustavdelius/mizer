@@ -257,6 +257,12 @@ valid_MizerParams <- function(object) {
 #'  at each weight at our candidate steady state solution.
 #' @slot initial_n_pp A vector the same length as the w_full slot that describes
 #'  the abundance of the background background resource at each weight.
+#' @slot n Exponent of maximum intake rate.
+#' @slot p Exponent of metabolic cost.
+#' @slot lambda Exponent of resource spectrum.
+#' @slot q Exponent for volumetric search rate.
+#' @slot f0 Initial feeding level.
+#' @slot kappa Magnitude of resource spectrum.
 #' @note The \code{MizerParams} class is fairly complex with a large number of
 #'   slots, many of which are multidimensional arrays. The dimensions of these
 #'   arrays is strictly enforced so that \code{MizerParams} objects are
@@ -293,13 +299,25 @@ setClass(
         interaction = "array",
         srr  = "function",
         selectivity = "array",
-        catchability = "array"
+        catchability = "array",
+        n = "numeric",
+        p = "numeric",
+        lambda = "numeric",
+        q = "numeric",
+        f0 = "numeric",
+        kappa = "numeric"
     ),
     prototype = prototype(
         w = NA_real_,
         dw = NA_real_,
         w_full = NA_real_,
         dw_full = NA_real_,
+        n = NA_real_,
+        p = NA_real_,
+        lambda = NA_real_,
+        q = NA_real_,
+        f0 = NA_real_,
+        kappa = NA_real_,
         psi = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         initial_n = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         intake_max = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
@@ -555,6 +573,12 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	# Make an empty object of the right dimensions
 	res <- MizerParams(no_sp, species_names=object$species, 
 	                   gear_names=unique(object$gear), max_w=max_w,...)
+    res@n <- n
+    res@p <- p
+    res@lambda <- lambda
+    res@q <- q
+    res@f0 <- f0
+    res@kappa <- kappa
 
 	# If not w_min column in species_params, set to w_min of community
 	if (!("w_min" %in% colnames(object)))
