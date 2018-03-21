@@ -19,8 +19,9 @@
  #' @return A function that can be used as the break argument in calls to
  #'     scale_y_continuous() or scale_x_continuous()
 log_breaks <- function(n = 6){
+   n = max(1, n)  # Because n=0 could lead to R crash
    function(x) {
-     axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, n = n)
+     axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, nint = n)
    }
  }
 
@@ -89,12 +90,12 @@ setMethod('plotBiomass', signature(object='MizerSim'),
         min_value <- 1e-30
         bm <- bm[bm$value >= min_value,]
         p <- ggplot(bm) + geom_line(aes(x=time,y=value, colour=Species, linetype=Species)) + 
-            scale_y_continuous(trans="log10", breaks=log_breaks(n=y_ticks-1), 
+            scale_y_continuous(trans="log10", breaks=log_breaks(n=y_ticks), 
                                labels = prettyNum, name="Biomass") + 
             scale_x_continuous(name="Time") 
         if (nrow(object@params@species_params)>12){
         p <- ggplot(bm) + geom_line(aes(x=time,y=value, group=Species)) + 
-            scale_y_continuous(trans="log10", breaks=log_breaks(n=y_ticks-1), 
+            scale_y_continuous(trans="log10", breaks=log_breaks(n=y_ticks), 
                                labels = prettyNum, name="Biomass") + 
             scale_x_continuous(name="Time") 
         }
