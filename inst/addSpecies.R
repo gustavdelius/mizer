@@ -170,13 +170,6 @@ retune_abundance <- function(params,A,N_C){
   obj <- sum((((N_C - colSums(n_cand))^2)*params@dw)[idx_left:idx_right])
     
   
-  deg_free <- length(free_mulipliers)
-  counter <- 0
-  for (i in (1:no_sp)){
-    if (is.na(A[i])){
-      counter <- counter
-    }
-  }
     
   
 } 
@@ -227,4 +220,9 @@ retune_abundance <- function(params,A,N_C){
 
 # #20 and #42 Corrected bug about how the interaction matrix was set
 
+# #20 and #42 Started writing retune_abundance
 
+# #20 and #42 Continiueing writing retune_abundance. I wat to import 
+# old abundance optimization code, but identify the largest background species, 
+# and hold its abundance fixed. If -ve abundance multipliers are set, hold them at 0
+# and then run it again. Next job is to connect retune_abundance to the end of add_species
