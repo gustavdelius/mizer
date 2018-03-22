@@ -56,16 +56,8 @@ log_breaks <- function(n = 6){
 #' sim <- project(params, effort=1, t_max=20, t_save = 2)
 #' plotBiomass(sim)
 #' plotBiomass(sim, min_w = 10, max_w = 1000)
-#' 
-#' params <- set_community_model(f0=0.7, z0=0.2, recruitment=3e7)
-#'
-#' sim <- project(params, effort = 0, t_max = 100, dt=0.1)
-#' plotBiomass(sim)
-#' # check tickmarks now appear in this new version 
-#' sim2 <- project(params, effort = 0, t_max = 2, dt = 0.1, 
-#'                initial_n = sim@n[dim(sim@n)[1],,], 
-#'                initial_n_pp = sim@n_pp[dim(sim@n_pp)[1],])
-#' plotBiomass(sim2)
+#' plotBiomass(sim, start_time = 10, end_time = 15, y_ticks = 2)
+#' plotBiomass(sim, y_ticks = 3)
 #' }
 setGeneric('plotBiomass', function(object, ...)
     standardGeneric('plotBiomass'))
