@@ -83,7 +83,7 @@ combi_params@mu_b[new_sp,] <- params@mu_b[(new_sp-1),]
 # use rest of info to fill out n_new_sp properly
 # combi_params@initial_n[new_sp,] <- params@initial_n[(new_sp-1),]
 ################################
-combi_params@initial_n[new_sp,new_sp] <- 0
+combi_params@interaction[new_sp,new_sp] <- 0
 mumu <- getZ(combi_params, combi_params@initial_n, combi_params@initial_n_pp,0)[new_sp,]
 gg <- getEGrowth(combi_params, combi_params@initial_n, combi_params@initial_n_pp)[new_sp,]
 
@@ -99,7 +99,7 @@ combi_params@initial_n[new_sp,combi_params@species_params$w_min_idx[new_sp]:w_in
 #! not really sure why the above seems to create a NAN in the last weight box.
 combi_params@initial_n[is.nan(combi_params@initial_n)] <- 0
 
-combi_params@initial_n[new_sp,new_sp] <- 1
+combi_params@interaction[new_sp,new_sp] <- 1
 ################## reset erepro
 #! this version readjusts erepro in the case where rmax=inf, need to think more 
 # about what to do in general case, and look at wrapper functions.
@@ -161,5 +161,6 @@ plot(sim)
 # although the code currently breaks when rmax is infinite, at least the code 
 # has been modified to add in a large rmax when none is supplied.
 
+# #20 and #42 Corrected bug about how the interaction matrix was set
 
 
