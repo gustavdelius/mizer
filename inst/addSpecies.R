@@ -119,6 +119,70 @@ combi_params@species_params$erepro[new_sp] <-
 sim <- project(combi_params, t_max=5, effort = 0)
 plot(sim)
 
+####################################################
+
+# Lets function retune_abundance(params,A,N_C) that uses abundance multipliers A_i
+#when specified, and fills-in/chooses the null abundance multipliers so that the
+#aggregate abundance is close to N_c(w), for each w. We can call this function when
+#do things properly, and consider how to setup B_i = total biomass of individuals of
+#species i that have weight above some threshold (which would ideally be the same for
+#each species). A fraction fore_frac is given, and we choose the abundance multipliers
+#of the background species, and the kappa, so that the total abundance is a power law,
+#and (sum_{j in background} B_j)/(sum_{all i} B_i)=fore_frac. We should be able to
+#engineer things 
+
+#so that we get an exact steady state in the limit  fore_frac approaches zero.
+# After development I will try and write retune_abundance, and then I can run my current add_species code, and use retune_abundance at the end to 
+# make a steady state background plus single species system. Then we can consider how to do the latter step in terms of biomass.
+
+x <- c(NA,1)
+is.na(x[2])
+
+A <- c(NA,NA,1,NA)
+(1:length(A))[is.na(A)]
+
+# A is abundance multipliers, with NA for the free parameter
+# N_C is params@kappa*params@w^(-params@lambda)
+
+retune_abundance <- function(params,A,N_C){
+  # get a list of the species that we can tune abundance mulpliers of
+  free_mulipliers <- (1:length(A))[is.na(A)]
+  deg_free <- length(free_mulipliers)
+  
+  # choice 
+  A_free <- (1:deg_free)
+  
+  # constrant
+  A_free >=0
+  
+  # objective to minimize
+  
+  no_sp <- length(params@species_params$w_inf)
+  AA <- A
+  AA[is.na(AA)] <- A_free
+  n_cand <- params@initial_n
+  for (i in (1:no_sp)){
+    n_cand[i,] <- AA[i]*params@initial_n[i,]
+  }
+  
+  idx_left <- sum(params@w<min(params@species_params$w_mat))
+  idx_right <- sum(params@w<max(params@species_params$w_mat))
+  obj <- sum((((N_C - colSums(n_cand))^2)*params@dw)[idx_left:idx_right])
+    
+  
+  deg_free <- length(free_mulipliers)
+  counter <- 0
+  for (i in (1:no_sp)){
+    if (is.na(A[i])){
+      counter <- counter
+    }
+  }
+    
+  
+} 
+  
+
+#################################################################
 # #20 Created a new branch called adsp, which is a copy of the 
 # scaling branch, except that I have copied the params@p slots etc., 
 # over from the density_dev branch. Started writing add_species. First 
