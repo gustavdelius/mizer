@@ -96,6 +96,8 @@ the abundance of the background background resource at each weight.}
 \item{\code{f0}}{Initial feeding level.}
 
 \item{\code{kappa}}{Magnitude of resource spectrum.}
+
+\item{\code{A}}{Abundance multipliers.}
 }}
 
 \note{

@@ -263,6 +263,8 @@ valid_MizerParams <- function(object) {
 #' @slot q Exponent for volumetric search rate.
 #' @slot f0 Initial feeding level.
 #' @slot kappa Magnitude of resource spectrum.
+#' @slot A Abundance multipliers.
+
 #' @note The \code{MizerParams} class is fairly complex with a large number of
 #'   slots, many of which are multidimensional arrays. The dimensions of these
 #'   arrays is strictly enforced so that \code{MizerParams} objects are
@@ -305,7 +307,8 @@ setClass(
         lambda = "numeric",
         q = "numeric",
         f0 = "numeric",
-        kappa = "numeric"
+        kappa = "numeric",
+        A = "numeric"
     ),
     prototype = prototype(
         w = NA_real_,
@@ -330,6 +333,7 @@ setClass(
         rr_pp = NA_real_,
         cc_pp = NA_real_,
         initial_n_pp = NA_real_,
+        A = NA_real_,
         #speciesParams = data.frame(),
         interaction = array(
             NA,dim = c(1,1), dimnames = list(predator = NULL, prey = NULL)
@@ -499,7 +503,7 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	    ft_pred_kernel_p = ft_pred_kernel_p,
 	    selectivity=selectivity, catchability=catchability,
 	    rr_pp = vec1, cc_pp = vec1, initial_n_pp = vec1, species_params = species_params,
-	    interaction = interaction, srr = srr) 
+	    interaction = interaction, srr = srr, A=as.numeric(rep(NA, dim(interaction)[1]))) 
 	return(res)
     }
 )
@@ -710,6 +714,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	res@species_params <- res@species_params[,-which(names(res@species_params)=="catchability")]
 	res@initial_n <- res@psi
 	res@initial_n <- get_initial_n(res)
+	res@A <- rep(1,no_sp)
 	return(res)
     }
 )
