@@ -31,22 +31,22 @@ Lcomp <- (1:length(A))[!is.na(A2)]
 old_n <- params@initial_n
 no_sp <- length(params@species_params$w_inf)
 
-A3 <- A2
-A3[is.na(A3)] <- 1
-
-for (i in 1:no_sp){
-  old_n[i,] <- A3[i]*params@initial_n[i,]
-}
+#A3 <- A2
+#A3[is.na(A3)] <- 1
+#for (i in 1:no_sp){
+#  old_n[i,] <- A3[i]*params@initial_n[i,]
+#}
 #cc <- params@kappa*params@w^(-params@lambda)
-cc <- colSums(old_n)
+cc <- colSums(params@initial_n[all_background,])
 #rho <- colSums(params@initial_n[Lcomp,])
-rho <- colSums(old_n[Lcomp,])
+rho <- colSums(params@initial_n[Lcomp,])
 
-
+den <- cc^2
+den[den==0] <- 10^(-50)
 for (i in (1:length(L))){
-  QQ[i] <- sum((params@initial_n[L[i],]*(cc-rho)*params@dw/(cc^2))[idx_start:(idx_stop-1)])
+  QQ[i] <- sum((params@initial_n[L[i],]*(cc-rho)*params@dw/(den))[idx_start:(idx_stop-1)])
   for (j in (1:length(L))){
-    RR[i,j] <- sum((params@initial_n[L[i],]*params@initial_n[L[j],]*params@dw/(cc^2))[idx_start:(idx_stop-1)])
+    RR[i,j] <- sum((params@initial_n[L[i],]*params@initial_n[L[j],]*params@dw/(den))[idx_start:(idx_stop-1)])
   }
 }
 
@@ -65,17 +65,10 @@ for (i in (2:no_sp)){
 
 plot(params@w[idx_start:(idx_stop-1)],(colSums(new_n)/(params@kappa*params@w^(-params@lambda)))[idx_start:(idx_stop-1)],log="x")
 
+plot(params@w,colSums(new_n),log="xy")
+A2
 
-#  #20 and #42 Made steps to make sure abundance multipliers are used. 
-# Finishing building retune_abundance in a seperate file. 
-# 
-
-#  #20 and #42 Have debugged a few little things. The resulting code (retune_abundance.R
-# in the adsp branch)
-# is tested on the scale free case, with some multipliers as 1, and 
-# some multipliers as NA. It does not work correctly,  A[5:7] = c(1.4,0.27,2.28)
-# I expected instead that the code would set these multipliers to unity.
-
-# #  #20 and #42 Changed cc to sum_i A_i[old]*N_i(w), the code works now, but 
-# only when all the initial multipliers are 1 or NULL, since we need to know 
-# what values to use.
+# #20 #42  Used colSums(params@initial_n[all_background,]) for cc now by only summing over the background species, and 
+# adjusted denominator cc^2 in RR and QQ, so division by 0 does not occur. 
+# Why does this code give -ve abundance multipliers. 
+# but now the code gives -ve abundances, and does not return pow law.
