@@ -4,7 +4,7 @@
 #@ retune_abundance <- function(params,A){
 params <- set_scaling_model()
 A <- rep(1,length(params@species_params$w_inf))
-A[4:7] <- NA
+A[1:(length(params@species_params$w_inf)-1)] <- NA
 
 
 
@@ -72,3 +72,6 @@ A2
 # adjusted denominator cc^2 in RR and QQ, so division by 0 does not occur. 
 # Why does this code give -ve abundance multipliers. 
 # but now the code gives -ve abundances, and does not return pow law.
+
+# #20 #42  Changed initialization so that everything is background but last species, 
+# still getting slight -ve abundance multipliers, but result is more reasonable.
