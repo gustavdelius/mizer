@@ -91,7 +91,7 @@ sim <- project(params, t_max=5, effort = 0)
 plot(sim)
 
 species_params <- params@species_params[10,]
-species_params$beta <- 50
+#species_params$beta <- 50
 
 if (length(species_params$r_max)==0){
   species_params$r_max <- 10^(50)
@@ -218,3 +218,6 @@ plot(params@w,colSums(new_n),log="xy")
 # retune abundance always seems to return 1's
 
 # #20 #42 pasted corrected abndance retuning code in, working better now.
+
+# #20 #42 Done test case where newly added species equals species 10. Sum of abund_mult
+# after is 11.3
