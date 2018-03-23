@@ -21,8 +21,8 @@
   # (everything but largest background)
   #L <- all_background[all_background!=largest_background]
   L <- (1:length(A))[is.na(A2)]
-  idx_start <- sum(params@w<=min(params@species_params$w_mat[L]))
-  idx_stop <- sum(params@w<=max(params@species_params$w_inf[L]))
+  idx_start <- sum(params@w<=min(params@species_params$w_mat))
+  idx_stop <- sum(params@w<=max(params@species_params$w_inf))
   RR <- matrix(0,nrow = length(L), ncol = length(L))
   QQ <- (1:length(L))
   cc <- params@kappa*params@w^(-params@lambda)
