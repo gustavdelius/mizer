@@ -205,7 +205,16 @@ retune_abundance <- function(params,A,N_C){
   QQ <- (1:length(L))
   cc <- kappa*params@w^(-params@lambda)
   Lcomp <- (1:length(A))[!is.na(A2)]
-  rho <- colSums(params@initial_n[Lcomp,])
+  
+  old_n <- params@initial_n
+  no_sp <- length(params@species_params$w_inf)
+  
+  for (i in 1:no_sp){
+    old_n[i,] <- A2[i]*params@initial_n[i,]
+  }
+  #rho <- colSums(params@initial_n[Lcomp,])
+  rho <- colSums(old_n[Lcomp,])
+  
 
 for (i in (1:length(L))){
   QQ[i] <- sum((params@initial_n[L[i],]*(cc-rho)*params@dw/(cc^2))[idx_start:(idx_stop-1)])
