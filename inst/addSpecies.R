@@ -173,6 +173,31 @@ retune_abundance <- function(params,A,N_C){
     
   
 } 
+
+###########
+
+Y <- "list of species with free parameters"
+
+idx_start <- sum(w<=min(w_mat[Y]))
+idx_stop <- sum(w<=max(w_inf[Y]))
+
+RR <- params@interaction
+# no_free*no_free matrix
+QQ <- params@species_params$gamma
+for (i in (1:no_free)){
+  QQ[i] <- sum((initial_n[i,]*kappa*params@w^(-lambda)*params@dw)[idx_start:(idx_stop-1)])
+  for (j in (1:no_sp)){
+    RR[i,j] <- sum((initial_n[i,]*initial_n[j,]*params@dw)[idx_start:(idx_stop-1)])
+  }
+}
+
+AA <- solve(RR,QQ)
+n_output_new <- initial_n
+for (i in (1:no_sp)){
+  n_output_new[i,] <- AA[i]*initial_n[i,]
+}
+
+##############
   
 
 #################################################################
@@ -226,3 +251,6 @@ retune_abundance <- function(params,A,N_C){
 # old abundance optimization code, but identify the largest background species, 
 # and hold its abundance fixed. If -ve abundance multipliers are set, hold them at 0
 # and then run it again. Next job is to connect retune_abundance to the end of add_species
+
+#  #20 and #42 Building code using linear solving to solve quadratic optimization problem of 
+# abundance multipliers.
