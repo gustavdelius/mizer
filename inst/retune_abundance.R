@@ -21,11 +21,11 @@
   # (everything but largest background)
   #L <- all_background[all_background!=largest_background]
   L <- (1:length(A))[is.na(A2)]
-  idx_start <- sum(w<=min(params@species_params$w_mat[L]))
-  idx_start <- sum(w<=min(params@species_params$w_mat[L]))
+  idx_start <- sum(params@w<=min(params@species_params$w_mat[L]))
+  idx_stop <- sum(params@w<=max(params@species_params$w_inf[L]))
   RR <- matrix(0,nrow = length(L), ncol = length(L))
   QQ <- (1:length(L))
-  cc <- kappa*params@w^(-params@lambda)
+  cc <- params@kappa*params@w^(-params@lambda)
   Lcomp <- (1:length(A))[!is.na(A2)]
   
   old_n <- params@initial_n
@@ -45,19 +45,25 @@
     }
   }
   
-  A2[Y] <- solve(RR,QQ)
+  A2[L] <- solve(RR,QQ)
 
   #@  return(A2)}
-  new_n <- params@initial_n[i,]
+  new_n <- params@initial_n
   for (i in 1:no_sp){
     new_n[i,] <- A2[i]*params@initial_n[i,]
   }
   A2
   plot(params@w,new_n[1,],log="xy")
   for (i in (2:no_sp)){
-    lines(params@w,new_n[1,])
+    lines(params@w,new_n[i,])
   }
   
   #  #20 and #42 Made steps to make sure abundance multipliers are used. 
   # Finishing building retune_abundance in a seperate file. 
   # 
+  
+  #  #20 and #42 Have debugged a few little things. The resulting code (retune_abundance.R
+  # in the adsp branch)
+  # is tested on the scale free case, with some multipliers as 1, and 
+  # some multipliers as NA. It does not work correctly,  A[5:7] = c(1.4,0.27,2.28)
+  # I expected instead that the code would set these multipliers to unity.
