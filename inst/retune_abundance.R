@@ -53,7 +53,7 @@
     new_n[i,] <- A2[i]*params@initial_n[i,]
   }
   A2
-  plot(params@w,new_n[1,],log="xy")
+  plot(params@w,new_n[1,],log="xy", ylim=c(10^(-3),max(new_n)))
   for (i in (2:no_sp)){
     lines(params@w,new_n[i,])
   }
