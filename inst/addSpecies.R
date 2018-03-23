@@ -215,7 +215,8 @@ for (i in (1:length(L))){
 }
 
 A2[Y] <- solve(RR,QQ)
-
+return(A2)
+}
 
 
 ##############
@@ -278,3 +279,9 @@ A2[Y] <- solve(RR,QQ)
 
 #  #20 and #42 Got basic layout of code using linear solving to solve quadratic optimization problem of 
 # abundance multipliers.
+
+#  #20 and #42 Made attempt at retune_abundance. Todo (1) debug and test retune_abundance
+# (2) add warning in about negative abundance multipliers, and rewrite them. (3) 
+# connect with add_species, and add warning if newly added species is 
+# too close the the largest (or smallest) background species. Use abundance at egg weight 
+# to specify abundance multipliers for foreground species.
