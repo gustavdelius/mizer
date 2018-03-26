@@ -159,7 +159,18 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
     combi_params@A <- c(params@A, 1)
     
     
+    
+    
     for (i in 1:new_sp){
+      mumu <-
+        getZ(combi_params,
+             combi_params@initial_n,
+             combi_params@initial_n_pp,
+             effort = 0)[i, ]
+      gg <-
+        getEGrowth(combi_params,
+                   combi_params@initial_n,
+                   combi_params@initial_n_pp)[i, ]
       
       gg0 <- gg[combi_params@species_params$w_min_idx[i]]
       mumu0 <- mumu[combi_params@species_params$w_min_idx[i]]
@@ -264,3 +275,5 @@ params_out@species_params$erepro
 # #20 #42 Now we retune erepro for all species at the end.
 
 # #20 #42 Added mullet to code
+
+# #20 #42 Corrected bug about how red mullet is setup
