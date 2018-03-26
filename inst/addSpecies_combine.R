@@ -301,10 +301,10 @@ species_paramsH <- data.frame(
 
 k_vb <- 0.1
 
-species_params$h <- 3*k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0)
-ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
-species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
-species_params$w_min_idx <- sum(params@w<=species_params$w_min)
+species_paramsH$h <- 3*k_vb*(species_paramsH$w_inf^(1/3))/(species_paramsH$alpha*params@f0)
+ae <- sqrt(2*pi) * species_paramsH$sigma * species_paramsH$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_paramsH$sigma^2 / 2)
+species_paramsH$gamma <- (species_paramsH$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
+species_paramsH$w_min_idx <- sum(params@w<=species_paramsH$w_min)
 
 #params_out@A[] <- NA
 params_outwH <- add_species(params_out, species_paramsH, mult = 5.5 * 10 ^ (9))
@@ -333,3 +333,6 @@ plot(sim)
 
 # #20 #42 Having difficulties adding in the hake. Tried prefixing params_out@A[] <- NA
 #  but the problem remains, will try more debugging.
+
+# #20 #42 Corrected typos about setting up the hake params, but basic issue about 
+# the NAs remains
