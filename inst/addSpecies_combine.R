@@ -306,7 +306,7 @@ ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) 
 species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
 species_params$w_min_idx <- sum(params@w<=species_params$w_min)
 
-
+#params_out@A[] <- NA
 params_outwH <- add_species(params_out, species_paramsH, mult = 5.5 * 10 ^ (9))
 
 
@@ -330,3 +330,6 @@ plot(sim)
 # #20 #42 Added mullet simulation demonstrating stability
 
 # #20 #42 working well except difficulty adding hake, and low size background death
+
+# #20 #42 Having difficulties adding in the hake. Tried prefixing params_out@A[] <- NA
+#  but the problem remains, will try more debugging.
