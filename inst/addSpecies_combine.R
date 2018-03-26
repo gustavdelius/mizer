@@ -255,6 +255,12 @@ params_out <- add_species(params, species_params, mult = 5.5 * 10 ^ (9))
 sim <- project(params_out, t_max = 5, effort = 0)
 plot(sim)
 
+init_n <- params_out@initial_n
+init_n[12,] <- 10*init_n[12,]
+sim <- project(params_out, t_max = 5, effort = 0,initial_n=init_n, dt=0.01, t_save=0.1)
+plot(sim)
+
+
 params_out@species_params$erepro
 
 #AA
@@ -277,3 +283,5 @@ params_out@species_params$erepro
 # #20 #42 Added mullet to code
 
 # #20 #42 Corrected bug about how red mullet is setup
+
+# #20 #42 Added mullet simulation demonstrating stability
