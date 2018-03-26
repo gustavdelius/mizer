@@ -140,28 +140,7 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
         mult * exp(-cumsum(integrand)) / gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
     
     combi_params@interaction[new_sp, new_sp] <- 1
-    ################## reset erepro
-    #! this version readjusts erepro in the case where rmax=inf, need to think more
-    # about what to do in general case, and look at wrapper functions.
-    gg0 <- gg[combi_params@species_params$w_min_idx[new_sp]]
-    mumu0 <- mumu[combi_params@species_params$w_min_idx[new_sp]]
-    rdi <-
-        getRDI(combi_params,
-               combi_params@initial_n,
-               combi_params@initial_n_pp)[new_sp]
-    DW <-
-        combi_params@dw[combi_params@species_params$w_min_idx[new_sp]]
-    #combi_params@species_params$erepro[new_sp] <- combi_params@species_params$erepro[new_sp]*(
-    #  combi_params@initial_n[new_sp,combi_params@species_params$w_min_idx[new_sp]]*(gg0+DW*mumu0))/rdi
     
-    H <- rdi / combi_params@species_params$erepro[new_sp]
-    X <-
-        combi_params@initial_n[new_sp, combi_params@species_params$w_min_idx[new_sp]] *
-        (gg0 + DW * mumu0)
-    
-    combi_params@species_params$erepro[new_sp] <-
-        combi_params@species_params$r_max[new_sp] * X / (H * combi_params@species_params$r_max[new_sp] +
-                                                             H * X)
     ##################
     #sim <- project(combi_params, t_max=5, effort = 0)
     #plot(sim)
@@ -178,6 +157,32 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
     }
     combi_params@initial_n <- new_n
     combi_params@A <- c(params@A, 1)
+    
+    
+    for (i in 1:new_sp){
+      
+      gg0 <- gg[combi_params@species_params$w_min_idx[i]]
+      mumu0 <- mumu[combi_params@species_params$w_min_idx[i]]
+      rdi <-
+        getRDI(combi_params,
+               combi_params@initial_n,
+               combi_params@initial_n_pp)[i]
+      DW <-
+        combi_params@dw[combi_params@species_params$w_min_idx[i]]
+      #combi_params@species_params$erepro[i] <- combi_params@species_params$erepro[i]*(
+      #  combi_params@initial_n[i,combi_params@species_params$w_min_idx[i]]*(gg0+DW*mumu0))/rdi
+      
+      H <- rdi / combi_params@species_params$erepro[i]
+      X <-
+        combi_params@initial_n[i, combi_params@species_params$w_min_idx[i]] *
+        (gg0 + DW * mumu0)
+      
+      combi_params@species_params$erepro[i] <-
+        combi_params@species_params$r_max[i] * X / (H * combi_params@species_params$r_max[i] +
+                                                      H * X)
+      
+    }
+    
     return(combi_params)
 }
 
@@ -195,6 +200,8 @@ params_out <- add_species(params, species_params, mult = 1.5 * 10 ^ (11))
 sim <- project(params_out, t_max = 5, effort = 0)
 plot(sim)
 
+params_out@species_params$erepro
+
 #AA
 #plot(params@w,new_n[1,],log="xy", ylim=c(10^(-3),max(new_n)))
 #for (i in (2:length(combi_params@species_params$w_inf))){
@@ -209,3 +216,5 @@ plot(sim)
 # abundance  multipliers, re-iterate the solver
 # in case where some species are locked out. (3) Somehow improve
 # manner of recording abundance vectors. Currently A is just 1 or null.
+
+# #20 #42 Now we retune erepro for all species at the end.
