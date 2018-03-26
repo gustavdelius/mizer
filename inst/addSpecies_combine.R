@@ -219,7 +219,7 @@ params_out@species_params$erepro
 
 
 species_params <- data.frame(
-  species = "foreground",
+  species = "mullet",
   w_min = 0.001,
   w_inf = 251.94,
   w_mat = 16.48,
@@ -257,18 +257,61 @@ plot(sim)
 
 init_n <- params_out@initial_n
 init_n[12,] <- 10*init_n[12,]
-sim <- project(params_out, t_max = 5, effort = 0,initial_n=init_n, dt=0.01, t_save=0.1)
+sim <- project(params_out, t_max = 5, effort = 0.1,initial_n=init_n, dt=0.01, t_save=0.1)
 plot(sim)
 
 
+myZ <- getZ(params_out,
+            params_out@initial_n,
+            params_out@initial_n_pp,
+            effort = 0)
+myM2 <- getM2(params_out,
+              params_out@initial_n,
+              params_out@initial_n_pp)
+
+i <- 1
+plot(params_out@w,myZ[i, ],log="x")
+lines(params_out@w,myM2[i, ],col="red")
+lines(params_out@w,params_out@mu_b[i,],col="blue")
+abline(v=min(params_out@species_params$w_mat))
 params_out@species_params$erepro
 
-#AA
-#plot(params@w,new_n[1,],log="xy", ylim=c(10^(-3),max(new_n)))
-#for (i in (2:length(combi_params@species_params$w_inf))){
-#  lines(params@w,new_n[i,])
-#}
-#plot(params@w,colSums(new_n),log="xy")
+################ add Hake ############
+
+species_paramsH <- data.frame(
+  species = "hake",
+  w_min = 0.001,
+  w_inf = 173.9,
+  w_mat = 44, # use better value here later
+  h = NA, # will compute this later
+  ks = 4,
+  beta = 283,
+  sigma = 1.8,
+  z0 = 0,
+  alpha = 0.4,
+  erepro = 0.1,
+  sel_func = "knife_edge", # not used but required
+  knife_edge_size = 100,
+  gear = "knife_edge_gear",
+  k = 0,
+  gamma = NA,
+  w_min_idx = NA,
+  r_max = 10^50 #why do I need r_max after combining before
+)
+
+k_vb <- 0.1
+
+species_params$h <- 3*k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0)
+ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
+species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
+species_params$w_min_idx <- sum(params@w<=species_params$w_min)
+
+
+params_outwH <- add_species(params_out, species_paramsH, mult = 5.5 * 10 ^ (9))
+
+
+sim <- project(params_outwH, t_max = 5, effort = 0)
+plot(sim)
 
 
 #20 #42 Added "abundance mulplier" slots to params, really they are binary
@@ -285,3 +328,5 @@ params_out@species_params$erepro
 # #20 #42 Corrected bug about how red mullet is setup
 
 # #20 #42 Added mullet simulation demonstrating stability
+
+# #20 #42 working well except difficulty adding hake, and low size background death
