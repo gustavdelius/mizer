@@ -199,6 +199,10 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
 
 
 params <- set_scaling_model()
+params@species_params$r_max <- params@species_params$w_mat
+params@species_params$r_max[] <- 10^50
+  
+
 params@A[] <- NA
 
 species_params <- params@species_params[10, ]
@@ -235,7 +239,8 @@ species_params <- data.frame(
   gear = "knife_edge_gear",
   k = 0,
   gamma = NA,
-  w_min_idx = NA
+  w_min_idx = NA,
+  r_max = 10^50
 )
 
 k_vb <- 0.6
@@ -336,3 +341,5 @@ plot(sim)
 
 # #20 #42 Corrected typos about setting up the hake params, but basic issue about 
 # the NAs remains
+
+# #20 #42 Not sure why I now need to add a generation of rmax to make add species run 
