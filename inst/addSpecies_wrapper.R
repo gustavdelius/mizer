@@ -1,7 +1,7 @@
 #' Retunes abundance multipliers of background species so aggregate abundance is a 
 #' power law.
 #'
-#' If N_i(w) is a steady state of the McKendrik-von Foerster equation with fixed growth 
+#' If N_i(w) is a steady state of the McKendrik-von Foerster (MVF) equation with fixed growth 
 #' and death rates, then A_i*N_i(w) is also a steady state, where A_i is an abundance multiplier.  
 #' When we add a foreground species to our model, we want to choose new abundance multipliers of the 
 #' background species so that we the abundance, summed over all species and background 
@@ -82,6 +82,7 @@ retune_abundance <- function(params) {
   # Now we solve the linear system to find the abundance multipliers that 
   # yield our power law
   A2[L] <- solve(RR, QQ)
+  print(A2)
   if (sum(A2 < 0) > 0) {
     stop('Abundance multipliers generated with negative entries')
     #! we should add an extra iteration to solve this issue of -ve 
@@ -162,17 +163,17 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
   combi_params@mu_b[1:(new_sp - 1), ] <- params@mu_b
   combi_params@mu_b[new_sp, ] <- params@mu_b[1, ]
   #! what about params@srr ? do I have to pass this through when rmax is off ?
-  #! do I have to set rmax off if it is off in two inputs ?
   combi_params@srr <- params@srr
-  # use rest of info to fill out n_new_sp properly
-  # combi_params@initial_n[new_sp,] <- params@initial_n[(new_sp-1),]
-  ################################
+  # Turn off self-interaction of the new species, so we can determine 
+  # the growth rates, and death rates induced upon it by the pre-existing species
   combi_params@interaction[new_sp, new_sp] <- 0
+  # compute death rate for new species
   mumu <-
     getZ(combi_params,
          combi_params@initial_n,
          combi_params@initial_n_pp,
          effort = 0)[new_sp, ]
+  # compute growth rate for new species
   gg <-
     getEGrowth(combi_params,
                combi_params@initial_n,
@@ -181,69 +182,65 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
   w_inf_idx <-
     sum(combi_params@w < combi_params@species_params$w_inf[new_sp])
   #! Alter this code here, so it avoids division by zero, in stunted growth case.
+  # Compute integral to solve MVF for new species
   integrand <-
     params@dw[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx] * mumu[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx] /
     gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
+  # Write steady state for new species (under assumption of self interaction)
   combi_params@initial_n[new_sp, ] <- 0
-  
   combi_params@initial_n[new_sp, combi_params@species_params$w_min_idx[new_sp]:w_inf_idx] <-
     mult * exp(-cumsum(integrand)) / gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
-  
+  # Turn self interaction back on
   combi_params@interaction[new_sp, new_sp] <- 1
-  
-  ##################
-  #sim <- project(combi_params, t_max=5, effort = 0)
-  #plot(sim)
-  
-  ###########
-  #A <- rep(NA,length(combi_params@species_params$w_inf))
-  #A <- c(params@A, 1)
+  # Arrange background inidicators A, so show the new species is in the foreground
   combi_params@A <- c(params@A, 1)
-  A <- combi_params@A
+  # Retune the abundance multipliers to recreate the aggregate abundance spectrum of 
+  # the old params object.
   AA <- retune_abundance(combi_params)
-  print(AA)
+  # Use these abundance multipliers to rescale the abundance curves so that 
+  # their aggregation is close to the power law
   new_n <- combi_params@initial_n
   for (i in 1:length(combi_params@species_params$w_inf)) {
     new_n[i, ] <- AA[i] * combi_params@initial_n[i, ]
   }
   combi_params@initial_n <- new_n
-  
-  
-  
-  
+  # Retune the values of erepro, so that we are at steady state.
+  # First get growth rates
+  mumu <-
+    getZ(combi_params,
+         combi_params@initial_n,
+         combi_params@initial_n_pp,
+         effort = 0)
+  gg <-
+    getEGrowth(combi_params,
+               combi_params@initial_n,
+               combi_params@initial_n_pp)
   for (i in 1:new_sp){
-    mumu <-
-      getZ(combi_params,
-           combi_params@initial_n,
-           combi_params@initial_n_pp,
-           effort = 0)[i, ]
-    gg <-
-      getEGrowth(combi_params,
-                 combi_params@initial_n,
-                 combi_params@initial_n_pp)[i, ]
-    
-    gg0 <- gg[combi_params@species_params$w_min_idx[i]]
-    mumu0 <- mumu[combi_params@species_params$w_min_idx[i]]
+    gg0 <- gg[i,combi_params@species_params$w_min_idx[i]]
+    mumu0 <- mumu[i,combi_params@species_params$w_min_idx[i]]
+    # compute number of eggs made, ignoring stock recruitment relationship.
     rdi <-
       getRDI(combi_params,
              combi_params@initial_n,
              combi_params@initial_n_pp)[i]
     DW <-
       combi_params@dw[combi_params@species_params$w_min_idx[i]]
-    #combi_params@species_params$erepro[i] <- combi_params@species_params$erepro[i]*(
-    #  combi_params@initial_n[i,combi_params@species_params$w_min_idx[i]]*(gg0+DW*mumu0))/rdi
+    
+    # rdi = erepro*H
     
     H <- rdi / combi_params@species_params$erepro[i]
+    # X measures the amount of eggs growing/dying out of the egg size weight bin. 
+    # It should be equal to the inflow of eggs, rdd.
     X <-
       combi_params@initial_n[i, combi_params@species_params$w_min_idx[i]] *
       (gg0 + DW * mumu0)
-    
+    # Change erepro so that the reproduction boundary condition is satisfied
     combi_params@species_params$erepro[i] <-
       combi_params@species_params$r_max[i] * X / (H * combi_params@species_params$r_max[i] +
                                                     H * X)
-    
+    #! Do we need a new version of this erepro setting code for the case where 
+    # r_max is missing, or infinity.
   }
-  
   return(combi_params)
 }
 
@@ -324,3 +321,5 @@ plot(sim)
 # #20 #42 Progress on add_species clean up. Discussing erepro less
 
 # #20 #42 Not making special step-like psi for new species anymore.
+
+# #20 #42 Finished cleaning up add_species code, now just need to finish the help file
