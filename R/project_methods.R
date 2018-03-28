@@ -750,7 +750,6 @@ setMethod('getEReproAndGrowth', signature(object='MizerParams', n = 'matrix',
         e <- sweep(feeding_level * object@intake_max,1,object@species_params$alpha,"*", check.margin=FALSE)
         # Subtract basal metabolism and activity 
         e <- e - object@std_metab - object@activity
-        if (sum(e<0)>0){warning("stunted growth due to insufficient energy")}
         e[e<0] <- 0 # Do not allow negative growth
         return(e)
     }

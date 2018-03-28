@@ -874,11 +874,11 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
     getEGrowth(combi_params,
                combi_params@initial_n,
                combi_params@initial_n_pp)[new_sp, ]
-  
   w_inf_idx <-
     sum(combi_params@w < combi_params@species_params$w_inf[new_sp])
   #! Alter this code here, so it avoids division by zero, in stunted growth case.
   # Compute integral to solve MVF for new species
+  if (sum(gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]==0)>0){stop("Can not compute steady state due to zero growth rates")}
   integrand <-
     params@dw[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx] * mumu[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx] /
     gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
