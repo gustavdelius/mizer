@@ -164,9 +164,7 @@ retune_abundance <- function(params) {
 #' plot(sim)
 #' }
 
-#! need to add in example code in help
-
-#! assumption of first species being background.
+# Note first species must be in background.
 
 add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
   # create large r_max's if such slots are absent
@@ -326,3 +324,21 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
 # #20 #42 Finished help file, now am ready to paste it into wrapper functions.
 
 # #20 #42 Added examples and tests. Ready to paste.
+
+# #20 #42 Have included add_species which 
+# attempts to add a new species into the system 
+# in such a way that the resulting system will till be 
+# in steady state. As part of this I wrote retune_abundance, 
+# that retunes the abundances of background species to retain power law. 
+# Outstanding issues with retune_abundance are: 
+# (1) why doesnt the help example code for retune_abundance() work properly ?
+# (2) currently the code relies on L being a list, but we could switch 
+# to the TRUE/FALSE convention.
+# (3) we should add an extra iteration to solve this issue of -ve 
+# abundance multipliers by holding certain species off.
+# Outstanding issues with retune_abundance are:
+# (1) Have I dealt with absence of r_max's properly ?
+# (2) What about params@srr ? do I have to pass this through when rmax is off ?
+# (3) Alter this code here, so it avoids division by zero, in stunted growth case.
+# (4) Do we need a new version of this erepro setting code for the case where 
+    # r_max is missing, or infinity.
