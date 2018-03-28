@@ -717,14 +717,16 @@ retune_abundance <- function(params) {
   # the matrix RR and vector QQ
   RR <- matrix(0, nrow = length(L), ncol = length(L))
   QQ <- (1:length(L))
+  den <- cc ^ 2
+  den[den==0] <- 10^(-50)
   # Next we fill out the values of QQ and RR
   for (i in (1:length(L))) {
     QQ[i] <-
-      sum((params@initial_n[L[i], ] * (cc - rho) * params@dw / (cc ^ 2))[idx_start:idx_stop])
+      sum((params@initial_n[L[i], ] * (cc - rho) * params@dw / (den))[idx_start:idx_stop])
     for (j in (1:length(L))) {
       RR[i, j] <-
         sum((
-          params@initial_n[L[i], ] * params@initial_n[L[j], ] * params@dw / (cc ^ 2)
+          params@initial_n[L[i], ] * params@initial_n[L[j], ] * params@dw / (den)
         )[idx_start:idx_stop])
     }
   }
