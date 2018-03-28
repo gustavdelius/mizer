@@ -160,14 +160,6 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
   # Use the same psi and mu_b as before for old species
   combi_params@psi[1:(new_sp - 1), ] <- params@psi
   combi_params@mu_b[1:(new_sp - 1), ] <- params@mu_b
-  #! maybe we do not have to change psi[new_sp,]
-  combi_params@psi[new_sp, ] <-
-    (combi_params@w / combi_params@species_params$w_inf[new_sp]) ^ (1 - combi_params@n)
-  combi_params@psi[new_sp, combi_params@w < (combi_params@species_params$w_mat[new_sp] - 1e-10)] <-
-    0
-  combi_params@psi[new_sp, combi_params@w > (combi_params@species_params$w_inf[new_sp] - 1e-10)] <-
-    1
-  # combi_params@mu_b[new_sp, ] <- params@mu_b[(new_sp - 1), ]
   combi_params@mu_b[new_sp, ] <- params@mu_b[1, ]
   #! what about params@srr ? do I have to pass this through when rmax is off ?
   #! do I have to set rmax off if it is off in two inputs ?
@@ -330,3 +322,5 @@ plot(sim)
 # #20 #42 Started writing help for add_species
 
 # #20 #42 Progress on add_species clean up. Discussing erepro less
+
+# #20 #42 Not making special step-like psi for new species anymore.
