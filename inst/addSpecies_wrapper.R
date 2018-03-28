@@ -26,23 +26,22 @@
 
 retune_abundance <- function(params) {
   no_sp <- length(params@species_params$w_inf)
-  A <- params@A
   # get a list of the species that we can tune abundance mulpliers of
-  all_background <- is.na(A)
+  all_background <- is.na(params@A)
   largest_background <-
     which.max(params@species_params$w_inf[all_background])
   # we are assuming that the the abundance multiplier of the largest backgroud
   # species should be held fixed at 1, if though it was initially an NA.
-  A2 <- A
+  A2 <- params@A
   A2[largest_background] <- 1
   # we make a list L of species we will vary the abundance parameters of
   # (everything but largest background)
-  L <- (1:length(A))[is.na(A2)]
+  L <- (1:no_sp)[is.na(A2)]
   idx_start <- sum(params@w <= min(params@species_params$w_mat))
   idx_stop <- sum(params@w < max(params@species_params$w_inf))
   RR <- matrix(0, nrow = length(L), ncol = length(L))
   QQ <- (1:length(L))
-  Lcomp <- (1:length(A))[!is.na(A2)]
+  Lcomp <- (1:no_sp)[!is.na(A2)]
   old_n <- params@initial_n
   cc <- colSums(params@initial_n[all_background, ])
   rho <- colSums(params@initial_n[Lcomp, ])
@@ -254,3 +253,4 @@ plot(sim)
 
 # #20 #42 Cleaning up the code for wrapper. Currently adding two mullet like species
 
+# #20 #42 Removed A from retune_abundance
