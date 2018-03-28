@@ -343,8 +343,6 @@ set_trait_model <- function(no_sp = 10,
     return(trait_params)
 }
 
-####################@@@@@@@@@@@@@@@@@@@@###################
-
 #' Sets up parameters for a scale free trait-based model
 #'
 #' This functions creates a \code{MizerParams} object so that scale free
@@ -635,6 +633,7 @@ set_scaling_model <- function(no_sp = 11,
         params@species_params$r_max <-
             (rfac - 1) * getRDI(params, initial_n, initial_n_pp)
     } else {
+        
         # An infinite rfac means that rdd equals rdi
         params@srr <- function(rdi, species_params) {return(rdi)}
     }
@@ -642,7 +641,6 @@ set_scaling_model <- function(no_sp = 11,
     return(params)
 }
 
-##@@@@@@@@@@@@@@@################################
 
 #' Retunes abundance multipliers of background species so aggregate abundance is a 
 #' power law.
@@ -743,9 +741,9 @@ retune_abundance <- function(params) {
   return(A2)
 }
 
-
-################################################################################
-
+#' Included add_species which attempts to add a new species into the system in such a way that 
+#' the resulting system will still be in steady state. 
+#'
 #' Adds a new species into the system, and sets its abundance to the steady state 
 #' in the system where the new species does not self interact. Then the abundance 
 #' multipliers of the background species are retuned to retain the old aggregate 
@@ -937,21 +935,3 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
   }
   return(combi_params)
 }
-
-# #20 #42 Have included add_species which 
-# attempts to add a new species into the system 
-# in such a way that the resulting system will till be 
-# in steady state. As part of this I wrote retune_abundance, 
-# that retunes the abundances of background species to retain power law. 
-# Outstanding issues with retune_abundance are: 
-# (1) why doesnt the help example code for retune_abundance() work properly ?
-# (2) currently the code relies on L being a list, but we could switch 
-# to the TRUE/FALSE convention.
-# (3) we should add an extra iteration to solve this issue of -ve 
-# abundance multipliers by holding certain species off.
-# Outstanding issues with retune_abundance are:
-# (1) Have I dealt with absence of r_max's properly ?
-# (2) What about params@srr ? do I have to pass this through when rmax is off ?
-# (3) Alter this code here, so it avoids division by zero, in stunted growth case.
-# (4) Do we need a new version of this erepro setting code for the case where 
-# r_max is missing, or infinity.
