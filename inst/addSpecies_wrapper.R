@@ -5,11 +5,14 @@
 #' and death rates, then A_i*N_i(w) is also a steady state, where A_i is an abundance multiplier.  
 #' When we add a foreground species to our model, we want to choose new abundance multipliers of the 
 #' background species so that we the abundance, summed over all species and background 
-#' resources, is close to the power law kappa*w^(-lambda). 
+#' resources, is close to cc(w), which is the aggregate abundance of all but 
+#' the last species. We are assuming this last species is newly added, with A_i=1.  
 #' 
 #' retune_abundance operates of a params object, with a slot A. If i is a background 
-#' species, then A[i]=NA, indicating we are allowed to retune the abundance 
-#' multiplier  
+#' species, then A_i=NA, indicating we are allowed to retune the abundance 
+#' multiplier.
+#' 
+#'      
 #' 
 #'
 #' @param params A mizer params object with an A slot with 1's for species 
@@ -30,20 +33,35 @@ retune_abundance <- function(params) {
   all_background <- is.na(params@A)
   largest_background <-
     which.max(params@species_params$w_inf[all_background])
-  # we are assuming that the the abundance multiplier of the largest backgroud
+  # we are assuming that the abundance multiplier of the largest backgroud
   # species should be held fixed at 1, if though it was initially an NA.
+  # to represent this we make a new background indicator A2
   A2 <- params@A
   A2[largest_background] <- 1
   # we make a list L of species we will vary the abundance parameters of
   # (everything but largest background)
   L <- (1:no_sp)[is.na(A2)]
+  # determine the indices of the limits we shall integrate between 
   idx_start <- sum(params@w <= min(params@species_params$w_mat))
   idx_stop <- sum(params@w < max(params@species_params$w_inf))
+  # the problem is to vary the abundance multupliers of species in L
+  # so that, between the limits, to sum of the abundances 
+  # of the species is "close" to the power law c(w)=kappa*w^(-lambda). 
+  # More precisely, we find the abundance multipliers so that 
+  # the relative distance sum_i N_i(w) - 
   RR <- matrix(0, nrow = length(L), ncol = length(L))
   QQ <- (1:length(L))
   Lcomp <- (1:no_sp)[!is.na(A2)]
   old_n <- params@initial_n
-  cc <- colSums(params@initial_n[all_background, ])
+  #! how to define cc in general ? should it be smoothed ?
+  cc <- colSums(params@initial_n[1:(no_sp-1), ])
+  # cc used to be defined as
+  # cc <- colSums(params@initial_n[all_background, ])
+  # but now we are assuming that the newly added species 
+  # is the last one, and we are retunning to 
+  # get similar to the aggregate abundance of the 
+  # species (1:(no_sp-1))
+  
   rho <- colSums(params@initial_n[Lcomp, ])
   den <- cc ^ 2
   for (i in (1:length(L))) {
@@ -254,3 +272,11 @@ plot(sim)
 # #20 #42 Cleaning up the code for wrapper. Currently adding two mullet like species
 
 # #20 #42 Removed A from retune_abundance
+
+# #20 #42 cc is now cc <- colSums(params@initial_n[1:(no_sp-1), ])
+# cc used to be defined as
+# cc <- colSums(params@initial_n[all_background, ])
+# but now we are assuming that the newly added foreground species 
+# is the last one, and we are retuneing to 
+# get similar to the aggregate abundance of the 
+# species (1:(no_sp-1))
