@@ -65,6 +65,8 @@ growth rate of the background spectrum, \eqn{r_0 w^{p-1}}}
 \item{\code{cc_pp}}{A vector the same length as the w_full slot. The size specific
 carrying capacity of the background spectrum, \eqn{\kappa w^{-\lambda}}}
 
+\item{\code{sc}}{The community abundance of the scaling community}
+
 \item{\code{species_params}}{A data.frame to hold the species specific parameters
 (see the mizer vignette, Table 2, for details)}
 

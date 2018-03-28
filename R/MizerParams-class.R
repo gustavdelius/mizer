@@ -244,6 +244,7 @@ valid_MizerParams <- function(object) {
 #'   growth rate of the background spectrum, \eqn{r_0 w^{p-1}}
 #' @slot cc_pp A vector the same length as the w_full slot. The size specific
 #'   carrying capacity of the background spectrum, \eqn{\kappa w^{-\lambda}}
+#' @slot sc The community abundance of the scaling community
 #' @slot species_params A data.frame to hold the species specific parameters
 #'   (see the mizer vignette, Table 2, for details)
 #' @slot interaction The species specific interaction matrix, \eqn{\theta_{ij}}
@@ -296,6 +297,7 @@ setClass(
         mu_b = "array",
         rr_pp = "numeric",
         cc_pp = "numeric", # was NinPP, carrying capacity of background
+        sc = "numeric",
         initial_n_pp = "numeric",
         species_params = "data.frame",
         interaction = "array",
@@ -332,6 +334,7 @@ setClass(
         mu_b = array(NA,dim = c(1,1), dimnames = list(sp = NULL,w = NULL)),
         rr_pp = NA_real_,
         cc_pp = NA_real_,
+        sc = NA_real_,
         initial_n_pp = NA_real_,
         A = NA_real_,
         #speciesParams = data.frame(),
@@ -502,7 +505,7 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 	    std_metab = mat1, mu_b = mat1, ft_pred_kernel_e = ft_pred_kernel_e, 
 	    ft_pred_kernel_p = ft_pred_kernel_p,
 	    selectivity=selectivity, catchability=catchability,
-	    rr_pp = vec1, cc_pp = vec1, initial_n_pp = vec1, species_params = species_params,
+	    rr_pp = vec1, cc_pp = vec1, sc = w, initial_n_pp = vec1, species_params = species_params,
 	    interaction = interaction, srr = srr, A=as.numeric(rep(NA, dim(interaction)[1]))) 
 	return(res)
     }
