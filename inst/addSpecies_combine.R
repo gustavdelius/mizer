@@ -131,6 +131,7 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
     
     w_inf_idx <-
         sum(combi_params@w < combi_params@species_params$w_inf[new_sp])
+    #! Alter this code here, so it avoids division by zero, in stunted growth case.
     integrand <-
         params@dw[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx] * mumu[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx] /
         gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
@@ -289,7 +290,8 @@ species_paramsH <- data.frame(
   w_inf = 173.9,
   w_mat = 44, # use better value here later
   h = NA, # will compute this later
-  ks = 4,
+  #ks = 4, 
+  ks = 1/2,
   beta = 283,
   sigma = 1.8,
   z0 = 0,
@@ -312,7 +314,7 @@ species_paramsH$gamma <- (species_paramsH$h / (params@kappa * ae)) * (params@f0 
 species_paramsH$w_min_idx <- sum(params@w<=species_paramsH$w_min)
 
 #params_out@A[] <- NA
-params_outwH <- add_species(params_out, species_paramsH, mult = 5.5 * 10 ^ (9))
+params_outwH <- add_species(params_out, species_paramsH, mult = 5.5 * 10 ^ (-30))
 
 
 sim <- project(params_outwH, t_max = 5, effort = 0)
@@ -342,4 +344,16 @@ plot(sim)
 # #20 #42 Corrected typos about setting up the hake params, but basic issue about 
 # the NAs remains
 
-# #20 #42 Not sure why I now need to add a generation of rmax to make add species run 
+# #20 #42 Not sure why I now need to add a generation of rmax to make add species run.
+# I guess its because setscaling does not make r_max under default settings
+
+# #20 #42 One problem was that the ks of the hake was set too high, so 
+# the metabolic cost of the hake was too high, so it had zero growth rate g 
+# and so the steady state constructor errored when it encountered 1/g. 
+# to help this problem I have added a warning in project_methods, and I have 
+# decreased the ks of the hake. Perhaps I should also look at the part 
+# where we compute the steady state, and stop the code being trying 
+# to compute 1/g, whenever g=0.  
+#However, now the code is complaining 
+# about -ve abundance multipliers, and strangely the complaints dont 
+# go away when the abundance multiplier of the added hake is made small.
