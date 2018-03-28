@@ -12,9 +12,6 @@
 #' species, then A_i=NA, indicating we are allowed to retune the abundance 
 #' multiplier.
 #' 
-#'      
-#' 
-#'
 #' @param params A mizer params object with an A slot with 1's for species 
 #' we wish to hold fixed the abundance multiplier of, and NA's for species that 
 #' we shall vary the abundance multiplier of.
@@ -95,6 +92,27 @@ retune_abundance <- function(params) {
 
 
 ################################################################################
+
+#' Adds a new species into the system, and sets its abundance to the steady state 
+#' in the system where the new species does not self interact. Then the abundance 
+#' multipliers of the background species are retuned to retain the old aggregate 
+#' abundance curve, using retune_abundance().
+#' 
+#' In particular
+#' 
+#' @param params A mizer params object with an A slot with 1's for species 
+#' we wish to hold fixed the abundance multiplier of, and NA's for species that 
+#' we shall vary the abundance multiplier of.
+
+#' @export
+#' @return An object of type \code{MizerParams}
+#' @seealso \linkS4class{MizerParams}
+#' @examples
+#' \dontrun{
+#' plotSpectra(sim)
+#' }
+
+#! need to add in example code in help
 
 add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
   
@@ -300,3 +318,4 @@ plot(sim)
 # 3 we should add an extra iteration to solve this issue of -ve 
 # abundance multipliers by holding certain species off.
 
+# #20 #42 Started writing help for add_species
