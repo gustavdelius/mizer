@@ -638,6 +638,7 @@ set_scaling_model <- function(no_sp = 11,
         # An infinite rfac means that rdd equals rdi
         params@srr <- function(rdi, species_params) {return(rdi)}
     }
+    params@sc <- colSums(params@initial_n)
     return(params)
 }
 
@@ -650,7 +651,7 @@ set_scaling_model <- function(no_sp = 11,
 #' and death rates, then A_i*N_i(w) is also a steady state, where A_i is an abundance multiplier.  
 #' When we add a foreground species to our model, we want to choose new abundance multipliers of the 
 #' background species so that we the abundance, summed over all species and background 
-#' resources, is close to cc(w), which is the aggregate abundance of all but 
+#' resources, is close to sc(w), which is the aggregate abundance of all but 
 #' the last species. We are assuming this last species is newly added, with A_i=1.  
 #' 
 #' retune_abundance operates of a params object, with a slot A. If i is a background 
@@ -701,14 +702,14 @@ retune_abundance <- function(params) {
   # of all but the last (newly added) species, and L is the set of all background 
   # species, except the largest (that we keep the abundance multipliers of fixed).
   #
-  #! how to define cc in general ? should it be smoothed ?
-  # cc used to be defined as
-  # cc <- colSums(params@initial_n[all_background, ])
+  #! how to define sc in general ? should it be smoothed ?
+  # sc used to be defined as
+  # sc <- colSums(params@initial_n[all_background, ])
   # but now we are assuming that the newly added species 
   # is the last one, and we are retunning to 
   # get similar to the aggregate abundance of the 
   # species (1:(no_sp-1))
-  cc <- colSums(params@initial_n[1:(no_sp-1), ])
+  sc <- params@sc
   # rho is the total abundance of all the species that have their abundance multipliers
   # held fixed.
   Lcomp <- (1:no_sp)[!is.na(A2)]
@@ -717,12 +718,12 @@ retune_abundance <- function(params) {
   # the matrix RR and vector QQ
   RR <- matrix(0, nrow = length(L), ncol = length(L))
   QQ <- (1:length(L))
-  den <- cc ^ 2
+  den <- sc ^ 2
   den[den==0] <- 10^(-50)
   # Next we fill out the values of QQ and RR
   for (i in (1:length(L))) {
     QQ[i] <-
-      sum((params@initial_n[L[i], ] * (cc - rho) * params@dw / (den))[idx_start:idx_stop])
+      sum((params@initial_n[L[i], ] * (sc - rho) * params@dw / (den))[idx_start:idx_stop])
     for (j in (1:length(L))) {
       RR[i, j] <-
         sum((
@@ -854,6 +855,7 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
   combi_params@initial_n[1:(new_sp - 1), ] <- params@initial_n
   # Use the same psi and mu_b as before for old species
   combi_params@psi[1:(new_sp - 1), ] <- params@psi
+  combi_params@sc <- params@sc
   combi_params@mu_b[1:(new_sp - 1), ] <- params@mu_b
   combi_params@mu_b[new_sp, ] <- params@mu_b[1, ]
   #! what about params@srr ? do I have to pass this through when rmax is off ?

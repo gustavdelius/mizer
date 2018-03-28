@@ -20,7 +20,7 @@ If N_i(w) is a steady state of the McKendrik-von Foerster (MVF) equation with fi
 and death rates, then A_i*N_i(w) is also a steady state, where A_i is an abundance multiplier.  
 When we add a foreground species to our model, we want to choose new abundance multipliers of the 
 background species so that we the abundance, summed over all species and background 
-resources, is close to cc(w), which is the aggregate abundance of all but 
+resources, is close to sc(w), which is the aggregate abundance of all but 
 the last species. We are assuming this last species is newly added, with A_i=1.
 }
 \details{
