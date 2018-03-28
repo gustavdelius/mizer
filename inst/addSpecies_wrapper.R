@@ -40,43 +40,55 @@ retune_abundance <- function(params) {
   A2[largest_background] <- 1
   # we make a list L of species we will vary the abundance parameters of
   # (everything but largest background)
+  #! currently the code relies on L being a list, but we could switch 
+  # to the TRUE/FALSE convention.
   L <- (1:no_sp)[is.na(A2)]
-  # determine the indices of the limits we shall integrate between 
+  # Determine the indices of the limits we shall integrate between 
   idx_start <- sum(params@w <= min(params@species_params$w_mat))
   idx_stop <- sum(params@w < max(params@species_params$w_inf))
-  # the problem is to vary the abundance multupliers of species in L
+  # The problem is to vary the abundance multupliers of species in L
   # so that, between the limits, to sum of the abundances 
-  # of the species is "close" to the power law c(w)=kappa*w^(-lambda). 
-  # More precisely, we find the abundance multipliers so that 
-  # the relative distance sum_i N_i(w) - 
-  RR <- matrix(0, nrow = length(L), ncol = length(L))
-  QQ <- (1:length(L))
-  Lcomp <- (1:no_sp)[!is.na(A2)]
-  old_n <- params@initial_n
+  # of the species is "close" to the power law. 
+  # More precisely, we find the abundance multipliers A_i so that 
+  # the integral of the square of the relative distance (sum_{i not in L} A_i*N_i(w) + sum_{i not in L} N_i(w) - c(w))/c(w)
+  # over w, between our limits, is minimized. Here c(w) is the sum of the abundances 
+  # of all but the last (newly added) species, and L is the set of all background 
+  # species, except the largest (that we keep the abundance multipliers of fixed).
+  #
   #! how to define cc in general ? should it be smoothed ?
-  cc <- colSums(params@initial_n[1:(no_sp-1), ])
   # cc used to be defined as
   # cc <- colSums(params@initial_n[all_background, ])
   # but now we are assuming that the newly added species 
   # is the last one, and we are retunning to 
   # get similar to the aggregate abundance of the 
   # species (1:(no_sp-1))
-  
+  cc <- colSums(params@initial_n[1:(no_sp-1), ])
+  # rho is the total abundance of all the species that have their abundance multipliers
+  # held fixed.
+  Lcomp <- (1:no_sp)[!is.na(A2)]
   rho <- colSums(params@initial_n[Lcomp, ])
-  den <- cc ^ 2
+  # We solve a linear system to find the abundance multipliers, first we initialize 
+  # the matrix RR and vector QQ
+  RR <- matrix(0, nrow = length(L), ncol = length(L))
+  QQ <- (1:length(L))
+  # Next we fill out the values of QQ and RR
   for (i in (1:length(L))) {
     QQ[i] <-
-      sum((params@initial_n[L[i], ] * (cc - rho) * params@dw / (den))[idx_start:idx_stop])
+      sum((params@initial_n[L[i], ] * (cc - rho) * params@dw / (cc ^ 2))[idx_start:idx_stop])
     for (j in (1:length(L))) {
       RR[i, j] <-
         sum((
-          params@initial_n[L[i], ] * params@initial_n[L[j], ] * params@dw / (den)
+          params@initial_n[L[i], ] * params@initial_n[L[j], ] * params@dw / (cc ^ 2)
         )[idx_start:idx_stop])
     }
   }
+  # Now we solve the linear system to find the abundance multipliers that 
+  # yield our power law
   A2[L] <- solve(RR, QQ)
   if (sum(A2 < 0) > 0) {
     stop('Abundance multipliers generated with negative entries')
+    #! we should add an extra iteration to solve this issue of -ve 
+    # abundance multipliers by holding certain species off.
   }
   return(A2)
 }
@@ -280,3 +292,11 @@ plot(sim)
 # is the last one, and we are retuneing to 
 # get similar to the aggregate abundance of the 
 # species (1:(no_sp-1))
+
+# #20 #42 Finished cleaning up and commenting retune_species, except for three issues
+# (marked with #! in code): 1 currently the code relies on L being a list, but we could switch 
+# to the TRUE/FALSE convention. 2   How to define cc in general ? should it be smoothed ? 
+# should it relate to the original power law system, or just the last constructed system.
+# 3 we should add an extra iteration to solve this issue of -ve 
+# abundance multipliers by holding certain species off.
+
