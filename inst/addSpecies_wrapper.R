@@ -98,7 +98,9 @@ retune_abundance <- function(params) {
 #' multipliers of the background species are retuned to retain the old aggregate 
 #' abundance curve, using retune_abundance().
 #' 
-#' In particular
+#' Note that we assuming that the first species is a background species, and the
+#' last species is a foreground species, with abundance multiplier mult. 
+#' 
 #' 
 #' @param params A mizer params object with an A slot with 1's for species 
 #' we wish to hold fixed the abundance multiplier of, and NA's for species that 
@@ -114,12 +116,23 @@ retune_abundance <- function(params) {
 
 #! need to add in example code in help
 
+#! assumption of first species being background.
+
 add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
-  
-  combi_species_params <- rbind(params@species_params, species_params)
-  if (length(combi_species_params$r_max) == 0) {
-    combi_species_params$r_max <- 10 ^ (50)
+  # create large r_max's if such slots are absent
+  #! is it correct to make the rmax's like this
+  if (is.null(params@species_params$r_max)){
+    params@species_params$r_max <- params@species_params$w_inf
+    params@species_params$r_max[] <- 10^50
   }
+  if (is.null(species_params$r_max)){
+    species_params$r_max <- 10^50
+  }
+  # add the new species (with parameters described by species_params), 
+  # to make a larger species_params dataframe.
+  combi_species_params <- rbind(params@species_params, species_params)
+  # use dataframe and global settings from params to make a new MizerParams 
+  # object.
   combi_params <-
     MizerParams(
       combi_species_params,
@@ -136,22 +149,17 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
       w_pp_cutoff = max(params@w_full),
       r_pp = (params@rr_pp / (params@w_full ^ (params@p - 1)))[1]
     )
-  
-  
+  # Use the same resource specrum as params
   combi_params@initial_n_pp <- params@initial_n_pp
   combi_params@cc_pp <- params@cc_pp
-  
   new_sp <- length(params@species_params$species) + 1
-  
+  # Initially use abundance curves for pre-existing species 
+  # (we shall retune the abundance multipliers of such 
+  # species from the background later)
   combi_params@initial_n[1:(new_sp - 1), ] <- params@initial_n
-  combi_params@species_params$erepro[1:(new_sp - 1)] <-
-    params@species_params$erepro
+  # Use the same psi and mu_b as before for old species
   combi_params@psi[1:(new_sp - 1), ] <- params@psi
   combi_params@mu_b[1:(new_sp - 1), ] <- params@mu_b
-  
-  # other important info to pass through correspond to
-  # the parts of params that got modified after set_scaling made it initially.
-  combi_params@species_params$erepro[new_sp] <- 0.1
   #! maybe we do not have to change psi[new_sp,]
   combi_params@psi[new_sp, ] <-
     (combi_params@w / combi_params@species_params$w_inf[new_sp]) ^ (1 - combi_params@n)
@@ -159,7 +167,8 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
     0
   combi_params@psi[new_sp, combi_params@w > (combi_params@species_params$w_inf[new_sp] - 1e-10)] <-
     1
-  combi_params@mu_b[new_sp, ] <- params@mu_b[(new_sp - 1), ]
+  # combi_params@mu_b[new_sp, ] <- params@mu_b[(new_sp - 1), ]
+  combi_params@mu_b[new_sp, ] <- params@mu_b[1, ]
   #! what about params@srr ? do I have to pass this through when rmax is off ?
   #! do I have to set rmax off if it is off in two inputs ?
   combi_params@srr <- params@srr
@@ -319,3 +328,5 @@ plot(sim)
 # abundance multipliers by holding certain species off.
 
 # #20 #42 Started writing help for add_species
+
+# #20 #42 Progress on add_species clean up. Discussing erepro less
