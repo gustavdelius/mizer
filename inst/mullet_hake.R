@@ -120,7 +120,9 @@ plot(sim)
 
 #### mullet growth curve
 mysp <- 12
-gNS <- getEGrowth(params_out_2, sim@n[dim(sim@n)[1], , ], sim@n_pp[dim(sim@n_pp)[1], ])[mysp,]
+#gNS <- getEGrowth(params_out_2, sim@n[dim(sim@n)[1], , ], sim@n_pp[dim(sim@n_pp)[1], ])[mysp,]
+gNS <- getEGrowth(params_out_2, sim@n[1, , ], sim@n_pp[dim(sim@n_pp)[1], ])[mysp,]
+
 g_fnNS <- approxfun(params_out_2@w, gNS)
 myodefunNS <- function(t, state, parameters){
     return(list(g_fnNS(state)))
@@ -133,7 +135,9 @@ lines(ageNS,mullet_weight,col="red",lty=2)
 params_out_2@species_params$w_min[mysp]
 #### hake growth curve
 mysp <- 13
-gNS <- getEGrowth(params_out_2, sim@n[dim(sim@n)[1], , ], sim@n_pp[dim(sim@n_pp)[1], ])[mysp,]
+#gNS <- getEGrowth(params_out_2, sim@n[dim(sim@n)[1], , ], sim@n_pp[dim(sim@n_pp)[1], ])[mysp,]
+gNS <- getEGrowth(params_out_2, sim@n[1, , ], sim@n_pp[1, ])[mysp,]
+
 g_fnNS <- approxfun(params_out_2@w, gNS)
 myodefunNS <- function(t, state, parameters){
     return(list(g_fnNS(state)))
@@ -166,3 +170,6 @@ lines(ageNS,hake_weight,col="purple",lty=2)
 
 # #18 #24 #29 Modified definition of h to account for fc. Now growth curves look 
 # better, except that hake has stunted growth.
+
+# #18 #24 #29 Now I use the initial conditions (rather than state after sim) 
+# to define the growth rates used for growth curves.
