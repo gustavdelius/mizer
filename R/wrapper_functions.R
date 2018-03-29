@@ -458,8 +458,8 @@ set_scaling_model <- function(no_sp = 11,
                               max_w_inf = 10 ^ 3,
                               min_egg = 10 ^ (-4),
                               min_w_mat = 10 ^ (0.4),
-                              no_w = log10(max_w_inf / min_egg) * 100 +
-                                  1,
+                              no_w = round(log10(max_w_inf / min_egg) * 100 +
+                                  1),
                               min_w_pp = min_egg / (beta * exp(5 * sigma)),
                               n = 2 / 3,
                               q = 3 / 4,

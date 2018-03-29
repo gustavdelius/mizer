@@ -7,7 +7,7 @@ retune_abundance(params)
 
 ######### get scaling model
 
-params <- set_scaling_model()
+params <- set_scaling_model(max_w_inf = 5000)
 params@species_params$r_max <- params@species_params$w_mat
 params@species_params$r_max[] <- 10^50
 params@A[] <- NA
@@ -118,7 +118,7 @@ myodefunNS <- function(t, state, parameters){
     return(list(g_fnNS(state)))
 }
 ageNS <- (0:20)
-mullet_weight <- ode(y = params_out_2@species_params$w_min[my_sp], times = ageNS, func = myodefunNS, parms = 1)[,2]
+mullet_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
 plot(ageNS,mullet_weight)
 
 #### hake growth curve
@@ -128,7 +128,7 @@ g_fnNS <- approxfun(params_out_2@w, gNS)
 myodefunNS <- function(t, state, parameters){
     return(list(g_fnNS(state)))
 }
-ageNS <- (0:200)
+ageNS <- (0:400)
 hake_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
 plot(ageNS,hake_weight)
 
@@ -144,3 +144,8 @@ plot(ageNS,hake_weight)
 
 # #18 #24 #29 added growth curves. Having issues because I want to make max_w_inf=5000 
 # in the initial set_scaling model, but when I do, the code breaks.
+
+# #18 #24 #29 Have fixed wrapper functions, so that set_scaling has an integer number 
+# of weight bins, and now it works with general max_w_inf, so now I can run the 
+# system properly, but it looks like the hake is still growing too slow. 
+# Next job is to plot the true VB growth curves alongside.
