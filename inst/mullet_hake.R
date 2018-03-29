@@ -1,4 +1,4 @@
-
+library(deSolve)
 ######### returne abundance test
 params <- set_scaling_model()
 params@A[] <- NA
@@ -7,7 +7,7 @@ retune_abundance(params)
 
 ######### get scaling model
 
-params <- set_scaling_model(max_w_inf = 5*10^3)
+params <- set_scaling_model()
 params@species_params$r_max <- params@species_params$w_mat
 params@species_params$r_max[] <- 10^50
 params@A[] <- NA
@@ -110,6 +110,29 @@ params_out_2 <- add_species(params_out, species_params, mult = 5.5 * 10 ^ (8))
 sim <- project(params_out_2, t_max = 5, effort = 0)
 plot(sim)
 
+#### mullet growth curve
+mysp <- 12
+gNS <- getEGrowth(params_out_2, sim@n[dim(sim@n)[1], , ], sim@n_pp[dim(sim@n_pp)[1], ])[mysp,]
+g_fnNS <- approxfun(params_out_2@w, gNS)
+myodefunNS <- function(t, state, parameters){
+    return(list(g_fnNS(state)))
+}
+ageNS <- (0:20)
+mullet_weight <- ode(y = params_out_2@species_params$w_min[my_sp], times = ageNS, func = myodefunNS, parms = 1)[,2]
+plot(ageNS,mullet_weight)
+
+#### hake growth curve
+mysp <- 13
+gNS <- getEGrowth(params_out_2, sim@n[dim(sim@n)[1], , ], sim@n_pp[dim(sim@n_pp)[1], ])[mysp,]
+g_fnNS <- approxfun(params_out_2@w, gNS)
+myodefunNS <- function(t, state, parameters){
+    return(list(g_fnNS(state)))
+}
+ageNS <- (0:200)
+hake_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
+plot(ageNS,hake_weight)
+
+
 # #18 #24 #29 Have got code that holds hake and mullet (pushed to inst/mullet_hake.R in adsp branch). 
 # Next I want to retune the abundance multipliers to be more reasonable, and do some experiments with fishing gears.
 
@@ -118,3 +141,6 @@ plot(sim)
 # also, using the default ks=0.2*h the mullet seems to have too much energy, 
 # and curls up, while the hake does not seem to have enough energy and its 
 # biomass curve slopes down. Need to figure out what I can tune. 
+
+# #18 #24 #29 added growth curves. Having issues because I want to make max_w_inf=5000 
+# in the initial set_scaling model, but when I do, the code breaks.
