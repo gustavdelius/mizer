@@ -1,4 +1,4 @@
- 
+
 ######### returne abundance test
 params <- set_scaling_model()
 params@A[] <- NA
@@ -8,72 +8,113 @@ retune_abundance(params)
 ######### get scaling model
 
 params <- set_scaling_model(max_w_inf = 5*10^3)
- params@species_params$r_max <- params@species_params$w_mat
- params@species_params$r_max[] <- 10^50
- params@A[] <- NA
- 
-######### add mullet
- species_params <- data.frame(
-   species = "mullet",
-   w_min = 0.001,
-   w_inf = 251.94,
-   w_mat = 16.48,
-   h = NA, # will compute this later
-   ks = 4,
-   beta = 283,
-   sigma = 1.8,
-   z0 = 0,
-   alpha = 0.4,
-   erepro = 0.1,
-   sel_func = "knife_edge", # not used but required
-   knife_edge_size = 100,
-   gear = "knife_edge_gear",
-   k = 0,
-   gamma = NA,
-   w_min_idx = NA,
-   r_max = 10^50
- )
- k_vb <- 0.6
- species_params$h <- 3*k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0)
- ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
- species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
- species_params$w_min_idx <- sum(params@w<=species_params$w_min)
- params_out <- add_species(params, species_params, mult = 5.5 * 10 ^ (8))
- sim <- project(params_out, t_max = 5, effort = 0)
- plot(sim)
+params@species_params$r_max <- params@species_params$w_mat
+params@species_params$r_max[] <- 10^50
+params@A[] <- NA
 
- ############# add hake 
- species_params <- data.frame(
-   species = "hake",
-   w_min = 0.001,
-   w_inf = 3964,
-   w_mat = 173.9, # use better value here later
-   h = NA, # will compute this later
-   #ks = 4, 
-   ks = 1/2,
-   beta = 11.02,
-   sigma = 1.1,
-   z0 = 0,
-   alpha = 0.4,
-   erepro = 0.1,
-   sel_func = "knife_edge", # not used but required
-   knife_edge_size = 100,
-   gear = "knife_edge_gear",
-   k = 0,
-   gamma = NA,
-   w_min_idx = NA,
-   r_max = 10^50 #why do I need r_max after combining before
- )
- k_vb <- 0.1
- species_params$h <- 3*k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0)
- ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
- species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
- species_params$w_min_idx <- sum(params@w<=species_params$w_min)
- 
- params_out_2 <- add_species(params_out, species_params, mult = 5.5 * 10 ^ (8))
- sim <- project(params_out_2, t_max = 5, effort = 0)
- plot(sim)
- 
- # #18 #24 #29 Have got code that holds hake and mullet (pushed to inst/mullet_hake.R in adsp branch). 
- # Next I want to retune the abundance multipliers to be more reasonable, and do some experiments with fishing gears.
- 
+######### add mullet
+# some data from fishbase at 
+# http://www.fishbase.org/summary/Mullus-barbatus+barbatus.html
+# length to weight conversion constants from 
+# http://www.fishbase.org/popdyn/LWRelationshipList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
+a <- 0.0085
+b <- 3.11
+# asymptotic length from
+# http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
+L_inf <- 24.3
+# length at maturity from 
+# http://www.fishbase.org/summary/Mullus-barbatus+barbatus.html
+L_mat <- 11.1
+species_params <- data.frame(
+    species = "mullet",
+    w_min = 0.001, # mizer's default egg weight, used in NS
+    # w_inf = 251.94, #is the old value we used. Where is it from ? It differs to below
+    w_inf = a*L_inf^b, # from fishbase
+    # w_mat = 16.48, #is the old value we used. Where is it from ? It differs to below
+    w_mat = a*L_inf^b, # from fishbase
+    h = NA, # will compute this later
+    #ks = 4,
+    ks = NA, # unknown, so we setup mizer's default of ks=0.2*h below
+    beta = 283, # = beta_gurnard from North sea. Silvia says gurnard is similar.
+    sigma = 1.8, # = sigma_gurnard from North sea. Silvia says gurnard is similar.
+    z0 = 0,
+    alpha = 0.4, # unknown, set same as set_scaling default. Normal mizer default=0.6
+    erepro = 0.1, # unknown
+    sel_func = "knife_edge", # not used but required
+    knife_edge_size = 100, # we can choose
+    gear = "knife_edge_gear",
+    k = 0,
+    gamma = NA,
+    w_min_idx = NA,
+    r_max = 10^50
+)
+# k_vb is from 
+# http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
+k_vb <- 0.6
+species_params$h <- 3*k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0)
+species_params$ks <- 0.2*species_params$h # mizer's default setting
+ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
+species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
+species_params$w_min_idx <- sum(params@w<=species_params$w_min)
+params_out <- add_species(params, species_params, mult = 5.5 * 10 ^ (8))
+sim <- project(params_out, t_max = 5, effort = 0)
+plot(sim)
+
+############# add hake 
+# Merluccius merluccius  (European hake)
+# http://www.fishbase.org/summary/Merluccius-merluccius.html
+#! Currently hake and mullet are both using the same feeding level. What to do about it ?
+# length to weight conversion: w=a*L^b, a = 0.0046, b = 3.12
+# http://www.fishbase.org/popdyn/LWRelationshipList.php?ID=30&GenusName=Merluccius&SpeciesName=merluccius&fc=184
+a <- 0.0046
+b <- 3.12
+# characteristic weights from
+# http://www.fishbase.org/Reproduction/MaturityList.php?ID=30&GenusName=Merluccius&SpeciesName=merluccius&fc=184
+# http://www.fishbase.org/graph/graphLengthFM01.php?RequestTimeout=50000&ID=30&genusname=Merluccius&speciesname=merluccius&fc=184&gm_lm=29.832069860776&gm_loo=81.220460002349
+L_inf <- 81.2
+L_mat <- 29.83
+# Some information below is from Richard Law's document (RLD) at
+# https://www.dropbox.com/s/g701wgcnhr12qpg/species%20%282%29.pdf?dl=0
+
+species_params <- data.frame(
+    species = "hake",
+    w_min = 0.001, # mizer default
+    w_inf = a*L_inf^b, # from fishbase
+    w_mat = a*L_mat^b, # from fishbase
+    h = NA, # will compute this later
+    # ks = 1/2, # unknown, mizer default =0.2*h
+    ks = NA, # defined later as mizer default ks=0.2*h
+    beta = exp(2.4), #RLD and Blanchard thesis p 88
+    sigma = 1.1, #RLD and Blanchard thesis p 88
+    z0 = 0,
+    alpha = 0.4, # unknown, set same as set_scaling default. Normal mizer default=0.6
+    erepro = 0.1, # unknown
+    sel_func = "knife_edge", # not used but required
+    knife_edge_size = 100, # can choose
+    gear = "knife_edge_gear",
+    k = 0,
+    gamma = NA,
+    w_min_idx = NA,
+    r_max = 10^50 #why do I need r_max after combining before
+)
+k_vb <- 0.1 # from FB website below
+# http://www.fishbase.org/popdyn/PopGrowthList.php?ID=30&GenusName=Merluccius&SpeciesName=merluccius&fc=184
+species_params$h <- 3*k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0)
+species_params$ks <- 0.2*species_params$h # mizer's default setting
+ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
+species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
+species_params$w_min_idx <- sum(params@w<=species_params$w_min)
+
+
+params_out_2 <- add_species(params_out, species_params, mult = 5.5 * 10 ^ (8))
+sim <- project(params_out_2, t_max = 5, effort = 0)
+plot(sim)
+
+# #18 #24 #29 Have got code that holds hake and mullet (pushed to inst/mullet_hake.R in adsp branch). 
+# Next I want to retune the abundance multipliers to be more reasonable, and do some experiments with fishing gears.
+
+# #18 #24 #29 filled out where some hake and mullet parameters are from
+# am having difficulty reproducing the mullet characteristic weights I used before.
+# also, using the default ks=0.2*h the mullet seems to have too much energy, 
+# and curls up, while the hake does not seem to have enough energy and its 
+# biomass curve slopes down. Need to figure out what I can tune. 
