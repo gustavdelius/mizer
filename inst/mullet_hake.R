@@ -17,11 +17,11 @@ params@A[] <- NA
 # http://www.fishbase.org/summary/Mullus-barbatus+barbatus.html
 # length to weight conversion constants from 
 # http://www.fishbase.org/popdyn/LWRelationshipList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
-a <- 0.0085
-b <- 3.11
+a_m <- 0.0085
+b_m <- 3.11
 # asymptotic length from
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
-L_inf <- 24.3
+L_inf_m <- 24.3
 # length at maturity from 
 # http://www.fishbase.org/summary/Mullus-barbatus+barbatus.html
 L_mat <- 11.1
@@ -29,9 +29,9 @@ species_params <- data.frame(
     species = "mullet",
     w_min = 0.001, # mizer's default egg weight, used in NS
     # w_inf = 251.94, #is the old value we used. Where is it from ? It differs to below
-    w_inf = a*L_inf^b, # from fishbase
+    w_inf = a_m*L_inf_m^b_m, # from fishbase
     # w_mat = 16.48, #is the old value we used. Where is it from ? It differs to below
-    w_mat = a*L_inf^b, # from fishbase
+    w_mat = a_m*L_mat^b_m, # from fishbase
     h = NA, # will compute this later
     #ks = 4,
     ks = NA, # unknown, so we setup mizer's default of ks=0.2*h below
@@ -50,8 +50,8 @@ species_params <- data.frame(
 )
 # k_vb is from 
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
-k_vb <- 0.6
-species_params$h <- 3*k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0)
+k_vb_m <- 0.6
+species_params$h <- 3*k_vb_m*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0)
 species_params$ks <- 0.2*species_params$h # mizer's default setting
 ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
 species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
@@ -117,10 +117,12 @@ g_fnNS <- approxfun(params_out_2@w, gNS)
 myodefunNS <- function(t, state, parameters){
     return(list(g_fnNS(state)))
 }
-ageNS <- (0:20)
+ageNS <- (0:400)
 mullet_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
-plot(ageNS,mullet_weight)
+plot(ageNS,a_m*(L_inf_m*(1-exp(-k_vb_m*ageNS)))^b_m,type="l",ylim=c(0,5000))
+lines(ageNS,mullet_weight,col="red",lty=2)
 
+params_out_2@species_params$w_min[mysp]
 #### hake growth curve
 mysp <- 13
 gNS <- getEGrowth(params_out_2, sim@n[dim(sim@n)[1], , ], sim@n_pp[dim(sim@n_pp)[1], ])[mysp,]
@@ -128,9 +130,10 @@ g_fnNS <- approxfun(params_out_2@w, gNS)
 myodefunNS <- function(t, state, parameters){
     return(list(g_fnNS(state)))
 }
-ageNS <- (0:400)
+#ageNS <- (0:400)
 hake_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
-plot(ageNS,hake_weight)
+lines(ageNS,a*(L_inf*(1-exp(-k_vb*ageNS)))^b,col="blue")
+lines(ageNS,hake_weight,col="purple",lty=2)
 
 
 # #18 #24 #29 Have got code that holds hake and mullet (pushed to inst/mullet_hake.R in adsp branch). 
@@ -149,3 +152,6 @@ plot(ageNS,hake_weight)
 # of weight bins, and now it works with general max_w_inf, so now I can run the 
 # system properly, but it looks like the hake is still growing too slow. 
 # Next job is to plot the true VB growth curves alongside.
+
+# #18 #24 #29 Plotted growth curves vs VB curves (with t0 =0). Agreement is not good. 
+# also corrected a typo about specifying W_mat for mullet.
