@@ -15,6 +15,8 @@ params@A[] <- NA
 ######### add mullet
 # some data from fishbase at 
 # http://www.fishbase.org/summary/Mullus-barbatus+barbatus.html
+# some parameter info is in this table
+# https://www.dropbox.com/s/iqiydcrxqrx0k0w/paramsTable.jpg?dl=0
 # length to weight conversion constants from 
 # http://www.fishbase.org/popdyn/LWRelationshipList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
 a_m <- 0.0085
@@ -51,7 +53,11 @@ species_params <- data.frame(
 # k_vb is from 
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
 k_vb_m <- 0.6
-species_params$h <- 3*k_vb_m*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0)
+fc <- 0.2/species_params$alpha
+species_params$h <- 3*k_vb_m*(species_params$w_inf^(1/3))/(
+    species_params$alpha*params@f0*(1-fc/params@f0))
+# The above definition of h differs from old eqn (8.1) from vignette, see notes
+# https://www.dropbox.com/s/j9yajrx3d2t0zub/hDefinition.jpg?dl=0
 species_params$ks <- 0.2*species_params$h # mizer's default setting
 ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
 species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
@@ -99,7 +105,9 @@ species_params <- data.frame(
 )
 k_vb <- 0.1 # from FB website below
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=30&GenusName=Merluccius&SpeciesName=merluccius&fc=184
-species_params$h <- 3*k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0)
+fc <- 0.2/species_params$alpha
+species_params$h <- 3*k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0*
+                                                             (1-fc/params@f0))
 species_params$ks <- 0.2*species_params$h # mizer's default setting
 ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
 species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
@@ -117,7 +125,7 @@ g_fnNS <- approxfun(params_out_2@w, gNS)
 myodefunNS <- function(t, state, parameters){
     return(list(g_fnNS(state)))
 }
-ageNS <- (0:400)
+ageNS <- (0:200)
 mullet_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
 plot(ageNS,a_m*(L_inf_m*(1-exp(-k_vb_m*ageNS)))^b_m,type="l",ylim=c(0,5000))
 lines(ageNS,mullet_weight,col="red",lty=2)
@@ -155,3 +163,6 @@ lines(ageNS,hake_weight,col="purple",lty=2)
 
 # #18 #24 #29 Plotted growth curves vs VB curves (with t0 =0). Agreement is not good. 
 # also corrected a typo about specifying W_mat for mullet.
+
+# #18 #24 #29 Modified definition of h to account for fc. Now growth curves look 
+# better, except that hake has stunted growth.
