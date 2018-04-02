@@ -151,10 +151,23 @@ plot(ageNS,a*(L_inf*(1-exp(-k_vb*ageNS)))^b,col="blue",type="l")
 lines(ageNS,hake_weight,col="purple",lty=2)
 
 ################ investigate the effect of changing fishing gears #############
-
-sim <- project(params_out_2, t_max = 5, effort = 0.1)
+eff <- 0.15
+sim <- project(params_out_2, t_max = 5, effort = eff)
 plot(sim)
+gyA <- getYield(sim)
+gyA[dim(gyA)[1],]
 
+params_out_2B <- params_out_2
+# change the knife edge on hake to 50g
+params_out_2B@selectivity[1,13,] <- 1*params_out_2@w>50
+sim <- project(params_out_2B, t_max = 5, effort = eff)
+plot(sim)
+gyB <- getYield(sim)
+gyB[dim(gyB)[1],]
+
+# notice there is a slight increase in the catch of mullet 
+# in the latter system, because we are fishing its predator, hake, 
+# with a more disruptive gear. 
 
 # #18 #24 #29 Have got code that holds hake and mullet (pushed to inst/mullet_hake.R in adsp branch). 
 # Next I want to retune the abundance multipliers to be more reasonable, and do some experiments with fishing gears.
@@ -193,3 +206,6 @@ plot(sim)
 
 # #18 #24 #29 corrected previous typo with setup of alpha.
 
+# #21 Added very basic fishing gears, to show slight increase in 
+# the yield of mullet that comes as a knock-on effect of changing 
+# to use a more aggressive fishing gear on the hake. 
