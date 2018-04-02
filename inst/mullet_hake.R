@@ -1,14 +1,14 @@
 library(deSolve)
 ######### returne abundance test
 #params <- set_scaling_model()
-params <- set_scaling_model(alpha = 0.6)
+params <- set_scaling_model()
 params@A[] <- NA
 params@A[length(params@A)] <- 1
 retune_abundance(params)
 
 ######### get scaling model
 
-params <- set_scaling_model(max_w_inf = 5000)
+params <- set_scaling_model(max_w_inf = 5000,alpha = 0.6)
 params@species_params$r_max <- params@species_params$w_mat
 params@species_params$r_max[] <- 10^50
 params@A[] <- NA
@@ -150,6 +150,11 @@ hake_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, f
 plot(ageNS,a*(L_inf*(1-exp(-k_vb*ageNS)))^b,col="blue",type="l")
 lines(ageNS,hake_weight,col="purple",lty=2)
 
+################ investigate the effect of changing fishing gears #############
+
+sim <- project(params_out_2, t_max = 5, effort = 0.1)
+plot(sim)
+
 
 # #18 #24 #29 Have got code that holds hake and mullet (pushed to inst/mullet_hake.R in adsp branch). 
 # Next I want to retune the abundance multipliers to be more reasonable, and do some experiments with fishing gears.
@@ -185,3 +190,6 @@ lines(ageNS,hake_weight,col="purple",lty=2)
 # a grid point. Also, now with alpha =0.6, I do not understand why now it keeps 
 # repeatedly warning "Note: Negative background mortality rates overwritten with zeros"
 # I guess this warning message should be suppressed after first print.
+
+# #18 #24 #29 corrected previous typo with setup of alpha.
+
