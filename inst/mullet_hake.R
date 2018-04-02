@@ -1,6 +1,7 @@
 library(deSolve)
 ######### returne abundance test
-params <- set_scaling_model()
+#params <- set_scaling_model()
+params <- set_scaling_model(alpha = 0.6)
 params@A[] <- NA
 params@A[length(params@A)] <- 1
 retune_abundance(params)
@@ -40,7 +41,8 @@ species_params <- data.frame(
     beta = 283, # = beta_gurnard from North sea. Silvia says gurnard is similar.
     sigma = 1.8, # = sigma_gurnard from North sea. Silvia says gurnard is similar.
     z0 = 0,
-    alpha = 0.4, # unknown, set same as set_scaling default. Normal mizer default=0.6
+    #alpha = 0.4, # unknown, set same as set_scaling default. Normal mizer default=0.6
+    alpha = 0.6, # unknown, set same as set_scaling default. Normal mizer default=0.6
     erepro = 0.1, # unknown
     sel_func = "knife_edge", # not used but required
     knife_edge_size = 100, # we can choose
@@ -93,7 +95,8 @@ species_params <- data.frame(
     beta = exp(2.4), #RLD and Blanchard thesis p 88
     sigma = 1.1, #RLD and Blanchard thesis p 88
     z0 = 0,
-    alpha = 0.4, # unknown, set same as set_scaling default. Normal mizer default=0.6
+    #alpha = 0.4, # unknown, set same as set_scaling default. Normal mizer default=0.6
+    alpha = 0.6, # unknown, set same as set_scaling default. Normal mizer default=0.6
     erepro = 0.1, # unknown
     sel_func = "knife_edge", # not used but required
     knife_edge_size = 100, # can choose
@@ -127,9 +130,9 @@ g_fnNS <- approxfun(params_out_2@w, gNS)
 myodefunNS <- function(t, state, parameters){
     return(list(g_fnNS(state)))
 }
-ageNS <- (0:200)
+ageNS <- (0:20)
 mullet_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
-plot(ageNS,a_m*(L_inf_m*(1-exp(-k_vb_m*ageNS)))^b_m,type="l",ylim=c(0,5000))
+plot(ageNS,a_m*(L_inf_m*(1-exp(-k_vb_m*ageNS)))^b_m,type="l")
 lines(ageNS,mullet_weight,col="red",lty=2)
 
 params_out_2@species_params$w_min[mysp]
@@ -142,9 +145,9 @@ g_fnNS <- approxfun(params_out_2@w, gNS)
 myodefunNS <- function(t, state, parameters){
     return(list(g_fnNS(state)))
 }
-#ageNS <- (0:400)
+ageNS <- (0:100)
 hake_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
-lines(ageNS,a*(L_inf*(1-exp(-k_vb*ageNS)))^b,col="blue")
+plot(ageNS,a*(L_inf*(1-exp(-k_vb*ageNS)))^b,col="blue",type="l")
 lines(ageNS,hake_weight,col="purple",lty=2)
 
 
@@ -173,3 +176,12 @@ lines(ageNS,hake_weight,col="purple",lty=2)
 
 # #18 #24 #29 Now I use the initial conditions (rather than state after sim) 
 # to define the growth rates used for growth curves.
+
+# #18 #24 #29 Still dont understand why I could not match the Hake growth curve 
+# when I used the original settings. Now I run the code again with all alpha=0.6 
+# (which is the mizer default), and the growth curves seem to match much better with 
+# the VB growth curves now. There is a slight discrepency because w_inf does not 
+# lie upon a grid point. I guess the w_inf etc. should be coerced to lie upon 
+# a grid point. Also, now with alpha =0.6, I do not understand why now it keeps 
+# repeatedly warning "Note: Negative background mortality rates overwritten with zeros"
+# I guess this warning message should be suppressed after first print.
