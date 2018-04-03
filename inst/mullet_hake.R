@@ -52,8 +52,8 @@ species_params <- data.frame(
     #w_min_idx = NA,
     r_max = 10^50,
     k_vb = 0.6,
-    aa = a_m,
-    bb = b_m
+    a = a_m,
+    b = b_m
 )
 # k_vb is from 
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
@@ -100,8 +100,8 @@ species_params <- data.frame(
     #w_min_idx = NA,
     r_max = 10^50, #why do I need r_max after combining before
     k_vb = 0.1, # from FB website below
-    aa = a,
-    bb = b
+    a = a,
+    b = b
 )
 #k_vb <- 0.1 # from FB website below
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=30&GenusName=Merluccius&SpeciesName=merluccius&fc=184
@@ -130,7 +130,7 @@ myodefunNS <- function(t, state, parameters){
 }
 ageNS <- (0:20)
 mullet_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
-plot(ageNS,params_out_2@species_params$aa[mysp]*(L_inf_m*(1-exp(-params_out_2@species_params$k_vb[mysp]*ageNS)))^params_out_2@species_params$bb[mysp],type="l")
+plot(ageNS,params_out_2@species_params$a[mysp]*(L_inf_m*(1-exp(-params_out_2@species_params$k_vb[mysp]*ageNS)))^params_out_2@species_params$b[mysp],type="l")
 lines(ageNS,mullet_weight,col="red",lty=2)
 
 params_out_2@species_params$w_min[mysp]
@@ -146,7 +146,7 @@ myodefunNS <- function(t, state, parameters){
 ageNS <- (0:100)
 hake_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
 #plot(ageNS,a*(L_inf*(1-exp(-k_vb*ageNS)))^b,col="blue",type="l")
-plot(ageNS,params_out_2@species_params$aa[mysp]*(L_inf*(1-exp(-params_out_2@species_params$k_vb[mysp]*ageNS)))^params_out_2@species_params$bb[mysp],type="l",col="blue")
+plot(ageNS,params_out_2@species_params$a[mysp]*(L_inf*(1-exp(-params_out_2@species_params$k_vb[mysp]*ageNS)))^params_out_2@species_params$b[mysp],type="l",col="blue")
 lines(ageNS,hake_weight,col="purple",lty=2)
 
 ################ investigate the effect of changing fishing gears #############
@@ -209,7 +209,7 @@ gyB[dim(gyB)[1],]
 # the yield of mullet that comes as a knock-on effect of changing 
 # to use a more aggressive fishing gear on the hake. 
 
-# #53 added $aa, $bb and $k_vb to species params dataframe, and added column presence 
+# #53 added $a, $b and $k_vb to species params dataframe, and added column presence 
 # matcher in add_species for these quantities
 
 # #53 Have moved the part of the mullet_hake.R code that fills out 
@@ -225,5 +225,8 @@ gyB[dim(gyB)[1],]
 #with !("a" %in% colnames(species_params)) ? Will this still suffer from 
 #the same a/alpha confusion, or will this allow me to call them a and b, rather 
 #then aa and bb ?
+
+# #53 Got rid of aa and bb, by using more sensible ways of checking whether column names are 
+# present.
 
 

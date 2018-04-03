@@ -821,7 +821,7 @@ add_species <- function(params, species_params, biomass = 4*10^8) {
   if (is.null(species_params$r_max)){
     species_params$r_max <- 10^50
   }
-    # ensure dataframes to be merged have the same columns, regarding k_vb,aa and bb
+    # ensure dataframes to be merged have the same columns, regarding k_vb,a and b
     if (is.null(params@species_params$k_vb)&(!is.null(species_params$k_vb))){
         params@species_params$k_vb <- params@species_params$w_inf
         params@species_params$k_vb[] <- NA
@@ -829,19 +829,19 @@ add_species <- function(params, species_params, biomass = 4*10^8) {
     if (!is.null(params@species_params$k_vb)&(is.null(species_params$k_vb))){
         species_params$k_vb <- NA
     }
-    if (is.null(params@species_params$aa)&(!is.null(species_params$aa))){
-        params@species_params$aa <- params@species_params$w_inf
-        params@species_params$aa[] <- NA
+    if ((!("a" %in% colnames(params@species_params)))&(("a" %in% colnames(species_params)))){
+        params@species_params$a <- params@species_params$w_inf
+        params@species_params$a[] <- NA
     }
-    if (!is.null(params@species_params$aa)&(is.null(species_params$aa))){
-        species_params$aa <- NA
+    if ((("a" %in% colnames(params@species_params)))&(!("a" %in% colnames(species_params)))){
+        species_params$a <- NA
     }
-    if (is.null(params@species_params$bb)&(!is.null(species_params$bb))){
-        params@species_params$bb <- params@species_params$w_inf
-        params@species_params$bb[] <- NA
+    if ((!("b" %in% colnames(params@species_params)))&(("b" %in% colnames(species_params)))){
+        params@species_params$b <- params@species_params$w_inf
+        params@species_params$b[] <- NA
     }
-    if (!is.null(params@species_params$bb)&(is.null(species_params$bb))){
-        species_params$bb <- NA
+    if ((("b" %in% colnames(params@species_params)))&(!("b" %in% colnames(species_params)))){
+        species_params$b <- NA
     }
     # calculate h if it is missing
     if (is.null(species_params$h)){
