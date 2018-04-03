@@ -847,6 +847,9 @@ add_species <- function(params, species_params, biomass = 4*10^8) {
     if (is.null(species_params$h)){
         message("Note: \tNo h column in new species data frame so using f0 and k_vb to
                 calculate it.")
+        if(!("k_vb" %in% colnames(species_params))){
+            stop("\t\tExcept I can't because there is no k_vb column in the new species data frame")
+        }
         fc <- 0.2/species_params$alpha
         species_params$h <- 3*species_params$k_vb*(species_params$w_inf^(1/3))/(
             species_params$alpha*params@f0*(1-fc/params@f0))
