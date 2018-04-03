@@ -843,6 +843,33 @@ add_species <- function(params, species_params, biomass = 4*10^8) {
     if (!is.null(params@species_params$bb)&(is.null(species_params$bb))){
         species_params$bb <- NA
     }
+    ###################
+    if (is.null(species_params$h)){
+        fc <- 0.2/species_params$alpha
+        species_params$h <- 3*species_params$k_vb*(species_params$w_inf^(1/3))/(
+            species_params$alpha*params@f0*(1-fc/params@f0))
+    }
+    if (is.na(species_params$h)){
+        fc <- 0.2/species_params$alpha
+        species_params$h <- 3*species_params$k_vb*(species_params$w_inf^(1/3))/(
+            species_params$alpha*params@f0*(1-fc/params@f0))
+    }
+    if (is.null(species_params$ks)){
+        species_params$ks <- 0.2*species_params$h # mizer's default setting
+    }
+    if (is.na(species_params$ks)){
+        species_params$ks <- 0.2*species_params$h # mizer's default setting
+    }
+    if (is.null(species_params$gamma)){
+        ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
+        species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
+    }
+    if (is.na(species_params$gamma)){
+        ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
+        species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
+    }
+    species_params$w_min_idx <- sum(params@w<=species_params$w_min)
+    ###################
   # add the new species (with parameters described by species_params), 
   # to make a larger species_params dataframe.
   combi_species_params <- rbind(params@species_params, species_params)

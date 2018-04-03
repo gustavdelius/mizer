@@ -35,9 +35,9 @@ species_params <- data.frame(
     w_inf = a_m*L_inf_m^b_m, # from fishbase
     # w_mat = 16.48, #is the old value we used. Where is it from ? It differs to below
     w_mat = a_m*L_mat^b_m, # from fishbase
-    h = NA, # will compute this later
+    #h = NA, # will compute this later
     #ks = 4,
-    ks = NA, # unknown, so we setup mizer's default of ks=0.2*h below
+    #ks = NA, # unknown, so we setup mizer's default of ks=0.2*h below
     beta = 283, # = beta_gurnard from North sea. Silvia says gurnard is similar.
     sigma = 1.8, # = sigma_gurnard from North sea. Silvia says gurnard is similar.
     z0 = 0,
@@ -48,8 +48,8 @@ species_params <- data.frame(
     knife_edge_size = 100, # we can choose
     gear = "knife_edge_gear",
     k = 0,
-    gamma = NA,
-    w_min_idx = NA,
+    #gamma = NA,
+    #w_min_idx = NA,
     r_max = 10^50,
     k_vb = 0.6,
     aa = a_m,
@@ -57,15 +57,6 @@ species_params <- data.frame(
 )
 # k_vb is from 
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
-fc <- 0.2/species_params$alpha
-species_params$h <- 3*species_params$k_vb*(species_params$w_inf^(1/3))/(
-    species_params$alpha*params@f0*(1-fc/params@f0))
-# The above definition of h differs from old eqn (8.1) from vignette, see notes
-# https://www.dropbox.com/s/j9yajrx3d2t0zub/hDefinition.jpg?dl=0
-species_params$ks <- 0.2*species_params$h # mizer's default setting
-ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
-species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
-species_params$w_min_idx <- sum(params@w<=species_params$w_min)
 #@ params_out <- add_species(params, species_params, mult = 5.5 * 10 ^ (8))
 params_out <- add_species(params, species_params, biomass = 3070953023)
 sim <- project(params_out, t_max = 5, effort = 0)
@@ -92,9 +83,9 @@ species_params <- data.frame(
     w_min = 0.001, # mizer default
     w_inf = a*L_inf^b, # from fishbase
     w_mat = a*L_mat^b, # from fishbase
-    h = NA, # will compute this later
+    #h = NA, # will compute this later
     # ks = 1/2, # unknown, mizer default =0.2*h
-    ks = NA, # defined later as mizer default ks=0.2*h
+    #ks = NA, # defined later as mizer default ks=0.2*h
     beta = exp(2.4), #RLD and Blanchard thesis p 88
     sigma = 1.1, #RLD and Blanchard thesis p 88
     z0 = 0,
@@ -105,8 +96,8 @@ species_params <- data.frame(
     knife_edge_size = 100, # can choose
     gear = "knife_edge_gear",
     k = 0,
-    gamma = NA,
-    w_min_idx = NA,
+    #gamma = NA,
+    #w_min_idx = NA,
     r_max = 10^50, #why do I need r_max after combining before
     k_vb = 0.1, # from FB website below
     aa = a,
@@ -114,13 +105,13 @@ species_params <- data.frame(
 )
 #k_vb <- 0.1 # from FB website below
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=30&GenusName=Merluccius&SpeciesName=merluccius&fc=184
-fc <- 0.2/species_params$alpha
-species_params$h <- 3*species_params$k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0*
-                                                             (1-fc/params@f0))
-species_params$ks <- 0.2*species_params$h # mizer's default setting
-ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
-species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
-species_params$w_min_idx <- sum(params@w<=species_params$w_min)
+#fc <- 0.2/species_params$alpha
+#species_params$h <- 3*species_params$k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0*
+#                                                             (1-fc/params@f0))
+#species_params$ks <- 0.2*species_params$h # mizer's default setting
+#ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
+#species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
+#species_params$w_min_idx <- sum(params@w<=species_params$w_min)
 
 
 #@ params_out_2 <- add_species(params_out, species_params, mult = 5.5 * 10 ^ (8))
@@ -221,3 +212,7 @@ gyB[dim(gyB)[1],]
 # #53 added $aa, $bb and $k_vb to species params dataframe, and added column presence 
 # matcher in add_species for these quantities
 
+# #53 Have moved the part of the mullet_hake.R code that fills out 
+# missing info about h,ks and gamma to the wrapper functions, so the user does 
+# not have to confront it. Next I have to add warnings like "Note: 	No gamma column in species data frame so using f0, h, beta, sigma, 
+#lambda and kappa to calculate it.", and clean up mullet_hake and wrapper_functions.R
