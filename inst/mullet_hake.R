@@ -4,7 +4,7 @@ library(deSolve)
 params <- set_scaling_model()
 params@A[] <- NA
 params@A[length(params@A)] <- 1
-retune_abundance(params)
+multipliers <- retune_abundance(params)
 
 ######### get scaling model
 
@@ -216,3 +216,14 @@ gyB[dim(gyB)[1],]
 # missing info about h,ks and gamma to the wrapper functions, so the user does 
 # not have to confront it. Next I have to add warnings like "Note: 	No gamma column in species data frame so using f0, h, beta, sigma, 
 #lambda and kappa to calculate it.", and clean up mullet_hake and wrapper_functions.R
+
+# #53 Added warnings for when h,ks and gamma are missing from new species, and must be 
+# calculated. Note that this computation of h uses the (1-fc/params@f0) term, 
+# which I don't understand. Also, the way of getting h that I 
+# penned the other day involves the assumption that k_s=0.2*h 
+# which may not be the case. Can I replace is.null(species_params$a) 
+#with !("a" %in% colnames(species_params)) ? Will this still suffer from 
+#the same a/alpha confusion, or will this allow me to call them a and b, rather 
+#then aa and bb ?
+
+

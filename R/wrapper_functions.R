@@ -813,8 +813,7 @@ retune_abundance <- function(params) {
 # Note first species must be in background.
 
 add_species <- function(params, species_params, biomass = 4*10^8) {
-  # create large r_max's if such slots are absent
-  #! is it correct to make the rmax's like this
+  # replace r_max with a large value, if absent
   if (is.null(params@species_params$r_max)){
     params@species_params$r_max <- params@species_params$w_inf
     params@species_params$r_max[] <- 10^50
@@ -822,6 +821,7 @@ add_species <- function(params, species_params, biomass = 4*10^8) {
   if (is.null(species_params$r_max)){
     species_params$r_max <- 10^50
   }
+    # ensure dataframes to be merged have the same columns, regarding k_vb,aa and bb
     if (is.null(params@species_params$k_vb)&(!is.null(species_params$k_vb))){
         params@species_params$k_vb <- params@species_params$w_inf
         params@species_params$k_vb[] <- NA
@@ -843,28 +843,38 @@ add_species <- function(params, species_params, biomass = 4*10^8) {
     if (!is.null(params@species_params$bb)&(is.null(species_params$bb))){
         species_params$bb <- NA
     }
-    ###################
+    # calculate h if it is missing
     if (is.null(species_params$h)){
+        message("Note: \tNo h column in new species data frame so using f0 and k_vb to
+                calculate it.")
         fc <- 0.2/species_params$alpha
         species_params$h <- 3*species_params$k_vb*(species_params$w_inf^(1/3))/(
             species_params$alpha*params@f0*(1-fc/params@f0))
     }
     if (is.na(species_params$h)){
+        message("Note: \tNo h column in new species data frame so using f0 and k_vb to
+                calculate it.")
         fc <- 0.2/species_params$alpha
         species_params$h <- 3*species_params$k_vb*(species_params$w_inf^(1/3))/(
             species_params$alpha*params@f0*(1-fc/params@f0))
     }
+    # calculate ks if it is missing
     if (is.null(species_params$ks)){
+        message("Note: \tNo ks column in new species data frame. Setting ks = 0.2*h.")
         species_params$ks <- 0.2*species_params$h # mizer's default setting
     }
     if (is.na(species_params$ks)){
+        message("Note: \tNo ks column in new species data frame. Setting ks = 0.2*h.")
         species_params$ks <- 0.2*species_params$h # mizer's default setting
     }
+    # calculate gamma if it is missing
     if (is.null(species_params$gamma)){
+        message("Note: \tNo gamma column in new species data frame so using f0, h, beta, sigma, lambda and kappa to calculate it.")
         ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
         species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
     }
     if (is.na(species_params$gamma)){
+        message("Note: \tNo gamma column in new species data frame so using f0, h, beta, sigma, lambda and kappa to calculate it.")
         ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
         species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
     }
