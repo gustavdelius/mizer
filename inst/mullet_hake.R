@@ -35,21 +35,15 @@ species_params <- data.frame(
     w_inf = a_m*L_inf_m^b_m, # from fishbase
     # w_mat = 16.48, #is the old value we used. Where is it from ? It differs to below
     w_mat = a_m*L_mat^b_m, # from fishbase
-    #h = NA, # will compute this later
-    #ks = 4,
-    #ks = NA, # unknown, so we setup mizer's default of ks=0.2*h below
     beta = 283, # = beta_gurnard from North sea. Silvia says gurnard is similar.
     sigma = 1.8, # = sigma_gurnard from North sea. Silvia says gurnard is similar.
     z0 = 0,
-    #alpha = 0.4, # unknown, set same as set_scaling default. Normal mizer default=0.6
-    alpha = 0.6, # unknown, set same as set_scaling default. Normal mizer default=0.6
+    alpha = 0.6, # unknown, using mizer default=0.6
     erepro = 0.1, # unknown
     sel_func = "knife_edge", # not used but required
     knife_edge_size = 100, # we can choose
     gear = "knife_edge_gear",
     k = 0,
-    #gamma = NA,
-    #w_min_idx = NA,
     r_max = 10^50,
     k_vb = 0.6,
     a = a_m,
@@ -57,7 +51,6 @@ species_params <- data.frame(
 )
 # k_vb is from 
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
-#@ params_out <- add_species(params, species_params, mult = 5.5 * 10 ^ (8))
 params_out <- add_species(params, species_params, biomass = 3070953023, min_w_observed = 0)
 sim <- project(params_out, t_max = 5, effort = 0)
 plot(sim)
@@ -83,21 +76,15 @@ species_params <- data.frame(
     w_min = 0.001, # mizer default
     w_inf = a*L_inf^b, # from fishbase
     w_mat = a*L_mat^b, # from fishbase
-    #h = NA, # will compute this later
-    # ks = 1/2, # unknown, mizer default =0.2*h
-    #ks = NA, # defined later as mizer default ks=0.2*h
     beta = exp(2.4), #RLD and Blanchard thesis p 88
     sigma = 1.1, #RLD and Blanchard thesis p 88
     z0 = 0,
-    #alpha = 0.4, # unknown, set same as set_scaling default. Normal mizer default=0.6
-    alpha = 0.6, # unknown, set same as set_scaling default. Normal mizer default=0.6
+    alpha = 0.6, # unknown, using mizer default=0.6
     erepro = 0.1, # unknown
     sel_func = "knife_edge", # not used but required
     knife_edge_size = 100, # can choose
     gear = "knife_edge_gear",
     k = 0,
-    #gamma = NA,
-    #w_min_idx = NA,
     r_max = 10^50, #why do I need r_max after combining before
     k_vb = 0.1, # from FB website below
     a = a,
@@ -105,25 +92,13 @@ species_params <- data.frame(
 )
 #k_vb <- 0.1 # from FB website below
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=30&GenusName=Merluccius&SpeciesName=merluccius&fc=184
-#fc <- 0.2/species_params$alpha
-#species_params$h <- 3*species_params$k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0*
-#                                                             (1-fc/params@f0))
-#species_params$ks <- 0.2*species_params$h # mizer's default setting
-#ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
-#species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
-#species_params$w_min_idx <- sum(params@w<=species_params$w_min)
-
-
-#@ params_out_2 <- add_species(params_out, species_params, mult = 5.5 * 10 ^ (8))
 params_out_2 <- add_species(params_out, species_params, biomass = 427977180, min_w_observed = 0)
 sim <- project(params_out_2, t_max = 5, effort = 0)
 plot(sim)
 
 #### mullet growth curve
 mysp <- 12
-#gNS <- getEGrowth(params_out_2, sim@n[dim(sim@n)[1], , ], sim@n_pp[dim(sim@n_pp)[1], ])[mysp,]
 gNS <- getEGrowth(params_out_2, sim@n[1, , ], sim@n_pp[dim(sim@n_pp)[1], ])[mysp,]
-
 g_fnNS <- approxfun(params_out_2@w, gNS)
 myodefunNS <- function(t, state, parameters){
     return(list(g_fnNS(state)))
@@ -133,19 +108,15 @@ mullet_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS,
 plot(ageNS,params_out_2@species_params$a[mysp]*(L_inf_m*(1-exp(-params_out_2@species_params$k_vb[mysp]*ageNS)))^params_out_2@species_params$b[mysp],type="l")
 lines(ageNS,mullet_weight,col="red",lty=2)
 
-params_out_2@species_params$w_min[mysp]
 #### hake growth curve
 mysp <- 13
-#gNS <- getEGrowth(params_out_2, sim@n[dim(sim@n)[1], , ], sim@n_pp[dim(sim@n_pp)[1], ])[mysp,]
 gNS <- getEGrowth(params_out_2, sim@n[1, , ], sim@n_pp[1, ])[mysp,]
-
 g_fnNS <- approxfun(params_out_2@w, gNS)
 myodefunNS <- function(t, state, parameters){
     return(list(g_fnNS(state)))
 }
 ageNS <- (0:100)
 hake_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
-#plot(ageNS,a*(L_inf*(1-exp(-k_vb*ageNS)))^b,col="blue",type="l")
 plot(ageNS,params_out_2@species_params$a[mysp]*(L_inf*(1-exp(-params_out_2@species_params$k_vb[mysp]*ageNS)))^params_out_2@species_params$b[mysp],type="l",col="blue")
 lines(ageNS,hake_weight,col="purple",lty=2)
 
@@ -231,3 +202,5 @@ gyB[dim(gyB)[1],]
 
 # #53 Cleaned wrapper functions, and added min_w_observed, for biomass setting. 
 # Next I need to clean mullet_hake.R, and add a clean add_species example.
+
+# #53 cleaned mullet_hake.R, and added a clean add_species example.
