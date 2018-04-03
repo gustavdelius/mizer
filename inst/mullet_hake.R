@@ -64,7 +64,8 @@ species_params$ks <- 0.2*species_params$h # mizer's default setting
 ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
 species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
 species_params$w_min_idx <- sum(params@w<=species_params$w_min)
-params_out <- add_species(params, species_params, mult = 5.5 * 10 ^ (8))
+#@ params_out <- add_species(params, species_params, mult = 5.5 * 10 ^ (8))
+params_out <- add_species(params, species_params, biomass = 3070953023)
 sim <- project(params_out, t_max = 5, effort = 0)
 plot(sim)
 
@@ -117,7 +118,8 @@ species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / 
 species_params$w_min_idx <- sum(params@w<=species_params$w_min)
 
 
-params_out_2 <- add_species(params_out, species_params, mult = 5.5 * 10 ^ (8))
+#@ params_out_2 <- add_species(params_out, species_params, mult = 5.5 * 10 ^ (8))
+params_out_2 <- add_species(params_out, species_params, biomass = 427977180)
 sim <- project(params_out_2, t_max = 5, effort = 0)
 plot(sim)
 

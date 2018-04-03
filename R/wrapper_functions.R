@@ -765,7 +765,7 @@ retune_abundance <- function(params) {
 #' for background species that we shall vary the abundance multiplier of.
 #' @param species_params The species parameters of the foreground species we 
 #' want to add to the system.
-#' @param mult The abundance multiplier of the newly added species. Default value is 1.5 * 10 ^ (11)
+#' @param biomass The total biomass of the newly added species. Default value is 4*10^8
 #' @export
 #' @return An object of type \code{MizerParams}
 #' @seealso \linkS4class{MizerParams}
@@ -812,7 +812,7 @@ retune_abundance <- function(params) {
 
 # Note first species must be in background.
 
-add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
+add_species <- function(params, species_params, biomass = 4*10^8) {
   # create large r_max's if such slots are absent
   #! is it correct to make the rmax's like this
   if (is.null(params@species_params$r_max)){
@@ -882,8 +882,18 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
     gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
   # Write steady state for new species (under assumption of self interaction)
   combi_params@initial_n[new_sp, ] <- 0
+  #@ combi_params@initial_n[new_sp, combi_params@species_params$w_min_idx[new_sp]:w_inf_idx] <-
+    #@ mult * exp(-cumsum(integrand)) / gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
   combi_params@initial_n[new_sp, combi_params@species_params$w_min_idx[new_sp]:w_inf_idx] <-
-    mult * exp(-cumsum(integrand)) / gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
+   exp(-cumsum(integrand)) / gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
+  if(sum(is.infinite(combi_params@initial_n))>0){
+      stop("Candidate steady state holds infinities")
+  }
+  if(sum(is.na(combi_params@initial_n))+sum(is.nan(combi_params@initial_n))>0){
+      stop("Candidate steady state holds none numeric values")
+  }
+  unnormalised_biomass <- sum(combi_params@initial_n[new_sp,]*combi_params@w*combi_params@dw)
+  combi_params@initial_n[new_sp,] <- combi_params@initial_n[new_sp,]*biomass/unnormalised_biomass
   # Turn self interaction back on
   combi_params@interaction[new_sp, new_sp] <- 1
   # Arrange background inidicators A, so show the new species is in the foreground
@@ -935,3 +945,6 @@ add_species <- function(params, species_params, mult = 1.5 * 10 ^ (11)) {
   }
   return(combi_params)
 }
+
+# #53 changed add_species so it works in terms of biomass rather than mult. Added code 
+# to stop if the new species candidate steady state solution contains nans or inifinities.
