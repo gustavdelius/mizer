@@ -58,7 +58,7 @@ species_params <- data.frame(
 # k_vb is from 
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
 #@ params_out <- add_species(params, species_params, mult = 5.5 * 10 ^ (8))
-params_out <- add_species(params, species_params, biomass = 3070953023)
+params_out <- add_species(params, species_params, biomass = 3070953023, min_w_observed = 0)
 sim <- project(params_out, t_max = 5, effort = 0)
 plot(sim)
 
@@ -115,7 +115,7 @@ species_params <- data.frame(
 
 
 #@ params_out_2 <- add_species(params_out, species_params, mult = 5.5 * 10 ^ (8))
-params_out_2 <- add_species(params_out, species_params, biomass = 427977180)
+params_out_2 <- add_species(params_out, species_params, biomass = 427977180, min_w_observed = 0)
 sim <- project(params_out_2, t_max = 5, effort = 0)
 plot(sim)
 
@@ -229,4 +229,5 @@ gyB[dim(gyB)[1],]
 # #53 Got rid of aa and bb, by using more sensible ways of checking whether column names are 
 # present.
 
-
+# #53 Cleaned wrapper functions, and added min_w_observed, for biomass setting. 
+# Next I need to clean mullet_hake.R, and add a clean add_species example.

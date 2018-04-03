@@ -670,7 +670,6 @@ set_scaling_model <- function(no_sp = 11,
 #' params@A[length(params@A)] <- 1
 #' retune_abundance(params)
 #' }
-#! why doesnt the example code for retune_abundance() work properly ?
 
 retune_abundance <- function(params) {
   no_sp <- length(params@species_params$w_inf)
@@ -685,8 +684,6 @@ retune_abundance <- function(params) {
   A2[largest_background] <- 1
   # we make a list L of species we will vary the abundance parameters of
   # (everything but largest background)
-  #! currently the code relies on L being a list, but we could switch 
-  # to the TRUE/FALSE convention.
   L <- (1:no_sp)[is.na(A2)]
   # Determine the indices of the limits we shall integrate between 
   idx_start <- sum(params@w <= min(params@species_params$w_mat))
@@ -765,7 +762,11 @@ retune_abundance <- function(params) {
 #' for background species that we shall vary the abundance multiplier of.
 #' @param species_params The species parameters of the foreground species we 
 #' want to add to the system.
-#' @param biomass The total biomass of the newly added species. Default value is 4*10^8
+#' @param biomass The total biomass of members of the newly added species which have weights 
+#' greater than min_w_observed. Default value is 4*10^8.
+#' @param min_w_observed The minimum weight of fish of the new species that contribute to the
+#' biomass which we setup for the new species. Default value is 0.
+#' 
 #' @export
 #' @return An object of type \code{MizerParams}
 #' @seealso \linkS4class{MizerParams}
@@ -812,7 +813,7 @@ retune_abundance <- function(params) {
 
 # Note first species must be in background.
 
-add_species <- function(params, species_params, biomass = 4*10^8) {
+add_species <- function(params, species_params, biomass = 4*10^8, min_w_observed = 0) {
   # replace r_max with a large value, if absent
   if (is.null(params@species_params$r_max)){
     params@species_params$r_max <- params@species_params$w_inf
@@ -882,7 +883,6 @@ add_species <- function(params, species_params, biomass = 4*10^8) {
         species_params$gamma <- (species_params$h / (params@kappa * ae)) * (params@f0 / (1 - params@f0))
     }
     species_params$w_min_idx <- sum(params@w<=species_params$w_min)
-    ###################
   # add the new species (with parameters described by species_params), 
   # to make a larger species_params dataframe.
   combi_species_params <- rbind(params@species_params, species_params)
@@ -943,8 +943,6 @@ add_species <- function(params, species_params, biomass = 4*10^8) {
     gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
   # Write steady state for new species (under assumption of self interaction)
   combi_params@initial_n[new_sp, ] <- 0
-  #@ combi_params@initial_n[new_sp, combi_params@species_params$w_min_idx[new_sp]:w_inf_idx] <-
-    #@ mult * exp(-cumsum(integrand)) / gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
   combi_params@initial_n[new_sp, combi_params@species_params$w_min_idx[new_sp]:w_inf_idx] <-
    exp(-cumsum(integrand)) / gg[combi_params@species_params$w_min_idx[new_sp]:w_inf_idx]
   if(sum(is.infinite(combi_params@initial_n))>0){
@@ -953,7 +951,8 @@ add_species <- function(params, species_params, biomass = 4*10^8) {
   if(sum(is.na(combi_params@initial_n))+sum(is.nan(combi_params@initial_n))>0){
       stop("Candidate steady state holds none numeric values")
   }
-  unnormalised_biomass <- sum(combi_params@initial_n[new_sp,]*combi_params@w*combi_params@dw)
+  unnormalised_biomass <- sum(combi_params@initial_n[new_sp,]*combi_params@w*combi_params@dw)*
+      (combi_params@w>min_w_observed)
   combi_params@initial_n[new_sp,] <- combi_params@initial_n[new_sp,]*biomass/unnormalised_biomass
   # Turn self interaction back on
   combi_params@interaction[new_sp, new_sp] <- 1
@@ -1006,6 +1005,3 @@ add_species <- function(params, species_params, biomass = 4*10^8) {
   }
   return(combi_params)
 }
-
-# #53 changed add_species so it works in terms of biomass rather than mult. Added code 
-# to stop if the new species candidate steady state solution contains nans or inifinities.

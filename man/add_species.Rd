@@ -5,7 +5,7 @@
 \title{Included add_species which attempts to add a new species into the system in such a way that 
 the resulting system will still be in steady state.}
 \usage{
-add_species(params, species_params, biomass = 4 * 10^8)
+add_species(params, species_params, biomass = 4 * 10^8, min_w_observed = 0)
 }
 \arguments{
 \item{params}{A mizer params object for the original system. The A slot 
@@ -15,7 +15,11 @@ for background species that we shall vary the abundance multiplier of.}
 \item{species_params}{The species parameters of the foreground species we 
 want to add to the system.}
 
-\item{biomass}{The total biomass of the newly added species. Default value is 4*10^8}
+\item{biomass}{The total biomass of members of the newly added species which have weights 
+greater than min_w_observed. Default value is 4*10^8.}
+
+\item{min_w_observed}{The minimum weight of fish of the new species that contribute to the
+biomass which we setup for the new species. Default value is 0.}
 }
 \value{
 An object of type \code{MizerParams}
