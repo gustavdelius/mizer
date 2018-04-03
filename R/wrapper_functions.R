@@ -822,6 +822,27 @@ add_species <- function(params, species_params, biomass = 4*10^8) {
   if (is.null(species_params$r_max)){
     species_params$r_max <- 10^50
   }
+    if (is.null(params@species_params$k_vb)&(!is.null(species_params$k_vb))){
+        params@species_params$k_vb <- params@species_params$w_inf
+        params@species_params$k_vb[] <- NA
+    }
+    if (!is.null(params@species_params$k_vb)&(is.null(species_params$k_vb))){
+        species_params$k_vb <- NA
+    }
+    if (is.null(params@species_params$aa)&(!is.null(species_params$aa))){
+        params@species_params$aa <- params@species_params$w_inf
+        params@species_params$aa[] <- NA
+    }
+    if (!is.null(params@species_params$aa)&(is.null(species_params$aa))){
+        species_params$aa <- NA
+    }
+    if (is.null(params@species_params$bb)&(!is.null(species_params$bb))){
+        params@species_params$bb <- params@species_params$w_inf
+        params@species_params$bb[] <- NA
+    }
+    if (!is.null(params@species_params$bb)&(is.null(species_params$bb))){
+        species_params$bb <- NA
+    }
   # add the new species (with parameters described by species_params), 
   # to make a larger species_params dataframe.
   combi_species_params <- rbind(params@species_params, species_params)

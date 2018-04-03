@@ -50,13 +50,15 @@ species_params <- data.frame(
     k = 0,
     gamma = NA,
     w_min_idx = NA,
-    r_max = 10^50
+    r_max = 10^50,
+    k_vb = 0.6,
+    aa = a_m,
+    bb = b_m
 )
 # k_vb is from 
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
-k_vb_m <- 0.6
 fc <- 0.2/species_params$alpha
-species_params$h <- 3*k_vb_m*(species_params$w_inf^(1/3))/(
+species_params$h <- 3*species_params$k_vb*(species_params$w_inf^(1/3))/(
     species_params$alpha*params@f0*(1-fc/params@f0))
 # The above definition of h differs from old eqn (8.1) from vignette, see notes
 # https://www.dropbox.com/s/j9yajrx3d2t0zub/hDefinition.jpg?dl=0
@@ -105,12 +107,15 @@ species_params <- data.frame(
     k = 0,
     gamma = NA,
     w_min_idx = NA,
-    r_max = 10^50 #why do I need r_max after combining before
+    r_max = 10^50, #why do I need r_max after combining before
+    k_vb = 0.1, # from FB website below
+    aa = a,
+    bb = b
 )
-k_vb <- 0.1 # from FB website below
+#k_vb <- 0.1 # from FB website below
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=30&GenusName=Merluccius&SpeciesName=merluccius&fc=184
 fc <- 0.2/species_params$alpha
-species_params$h <- 3*k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0*
+species_params$h <- 3*species_params$k_vb*(species_params$w_inf^(1/3))/(species_params$alpha*params@f0*
                                                              (1-fc/params@f0))
 species_params$ks <- 0.2*species_params$h # mizer's default setting
 ae <- sqrt(2*pi) * species_params$sigma * species_params$beta^(params@lambda-2) * exp((params@lambda-2)^2 * species_params$sigma^2 / 2)
@@ -134,7 +139,7 @@ myodefunNS <- function(t, state, parameters){
 }
 ageNS <- (0:20)
 mullet_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
-plot(ageNS,a_m*(L_inf_m*(1-exp(-k_vb_m*ageNS)))^b_m,type="l")
+plot(ageNS,params_out_2@species_params$aa[mysp]*(L_inf_m*(1-exp(-params_out_2@species_params$k_vb[mysp]*ageNS)))^params_out_2@species_params$bb[mysp],type="l")
 lines(ageNS,mullet_weight,col="red",lty=2)
 
 params_out_2@species_params$w_min[mysp]
@@ -149,7 +154,8 @@ myodefunNS <- function(t, state, parameters){
 }
 ageNS <- (0:100)
 hake_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
-plot(ageNS,a*(L_inf*(1-exp(-k_vb*ageNS)))^b,col="blue",type="l")
+#plot(ageNS,a*(L_inf*(1-exp(-k_vb*ageNS)))^b,col="blue",type="l")
+plot(ageNS,params_out_2@species_params$aa[mysp]*(L_inf*(1-exp(-params_out_2@species_params$k_vb[mysp]*ageNS)))^params_out_2@species_params$bb[mysp],type="l",col="blue")
 lines(ageNS,hake_weight,col="purple",lty=2)
 
 ################ investigate the effect of changing fishing gears #############
@@ -211,3 +217,7 @@ gyB[dim(gyB)[1],]
 # #21 Added very basic fishing gears, to show slight increase in 
 # the yield of mullet that comes as a knock-on effect of changing 
 # to use a more aggressive fishing gear on the hake. 
+
+# #53 added $aa, $bb and $k_vb to species params dataframe, and added column presence 
+# matcher in add_species for these quantities
+
