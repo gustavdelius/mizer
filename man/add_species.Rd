@@ -44,7 +44,7 @@ last species is a foreground species, with abundance multiplier mult.
 }
 \examples{
 \dontrun{
-params <- set_scaling_model(max_w_inf = 5000,alpha = 0.6)
+params <- set_scaling_model(max_w_inf = 5000)
 params@species_params$r_max <- params@species_params$w_mat
 params@species_params$r_max[] <- 10^50
 params@A[] <- NA

@@ -772,7 +772,7 @@ retune_abundance <- function(params) {
 #' @seealso \linkS4class{MizerParams}
 #' @examples
 #' \dontrun{
-#' params <- set_scaling_model(max_w_inf = 5000,alpha = 0.6)
+#' params <- set_scaling_model(max_w_inf = 5000)
 #' params@species_params$r_max <- params@species_params$w_mat
 #' params@species_params$r_max[] <- 10^50
 #' params@A[] <- NA
@@ -846,7 +846,7 @@ add_species <- function(params, species_params, biomass = 4*10^8, min_w_observed
         }
         fc <- 0.2/species_params$alpha
         species_params$h <- 3*species_params$k_vb*(species_params$w_inf^(1/3))/(
-            species_params$alpha*params@f0*(1-fc/params@f0))
+            species_params$alpha*params@f0-0.2)
     }
     if (is.na(species_params$h)){
         message("Note: \tNo h column in new species data frame so using f0 and k_vb to

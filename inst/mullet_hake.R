@@ -8,7 +8,7 @@ multipliers <- retune_abundance(params)
 
 ######### get scaling model
 
-params <- set_scaling_model(max_w_inf = 5000,alpha = 0.6)
+params <- set_scaling_model(max_w_inf = 5000)
 params@species_params$r_max <- params@species_params$w_mat
 params@species_params$r_max[] <- 10^50
 params@A[] <- NA
@@ -38,7 +38,7 @@ species_params <- data.frame(
     beta = 283, # = beta_gurnard from North sea. Silvia says gurnard is similar.
     sigma = 1.8, # = sigma_gurnard from North sea. Silvia says gurnard is similar.
     z0 = 0,
-    alpha = 0.6, # unknown, using mizer default=0.6
+    alpha = 0.4, # unknown, mizer default=0.6
     erepro = 0.1, # unknown
     sel_func = "knife_edge", # not used but required
     knife_edge_size = 100, # we can choose
@@ -95,7 +95,7 @@ species_params <- data.frame(
 params_out_2 <- add_species(params_out, species_params, biomass = 427977180, min_w_observed = 0)
 sim <- project(params_out_2, t_max = 5, effort = 0)
 plot(sim)
-
+params_out_2@species_params$erepro
 #### mullet growth curve
 mysp <- 12
 gNS <- getEGrowth(params_out_2, sim@n[1, , ], sim@n_pp[dim(sim@n_pp)[1], ])[mysp,]
@@ -204,3 +204,10 @@ gyB[dim(gyB)[1],]
 # Next I need to clean mullet_hake.R, and add a clean add_species example.
 
 # #53 cleaned mullet_hake.R, and added a clean add_species example.
+
+# #53 Changed alpha back to default (0.4) for background, for the background species. 
+# Also, now calculating h under the assumption that ks = 0.2*h. Updated hellp examples,
+# and printed erepro. Have also changed the alpha value of mullet back to 0.4. The 
+# erepro values for the added species seem too low, but they dont seem to change 
+# much when we vary alpha.
+
