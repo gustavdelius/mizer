@@ -8,7 +8,7 @@ multipliers <- retune_abundance(params)
 
 ######### get scaling model
 
-params <- set_scaling_model(max_w_inf = 5000)
+params <- set_scaling_model(max_w_inf = 5000,knife_edge_size = 10^8)
 params@species_params$r_max <- params@species_params$w_mat
 params@species_params$r_max[] <- 10^50
 params@A[] <- NA
@@ -28,16 +28,6 @@ L_inf_m <- 24.3
 # length at maturity from 
 # http://www.fishbase.org/summary/Mullus-barbatus+barbatus.html
 L_mat <- 11.1
-
-
-L25 <- 12 #wrong
-L50 <- 16.6 # standard, pre T90
-params@species_params$l25 <- params@species_params$w_inf
-params@species_params$l25[] <- L25
-params@species_params$l50 <- params@species_params$w_inf
-params@species_params$l50[] <- L50
-
-
 species_params <- data.frame(
     species = "mullet",
     w_min = 0.001, # mizer's default egg weight, used in NS
@@ -50,21 +40,15 @@ species_params <- data.frame(
     z0 = 0,
     alpha = 0.4, # unknown, mizer default=0.6
     erepro = 0.1, # unknown
-    #sel_func = "knife_edge", # not used but required
-    sel_func = "sigmoid_length", # not used but required
+    sel_func = "knife_edge", # not used but required
     knife_edge_size = 100, # we can choose
-    #gear = "knife_edge_gear",
-    gear = "sigmoid_length_gear",
+    gear = "knife_edge_gear",
     k = 0,
     r_max = 10^50,
     k_vb = 0.6,
     a = a_m,
-    b = b_m,
-    l25 = L25,
-    l50 = L50
+    b = b_m
 )
-
-
 # k_vb is from 
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
 params_out <- add_species(params, species_params, biomass = 3070953023, min_w_observed = 0)
@@ -97,18 +81,14 @@ species_params <- data.frame(
     z0 = 0,
     alpha = 0.6, # unknown, using mizer default=0.6
     erepro = 0.1, # unknown
-    #sel_func = "knife_edge", # not used but required
-    sel_func = "sigmoid_length", # not used but required
+    sel_func = "knife_edge", # not used but required
     knife_edge_size = 100, # can choose
-    #gear = "knife_edge_gear",
-    gear = "sigmoid_length_gear",
+    gear = "knife_edge_gear",
     k = 0,
     r_max = 10^50, #why do I need r_max after combining before
     k_vb = 0.1, # from FB website below
     a = a,
-    b = b,
-    l25 = L25,
-    l50 = L50
+    b = b
 )
 #k_vb <- 0.1 # from FB website below
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=30&GenusName=Merluccius&SpeciesName=merluccius&fc=184
@@ -141,28 +121,58 @@ plot(ageNS,params_out_2@species_params$a[mysp]*(L_inf*(1-exp(-params_out_2@speci
 lines(ageNS,hake_weight,col="purple",lty=2)
 
 ################ investigate the effect of changing fishing gears #############
+t_max <- 20
 eff <- 0.15
-sim <- project(params_out_2, t_max = 5, effort = eff)
+dt <- 0.01
+
+############ control 
+params_out_2_control <- params_out_2
+
+#- control net: L50= 16.16 cm TL; sd=0.462
+#- experimental net: L50= 20.50; sd= 0.331
+
+L50 <- 16.16
+sig <- 0.462
+# for mullet
+mysp <- 12
+len <- (params_out_2_control@w/params_out_2_control@species_params$a[mysp])^(1/params_out_2_control@species_params$b[mysp])
+params_out_2_control@selectivity[1,mysp,] <- 1/(1+exp(-(len-L50)/sig))
+# for hake
+mysp <- 13
+len <- (params_out_2_control@w/params_out_2_control@species_params$a[mysp])^(1/params_out_2_control@species_params$b[mysp])
+params_out_2_control@selectivity[1,mysp,] <- 1/(1+exp(-(len-L50)/sig))
+sim <- project(params_out_2_control, t_max = t_max, effort = eff, dt = dt)
 plot(sim)
-gyA <- getYield(sim)
-gyA[dim(gyA)[1],]
-
-params_out_2B <- params_out_2
-# change the knife edge on hake to 50g
-params_out_2B@selectivity[1,13,] <- 1*params_out_2@w>50
-sim <- project(params_out_2B, t_max = 5, effort = eff)
+gy_control <- getYield(sim)
+############################### T90
+params_out_2_t90 <- params_out_2
+L50 <- 20.50 
+sig <- 0.331
+# for mullet
+mysp <- 12
+len <- (params_out_2_t90@w/params_out_2_t90@species_params$a[mysp])^(1/params_out_2_t90@species_params$b[mysp])
+params_out_2_t90@selectivity[1,mysp,] <- 1/(1+exp(-(len-L50)/sig))
+# for hake
+mysp <- 13
+len <- (params_out_2_t90@w/params_out_2_t90@species_params$a[mysp])^(1/params_out_2_t90@species_params$b[mysp])
+params_out_2_t90@selectivity[1,mysp,] <- 1/(1+exp(-(len-L50)/sig))
+sim <- project(params_out_2_t90, t_max = t_max, effort = eff, dt = dt)
 plot(sim)
-gyB <- getYield(sim)
-gyB[dim(gyB)[1],]
+gy_t90 <- getYield(sim)
+
+dim(gy_control[])
+
+# comparision of gears on mullet
+mysp <- 12
+plot(gy_control[,mysp],type="l",ylim = c(min(c(gy_control[,mysp],gy_t90[,mysp])),max(c(gy_control[,mysp],gy_t90[,mysp]))))
+lines(gy_t90[,mysp],col="red")
+# comparision of gears on hake (I guess Francesc's data only applies for hake)
+mysp <- 13
+plot(gy_control[,mysp],type="l",ylim = c(min(c(gy_control[,mysp],gy_t90[,mysp])),max(c(gy_control[,mysp],gy_t90[,mysp]))))
+lines(gy_t90[,mysp],col="red")
 
 
-
-########################
-
-
-# notice there is a slight increase in the catch of mullet 
-# in the latter system, because we are fishing its predator, hake, 
-# with a more disruptive gear. 
+############################### 
 
 # #18 #24 #29 Have got code that holds hake and mullet (pushed to inst/mullet_hake.R in adsp branch). 
 # Next I want to retune the abundance multipliers to be more reasonable, and do some experiments with fishing gears.
@@ -236,7 +246,7 @@ gyB[dim(gyB)[1],]
 # erepro values for the added species seem too low, but they dont seem to change 
 # much when we vary alpha.
 
-# #21 Am implementing sigmoidal fishing gears with some of Francesc's data, but I still 
-# need to decide on an a and b for the background species. Also, at the moment we 
-# have to go back to the dataframe to implement the plots, which is not 
-# optimal.
+# #21 Setup fishing gears according to Francesc's recomendations. I think he 
+# only gave me the std and L50 for hake. I shall ask him for them for mullet, 
+# as well as which a and b he used. I don't know which a and b to use for 
+# the background species, so I just did not fish them in these experiments.
