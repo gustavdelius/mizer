@@ -627,11 +627,12 @@ set_scaling_model <- function(no_sp = 11,
     params@initial_n <- initial_n
     params@initial_n_pp <- initial_n_pp
     if (is.finite(rfac)) {
+        params@species_params$r_max <- params@species_params$w_inf
         # set rmax=fac*RDD
         # note that erepro has been multiplied by a factor of (rfac/(rfac-1)) to compensate for using a
         # stock recruitment relationship.
         params@species_params$r_max <-
-            (rfac - 1) * getRDI(params, initial_n, initial_n_pp)
+            (rfac - 1) * getRDI(params, initial_n, initial_n_pp)[,1]
     } else {
         
         # An infinite rfac means that rdd equals rdi

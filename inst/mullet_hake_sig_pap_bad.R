@@ -7,8 +7,8 @@ params@A[length(params@A)] <- 1
 multipliers <- retune_abundance(params)
 
 ######### get scaling model
-
-params <- set_scaling_model(max_w_inf = 5000,knife_edge_size = 10^8,kappa = 2*10^10,rfac=10)
+rfac <- 10
+params <- set_scaling_model(max_w_inf = 5000,knife_edge_size = 10^8,kappa = 2*10^10,rfac=rfac)
 #params@species_params$r_max <- params@species_params$w_mat
 #params@species_params$r_max[] <- 10^50
 params@A[] <- NA
@@ -52,7 +52,12 @@ species_params <- data.frame(
 # k_vb is from 
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
 params_out <- add_species(params, species_params, biomass = 2*10^9, min_w_observed = species_params$w_mat)
-sim <- project(params_out, t_max = 25, effort = 0, dt=0.01)
+params_out@species_params$erepro[12] <- (rfac / (rfac - 1)) * params_out@species_params$erepro[12]
+params_out@species_params$r_max[12] <-
+    (rfac - 1) * getRDI(params_out, params_out@initial_n, params_out@initial_n_pp)[12,1]
+
+
+sim <- project(params_out, t_max = 250, effort = 0)
 plot(sim)
 
 ############# add hake 
@@ -93,6 +98,10 @@ species_params <- data.frame(
 #k_vb <- 0.1 # from FB website below
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=30&GenusName=Merluccius&SpeciesName=merluccius&fc=184
 params_out_2 <- add_species(params_out, species_params,  biomass = 2*10^9, min_w_observed = species_params$w_mat)
+params_out_2@species_params$erepro[13] <- (rfac / (rfac - 1)) * params_out_2@species_params$erepro[13]
+params_out_2@species_params$r_max[13] <-
+    (rfac - 1) * getRDI(params_out_2, params_out_2@initial_n, params_out_2@initial_n_pp)[13,1]
+
 sim <- project(params_out_2, t_max = 55, effort = 0)
 plot(sim)
 params_out_2@species_params$erepro
@@ -258,3 +267,12 @@ lines(gy_t90[,mysp],col="red")
 # value of kappa from 7*10^10 to 2*10^10 so that the added species 
 # have similar abundance curves to the background species. We just discovered that 
 # co-existance is actually not happening.
+
+# #18 #24 #29 #53 Since we found out the hake and mullet are not coexisting, 
+# I have tried to set rmax=10. There was a problem with the way RDI was used to 
+# set rmax before (rmax was made as a matrix, so rbind broke, so I had to change it to 
+# getRDI()[,1]), now this error is gone, but maybe there is now an issue with how epsilon and 
+# rmax are being setup for the new species. Perhaps I should delete these new 
+# fragments from mullet_hake.R and put something extra in add_species to rework these 
+# quantities at the end, like we did at the end of set_scaling.
+
