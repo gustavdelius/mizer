@@ -944,8 +944,8 @@ add_species <- function(params, species_params, biomass = 4*10^8, min_w_observed
   if(sum(is.na(combi_params@initial_n))+sum(is.nan(combi_params@initial_n))>0){
       stop("Candidate steady state holds none numeric values")
   }
-  unnormalised_biomass <- sum(combi_params@initial_n[new_sp,]*combi_params@w*combi_params@dw)*
-      (combi_params@w>min_w_observed)
+  unnormalised_biomass <- sum(combi_params@initial_n[new_sp,]*combi_params@w*combi_params@dw*
+      (combi_params@w>min_w_observed))
   combi_params@initial_n[new_sp,] <- combi_params@initial_n[new_sp,]*biomass/unnormalised_biomass
   # Turn self interaction back on
   combi_params@interaction[new_sp, new_sp] <- 1

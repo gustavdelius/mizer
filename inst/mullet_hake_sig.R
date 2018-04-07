@@ -51,7 +51,7 @@ species_params <- data.frame(
 )
 # k_vb is from 
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
-params_out <- add_species(params, species_params, biomass = 3070953023, min_w_observed = 0)
+params_out <- add_species(params, species_params, biomass = 3070953023, min_w_observed = .1)
 sim <- project(params_out, t_max = 5, effort = 0)
 plot(sim)
 
@@ -250,3 +250,5 @@ lines(gy_t90[,mysp],col="red")
 # only gave me the std and L50 for hake. I shall ask him for them for mullet, 
 # as well as which a and b he used. I don't know which a and b to use for 
 # the background species, so I just did not fish them in these experiments.
+
+# #21 corrected a bug in the way w_min_observed was used in add_species
