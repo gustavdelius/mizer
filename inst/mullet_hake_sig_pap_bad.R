@@ -51,10 +51,10 @@ species_params <- data.frame(
 )
 # k_vb is from 
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
-params_out <- add_species(params, species_params, biomass = 2*10^9, min_w_observed = species_params$w_mat)
-params_out@species_params$erepro[12] <- (rfac / (rfac - 1)) * params_out@species_params$erepro[12]
-params_out@species_params$r_max[12] <-
-    (rfac - 1) * getRDI(params_out, params_out@initial_n, params_out@initial_n_pp)[12,1]
+params_out <- add_species(params, species_params, biomass = 2*10^9, min_w_observed = species_params$w_mat,rfac = rfac)
+#params_out@species_params$erepro[12] <- (rfac / (rfac - 1)) * params_out@species_params$erepro[12]
+#params_out@species_params$r_max[12] <-
+#    (rfac - 1) * getRDI(params_out, params_out@initial_n, params_out@initial_n_pp)[12,1]
 
 
 sim <- project(params_out, t_max = 250, effort = 0)
@@ -97,10 +97,10 @@ species_params <- data.frame(
 )
 #k_vb <- 0.1 # from FB website below
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=30&GenusName=Merluccius&SpeciesName=merluccius&fc=184
-params_out_2 <- add_species(params_out, species_params,  biomass = 2*10^9, min_w_observed = species_params$w_mat)
-params_out_2@species_params$erepro[13] <- (rfac / (rfac - 1)) * params_out_2@species_params$erepro[13]
-params_out_2@species_params$r_max[13] <-
-    (rfac - 1) * getRDI(params_out_2, params_out_2@initial_n, params_out_2@initial_n_pp)[13,1]
+params_out_2 <- add_species(params_out, species_params,  biomass = 2*10^9, min_w_observed = species_params$w_mat,rfac=rfac)
+#params_out_2@species_params$erepro[13] <- (rfac / (rfac - 1)) * params_out_2@species_params$erepro[13]
+#params_out_2@species_params$r_max[13] <-
+#    (rfac - 1) * getRDI(params_out_2, params_out_2@initial_n, params_out_2@initial_n_pp)[13,1]
 
 sim <- project(params_out_2, t_max = 55, effort = 0)
 plot(sim)
@@ -276,3 +276,7 @@ lines(gy_t90[,mysp],col="red")
 # fragments from mullet_hake.R and put something extra in add_species to rework these 
 # quantities at the end, like we did at the end of set_scaling.
 
+
+# #18 #24 #29 #53 I replaced the code at the end of add species to reset erepro 
+# and rmax for all species according to rfac in the same way as was done at the end of 
+# add species. Unfortunately this does not get rid of the wierd dynamics.

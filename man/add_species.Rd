@@ -5,7 +5,8 @@
 \title{Included add_species which attempts to add a new species into the system in such a way that 
 the resulting system will still be in steady state.}
 \usage{
-add_species(params, species_params, biomass = 4 * 10^8, min_w_observed = 0)
+add_species(params, species_params, biomass = 4 * 10^8, min_w_observed = 0,
+  rfac = 10)
 }
 \arguments{
 \item{params}{A mizer params object for the original system. The A slot 

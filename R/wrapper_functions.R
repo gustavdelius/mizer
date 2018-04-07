@@ -807,7 +807,7 @@ retune_abundance <- function(params) {
 
 # Note first species must be in background.
 
-add_species <- function(params, species_params, biomass = 4*10^8, min_w_observed = 0) {
+add_species <- function(params, species_params, biomass = 4*10^8, min_w_observed = 0, rfac=10) {
   # replace r_max with a large value, if absent
   if (is.null(params@species_params$r_max)){
     params@species_params$r_max <- params@species_params$w_inf
@@ -973,29 +973,38 @@ add_species <- function(params, species_params, biomass = 4*10^8, min_w_observed
     getEGrowth(combi_params,
                combi_params@initial_n,
                combi_params@initial_n_pp)
-  for (i in 1:new_sp){
-    gg0 <- gg[i,combi_params@species_params$w_min_idx[i]]
-    mumu0 <- mumu[i,combi_params@species_params$w_min_idx[i]]
-    # compute number of eggs made, ignoring stock recruitment relationship.
-    rdi <-
-      getRDI(combi_params,
-             combi_params@initial_n,
-             combi_params@initial_n_pp)[i]
-    DW <-
-      combi_params@dw[combi_params@species_params$w_min_idx[i]]
-    # rdi = erepro*H
-    H <- rdi / combi_params@species_params$erepro[i]
-    # X measures the amount of eggs growing/dying out of the egg size weight bin. 
-    # It should be equal to the inflow of eggs, rdd.
-    X <-
-      combi_params@initial_n[i, combi_params@species_params$w_min_idx[i]] *
-      (gg0 + DW * mumu0)
-    # Change erepro so that the reproduction boundary condition is satisfied
-    combi_params@species_params$erepro[i] <-
-      combi_params@species_params$r_max[i] * X / (H * combi_params@species_params$r_max[i] +
-                                                    H * X)
-    #! Do we need a new version of this erepro setting code for the case where 
-    # r_max is missing, or infinity.
+  # #
+  rdi <- getRDI(combi_params, combi_params@initial_n, combi_params@initial_n_pp)
+  gg <- getEGrowth(combi_params, combi_params@initial_n, combi_params@initial_n_pp)
+  mumu <- getZ(combi_params, combi_params@initial_n, combi_params@initial_n_pp, effort = 0)
+  no_sp <- new_sp
+  erepro_final <- 1:no_sp  # set up vector of right dimension
+  for (i in (1:no_sp)) {
+      gg0 <- gg[i, combi_params@species_params$w_min_idx[i]]
+      mumu0 <- mumu[i, combi_params@species_params$w_min_idx[i]]
+      DW <- params@dw[combi_params@species_params$w_min_idx[i]]
+      erepro_final[i] <- combi_params@species_params$erepro[i] * (combi_params@initial_n[i, combi_params@species_params$w_min_idx[i]] *
+                                       (gg0 + DW * mumu0)) / rdi[i]
   }
+  if (is.finite(rfac)) {
+      # erepro has been multiplied by a factor of (rfac/(rfac-1)) to compensate for using a
+      # stock recruitment relationship.
+      erepro_final <- (rfac / (rfac - 1)) * erepro_final
+  }
+  combi_params@species_params$erepro <- erepro_final
+  
+  if (is.finite(rfac)) {
+      combi_params@species_params$r_max <- combi_params@species_params$w_inf
+      # set rmax=fac*RDD
+      # note that erepro has been multiplied by a factor of (rfac/(rfac-1)) to compensate for using a
+      # stock recruitment relationship.
+      combi_params@species_params$r_max <-
+          (rfac - 1) * getRDI(combi_params, combi_params@initial_n, combi_params@initial_n_pp)[,1]
+  } else {
+      
+      # An infinite rfac means that rdd equals rdi
+      params@srr <- function(rdi, species_params) {return(rdi)}
+  }
+  # #
   return(combi_params)
 }
