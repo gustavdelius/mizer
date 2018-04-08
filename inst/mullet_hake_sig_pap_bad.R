@@ -8,7 +8,7 @@ multipliers <- retune_abundance(params)
 
 ######### get scaling model
 rfac <- 2
-params <- set_scaling_model(max_w_inf = 5000,knife_edge_size = 10^8,kappa = 2*10^10,rfac=rfac)
+params <- set_scaling_model(max_w_inf = 5000,knife_edge_size = 10^8,kappa = 2*10^10,rfac=rfac,alpha = 0.6)
 #params@species_params$r_max <- params@species_params$w_mat
 #params@species_params$r_max[] <- 10^50
 params@A[] <- NA
@@ -38,7 +38,7 @@ species_params <- data.frame(
     beta = 283, # = beta_gurnard from North sea. Silvia says gurnard is similar.
     sigma = 1.8, # = sigma_gurnard from North sea. Silvia says gurnard is similar.
     z0 = 0,
-    alpha = 0.4, # unknown, mizer default=0.6
+    alpha = 0.6, # unknown, mizer default=0.6
     erepro = 0.1, # unknown
     sel_func = "knife_edge", # not used but required
     knife_edge_size = 100, # we can choose
@@ -57,7 +57,7 @@ params_out <- add_species(params, species_params, biomass = 2*10^9, min_w_observ
 #    (rfac - 1) * getRDI(params_out, params_out@initial_n, params_out@initial_n_pp)[12,1]
 
 
-sim <- project(params_out, t_max = 250, effort = 0)
+sim <- project(params_out, t_max = 50, effort = 0)
 plot(sim)
 
 ############# add hake 
@@ -306,3 +306,6 @@ lines(gy_t90[,mysp],col="red")
 
 # #18 #24 #29 #53 Changed rfac to 2, now the system seems stable. Made growth curve plots 
 # for the background species
+
+# #18 #24 #29 #53 Changed alpha of background and mullet to be 0.6.  am happy with the growth curves, and the responsiveness to fishing etc. 
+# Not sure what could have gone wrong with set_scaling when I altered alpha
