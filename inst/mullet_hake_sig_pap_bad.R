@@ -7,7 +7,7 @@ params@A[length(params@A)] <- 1
 multipliers <- retune_abundance(params)
 
 ######### get scaling model
-rfac <- 10
+rfac <- 2
 params <- set_scaling_model(max_w_inf = 5000,knife_edge_size = 10^8,kappa = 2*10^10,rfac=rfac)
 #params@species_params$r_max <- params@species_params$w_mat
 #params@species_params$r_max[] <- 10^50
@@ -128,6 +128,29 @@ ageNS <- (0:100)
 hake_weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
 plot(ageNS,params_out_2@species_params$a[mysp]*(L_inf*(1-exp(-params_out_2@species_params$k_vb[mysp]*ageNS)))^params_out_2@species_params$b[mysp],type="l",col="blue")
 lines(ageNS,hake_weight,col="purple",lty=2)
+
+######################## all growth curves
+
+mysp <- 1
+gNS <- getEGrowth(params_out_2, sim@n[1, , ], sim@n_pp[1, ])[mysp,]
+g_fnNS <- approxfun(params_out_2@w, gNS)
+myodefunNS <- function(t, state, parameters){
+    return(list(g_fnNS(state)))
+}
+ageNS <- (0:100)
+weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
+plot(ageNS,weight,type="l",ylim=c(0,5000))
+for (mysp in 2:11){
+    gNS <- getEGrowth(params_out_2, sim@n[1, , ], sim@n_pp[1, ])[mysp,]
+    g_fnNS <- approxfun(params_out_2@w, gNS)
+    myodefunNS <- function(t, state, parameters){
+        return(list(g_fnNS(state)))
+    }
+    weight <- ode(y = params_out_2@species_params$w_min[mysp], times = ageNS, func = myodefunNS, parms = 1)[,2]
+    lines(ageNS,weight)
+}
+
+
 
 ################ investigate the effect of changing fishing gears #############
 t_max <- 20
@@ -280,3 +303,6 @@ lines(gy_t90[,mysp],col="red")
 # #18 #24 #29 #53 I replaced the code at the end of add species to reset erepro 
 # and rmax for all species according to rfac in the same way as was done at the end of 
 # add species. Unfortunately this does not get rid of the wierd dynamics.
+
+# #18 #24 #29 #53 Changed rfac to 2, now the system seems stable. Made growth curve plots 
+# for the background species
