@@ -11,7 +11,7 @@ multipliers <- retune_abundance(params)
 
 ######### get scaling model
 rfac <- 2
-params <- set_scaling_model(max_w_inf = 5000,knife_edge_size = 10^8,kappa = 2*10^10,rfac=rfac,alpha = 0.6)
+params <- set_scaling_model(max_w_inf = 5000,knife_edge_size = 10^8,kappa = 2*10^11,rfac=rfac,alpha = 0.6)
 #params@species_params$r_max <- params@species_params$w_mat
 #params@species_params$r_max[] <- 10^50
 params@A[] <- NA
@@ -332,3 +332,4 @@ lines(gy_t90[,mysp],col="red")
 # new steady state. It still runs when eff is small, but eff = 1.605 
 # induces "negative abundance multiplier" errors
 
+# #18 #24 #29 #53 Multiplied kappa by 10, so it works now.
