@@ -329,5 +329,6 @@ lines(gy_t90[,mysp],col="red")
 # #18 #24 #29 #53 Changed add species so it can also handel L25 and L50 
 # data frame columns, so that fishing effort can be handled properly, 
 # and set things up so that it takes Z into account when setting up the 
-# new steady state.
+# new steady state. It still runs when eff is small, but eff = 1.605 
+# induces "negative abundance multiplier" errors
 
