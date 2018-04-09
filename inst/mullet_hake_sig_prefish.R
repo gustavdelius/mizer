@@ -1,3 +1,6 @@
+# fishing effort is max fishing mortality of mullet from table 2 of Bioeconomic analysis of the effects of a
+# modification of the trawl extension piece
+# with T90 netting)
 eff <- 1.6
 
 
@@ -10,6 +13,9 @@ params@A[length(params@A)] <- 1
 multipliers <- retune_abundance(params)
 
 ######### get scaling model
+#! rfac = 2 was selected to stablize the model. Will have to check if this is needed at this value
+# kappa was chosen to be as low as possible such that the target species can be added in without 
+# -ve abundance multiplier warnings
 rfac <- 2
 params <- set_scaling_model(max_w_inf = 5000,knife_edge_size = 10^8,kappa = 2*10^11,rfac=rfac,alpha = 0.6)
 #params@species_params$r_max <- params@species_params$w_mat
@@ -60,10 +66,9 @@ species_params <- data.frame(
 # k_vb is from 
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=790&GenusName=Mullus&SpeciesName=barbatus+barbatus&fc=332
 params_out <- add_species(params, species_params, biomass = 2*10^9, min_w_observed = species_params$w_mat,rfac = rfac,effort = eff)
-#params_out@species_params$erepro[12] <- (rfac / (rfac - 1)) * params_out@species_params$erepro[12]
-#params_out@species_params$r_max[12] <-
-#    (rfac - 1) * getRDI(params_out, params_out@initial_n, params_out@initial_n_pp)[12,1]
-
+# stock spawning biomass = 2000 tons (from fig.2 of Bioeconomic analysis of the effects of a
+# modification of the trawl extension piece
+# with T90 netting)
 
 sim <- project(params_out, t_max = 50, effort = 0)
 plot(sim)
@@ -108,9 +113,9 @@ species_params <- data.frame(
 #k_vb <- 0.1 # from FB website below
 # http://www.fishbase.org/popdyn/PopGrowthList.php?ID=30&GenusName=Merluccius&SpeciesName=merluccius&fc=184
 params_out_2 <- add_species(params_out, species_params,  biomass = 2*10^9, min_w_observed = species_params$w_mat,rfac=rfac,effort = eff)
-#params_out_2@species_params$erepro[13] <- (rfac / (rfac - 1)) * params_out_2@species_params$erepro[13]
-#params_out_2@species_params$r_max[13] <-
-#    (rfac - 1) * getRDI(params_out_2, params_out_2@initial_n, params_out_2@initial_n_pp)[13,1]
+# # stock spawning biomass = 2000 tons (from fig.2 of Bioeconomic analysis of the effects of a
+# modification of the trawl extension piece
+# with T90 netting)
 
 sim <- project(params_out_2, t_max = 55, effort = 0)
 plot(sim)
@@ -333,3 +338,6 @@ lines(gy_t90[,mysp],col="red")
 # induces "negative abundance multiplier" errors
 
 # #18 #24 #29 #53 Multiplied kappa by 10, so it works now.
+
+# #18 #24 #29 #53 Added notes about parameter choices. erepro of hake = 12.16, that 
+# needs sorting out.
