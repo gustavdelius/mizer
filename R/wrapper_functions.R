@@ -767,6 +767,8 @@ retune_abundance <- function(params) {
 #' greater than min_w_observed. Default value is 4*10^8.
 #' @param min_w_observed The minimum weight of fish of the new species that contribute to the
 #' biomass which we setup for the new species. Default value is 0.
+#' @param rfac Default value is 10.
+#' @param effort Default value is 0.
 #' 
 #' @export
 #' @return An object of type \code{MizerParams}
@@ -807,7 +809,7 @@ retune_abundance <- function(params) {
 
 # Note first species must be in background.
 
-add_species <- function(params, species_params, biomass = 4*10^8, min_w_observed = 0, rfac=10) {
+add_species <- function(params, species_params, biomass = 4*10^8, min_w_observed = 0, rfac=10, effort = 0) {
   # replace r_max with a large value, if absent
   if (is.null(params@species_params$r_max)){
     params@species_params$r_max <- params@species_params$w_inf
@@ -837,6 +839,20 @@ add_species <- function(params, species_params, biomass = 4*10^8, min_w_observed
     }
     if ((("b" %in% colnames(params@species_params)))&(!("b" %in% colnames(species_params)))){
         species_params$b <- NA
+    }
+    if ((!("l25" %in% colnames(params@species_params)))&(("l25" %in% colnames(species_params)))){
+        params@species_params$l25 <- params@species_params$w_inf
+        params@species_params$l25[] <- NA
+    }
+    if ((("l25" %in% colnames(params@species_params)))&(!("l25" %in% colnames(species_params)))){
+        species_params$l25 <- NA
+    }
+    if ((!("l50" %in% colnames(params@species_params)))&(("l50" %in% colnames(species_params)))){
+        params@species_params$l50 <- params@species_params$w_inf
+        params@species_params$l50[] <- NA
+    }
+    if ((("l50" %in% colnames(params@species_params)))&(!("l50" %in% colnames(species_params)))){
+        species_params$l50 <- NA
     }
     # calculate h if it is missing
     if (is.null(species_params$h)){
@@ -921,7 +937,7 @@ add_species <- function(params, species_params, biomass = 4*10^8, min_w_observed
     getZ(combi_params,
          combi_params@initial_n,
          combi_params@initial_n_pp,
-         effort = 0)[new_sp, ]
+         effort = effort)[new_sp, ]
   # compute growth rate for new species
   gg <-
     getEGrowth(combi_params,
@@ -968,15 +984,13 @@ add_species <- function(params, species_params, biomass = 4*10^8, min_w_observed
     getZ(combi_params,
          combi_params@initial_n,
          combi_params@initial_n_pp,
-         effort = 0)
+         effort = effort)
   gg <-
     getEGrowth(combi_params,
                combi_params@initial_n,
                combi_params@initial_n_pp)
   # #
   rdi <- getRDI(combi_params, combi_params@initial_n, combi_params@initial_n_pp)
-  gg <- getEGrowth(combi_params, combi_params@initial_n, combi_params@initial_n_pp)
-  mumu <- getZ(combi_params, combi_params@initial_n, combi_params@initial_n_pp, effort = 0)
   no_sp <- new_sp
   erepro_final <- 1:no_sp  # set up vector of right dimension
   for (i in (1:no_sp)) {

@@ -6,7 +6,7 @@
 the resulting system will still be in steady state.}
 \usage{
 add_species(params, species_params, biomass = 4 * 10^8, min_w_observed = 0,
-  rfac = 10)
+  rfac = 10, effort = 0)
 }
 \arguments{
 \item{params}{A mizer params object for the original system. The A slot 
@@ -21,6 +21,10 @@ greater than min_w_observed. Default value is 4*10^8.}
 
 \item{min_w_observed}{The minimum weight of fish of the new species that contribute to the
 biomass which we setup for the new species. Default value is 0.}
+
+\item{rfac}{Default value is 10.}
+
+\item{effort}{Default value is 0.}
 }
 \value{
 An object of type \code{MizerParams}

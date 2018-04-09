@@ -154,8 +154,8 @@ for (mysp in 2:11){
 
 ################ investigate the effect of changing fishing gears #############
 t_max <- 20
-eff <- 0.15
-dt <- 0.01
+eff <- 0.05
+#dt <- 0.01
 
 ############ control 
 params_out_2_control <- params_out_2
@@ -173,9 +173,16 @@ params_out_2_control@selectivity[1,mysp,] <- 1/(1+exp(-(len-L50)/sig))
 mysp <- 13
 len <- (params_out_2_control@w/params_out_2_control@species_params$a[mysp])^(1/params_out_2_control@species_params$b[mysp])
 params_out_2_control@selectivity[1,mysp,] <- 1/(1+exp(-(len-L50)/sig))
-sim <- project(params_out_2_control, t_max = t_max, effort = eff, dt = dt)
+# initialization
+sim <- project(params_out_2_control, t_max = 50, effort = eff)
 plot(sim)
+initial_n <- sim@n[dim(sim@n)[1],,]
+initial_n_pp <- sim@n_pp[dim(sim@n_pp)[1],]
+# control sim
+sim <- project(params_out_2_control, t_max = t_max, effort = eff, initial_n=initial_n,initial_n_pp=initial_n_pp)
 gy_control <- getYield(sim)
+
+
 ############################### T90
 params_out_2_t90 <- params_out_2
 L50 <- 20.50 
@@ -188,7 +195,7 @@ params_out_2_t90@selectivity[1,mysp,] <- 1/(1+exp(-(len-L50)/sig))
 mysp <- 13
 len <- (params_out_2_t90@w/params_out_2_t90@species_params$a[mysp])^(1/params_out_2_t90@species_params$b[mysp])
 params_out_2_t90@selectivity[1,mysp,] <- 1/(1+exp(-(len-L50)/sig))
-sim <- project(params_out_2_t90, t_max = t_max, effort = eff, dt = dt)
+sim <- project(params_out_2_t90, t_max = t_max, effort = eff, initial_n=initial_n,initial_n_pp=initial_n_pp)
 plot(sim)
 gy_t90 <- getYield(sim)
 
@@ -309,3 +316,4 @@ lines(gy_t90[,mysp],col="red")
 
 # #18 #24 #29 #53 Changed alpha of background and mullet to be 0.6.  am happy with the growth curves, and the responsiveness to fishing etc. 
 # Not sure what could have gone wrong with set_scaling when I altered alpha
+
