@@ -1,7 +1,7 @@
 # fishing effort is max fishing mortality of mullet from table 2 of Bioeconomic analysis of the effects of a
 # modification of the trawl extension piece
 # with T90 netting)
-eff <- 1.6
+eff <- 0.8
 
 
 library(deSolve)
@@ -17,6 +17,7 @@ multipliers <- retune_abundance(params)
 # kappa was chosen to be as low as possible such that the target species can be added in without 
 # -ve abundance multiplier warnings
 rfac <- 2
+# old alpha_hake = 0.6, kappa = 2*10^11
 params <- set_scaling_model(max_w_inf = 5000,knife_edge_size = 10^8,kappa = 2*10^11,rfac=rfac,alpha = 0.6)
 #params@species_params$r_max <- params@species_params$w_mat
 #params@species_params$r_max[] <- 10^50
@@ -97,7 +98,8 @@ species_params <- data.frame(
     beta = exp(2.4), #RLD and Blanchard thesis p 88
     sigma = 1.1, #RLD and Blanchard thesis p 88
     z0 = 0,
-    alpha = 0.6, # unknown, using mizer default=0.6
+    #alpha = 0.6, # unknown, using mizer default=0.6
+    alpha = 0.7, # unknown, using mizer default=0.6
     erepro = 0.1, # unknown
     sel_func = "sigmoid_length", # not used but required
     knife_edge_size = 100, # can choose
@@ -341,3 +343,9 @@ lines(gy_t90[,mysp],col="red")
 
 # #18 #24 #29 #53 Added notes about parameter choices. erepro of hake = 12.16, that 
 # needs sorting out.
+
+params_out_2_control@species_params$erepro
+
+# #18 #24 #29 #53 changed alpha(hake) from 0.6 to 0.7
+# changed F from 1.605 to 0.8
+# still having problems with erepro
