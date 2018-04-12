@@ -6,16 +6,19 @@
 \alias{plotM2,MizerSim-method}
 \title{Plot M2 of each species by size}
 \usage{
-plotM2(object, ...)
+plotM2(sim, ...)
 
-\S4method{plotM2}{MizerSim}(object,
-  time_range = max(as.numeric(dimnames(object@n)$time)), print_it = TRUE,
-  ...)
+\S4method{plotM2}{MizerSim}(sim,
+  species = as.character(sim@params@species_params$species),
+  time_range = max(as.numeric(dimnames(sim@n)$time)), print_it = TRUE, ...)
 }
 \arguments{
-\item{object}{An object of class \code{MizerSim}}
+\item{sim}{An object of class \code{MizerSim}}
 
 \item{...}{Other arguments to pass to \code{getM2} method.}
+
+\item{species}{Vector of names of the species to be plotted. The default is
+the list of all species.}
 
 \item{time_range}{The time range (either a vector of values, a vector of min
 and max time, or a single value) to average the abundances over. Default is

@@ -1,6 +1,10 @@
 # Plotting methods for the MizerSim class
 
-# Copyright 2012 Finlay Scott and Julia Blanchard. 
+# Copyright 2012 Finlay Scott and Julia Blanchard.
+# Copyright 2018 Gustav Delius and Richard Southwell.
+# Development has received funding from the European Commission’s Horizon 2020 
+# Research and Innovation Programme under Grant Agreement No. 634495 
+# for the project MINOUW (http://minouw-project.eu/).
 # Distributed under the GPL 3 or later 
 # Maintainer: Gustav Delius, University of York, <gustav.delius@york.ac.uk>
 
@@ -25,16 +29,20 @@ log_breaks <- function(n = 6){
    }
  }
 
-#' Plot the biomass of each species through time
+#' Plot the biomass of species through time
 #'
 #' After running a projection, the biomass of each species can be plotted
 #' against time. The biomass is calculated within user defined size limits (see
-#' \code{\link{getBiomass}}). This plot is pretty easy to do by hand. It just
+#' \code{\link{getBiomass}}). 
+#' 
+#' This plot is pretty easy to do by hand. It just
 #' gets the biomass using the \code{\link{getBiomass}} method and plots using
 #' the ggplot2 package. You can then fiddle about with colours and linetypes
 #' etc. Just look at the source code for details.
 #' 
-#' @param object An object of class \code{MizerSim}.
+#' @param sim An object of class \code{MizerSim}.
+#' @param species Vector of names of the species to be plotted. The default is
+#'   the list of all species.
 #' @param start_time The first time to be plotted. Default is the beginning
 #'   of the time series.
 #' @param end_time The last time to be plotted. Default is the end of the
@@ -42,6 +50,8 @@ log_breaks <- function(n = 6){
 #' @param y_ticks The approximate number of ticks desired on the y axis
 #' @param print_it Display the plot, or just return the ggplot2 object. Default
 #'   value is TRUE
+#' @param total A boolean value that determines whether the total is plotted as 
+#'   well. Default is FALSE
 #' @param ... Other arguments to pass to \code{getBiomass} method, for example
 #'   \code{min_w} and \code{max_w}
 #'   
@@ -53,43 +63,52 @@ log_breaks <- function(n = 6){
 #' data(NS_species_params_gears)
 #' data(inter)
 #' params <- MizerParams(NS_species_params_gears, inter)
-#' sim <- project(params, effort=1, t_max=20, t_save = 2)
+#' sim <- project(params, effort=1, t_max=20, t_save = 0.2)
 #' plotBiomass(sim)
 #' plotBiomass(sim, min_w = 10, max_w = 1000)
 #' plotBiomass(sim, start_time = 10, end_time = 15, y_ticks = 2)
 #' plotBiomass(sim, y_ticks = 3)
 #' }
-setGeneric('plotBiomass', function(object, ...)
+setGeneric('plotBiomass', function(sim, ...)
     standardGeneric('plotBiomass'))
 
 #' Plot the biomass using a \code{MizerSim} object.
 #' @rdname plotBiomass
-setMethod('plotBiomass', signature(object='MizerSim'),
-    function(object, start_time = as.numeric(dimnames(object@n)[[1]][1]), 
-             end_time = as.numeric(dimnames(object@n)[[1]][dim(object@n)[1]]),
-             y_ticks = 6, print_it = TRUE, ...){
-        b <- getBiomass(object, ...)
-        names(dimnames(b))[names(dimnames(b))=="sp"] <- "Species"
+setMethod('plotBiomass', signature(sim='MizerSim'),
+    function(sim, species = as.character(sim@params@species_params$species),
+             start_time = as.numeric(dimnames(sim@n)[[1]][1]), 
+             end_time = as.numeric(dimnames(sim@n)[[1]][dim(sim@n)[1]]),
+             y_ticks = 6, print_it = TRUE, total = FALSE, ...){
+        b <- getBiomass(sim, ...)
         if(start_time >= end_time){
             stop("start_time must be less than end_time")
         }
-        b <- b[(as.numeric(dimnames(b)[[1]]) >= start_time) & (as.numeric(dimnames(b)[[1]]) <= end_time),,drop=FALSE]
-        bm <- melt(b)
+        b <- b[(as.numeric(dimnames(b)[[1]]) >= start_time) & 
+                   (as.numeric(dimnames(b)[[1]]) <= end_time),
+               as.character(dimnames(b)[[2]]) %in% species, drop=FALSE]
+        if (total) {
+            # Include total
+            b <- cbind(b, Total = rowSums(b))
+        }
+        names(dimnames(b)) <- c("time", "Species")
+        bm <- reshape2::melt(b)
         # Force Species column to be a character (if numbers used - may be
         # interpreted as integer and hence continuous)
         bm$Species <- as.character(bm$Species)
         # Due to log10, need to set a minimum value, seems like a feature in ggplot
         min_value <- 1e-30
         bm <- bm[bm$value >= min_value,]
-        p <- ggplot(bm) + geom_line(aes(x=time,y=value, colour=Species, linetype=Species)) + 
-            scale_y_continuous(trans="log10", breaks=log_breaks(n=y_ticks), 
-                               labels = prettyNum, name="Biomass") + 
-            scale_x_continuous(name="Time") 
-        if (nrow(object@params@species_params)>12){
-        p <- ggplot(bm) + geom_line(aes(x=time,y=value, group=Species)) + 
-            scale_y_continuous(trans="log10", breaks=log_breaks(n=y_ticks), 
-                               labels = prettyNum, name="Biomass") + 
-            scale_x_continuous(name="Time") 
+        if (length(species) > 12) {
+            p <- ggplot(bm) + geom_line(aes(x=time,y=value, group=Species)) + 
+                scale_y_continuous(trans="log10", breaks=log_breaks(n=y_ticks), 
+                                   labels = prettyNum, name="Biomass") + 
+                scale_x_continuous(name="Time") 
+        } else {
+            p <- ggplot(bm) + 
+                geom_line(aes(x=time,y=value, colour=Species, linetype=Species)) + 
+                scale_y_continuous(trans="log10", breaks=log_breaks(n=y_ticks), 
+                                   labels = prettyNum, name="Biomass") + 
+                scale_x_continuous(name="Time") 
         }
         if (print_it)
             print(p)
@@ -97,7 +116,7 @@ setMethod('plotBiomass', signature(object='MizerSim'),
     }
 )
 
-#' Plot the total yield of each species through time
+#' Plot the total yield of species through time
 #'
 #' After running a projection, the total yield of each species across all 
 #' fishing gears can be plotted against time. This plot is pretty easy to do by
@@ -105,9 +124,13 @@ setMethod('plotBiomass', signature(object='MizerSim'),
 #' plots using the ggplot2 package. You can then fiddle about with colours and
 #' linetypes etc. Just look at the source code for details.
 #' 
-#' @param object An object of class \code{MizerSim}
+#' @param sim An object of class \code{MizerSim}
+#' @param species Vector of names of the species to be plotted. The default is
+#'   the list of all species.
 #' @param print_it Display the plot, or just return the ggplot2 object.
 #'   Defaults to TRUE
+#' @param total A boolean value that determines whether the total is plotted as 
+#'   well. Default is FALSE
 #' @param ... Other arguments to pass to \code{getYield} method
 #'
 #' @return A ggplot2 object
@@ -118,22 +141,28 @@ setMethod('plotBiomass', signature(object='MizerSim'),
 #' data(NS_species_params_gears)
 #' data(inter)
 #' params <- MizerParams(NS_species_params_gears, inter)
-#' sim <- project(params, effort=1, t_max=20, t_save = 2)
+#' sim <- project(params, effort=1, t_max=20, t_save = 0.2)
 #' plotYield(sim)
 #' }
-setGeneric('plotYield', function(object, ...)
+setGeneric('plotYield', function(sim, ...)
     standardGeneric('plotYield'))
 
 #' Plot the yield using a \code{MizerSim} object.
 #' @rdname plotYield
-setMethod('plotYield', signature(object='MizerSim'),
-    function(object, print_it = TRUE, ...){
-        y <- getYield(object, ...)
-        names(dimnames(y))[names(dimnames(y))=="sp"] <- "Species"
-        y <- y[, colSums(y)>0]
+setMethod('plotYield', signature(sim='MizerSim'),
+    function(sim, species = as.character(sim@params@species_params$species),
+             print_it = TRUE, total = FALSE, ...){
+        y <- getYield(sim, ...)
+        y <- y[, (as.character(dimnames(b)[[2]]) %in% species) & colSums(y)>0, 
+               drop=FALSE]
+        if (total) {
+            # Include total
+            y <- cbind(y, Total = rowSums(y))
+        }
+        names(dimnames(y)) <- c("time", "Species")
         ym <- reshape2::melt(y)
         ym$Species <- as.character(ym$Species)
-        if (dim(y)[2]>12) {
+        if (dim(y)[2] > 12) {
             p <- ggplot(ym) + 
                 geom_line(aes(x=time,y=value, group=Species)) + 
                 scale_y_continuous(trans="log10", name="Yield") + 
@@ -158,9 +187,13 @@ setMethod('plotYield', signature(object='MizerSim'),
 #' the ggplot2 package. You can then fiddle about with colours and linetypes
 #' etc. Just look at the source code for details.
 #' 
-#' @param object An object of class \code{MizerSim}
+#' @param sim An object of class \code{MizerSim}
+#' @param species Vector of names of the species to be plotted. The default is
+#'   the list of all species.
 #' @param print_it Display the plot, or just return the ggplot2 object. 
 #'   Defaults to TRUE
+#' @param total A boolean value that determines whether the total is plotted as 
+#'   well. Default is FALSE
 #' @param ... Other arguments to pass to \code{getYieldGear} method
 #'
 #' @return A ggplot2 object
@@ -171,22 +204,37 @@ setMethod('plotYield', signature(object='MizerSim'),
 #' data(NS_species_params_gears)
 #' data(inter)
 #' params <- MizerParams(NS_species_params_gears, inter)
-#' sim <- project(params, effort=1, t_max=20, t_save = 2)
+#' sim <- project(params, effort=1, t_max=20, t_save = 0.2)
 #' plotYieldGear(sim)
 #' }
-setGeneric('plotYieldGear', function(object, ...)
+setGeneric('plotYieldGear', function(sim, ...)
     standardGeneric('plotYieldGear'))
 
 #' Plot the yield of each gear using a \code{MizerSim} object.
 #' @rdname plotYieldGear
-setMethod('plotYieldGear', signature(object='MizerSim'),
-    function(object, print_it=TRUE, ...){
-	y <- getYieldGear(object, ...)
+setMethod('plotYieldGear', signature(sim='MizerSim'),
+    function(sim, species = as.character(sim@params@species_params$species),
+             print_it=TRUE, total = FALSE, ...){
+	y <- getYieldGear(sim, ...)
+	y <- y[, , as.character(dimnames(y)[[3]]) %in% species,
+	       drop=FALSE]
 	names(dimnames(y))[names(dimnames(y))=="sp"] <- "Species"
-	ym <- melt(y)
-	p <- ggplot(ym) + geom_line(aes(x=time,y=value, colour=Species, linetype=gear)) + scale_y_continuous(trans="log10", name="Yield") + scale_x_continuous(name="Time") 
-    if (nrow(object@params@species_params)>12){
-        p <- ggplot(ym) + geom_line(aes(x=time,y=value, group=Species)) + scale_y_continuous(trans="log10", name="Yield") + scale_x_continuous(name="Time") 
+	ym <- reshape2::melt(y)
+	if (total) {
+	    yt <- reshape2::melt(rowSums(y, dims = 2))
+	    yt$Species <- "Total"
+	    ym <- rbind(ym, yt)
+	}
+	ym <- subset(ym, ym$value > 0)
+    if (length(species) > 12) {
+        p <- ggplot(ym) + geom_line(aes(x=time,y=value, group=Species)) + 
+            scale_y_continuous(trans="log10", name="Yield") + 
+            scale_x_continuous(name="Time") 
+    } else {
+        p <- ggplot(ym) + 
+            geom_line(aes(x=time,y=value, colour=Species, linetype=gear)) + 
+            scale_y_continuous(trans="log10", name="Yield") + 
+            scale_x_continuous(name="Time") 
     }
     if (print_it)
         print(p)
@@ -194,7 +242,7 @@ setMethod('plotYieldGear', signature(object='MizerSim'),
     }
 )
 
-#' Plot the abundance spectra of each species and the background population
+#' Plot the abundance spectra of species and the background population
 #' 
 #' After running a projection, the spectra of the abundance of each species and
 #' the background population can be plotted. The abundance is averaged over the
@@ -202,7 +250,9 @@ setMethod('plotYieldGear', signature(object='MizerSim'),
 #' single time step). The abundance can be in terms of numbers or biomass,
 #' depending on the \code{biomass} argument.
 #' 
-#' @param object An object of class \code{MizerSim}.
+#' @param sim An object of class \code{MizerSim}.
+#' @param species Vector of names of the species to be plotted. The default is
+#'   the list of all species.
 #' @param time_range The time range (either a vector of values, a vector of min
 #'   and max time, or a single value) to average the abundances over. Default is
 #'   the final time step.
@@ -213,6 +263,8 @@ setMethod('plotYieldGear', signature(object='MizerSim'),
 #'   or the abundance in numbers (FALSE). Default is TRUE.
 #' @param print_it Display the plot, or just return the ggplot2 object.
 #'   Defaults to TRUE
+#' @param total A boolean value that determines whether the total is plotted as 
+#'   well. Default is FALSE
 #' @param ... Other arguments (currently unused)
 #'   
 #' @return A ggplot2 object
@@ -228,30 +280,65 @@ setMethod('plotYieldGear', signature(object='MizerSim'),
 #' plotSpectra(sim, time_range = 10:20)
 #' plotSpectra(sim, time_range = 10:20, biomass = FALSE)
 #' }
-setGeneric('plotSpectra', function(object, ...)
+setGeneric('plotSpectra', function(sim, ...)
     standardGeneric('plotSpectra'))
 
 #' Plot the abundance spectra using a \code{MizerSim} object.
 #' @rdname plotSpectra
-setMethod('plotSpectra', signature(object='MizerSim'),
-    function(object, time_range = max(as.numeric(dimnames(object@n)$time)), min_w =min(object@params@w)/100, biomass = TRUE, print_it = TRUE, ...){
-        time_elements <- get_time_elements(object,time_range)
-        spec_n <- apply(object@n[time_elements,,,drop=FALSE],c(2,3), mean)
-        background_n <- apply(object@n_pp[time_elements,,drop=FALSE],2,mean)
+setMethod('plotSpectra', signature(sim='MizerSim'),
+    function(sim, species = as.character(sim@params@species_params$species),
+             time_range = max(as.numeric(dimnames(sim@n)$time)), 
+             min_w = min(sim@params@w)/100, biomass = TRUE, print_it = TRUE, 
+             total = FALSE, ...){
+        time_elements <- get_time_elements(sim,time_range)
+        spec_n <- apply(sim@n[time_elements, , ,drop=FALSE], c(2,3), mean)
+        background_n <- apply(sim@n_pp[time_elements,,drop=FALSE],2,mean)
+        if (total) {
+            # Calculate total community abundance
+            fish_idx <- (length(sim@params@w_full)-length(sim@params@w)+1):
+                length(sim@params@w_full)
+            total_n <- background_n
+            total_n[fish_idx] <- total_n[fish_idx] + colSums(spec_n)
+            if (biomass) {
+                total_n <- total_n * sim@params@w_full
+            }
+        }
+        # Select only the desired species
+        spec_n <- spec_n[as.character(dimnames(spec_n)[[1]]) %in% species, ,
+                         drop = FALSE]
         y_axis_name = "Abundance"
         if (biomass){
-            spec_n <- sweep(spec_n,2,object@params@w,"*")
-            background_n <- background_n * object@params@w_full
+            spec_n <- sweep(spec_n,2,sim@params@w,"*")
+            background_n <- background_n * sim@params@w_full
             y_axis_name = "Biomass"
         }
         # Make data.frame for plot
-        plot_dat <- data.frame(value = c(spec_n), Species = dimnames(spec_n)[[1]], w = rep(object@params@w, each=nrow(object@params@species_params)))
-        plot_dat <- rbind(plot_dat, data.frame(value = c(background_n), Species = "Background", w = object@params@w_full))
+        plot_dat <- data.frame(value = c(spec_n), 
+                               Species = dimnames(spec_n)[[1]], 
+                               w = rep(sim@params@w, 
+                                       each = length(species)))
+        plot_dat <- rbind(plot_dat, 
+                          data.frame(value = c(background_n), 
+                                     Species = "Background", 
+                                     w = sim@params@w_full))
+        if (total) {
+            plot_dat <- rbind(plot_dat, 
+                              data.frame(value = c(total_n), 
+                                         Species = "Total", 
+                                         w = sim@params@w_full))
+        }
         # lop off 0s in background and apply min_w
         plot_dat <- plot_dat[(plot_dat$value > 0) & (plot_dat$w >= min_w),]
-        p <- ggplot(plot_dat) + geom_line(aes(x=w, y = value, colour = Species, linetype=Species)) + scale_x_continuous(name = "Size", trans="log10") + scale_y_continuous(name = y_axis_name, trans="log10")
-        if (nrow(object@params@species_params)>12){
-            p <- ggplot(plot_dat) + geom_line(aes(x=w, y = value, group = Species)) + scale_x_continuous(name = "Size", trans="log10") + scale_y_continuous(name = y_axis_name, trans="log10")
+        if (length(species) > 12) {
+            p <- ggplot(plot_dat) + 
+                geom_line(aes(x=w, y = value, group = Species)) + 
+                scale_x_continuous(name = "Size", trans="log10") + 
+                scale_y_continuous(name = y_axis_name, trans="log10")
+        } else {
+            p <- ggplot(plot_dat) + 
+                geom_line(aes(x=w, y = value, colour = Species, linetype=Species)) + 
+                scale_x_continuous(name = "Size", trans="log10") + 
+                scale_y_continuous(name = y_axis_name, trans="log10")   
         }
         if (print_it)
             print(p)
@@ -260,13 +347,15 @@ setMethod('plotSpectra', signature(object='MizerSim'),
 )
 
 
-#' Plot the feeding level of each species by size
+#' Plot the feeding level of species by size
 #' 
 #' After running a projection, plot the feeding level of each species by size. 
 #' The feeding level is averaged over the specified time range (a single value
 #' for the time range can be used).
 #' 
-#' @param object An object of class \code{MizerSim}.
+#' @param sim An object of class \code{MizerSim}.
+#' @param species Vector of names of the species to be plotted. The default is
+#'   the list of all species.
 #' @param time_range The time range (either a vector of values, a vector of min
 #'   and max time, or a single value) to average the abundances over. Default is
 #'   the final time step.
@@ -286,20 +375,33 @@ setMethod('plotSpectra', signature(object='MizerSim'),
 #' plotFeedingLevel(sim)
 #' plotFeedingLevel(sim, time_range = 10:20)
 #' }
-setGeneric('plotFeedingLevel', function(object, ...)
+setGeneric('plotFeedingLevel', function(sim, ...)
     standardGeneric('plotFeedingLevel'))
 
 #' Plot the feeding level using a \code{MizerSim} object.
 #' @rdname plotFeedingLevel
-setMethod('plotFeedingLevel', signature(object='MizerSim'),
-    function(object, time_range = max(as.numeric(dimnames(object@n)$time)), print_it = TRUE, ...){
-        feed_time <- getFeedingLevel(object=object, time_range=time_range, drop=FALSE, ...)
+setMethod('plotFeedingLevel', signature(sim='MizerSim'),
+    function(sim, species = as.character(sim@params@species_params$species),
+             time_range = max(as.numeric(dimnames(sim@n)$time)), 
+             print_it = TRUE, ...){
+        feed_time <- getFeedingLevel(sim=sim, time_range=time_range, 
+                                     drop=FALSE, ...)
         feed <- apply(feed_time, c(2,3), mean)
-        plot_dat <- data.frame(value = c(feed), Species = dimnames(feed)[[1]], w = rep(object@params@w, each=nrow(object@params@species_params)))
-        p <- ggplot(plot_dat) + geom_line(aes(x=w, y = value, colour = Species, linetype=Species)) + scale_x_continuous(name = "Size", trans="log10") + scale_y_continuous(name = "Feeding Level", limits=c(0,1))
-        if (nrow(object@params@species_params)>12){
-            p <- ggplot(plot_dat) + geom_line(aes(x=w, y = value, group = Species)) + scale_x_continuous(name = "Size", trans="log10") + scale_y_continuous(name = "Feeding Level", limits=c(0,1))
-        }
+        feed <- feed[as.character(dimnames(feed)[[1]]) %in% species, , 
+                     drop = FALSE]
+        plot_dat <- data.frame(value = c(feed), 
+                               Species = dimnames(feed)[[1]], 
+                               w = rep(sim@params@w, each=length(species)))
+        if (length(species) > 12) {
+            p <- ggplot(plot_dat) + 
+                geom_line(aes(x=w, y = value, group = Species)) + 
+                scale_x_continuous(name = "Size", trans="log10") + 
+                scale_y_continuous(name = "Feeding Level", limits=c(0,1))
+        } else {
+            p <- ggplot(plot_dat) + 
+                geom_line(aes(x=w, y = value, colour = Species, linetype=Species)) + 
+                scale_x_continuous(name = "Size", trans="log10") + 
+                scale_y_continuous(name = "Feeding Level", limits=c(0,1))}
         if (print_it)
             print(p)
         return(p)
@@ -312,7 +414,9 @@ setMethod('plotFeedingLevel', signature(object='MizerSim'),
 #' over the specified time range (a single value for the time range can be used
 #' to plot a single time step).
 #' 
-#' @param object An object of class \code{MizerSim}
+#' @param sim An object of class \code{MizerSim}
+#' @param species Vector of names of the species to be plotted. The default is
+#'   the list of all species.
 #' @param time_range The time range (either a vector of values, a vector of min
 #'   and max time, or a single value) to average the abundances over. Default is
 #'   the final time step.
@@ -332,19 +436,32 @@ setMethod('plotFeedingLevel', signature(object='MizerSim'),
 #' plotM2(sim)
 #' plotM2(sim, time_range = 10:20)
 #' }
-setGeneric('plotM2', function(object, ...)
+setGeneric('plotM2', function(sim, ...)
     standardGeneric('plotM2'))
 
 #' Plot M2 using a \code{MizerSim} object.
 #' @rdname plotM2
-setMethod('plotM2', signature(object='MizerSim'),
-    function(object, time_range = max(as.numeric(dimnames(object@n)$time)), print_it = TRUE, ...){
-	m2_time <- getM2(object, time_range=time_range, drop=FALSE, ...)
+setMethod('plotM2', signature(sim='MizerSim'),
+    function(sim, species = as.character(sim@params@species_params$species),
+             time_range = max(as.numeric(dimnames(sim@n)$time)), 
+             print_it = TRUE, ...){
+	m2_time <- getM2(sim, time_range=time_range, drop=FALSE, ...)
 	m2 <- apply(m2_time, c(2,3), mean)
-	plot_dat <- data.frame(value = c(m2), Species = dimnames(m2)[[1]], w = rep(object@params@w, each=nrow(object@params@species_params)))
-	p <- ggplot(plot_dat) + geom_line(aes(x=w, y = value, colour = Species, linetype=Species)) + scale_x_continuous(name = "Size", trans="log10") + scale_y_continuous(name = "M2", limits=c(0,max(plot_dat$value)))
-    if (nrow(object@params@species_params)>12){
-        p <- ggplot(plot_dat) + geom_line(aes(x=w, y = value, group = Species)) + scale_x_continuous(name = "Size", trans="log10") + scale_y_continuous(name = "M2", limits=c(0,max(plot_dat$value)))
+	m2 <- m2[as.character(dimnames(m2)[[1]]) %in% species, , 
+	             drop = FALSE]
+	plot_dat <- data.frame(value = c(m2), 
+	                       Species = dimnames(m2)[[1]], 
+	                       w = rep(sim@params@w, each=length(species)))
+    if (length(species) > 12) {
+        p <- ggplot(plot_dat) + 
+            geom_line(aes(x=w, y = value, group = Species)) + 
+            scale_x_continuous(name = "Size", trans="log10") + 
+            scale_y_continuous(name = "M2", limits=c(0,max(plot_dat$value)))
+    } else {
+        p <- ggplot(plot_dat) + 
+            geom_line(aes(x=w, y = value, colour = Species, linetype=Species)) + 
+            scale_x_continuous(name = "Size", trans="log10") + 
+            scale_y_continuous(name = "M2", limits=c(0,max(plot_dat$value)))
     }
     if (print_it)
         print(p)
@@ -359,7 +476,9 @@ setMethod('plotM2', signature(object='MizerSim'),
 #' range (a single value for the time range can be used to plot a single time
 #' step).
 #' 
-#' @param object An object of class \code{MizerSim}.
+#' @param sim An object of class \code{MizerSim}.
+#' @param species Vector of names of the species to be plotted. The default is
+#'   the list of all species.
 #' @param time_range The time range (either a vector of values, a vector of min
 #'   and max time, or a single value) to average the abundances over. Default is
 #'   the final time step.
@@ -379,19 +498,32 @@ setMethod('plotM2', signature(object='MizerSim'),
 #' plotFMort(sim)
 #' plotFMort(sim, time_range = 10:20)
 #' }
-setGeneric('plotFMort', function(object, ...)
+setGeneric('plotFMort', function(sim, ...)
     standardGeneric('plotFMort'))
 
 #' Plot total fishing mortality using a \code{MizerSim} object.
 #' @rdname plotFMort
-setMethod('plotFMort', signature(object='MizerSim'),
-    function(object, time_range = max(as.numeric(dimnames(object@n)$time)), print_it = TRUE, ...){
-	f_time <- getFMort(object, time_range=time_range, drop=FALSE, ...)
+setMethod('plotFMort', signature(sim='MizerSim'),
+    function(sim, species = as.character(sim@params@species_params$species),
+             time_range = max(as.numeric(dimnames(sim@n)$time)), 
+             print_it = TRUE, ...){
+	f_time <- getFMort(sim, time_range=time_range, drop=FALSE, ...)
 	f <- apply(f_time, c(2,3), mean)
-	plot_dat <- data.frame(value = c(f), Species = dimnames(f)[[1]], w = rep(object@params@w, each=nrow(object@params@species_params)))
-	p <- ggplot(plot_dat) + geom_line(aes(x=w, y = value, colour = Species, linetype=Species)) + scale_x_continuous(name = "Size", trans="log10") + scale_y_continuous(name = "Total fishing mortality", limits=c(0,max(plot_dat$value)))
-    if (nrow(object@params@species_params)>12){
-        p <- ggplot(plot_dat) + geom_line(aes(x=w, y = value, group = Species)) + scale_x_continuous(name = "Size", trans="log10") + scale_y_continuous(name = "Total fishing mortality", limits=c(0,max(plot_dat$value)))
+	f <- f[as.character(dimnames(f)[[1]]) %in% species, , drop = FALSE]
+	plot_dat <- data.frame(value = c(f), 
+	                       Species = dimnames(f)[[1]], 
+	                       w = rep(sim@params@w, each=length(species)))
+    if (length(species) > 12) {
+        p <- ggplot(plot_dat) + geom_line(aes(x=w, y = value, group = Species)) + 
+            scale_x_continuous(name = "Size", trans="log10") + 
+            scale_y_continuous(name = "Total fishing mortality", 
+                               limits=c(0,max(plot_dat$value)))
+    } else {
+        p <- ggplot(plot_dat) + 
+            geom_line(aes(x=w, y = value, colour = Species, linetype=Species)) + 
+            scale_x_continuous(name = "Size", trans="log10") + 
+            scale_y_continuous(name = "Total fishing mortality", 
+                               limits=c(0,max(plot_dat$value)))
     }
     if (print_it)
         print(p)
@@ -443,7 +575,78 @@ setMethod("plot", signature(x="MizerSim", y="missing"),
 	print(p3+ theme(legend.position="none"), vp = vplayout(1,2))
 	print(p4+ theme(legend.position="none"), vp = vplayout(2,1))
 	print(p5+ theme(legend.position="none"), vp = vplayout(2,2))
-	print(p2+ theme(legend.position="right", legend.key.size=unit(0.1,"cm")), vp = vplayout(3,1:2))
+	print(p2+ theme(legend.position="right", legend.key.size=unit(0.1,"cm")), 
+	      vp = vplayout(3,1:2))
     }
 )
 
+
+
+#' Plot growth curves giving weight as a function of age
+#' 
+#' @param sim MizerSim object
+#' @param species Vector of names of the species to be plotted. The default is
+#'   the list of all species.
+#' @param max_age The age up to which the weight is to be plotted. Default is 6
+#' @param percentage Boolean value. If TRUE, the size is shown as a percentage
+#'   of the maximal size.
+#' @param print_it Display the plot, or just return the ggplot2 object.
+#'   Defaults to TRUE
+#' 
+#' @return A ggplot2 object
+#' @export
+#' @examples
+#' \dontrun{
+#' data(NS_species_params_gears)
+#' data(inter)
+#' params <- MizerParams(NS_species_params_gears, inter)
+#' sim <- project(params, effort=1, t_max=20, t_save = 2)
+#' plotGrowthCurves(sim)
+#' }
+setGeneric('plotGrowthCurves', function(sim, ...)
+    standardGeneric('plotGrowthCurves'))
+
+#' Plot growth curves using a \code{MizerSim} object.
+#' @rdname plotGrowthCurves
+setMethod('plotGrowthCurves', signature(sim='MizerSim'),
+    function(sim, species = as.character(sim@params@species_params$species),
+             max_age = 6, percentage = FALSE, print_it = TRUE, ...) {
+        # reorder list of species to coincide with order in sim
+        idx <- which(sim@params@species_params$species %in% species)
+        species <- sim@params@species_params$species[idx]
+        age <- seq(0, max_age, length.out = 50)
+        ws <- array(dim = c(length(species), length(age)), 
+                    dimnames = list(Species = species, Age = age))
+        g <- getEGrowth(sim@params, sim@n[1, , ], sim@n_pp[1, ])
+        for (j in 1:length(species)) {
+            i <- idx[j]
+            g_fn <- approxfun(sim@params@w, g[i, ])
+            myodefun <- function(t, state, parameters){
+                return(list(g_fn(state)))
+            }
+            ws[j, ] <- deSolve::ode(y = sim@params@species_params$w_min[i], 
+                           times = age, func = myodefun)[,2]
+            if (percentage) {
+                ws[j, ] <- ws[j, ] / sim@params@species_params$w_inf[i] * 100
+            }
+        }	
+        plot_dat <- reshape2::melt(ws)
+        plot_dat$Species <- as.character(plot_dat$Species)
+        y_label <- if (percentage) "Percent of maximum size" else "Weight"
+        if (length(species) > 12) {
+            p <- ggplot(plot_dat) + 
+                geom_line(aes(x=Age, y = value, group = Species)) + 
+                scale_x_continuous(name = "Size") + 
+                scale_y_continuous(name = "Total fishing mortality", 
+                                   limits=c(0,max(plot_dat$value)))
+        } else {
+            p <- ggplot(plot_dat) + 
+                geom_line(aes(x = Age, y = value, 
+                              colour = Species, linetype=Species)) +
+                scale_y_continuous(name = y_label)
+        }
+        if (print_it)
+            print(p)
+        return(p)
+    }
+)

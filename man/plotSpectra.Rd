@@ -4,18 +4,23 @@
 \name{plotSpectra}
 \alias{plotSpectra}
 \alias{plotSpectra,MizerSim-method}
-\title{Plot the abundance spectra of each species and the background population}
+\title{Plot the abundance spectra of species and the background population}
 \usage{
-plotSpectra(object, ...)
+plotSpectra(sim, ...)
 
-\S4method{plotSpectra}{MizerSim}(object,
-  time_range = max(as.numeric(dimnames(object@n)$time)),
-  min_w = min(object@params@w)/100, biomass = TRUE, print_it = TRUE, ...)
+\S4method{plotSpectra}{MizerSim}(sim,
+  species = as.character(sim@params@species_params$species),
+  time_range = max(as.numeric(dimnames(sim@n)$time)),
+  min_w = min(sim@params@w)/100, biomass = TRUE, print_it = TRUE,
+  total = FALSE, ...)
 }
 \arguments{
-\item{object}{An object of class \code{MizerSim}.}
+\item{sim}{An object of class \code{MizerSim}.}
 
 \item{...}{Other arguments (currently unused)}
+
+\item{species}{Vector of names of the species to be plotted. The default is
+the list of all species.}
 
 \item{time_range}{The time range (either a vector of values, a vector of min
 and max time, or a single value) to average the abundances over. Default is
@@ -30,6 +35,9 @@ or the abundance in numbers (FALSE). Default is TRUE.}
 
 \item{print_it}{Display the plot, or just return the ggplot2 object.
 Defaults to TRUE}
+
+\item{total}{A boolean value that determines whether the total is plotted as 
+well. Default is FALSE}
 }
 \value{
 A ggplot2 object
