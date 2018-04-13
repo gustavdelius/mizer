@@ -584,6 +584,9 @@ setMethod("plot", signature(x="MizerSim", y="missing"),
 
 #' Plot growth curves giving weight as a function of age
 #' 
+#' Uses the growth rates at the final time of a simulation to calculate
+#' the size at age.
+#' 
 #' @param sim MizerSim object
 #' @param species Vector of names of the species to be plotted. The default is
 #'   the list of all species.
@@ -617,7 +620,7 @@ setMethod('plotGrowthCurves', signature(sim='MizerSim'),
         age <- seq(0, max_age, length.out = 50)
         ws <- array(dim = c(length(species), length(age)), 
                     dimnames = list(Species = species, Age = age))
-        g <- getEGrowth(sim@params, sim@n[1, , ], sim@n_pp[1, ])
+        g <- getEGrowth(sim@params, sim@n[dim(sim@n)[1], , ], sim@n_pp[dim(sim@n)[1], ])
         for (j in 1:length(species)) {
             i <- idx[j]
             g_fn <- approxfun(sim@params@w, g[i, ])
