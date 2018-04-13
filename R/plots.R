@@ -394,7 +394,7 @@ setMethod('plotFeedingLevel', signature(sim='MizerSim'),
     function(sim, species = as.character(sim@params@species_params$species),
              time_range = max(as.numeric(dimnames(sim@n)$time)), 
              print_it = TRUE, ...) {
-        feed_time <- getFeedingLevel(sim=sim, time_range=time_range, 
+        feed_time <- getFeedingLevel(sim, time_range=time_range, 
                                      drop=FALSE, ...)
         feed <- apply(feed_time, c(2,3), mean)
         feed <- feed[as.character(dimnames(feed)[[1]]) %in% species, , 
