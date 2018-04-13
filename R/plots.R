@@ -645,8 +645,17 @@ setMethod('plotGrowthCurves', signature(sim='MizerSim'),
                               colour = Species, linetype=Species)) +
                 scale_y_continuous(name = y_label)
         }
-        if (print_it)
+        if (length(species) == 1) {
+            w_inf <- sim@params@species_params$w_inf[idx[1]]
+            p <- p + geom_hline(yintercept = w_inf) +
+                annotate("text", 0, w_inf, vjust = -1, label = "Maximum")
+            w_mat <- sim@params@species_params$w_mat[idx[1]]
+            p <- p + geom_hline(yintercept = w_mat) +
+                annotate("text", 0, w_mat, vjust = -1, label = "Maturity")
+        }
+        if (print_it) {
             print(p)
+        }
         return(p)
     }
 )
