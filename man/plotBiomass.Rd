@@ -20,8 +20,8 @@ plotBiomass(sim, ...)
 \item{...}{Other arguments to pass to \code{getBiomass} method, for example
 \code{min_w} and \code{max_w}}
 
-\item{species}{Vector of names of the species to be plotted. The default is
-the list of all species.}
+\item{species}{Name or vector of names of the species to be plotted. By
+default all species are plotted.}
 
 \item{start_time}{The first time to be plotted. Default is the beginning
 of the time series.}
@@ -34,8 +34,8 @@ time series.}
 \item{print_it}{Display the plot, or just return the ggplot2 object. Default
 value is TRUE}
 
-\item{total}{A boolean value that determines whether the total is plotted as 
-well. Default is FALSE}
+\item{total}{A boolean value that determines whether the total biomass from
+all species is plotted as well. Default is FALSE}
 }
 \value{
 A ggplot2 object
@@ -60,8 +60,9 @@ data(inter)
 params <- MizerParams(NS_species_params_gears, inter)
 sim <- project(params, effort=1, t_max=20, t_save = 0.2)
 plotBiomass(sim)
+plotBiomass(sim, species = c("Cod", "Herring"), total = TRUE)
 plotBiomass(sim, min_w = 10, max_w = 1000)
-plotBiomass(sim, start_time = 10, end_time = 15, y_ticks = 2)
+plotBiomass(sim, start_time = 10, end_time = 15)
 plotBiomass(sim, y_ticks = 3)
 }
 }

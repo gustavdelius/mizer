@@ -17,8 +17,8 @@ plotFMort(sim, ...)
 
 \item{...}{Other arguments to pass to \code{getFMort} method}
 
-\item{species}{Vector of names of the species to be plotted. The default is
-the list of all species.}
+\item{species}{Name or vector of names of the species to be plotted. By
+default all species are plotted.}
 
 \item{time_range}{The time range (either a vector of values, a vector of min
 and max time, or a single value) to average the abundances over. Default is

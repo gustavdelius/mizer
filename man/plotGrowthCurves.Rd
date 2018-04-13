@@ -15,8 +15,8 @@ plotGrowthCurves(sim, ...)
 \arguments{
 \item{sim}{MizerSim object}
 
-\item{species}{Vector of names of the species to be plotted. The default is
-the list of all species.}
+\item{species}{Name or vector of names of the species to be plotted. By
+default all species are plotted.}
 
 \item{max_age}{The age up to which the weight is to be plotted. Default is 20}
 
@@ -34,6 +34,11 @@ Uses the growth rates at the final time of a simulation to calculate
 the size at age.
 
 Plot growth curves using a \code{MizerSim} object.
+}
+\details{
+When the growth curve for only a single species is plotted, horizontal
+lines are included that indicate the maturity size and the maximum size for 
+that species.
 }
 \examples{
 \dontrun{

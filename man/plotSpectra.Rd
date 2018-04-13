@@ -19,8 +19,8 @@ plotSpectra(sim, ...)
 
 \item{...}{Other arguments (currently unused)}
 
-\item{species}{Vector of names of the species to be plotted. The default is
-the list of all species.}
+\item{species}{Name or vector of names of the species to be plotted. By
+default all species are plotted.}
 
 \item{time_range}{The time range (either a vector of values, a vector of min
 and max time, or a single value) to average the abundances over. Default is
@@ -36,8 +36,8 @@ or the abundance in numbers (FALSE). Default is TRUE.}
 \item{print_it}{Display the plot, or just return the ggplot2 object.
 Defaults to TRUE}
 
-\item{total}{A boolean value that determines whether the total is plotted as 
-well. Default is FALSE}
+\item{total}{A boolean value that determines whether the total over all
+species in the system is plotted as well. Default is FALSE}
 }
 \value{
 A ggplot2 object
@@ -61,5 +61,6 @@ plotSpectra(sim)
 plotSpectra(sim, min_w = 1e-6)
 plotSpectra(sim, time_range = 10:20)
 plotSpectra(sim, time_range = 10:20, biomass = FALSE)
+plotSpectra(sim, species = c("Cod", "Herring"), total = TRUE)
 }
 }

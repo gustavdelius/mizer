@@ -4,7 +4,7 @@
 \name{plotM2}
 \alias{plotM2}
 \alias{plotM2,MizerSim-method}
-\title{Plot M2 of each species by size}
+\title{Plot predation mortality rate of each species by size}
 \usage{
 plotM2(sim, ...)
 
@@ -17,8 +17,8 @@ plotM2(sim, ...)
 
 \item{...}{Other arguments to pass to \code{getM2} method.}
 
-\item{species}{Vector of names of the species to be plotted. The default is
-the list of all species.}
+\item{species}{Name or vector of names of the species to be plotted. By
+default all species are plotted.}
 
 \item{time_range}{The time range (either a vector of values, a vector of min
 and max time, or a single value) to average the abundances over. Default is
@@ -31,9 +31,9 @@ Defaults to TRUE}
 A ggplot2 object
 }
 \description{
-After running a projection, plot M2 of each species by size. M2 is averaged
-over the specified time range (a single value for the time range can be used
-to plot a single time step).
+After running a projection, plot the predation mortality rate of each species
+by size. The mortality rate is averaged over the specified time range (a
+single value for the time range can be used to plot a single time step).
 
 Plot M2 using a \code{MizerSim} object.
 }

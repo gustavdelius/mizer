@@ -17,26 +17,29 @@ plotYield(sim, ...)
 
 \item{...}{Other arguments to pass to \code{getYield} method}
 
-\item{species}{Vector of names of the species to be plotted. The default is
-the list of all species.}
+\item{species}{Name or vector of names of the species to be plotted. By
+default all species are plotted.}
 
 \item{print_it}{Display the plot, or just return the ggplot2 object.
 Defaults to TRUE}
 
-\item{total}{A boolean value that determines whether the total is plotted as 
-well. Default is FALSE}
+\item{total}{A boolean value that determines whether the total Yield from
+all species in the system is plotted as well. Default is FALSE}
 }
 \value{
 A ggplot2 object
 }
 \description{
 After running a projection, the total yield of each species across all 
-fishing gears can be plotted against time. This plot is pretty easy to do by
+fishing gears can be plotted against time.
+
+Plot the yield using a \code{MizerSim} object.
+}
+\details{
+This plot is pretty easy to do by
 hand. It just gets the biomass using the \code{\link{getYield}} method and
 plots using the ggplot2 package. You can then fiddle about with colours and
 linetypes etc. Just look at the source code for details.
-
-Plot the yield using a \code{MizerSim} object.
 }
 \examples{
 \dontrun{
@@ -45,6 +48,7 @@ data(inter)
 params <- MizerParams(NS_species_params_gears, inter)
 sim <- project(params, effort=1, t_max=20, t_save = 0.2)
 plotYield(sim)
+plotYield(sim, species = c("Cod", "Herring"), total = TRUE)
 }
 }
 \seealso{
