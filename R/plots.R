@@ -590,7 +590,7 @@ setMethod("plot", signature(x="MizerSim", y="missing"),
 #' @param sim MizerSim object
 #' @param species Vector of names of the species to be plotted. The default is
 #'   the list of all species.
-#' @param max_age The age up to which the weight is to be plotted. Default is 6
+#' @param max_age The age up to which the weight is to be plotted. Default is 20
 #' @param percentage Boolean value. If TRUE, the size is shown as a percentage
 #'   of the maximal size.
 #' @param print_it Display the plot, or just return the ggplot2 object.
@@ -604,7 +604,8 @@ setMethod("plot", signature(x="MizerSim", y="missing"),
 #' data(inter)
 #' params <- MizerParams(NS_species_params_gears, inter)
 #' sim <- project(params, effort=1, t_max=20, t_save = 2)
-#' plotGrowthCurves(sim)
+#' plotGrowthCurves(sim, percentage = TRUE)
+#' plotGrowthCurves(sim, species = "Cod", max_age = 24)
 #' }
 setGeneric('plotGrowthCurves', function(sim, ...)
     standardGeneric('plotGrowthCurves'))
@@ -613,7 +614,7 @@ setGeneric('plotGrowthCurves', function(sim, ...)
 #' @rdname plotGrowthCurves
 setMethod('plotGrowthCurves', signature(sim='MizerSim'),
     function(sim, species = as.character(sim@params@species_params$species),
-             max_age = 6, percentage = FALSE, print_it = TRUE, ...) {
+             max_age = 20, percentage = FALSE, print_it = TRUE, ...) {
         # reorder list of species to coincide with order in sim
         idx <- which(sim@params@species_params$species %in% species)
         species <- sim@params@species_params$species[idx]

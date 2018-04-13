@@ -9,7 +9,7 @@
 plotGrowthCurves(sim, ...)
 
 \S4method{plotGrowthCurves}{MizerSim}(sim,
-  species = as.character(sim@params@species_params$species), max_age = 6,
+  species = as.character(sim@params@species_params$species), max_age = 20,
   percentage = FALSE, print_it = TRUE, ...)
 }
 \arguments{
@@ -18,7 +18,7 @@ plotGrowthCurves(sim, ...)
 \item{species}{Vector of names of the species to be plotted. The default is
 the list of all species.}
 
-\item{max_age}{The age up to which the weight is to be plotted. Default is 6}
+\item{max_age}{The age up to which the weight is to be plotted. Default is 20}
 
 \item{percentage}{Boolean value. If TRUE, the size is shown as a percentage
 of the maximal size.}
@@ -41,6 +41,7 @@ data(NS_species_params_gears)
 data(inter)
 params <- MizerParams(NS_species_params_gears, inter)
 sim <- project(params, effort=1, t_max=20, t_save = 2)
-plotGrowthCurves(sim)
+plotGrowthCurves(sim, percentage = TRUE)
+plotGrowthCurves(sim, species = "Cod", max_age = 24)
 }
 }
