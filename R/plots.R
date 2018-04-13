@@ -595,7 +595,6 @@ setMethod("plot", signature(x="MizerSim", y="missing"),
 )
 
 
-
 #' Plot growth curves giving weight as a function of age
 #' 
 #' Uses the growth rates at the final time of a simulation to calculate
@@ -603,7 +602,9 @@ setMethod("plot", signature(x="MizerSim", y="missing"),
 #' 
 #' When the growth curve for only a single species is plotted, horizontal
 #' lines are included that indicate the maturity size and the maximum size for 
-#' that species.
+#' that species. If furthermore the species parameters contain the variables
+#' a and b for length to weight conversion and the von Bertalanffy parameter
+#' k_vb, then the von Bertalanffy growth curve is superimposed in black.
 #' 
 #' @param sim MizerSim object
 #' @param species Name or vector of names of the species to be plotted. By
@@ -666,6 +667,8 @@ setMethod('plotGrowthCurves', signature(sim='MizerSim'),
         p <- p + 
             scale_x_continuous(name = "Age [Years]") + 
             scale_y_continuous(name = y_label)
+        
+        # Extra stuff for single-species case
         if (length(species) == 1 && !percentage) {
             w_inf <- sim@params@species_params$w_inf[idx[1]]
             p <- p + geom_hline(yintercept = w_inf) +
@@ -673,7 +676,17 @@ setMethod('plotGrowthCurves', signature(sim='MizerSim'),
             w_mat <- sim@params@species_params$w_mat[idx[1]]
             p <- p + geom_hline(yintercept = w_mat) +
                 annotate("text", 0, w_mat, vjust = -1, label = "Maturity")
+            if (all(c("a", "b", "k_vb") %in% names(sim@params@species_params))) {
+                a <- sim@params@species_params$a[idx[1]]
+                b <- sim@params@species_params$b[idx[1]]
+                k_vb <- sim@params@species_params$k_vb[idx[1]]
+                L_inf <- (w_inf/a)^(1/b)
+                vb <- a * (L_inf * (1 - exp(-k_vb * age)))^b
+                dat <- data.frame(x = age, y = vb)
+                p <- p + geom_line(data = dat, aes(x = x, y = y))
+            }
         }
+        
         if (print_it) {
             print(p)
         }

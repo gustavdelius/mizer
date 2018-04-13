@@ -38,7 +38,9 @@ Plot growth curves using a \code{MizerSim} object.
 \details{
 When the growth curve for only a single species is plotted, horizontal
 lines are included that indicate the maturity size and the maximum size for 
-that species.
+that species. If furthermore the species parameters contain the variables
+a and b for length to weight conversion and the von Bertalanffy parameter
+k_vb, then the von Bertalanffy growth curve is superimposed in black.
 }
 \examples{
 \dontrun{
