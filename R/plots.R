@@ -25,7 +25,7 @@
 log_breaks <- function(n = 6){
    n = max(1, n)  # Because n=0 could lead to R crash
    function(x) {
-     axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, nint = n)
+     grDevices::axisTicks(log10(range(x, na.rm = TRUE)), log = TRUE, nint = n)
    }
 }
 
@@ -614,6 +614,7 @@ setMethod("plot", signature(x="MizerSim", y="missing"),
 #'   of the maximal size.
 #' @param print_it Display the plot, or just return the ggplot2 object.
 #'   Defaults to TRUE
+#' @param ... Other arguments (unused)
 #' 
 #' @return A ggplot2 object
 #' @export
@@ -633,7 +634,7 @@ setGeneric('plotGrowthCurves', function(sim, ...)
 #' @rdname plotGrowthCurves
 setMethod('plotGrowthCurves', signature(sim='MizerSim'),
     function(sim, species = as.character(sim@params@species_params$species),
-             max_age = 20, percentage = FALSE, print_it = TRUE, ...) {
+             max_age = 20, percentage = FALSE, print_it = TRUE) {
         # reorder list of species to coincide with order in sim
         idx <- which(sim@params@species_params$species %in% species)
         species <- sim@params@species_params$species[idx]
@@ -643,7 +644,7 @@ setMethod('plotGrowthCurves', signature(sim='MizerSim'),
         g <- getEGrowth(sim@params, sim@n[dim(sim@n)[1], , ], sim@n_pp[dim(sim@n)[1], ])
         for (j in 1:length(species)) {
             i <- idx[j]
-            g_fn <- approxfun(sim@params@w, g[i, ])
+            g_fn <- stats::approxfun(sim@params@w, g[i, ])
             myodefun <- function(t, state, parameters){
                 return(list(g_fn(state)))
             }

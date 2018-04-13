@@ -10,10 +10,12 @@ plotGrowthCurves(sim, ...)
 
 \S4method{plotGrowthCurves}{MizerSim}(sim,
   species = as.character(sim@params@species_params$species), max_age = 20,
-  percentage = FALSE, print_it = TRUE, ...)
+  percentage = FALSE, print_it = TRUE)
 }
 \arguments{
 \item{sim}{MizerSim object}
+
+\item{...}{Other arguments (unused)}
 
 \item{species}{Name or vector of names of the species to be plotted. By
 default all species are plotted.}
