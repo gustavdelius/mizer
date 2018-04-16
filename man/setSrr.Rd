@@ -37,9 +37,8 @@ The function can have the following optional arguments:
   \item{n_pp}{A vector of plankton abundances}
   \item{t_step}{An integer giving the time step if this is called inside a simulation}
 }
-If you need the function to depend on species-specific parameters, you should
-make sure they are included in the species parameter dataframe when setting
-up the model.
+If you need the function to depend on species-specific parameters, you could
+include them in the species parameter dataframe when setting up the model.
 
 The standard example of a stock recruitment relationship is the 
 Beverton-Holt type implemented by the function
@@ -47,5 +46,14 @@ Beverton-Holt type implemented by the function
   function(rdi, species_params, ...){
       return(species_params$r_max * rdi / (species_params$r_max+rdi))
   }
+}
+}
+\examples{
+\dontrun{
+p <- set_trait_model()
+# Setting trivial linear stock recruitment will lead to extinction
+p <- setSrr(p, function(rdi, ...) {rdi})
+sim <- project(p)
+plotBiomass(sim )
 }
 }

@@ -754,10 +754,10 @@ check_species_params_dataframe <- function(species_params){
 #' Method for setting reproductive efficiency
 #' 
 #' @param params An object of class \code{MizerParams}.
-#' @param erepro The reproductive efficiency. Either a vector with the length
-#'   equal to the number of species or, if the reproductive efficiency is
-#'   weight-dependent, a matrix with columns corresponding to species and
-#'   rows corresponding to the sizes in params@w.
+#' @param erepro The reproductive efficiency. Either a scalar or a vector with
+#'   the length equal to the number of species or, if the reproductive
+#'   efficiency is weight-dependent, a matrix with columns corresponding to
+#'   species and rows corresponding to the sizes in params@w.
 #'   
 #' @return A \code{MizerParams} object
 #' @export
@@ -769,11 +769,12 @@ setGeneric('setErepro', function(params, ...)
 setMethod('setErepro', signature(params = 'MizerParams'),
     function(params, erepro) {
         if ((is.array(erepro) && dim(erepro) == dim(params@search_vol))
-            || length(erepro) == dim(parms@search_vol)[1]) {
-            params@species_params$erepro[] <- erepro
+            || length(erepro) == dim(params@search_vol)[1]
+            || length(erepro) == 1) {
+            params@species_params$erepro <- erepro
             return(params)
         } else {
-            stop("The erepro argument must be either a vector with the length equal to the number of species  or, if the reproductive efficiency is weight-dependent, a matrix with columns corresponding to species and rows corresponding to the sizes.")
+            stop("The erepro argument must be either a scalar or a vector with the length equal to the number of species  or, if the reproductive efficiency is weight-dependent, a matrix with columns corresponding to species and rows corresponding to the sizes.")
         }
     }
 )
@@ -797,9 +798,8 @@ setMethod('setErepro', signature(params = 'MizerParams'),
 #'   \item{n_pp}{A vector of plankton abundances}
 #'   \item{t_step}{An integer giving the time step if this is called inside a simulation}
 #' }
-#' If you need the function to depend on species-specific parameters, you should
-#' make sure they are included in the species parameter dataframe when setting
-#' up the model.
+#' If you need the function to depend on species-specific parameters, you could
+#' include them in the species parameter dataframe when setting up the model.
 #' 
 #' The standard example of a stock recruitment relationship is the 
 #' Beverton-Holt type implemented by the function
@@ -814,13 +814,21 @@ setMethod('setErepro', signature(params = 'MizerParams'),
 #'   
 #' @return A \code{MizerParams} object
 #' @export
+#' @examples
+#' \dontrun{
+#' p <- set_trait_model()
+#' # Setting trivial linear stock recruitment will lead to extinction
+#' p <- setSrr(p, function(rdi, ...) {rdi})
+#' sim <- project(p)
+#' plotBiomass(sim)
+#' }
 setGeneric('setSrr', function(params, srr)
     standardGeneric('setSrr'))
 
 #' @rdname setSrr
 setMethod('setSrr', signature(params = 'MizerParams', srr = 'function'),
     function(params, srr) {
-        if(!all(c("rdi", "...") %in% names(formals(object@srr)))) {
+        if(!all(c("rdi", "...") %in% names(formals(srr)))) {
             stop("Arguments of srr function must contain 'rdi' and '...'")
         }
         params@srr <- srr

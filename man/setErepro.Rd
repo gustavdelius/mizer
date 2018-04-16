@@ -13,10 +13,10 @@ setErepro(params, ...)
 \arguments{
 \item{params}{An object of class \code{MizerParams}.}
 
-\item{erepro}{The reproductive efficiency. Either a vector with the length
-equal to the number of species or, if the reproductive efficiency is
-weight-dependent, a matrix with columns corresponding to species and
-rows corresponding to the sizes in params@w.}
+\item{erepro}{The reproductive efficiency. Either a scalar or a vector with
+the length equal to the number of species or, if the reproductive
+efficiency is weight-dependent, a matrix with columns corresponding to
+species and rows corresponding to the sizes in params@w.}
 }
 \value{
 A \code{MizerParams} object
