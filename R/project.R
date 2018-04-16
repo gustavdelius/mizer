@@ -242,7 +242,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             # R_{p,i}
             rdi <- getRDI(sim@params, n=n, n_pp=n_pp, e_spawning=e_spawning, sex_ratio=sex_ratio)
             # R_i
-            rdd <- getRDD(sim@params, n=n, n_pp=n_pp, rdi=rdi, sex_ratio=sex_ratio)
+            rdd <- getRDD(sim@params, n=n, n_pp=n_pp, rdi=rdi, sex_ratio=sex_ratio, t_step=i_step)
 
             # Iterate species one time step forward:
             # See Ken's PDF

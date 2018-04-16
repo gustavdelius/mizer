@@ -177,9 +177,9 @@ valid_MizerParams <- function(object) {
     }
 
     # SRR
-    # Must have two arguments: rdi amd species_params
-    if(!isTRUE(all.equal(names(formals(object@srr)), c("rdi", "species_params")))){
-        msg <- "Arguments of srr function must be 'rdi' and 'species_params'"
+    # Must have at least two arguments: rdi amd species_params
+    if(!all(c("rdi", "...") %in% names(formals(object@srr)))) {
+        msg <- "Arguments of srr function must include 'rdi' and '...'"
         errors <- c(errors, msg)
     }
 
@@ -495,7 +495,7 @@ setMethod('MizerParams', signature(object='numeric', interaction='missing'),
 				     z0 = NA, alpha = NA, erepro = NA)
 
 	# Make an empty srr function, just to pass validity check
-	srr <- function(rdi, species_params) return(0)
+	srr <- function(rdi, ...) return(0)
 
 	# Make the new object
 	# Should Z0, rrPP and ccPP have names (species names etc)?
@@ -683,7 +683,7 @@ setMethod('MizerParams', signature(object='data.frame', interaction='matrix'),
 	# Set the SRR to be a Beverton Holt esque relationship
 	# Can add more functional forms or user specifies own
 	res@initial_n_pp <- res@cc_pp
-	res@srr <- function(rdi, species_params){
+	res@srr <- function(rdi, species_params, ...){
 	    return(species_params$r_max * rdi / (species_params$r_max+rdi))
 	}
 
@@ -749,3 +749,81 @@ check_species_params_dataframe <- function(species_params){
     return(TRUE)
 }
 
+
+
+#' Method for setting reproductive efficiency
+#' 
+#' @param params An object of class \code{MizerParams}.
+#' @param erepro The reproductive efficiency. Either a vector with the length
+#'   equal to the number of species or, if the reproductive efficiency is
+#'   weight-dependent, a matrix with columns corresponding to species and
+#'   rows corresponding to the sizes in params@w.
+#'   
+#' @return A \code{MizerParams} object
+#' @export
+setGeneric('setErepro', function(params, ...)
+    standardGeneric('setErepro'))
+
+#' Set the reproductive efficiency
+#' @rdname setErepro
+setMethod('setErepro', signature(params = 'MizerParams'),
+    function(params, erepro) {
+        if ((is.array(erepro) && dim(erepro) == dim(params@search_vol))
+            || length(erepro) == dim(parms@search_vol)[1]) {
+            params@species_params$erepro[] <- erepro
+            return(params)
+        } else {
+            stop("The erepro argument must be either a vector with the length equal to the number of species  or, if the reproductive efficiency is weight-dependent, a matrix with columns corresponding to species and rows corresponding to the sizes.")
+        }
+    }
+)
+
+#' Method for setting stock recruitment relationship function
+#' 
+#' The stock recruitment relationship function takes the total production
+#' rate of eggs \eqn{R_{p.i}} and returns a modified production rate of eggs
+#' \eqn{R_i}, as explained in section 3.6 in the mizer vignette.
+#' 
+#' The function \code{srr} should have at least the two arguments
+#' \describe{
+#'   \item{rdi}{The total production rate of eggs \eqn{R_{p.i}}}
+#'   \item{...}{To allow the function to be called with a
+#'              variable number of arguments}
+#' }
+#' The function can have the following optional arguments:
+#' \describe{
+#'   \item{species_params}{A dataframe with species parameters}
+#'   \item{n}{A matrix (species x size) of fish abundances}
+#'   \item{n_pp}{A vector of plankton abundances}
+#'   \item{t_step}{An integer giving the time step if this is called inside a simulation}
+#' }
+#' If you need the function to depend on species-specific parameters, you should
+#' make sure they are included in the species parameter dataframe when setting
+#' up the model.
+#' 
+#' The standard example of a stock recruitment relationship is the 
+#' Beverton-Holt type implemented by the function
+#' \preformatted{
+#'   function(rdi, species_params, ...){
+#'       return(species_params$r_max * rdi / (species_params$r_max+rdi))
+#'   }
+#' }
+#' 
+#' @param params An object of class \code{MizerParams}.
+#' @param ssr A function to calculate the actual rate of egg production \eqn{R_i}
+#'   
+#' @return A \code{MizerParams} object
+#' @export
+setGeneric('setSrr', function(params, srr)
+    standardGeneric('setSrr'))
+
+#' @rdname setSrr
+setMethod('setSrr', signature(params = 'MizerParams', srr = 'function'),
+    function(params, srr) {
+        if(!all(c("rdi", "...") %in% names(formals(object@srr)))) {
+            stop("Arguments of srr function must contain 'rdi' and '...'")
+        }
+        params@srr <- srr
+        return(params)
+    }
+)

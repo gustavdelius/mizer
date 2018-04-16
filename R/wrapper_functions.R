@@ -120,7 +120,7 @@ set_community_model <- function(max_w = 1e6,
         constant_recruitment = recruitment * rec_mult # to be used in the SRR
     )
     # Set the recruitment function for constant recruitment
-    constant_recruitment <- function(rdi, species_params){
+    constant_recruitment <- function(rdi, species_params, ...){
         return(species_params$constant_recruitment)
     }
     com_params <- MizerParams(com_params_df, p=p, n=n,q=q, lambda = lambda, 
@@ -635,7 +635,7 @@ set_scaling_model <- function(no_sp = 11,
     } else {
         
         # An infinite rfac means that rdd equals rdi
-        params@srr <- function(rdi, species_params) {return(rdi)}
+        params@srr <- function(rdi, species_params, ...) {return(rdi)}
     }
     params@sc <- colSums(params@initial_n)
     return(params)

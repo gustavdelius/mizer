@@ -1,3 +1,19 @@
+# This branch
+
+As discussed in a video chat with Asta today, it may be desirable to
+
+* set a size-dependent reproductive efficiency and
+
+* have a stock-recruitment relationship that is time-dependent to allow 
+randomness in recruitment over time.
+
+Both of these are now implemented. While I was at it, I also allowed the stock 
+recruitment to depend on n and n_pp. I also added two methods 
+
+* **setErepro(params, erepro)** to set the reproductive efficiency and 
+
+* **setSrr(params, srr)** to set the stock recruitment function. 
+
 # mizer
 
 mizer is a package that implements size-based ecological models.

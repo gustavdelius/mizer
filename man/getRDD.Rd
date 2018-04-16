@@ -10,10 +10,10 @@
 getRDD(object, n, n_pp, rdi, ...)
 
 \S4method{getRDD}{MizerParams,matrix,numeric,matrix}(object, n, n_pp, rdi,
-  sex_ratio = 0.5)
+  sex_ratio = 0.5, t_step = 1)
 
 \S4method{getRDD}{MizerParams,matrix,numeric,missing}(object, n, n_pp,
-  sex_ratio = 0.5)
+  sex_ratio = 0.5, t_step = 1)
 }
 \arguments{
 \item{object}{An \code{MizerParams} object}
@@ -30,6 +30,8 @@ the \code{\link{getRDI}} method.}
 
 \item{sex_ratio}{Proportion of the population that is female. Default value
 is 0.5}
+
+\item{t_step}{The current time step in the simulation. Default 1.}
 }
 \value{
 A numeric vector the length of the number of species.
