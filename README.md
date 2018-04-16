@@ -14,6 +14,11 @@ recruitment to depend on n and n_pp. I also added two methods
 
 * **setSrr(params, srr)** to set the stock recruitment function. 
 
+Take a look at their help pages for a bit more info.
+
+You can install this version with
+`devtools::install_github("gustavdelius/mizer", ref="asta")`
+
 # mizer
 
 mizer is a package that implements size-based ecological models.
