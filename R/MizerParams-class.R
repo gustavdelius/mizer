@@ -758,6 +758,7 @@ check_species_params_dataframe <- function(species_params){
 #'   the length equal to the number of species or, if the reproductive
 #'   efficiency is weight-dependent, a matrix with columns corresponding to
 #'   species and rows corresponding to the sizes in params@w.
+#' @param ... Other arguments (unused)
 #'   
 #' @return A \code{MizerParams} object
 #' @export
@@ -810,7 +811,8 @@ setMethod('setErepro', signature(params = 'MizerParams'),
 #' }
 #' 
 #' @param params An object of class \code{MizerParams}.
-#' @param ssr A function to calculate the actual rate of egg production \eqn{R_i}
+#' @param srr A function to calculate the actual rate of egg production \eqn{R_i}
+#' @param ... Other arguments (unused)
 #'   
 #' @return A \code{MizerParams} object
 #' @export
@@ -822,7 +824,7 @@ setMethod('setErepro', signature(params = 'MizerParams'),
 #' sim <- project(p)
 #' plotBiomass(sim)
 #' }
-setGeneric('setSrr', function(params, srr)
+setGeneric('setSrr', function(params, srr, ...)
     standardGeneric('setSrr'))
 
 #' @rdname setSrr

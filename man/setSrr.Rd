@@ -6,14 +6,16 @@
 \alias{setSrr,MizerParams,function-method}
 \title{Method for setting stock recruitment relationship function}
 \usage{
-setSrr(params, srr)
+setSrr(params, srr, ...)
 
 \S4method{setSrr}{MizerParams,`function`}(params, srr)
 }
 \arguments{
 \item{params}{An object of class \code{MizerParams}.}
 
-\item{ssr}{A function to calculate the actual rate of egg production \eqn{R_i}}
+\item{srr}{A function to calculate the actual rate of egg production \eqn{R_i}}
+
+\item{...}{Other arguments (unused)}
 }
 \value{
 A \code{MizerParams} object
@@ -54,6 +56,6 @@ p <- set_trait_model()
 # Setting trivial linear stock recruitment will lead to extinction
 p <- setSrr(p, function(rdi, ...) {rdi})
 sim <- project(p)
-plotBiomass(sim )
+plotBiomass(sim)
 }
 }

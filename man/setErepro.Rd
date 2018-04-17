@@ -13,6 +13,8 @@ setErepro(params, ...)
 \arguments{
 \item{params}{An object of class \code{MizerParams}.}
 
+\item{...}{Other arguments (unused)}
+
 \item{erepro}{The reproductive efficiency. Either a scalar or a vector with
 the length equal to the number of species or, if the reproductive
 efficiency is weight-dependent, a matrix with columns corresponding to
