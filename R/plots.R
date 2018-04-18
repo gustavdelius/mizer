@@ -144,6 +144,8 @@ setMethod('plotBiomass', signature(sim='MizerSim'),
 #'   Defaults to TRUE
 #' @param total A boolean value that determines whether the total yield from
 #'   all species in the system is plotted as well. Default is FALSE
+#' @param log Boolean whether yield should be plotted on a logarithmic axis. 
+#'   Defaults to true.
 #' @param ... Other arguments to pass to \code{getYield} method
 #'
 #' @return A ggplot2 object
@@ -160,7 +162,7 @@ setMethod('plotBiomass', signature(sim='MizerSim'),
 #' 
 #' # Comparing with yield from twice the effort
 #' sim2 <- project(params, effort=2, t_max=20, t_save = 0.2)
-#' plotYield(sim, sim2, species = c("Cod", "Herring"), total = TRUE)
+#' plotYield(sim, sim2, species = c("Cod", "Herring"), log = FALSE)
 #' }
 setGeneric('plotYield', function(sim, sim2, ...)
     standardGeneric('plotYield'))
@@ -169,7 +171,7 @@ setGeneric('plotYield', function(sim, sim2, ...)
 #' @rdname plotYield
 setMethod('plotYield', signature(sim='MizerSim', sim2='missing'),
     function(sim, species = as.character(sim@params@species_params$species),
-             print_it = TRUE, total = FALSE, ...){
+             print_it = TRUE, total = FALSE, log = TRUE, ...){
         y <- getYield(sim, ...)
         y_total <- rowSums(y)
         y <- y[, (as.character(dimnames(y)[[2]]) %in% species), 
@@ -189,8 +191,11 @@ setMethod('plotYield', signature(sim='MizerSim', sim2='missing'),
             p <- ggplot(ym) + 
                 geom_line(aes(x=Year, y=Yield, colour=Species, linetype=Species))
         }
-        p <- p + scale_y_continuous(trans="log10", name="Yield [g]") + 
-            scale_x_continuous(name="Year")
+        if (log) {
+            p <- p + scale_y_continuous(trans="log10", name="Yield [g]")
+        } else {
+            p <- p + scale_y_continuous(name="Yield [g]")
+        }
     if (print_it) {
         print(p)
     }
@@ -203,7 +208,7 @@ setMethod('plotYield', signature(sim='MizerSim', sim2='missing'),
 setMethod('plotYield', signature(sim='MizerSim', sim2='MizerSim'),
           function(sim, sim2, 
                    species = as.character(sim@params@species_params$species),
-                   print_it = TRUE, total = FALSE, ...){
+                   print_it = TRUE, total = FALSE, log = TRUE, ...){
               if (!all(dimnames(sim@n)$time == dimnames(sim2@n)$time)) {
                   stop("The two simulations do not have the same times")
               }
@@ -239,9 +244,12 @@ setMethod('plotYield', signature(sim='MizerSim', sim2='MizerSim'),
                       geom_line(aes(x=Year, y=Yield, colour=Species, 
                                     linetype=Species, size=Simulation))
               }
-              p <- p + scale_size_manual(values = c(0.3, 0.6)) +
-                  scale_y_continuous(trans="log10", name="Yield [g]") + 
-                  scale_x_continuous(name="Year")
+              p <- p + scale_size_manual(values = c(0.3, 0.6))
+              if (log) {
+                  p <- p + scale_y_continuous(trans="log10", name="Yield [g]")
+              } else {
+                  p <- p + scale_y_continuous(name="Yield [g]")
+              }
               if (print_it) {
                   print(p)
               }

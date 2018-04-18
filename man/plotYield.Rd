@@ -11,11 +11,11 @@ plotYield(sim, sim2, ...)
 
 \S4method{plotYield}{MizerSim,missing}(sim,
   species = as.character(sim@params@species_params$species),
-  print_it = TRUE, total = FALSE, ...)
+  print_it = TRUE, total = FALSE, log = TRUE, ...)
 
 \S4method{plotYield}{MizerSim,MizerSim}(sim, sim2,
   species = as.character(sim@params@species_params$species),
-  print_it = TRUE, total = FALSE, ...)
+  print_it = TRUE, total = FALSE, log = TRUE, ...)
 }
 \arguments{
 \item{sim}{An object of class \code{MizerSim}}
@@ -33,6 +33,9 @@ Defaults to TRUE}
 
 \item{total}{A boolean value that determines whether the total yield from
 all species in the system is plotted as well. Default is FALSE}
+
+\item{log}{Boolean whether yield should be plotted on a logarithmic axis. 
+Defaults to true.}
 }
 \value{
 A ggplot2 object
@@ -62,7 +65,7 @@ plotYield(sim, species = c("Cod", "Herring"), total = TRUE)
 
 # Comparing with yield from twice the effort
 sim2 <- project(params, effort=2, t_max=20, t_save = 0.2)
-plotYield(sim, sim2, species = c("Cod", "Herring"), total = TRUE)
+plotYield(sim, sim2, species = c("Cod", "Herring"), log = FALSE)
 }
 }
 \seealso{
