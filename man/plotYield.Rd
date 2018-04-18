@@ -3,27 +3,35 @@
 \docType{methods}
 \name{plotYield}
 \alias{plotYield}
-\alias{plotYield,MizerSim-method}
+\alias{plotYield,MizerSim,missing-method}
+\alias{plotYield,MizerSim,MizerSim-method}
 \title{Plot the total yield of species through time}
 \usage{
-plotYield(sim, ...)
+plotYield(sim, sim2, ...)
 
-\S4method{plotYield}{MizerSim}(sim,
+\S4method{plotYield}{MizerSim,missing}(sim,
+  species = as.character(sim@params@species_params$species),
+  print_it = TRUE, total = FALSE, ...)
+
+\S4method{plotYield}{MizerSim,MizerSim}(sim, sim2,
   species = as.character(sim@params@species_params$species),
   print_it = TRUE, total = FALSE, ...)
 }
 \arguments{
 \item{sim}{An object of class \code{MizerSim}}
 
+\item{sim2}{An optional second object of class \code{MizerSim}. If this is
+provided its yields will be shown on the same plot in bolder lines.}
+
 \item{...}{Other arguments to pass to \code{getYield} method}
 
 \item{species}{Name or vector of names of the species to be plotted. By
-default all species are plotted.}
+default all species contained in \code{sim} are plotted.}
 
 \item{print_it}{Display the plot, or just return the ggplot2 object.
 Defaults to TRUE}
 
-\item{total}{A boolean value that determines whether the total Yield from
+\item{total}{A boolean value that determines whether the total yield from
 all species in the system is plotted as well. Default is FALSE}
 }
 \value{
@@ -34,6 +42,8 @@ After running a projection, the total yield of each species across all
 fishing gears can be plotted against time.
 
 Plot the yield using a \code{MizerSim} object.
+
+Plot the yield using two \code{MizerSim} objects.
 }
 \details{
 This plot is pretty easy to do by

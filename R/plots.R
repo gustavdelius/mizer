@@ -136,11 +136,13 @@ setMethod('plotBiomass', signature(sim='MizerSim'),
 #' linetypes etc. Just look at the source code for details.
 #' 
 #' @param sim An object of class \code{MizerSim}
+#' @param sim2 An optional second object of class \code{MizerSim}. If this is
+#'   provided its yields will be shown on the same plot in bolder lines.
 #' @param species Name or vector of names of the species to be plotted. By
-#'   default all species are plotted.
+#'   default all species contained in \code{sim} are plotted.
 #' @param print_it Display the plot, or just return the ggplot2 object.
 #'   Defaults to TRUE
-#' @param total A boolean value that determines whether the total Yield from
+#' @param total A boolean value that determines whether the total yield from
 #'   all species in the system is plotted as well. Default is FALSE
 #' @param ... Other arguments to pass to \code{getYield} method
 #'
@@ -156,38 +158,91 @@ setMethod('plotBiomass', signature(sim='MizerSim'),
 #' plotYield(sim)
 #' plotYield(sim, species = c("Cod", "Herring"), total = TRUE)
 #' }
-setGeneric('plotYield', function(sim, ...)
+setGeneric('plotYield', function(sim, sim2, ...)
     standardGeneric('plotYield'))
 
 #' Plot the yield using a \code{MizerSim} object.
 #' @rdname plotYield
-setMethod('plotYield', signature(sim='MizerSim'),
+setMethod('plotYield', signature(sim='MizerSim', sim2='missing'),
     function(sim, species = as.character(sim@params@species_params$species),
              print_it = TRUE, total = FALSE, ...){
         y <- getYield(sim, ...)
         y_total <- rowSums(y)
-        y <- y[, (as.character(dimnames(y)[[2]]) %in% species) & colSums(y)>0, 
+        y <- y[, (as.character(dimnames(y)[[2]]) %in% species), 
                drop=FALSE]
         if (total) {
             # Include total
             y <- cbind(y, Total = y_total)
         }
-        names(dimnames(y)) <- c("time", "Species")
-        ym <- reshape2::melt(y)
-        ym$Species <- as.character(ym$Species)
-        if (dim(y)[2] > 12) {
+        ym <- reshape2::melt(y, varnames = c("Year", "Species"), 
+                             value.name = "Yield")
+        ym$Species <- as.factor(ym$Species)
+        ym <- subset(ym, ym$Yield > 0)
+        if (nlevels(ym$Species) > 12) {
             p <- ggplot(ym) + 
-                geom_line(aes(x=time,y=value, group=Species))
+                geom_line(aes(x=Year, y=Yield, group=Species))
         } else {
             p <- ggplot(ym) + 
-                geom_line(aes(x=time,y=value, colour=Species, linetype=Species))
+                geom_line(aes(x=Year, y=Yield, colour=Species, linetype=Species))
         }
         p <- p + scale_y_continuous(trans="log10", name="Yield [g]") + 
             scale_x_continuous(name="Year")
-    if (print_it)
+    if (print_it) {
         print(p)
+    }
 	return(p)
     }
+)
+
+#' Plot the yield using two \code{MizerSim} objects.
+#' @rdname plotYield
+setMethod('plotYield', signature(sim='MizerSim', sim2='MizerSim'),
+          function(sim, sim2, 
+                   species = as.character(sim@params@species_params$species),
+                   print_it = TRUE, total = FALSE, ...){
+              if (!all(dimnames(sim@n)$time == dimnames(sim2@n)$time)) {
+                  stop("The two simulations do not have the same times")
+              }
+              y <- getYield(sim, ...)
+              y2 <- getYield(sim2, ...)
+              y_total <- rowSums(y)
+              y <- y[, (as.character(dimnames(y)[[2]]) %in% species) & colSums(y)>0, 
+                     drop=FALSE]
+              y2_total <- rowSums(y2)
+              y2 <- y2[, (as.character(dimnames(y2)[[2]]) %in% species), 
+                     drop=FALSE]
+              if (total) {
+                  # Include total
+                  y <- cbind(y, Total = y_total)
+                  y2 <- cbind(y2, Total = y2_total)
+              }
+              ym <- reshape2::melt(y, varnames = c("Year", "Species"), 
+                                   value.name = "Yield")
+              ym2 <- reshape2::melt(y2, varnames = c("Year", "Species"), 
+                                   value.name = "Yield")
+              ym$Simulation = 1
+              ym2$Simulation = 2
+              ym <- rbind(ym, ym2)
+              ym$Species <- as.factor(ym$Species)
+              ym$Simulation <- as.factor(ym$Simulation)
+              ym <- subset(ym, ym$Yield > 0)
+              if (nlevels(ym$Species) > 12) {
+                  p <- ggplot(ym) + 
+                      geom_line(aes(x=Year, y=Yield, size=Simulation,
+                                    group=interaction(Species, Simulation)))
+              } else {
+                  p <- ggplot(ym) + 
+                      geom_line(aes(x=Year, y=Yield, colour=Species, 
+                                    linetype=Species, size=Simulation))
+              }
+              p <- p + scale_size_manual(values = c(0.3, 0.6)) +
+                  scale_y_continuous(trans="log10", name="Yield [g]") + 
+                  scale_x_continuous(name="Year")
+              if (print_it) {
+                  print(p)
+              }
+              return(p)
+          }
 )
 
 
