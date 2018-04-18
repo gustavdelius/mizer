@@ -157,6 +157,10 @@ setMethod('plotBiomass', signature(sim='MizerSim'),
 #' sim <- project(params, effort=1, t_max=20, t_save = 0.2)
 #' plotYield(sim)
 #' plotYield(sim, species = c("Cod", "Herring"), total = TRUE)
+#' 
+#' # Comparing with yield from twice the effort
+#' sim2 <- project(params, effort=2, t_max=20, t_save = 0.2)
+#' plotYield(sim, sim2, species = c("Cod", "Herring"), total = TRUE)
 #' }
 setGeneric('plotYield', function(sim, sim2, ...)
     standardGeneric('plotYield'))
