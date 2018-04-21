@@ -18,7 +18,7 @@ plotYield(sim, sim2, ...)
   print_it = TRUE, total = FALSE, log = TRUE, ...)
 }
 \arguments{
-\item{sim}{An object of class \code{MizerSim}}
+\item{sim}{An object of class \linkS4class{MizerSim}}
 
 \item{sim2}{An optional second object of class \code{MizerSim}. If this is
 provided its yields will be shown on the same plot in bolder lines.}
