@@ -20,8 +20,8 @@ plotYield(sim, sim2, ...)
 \arguments{
 \item{sim}{An object of class \linkS4class{MizerSim}}
 
-\item{sim2}{An optional second object of class \code{MizerSim}. If this is
-provided its yields will be shown on the same plot in bolder lines.}
+\item{sim2}{An optional second object of class \linkS4class{MizerSim}. If
+this is provided its yields will be shown on the same plot in bolder lines.}
 
 \item{...}{Other arguments to pass to \code{getYield} method}
 
@@ -42,17 +42,12 @@ A ggplot2 object
 }
 \description{
 After running a projection, the total yield of each species across all 
-fishing gears can be plotted against time.
+fishing gears can be plotted against time. The yield is obtained with
+\code{\link{getYield}}.
 
 Plot the yield using a \code{MizerSim} object.
 
 Plot the yield using two \code{MizerSim} objects.
-}
-\details{
-This plot is pretty easy to do by
-hand. It just gets the biomass using the \code{\link{getYield}} method and
-plots using the ggplot2 package. You can then fiddle about with colours and
-linetypes etc. Just look at the source code for details.
 }
 \examples{
 \dontrun{

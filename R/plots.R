@@ -128,20 +128,12 @@ setMethod('plotBiomass', signature(sim='MizerSim'),
 #' Plot the total yield of species through time
 #'
 #' After running a projection, the total yield of each species across all 
-#' fishing gears can be plotted against time. 
+#' fishing gears can be plotted against time. The yield is obtained with
+#' \code{\link{getYield}}.
 #' 
-#' This plot is pretty easy to do by
-#' hand. It just gets the biomass using the \code{\link{getYield}} method and
-#' plots using the ggplot2 package. You can then fiddle about with colours and
-#' linetypes etc. Just look at the source code for details.
-#' 
-<<<<<<< HEAD
-#' @param sim An object of class \code{MizerSim}
-#' @param sim2 An optional second object of class \code{MizerSim}. If this is
-#'   provided its yields will be shown on the same plot in bolder lines.
-=======
 #' @param sim An object of class \linkS4class{MizerSim}
->>>>>>> master
+#' @param sim2 An optional second object of class \linkS4class{MizerSim}. If
+#'   this is provided its yields will be shown on the same plot in bolder lines.
 #' @param species Name or vector of names of the species to be plotted. By
 #'   default all species contained in \code{sim} are plotted.
 #' @param print_it Display the plot, or just return the ggplot2 object.
