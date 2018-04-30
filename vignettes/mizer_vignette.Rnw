@@ -68,7 +68,7 @@ opts_chunk$set(width = 7)
 @
 
 
-\title{Multispecies, trait-based and community size spectrum ecological modelling in \R (\pkg{mizer})\thanks{mizer version 0.2 authored by Finlay Scott (Cefas, Lowestoft, UK, Maritime Affairs Unit, IPSC, European Commission Joint Research Centre, IT), Julia L. Blanchard (University of Sheffield, UK) and  Ken. H. Andersen (DTU Aqua, Copenhagen, DK. Further improvements were made by Gustav Delius, Richard Southwell and Richard Law (University of York), which resulted in the current version of mizer.)}}
+\title{Multispecies, trait-based and community size spectrum ecological modelling in \R (\pkg{mizer})\thanks{mizer version 0.2 authored by Finlay Scott (Cefas, Lowestoft, UK, Maritime Affairs Unit, IPSC, European Commission Joint Research Centre, IT), Julia L. Blanchard (University of Sheffield, UK) and  Ken. H. Andersen (DTU Aqua, Copenhagen, DK). Further improvements were made by Gustav Delius, Richard Southwell and Richard Law (University of York), which resulted in the current version of mizer.}}
 %\author[1,4]{Finlay Scott}
 %\author[2]{Julia L. Blanchard}
 %\author[3]{Ken. H. Andersen}
