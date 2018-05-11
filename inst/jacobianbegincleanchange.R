@@ -26,7 +26,7 @@ s_params <- set_scaling_model()
 nstart <- s_params@initial_n
 nstart[1,] <- nstart[1,]
 
-sim <- project(s_params, t_max=5, effort = 0, initial_n = nstart, t_save = 1)
+sim <- project(s_params, t_max=15, effort = 0, initial_n = nstart, t_save = 1)
 
 
 plot(sim)
