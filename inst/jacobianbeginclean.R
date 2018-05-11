@@ -22,16 +22,28 @@ resource_rates <- function(params, n, n_pp){
 
 
 s_params <- set_scaling_model()
-sim <- project(s_params, t_max=5, effort = 0)
+
+nstart <- s_params@initial_n
+nstart[1,] <- nstart[1,]
+
+sim <- project(s_params, t_max=15, effort = 0, initial_n = nstart, t_save = 1)
+
+
 plot(sim)
 
 ################
 
-my_n <- sim@n[dim(sim@n)[1],,]
-my_n_pp <- sim@n_pp[dim(sim@n_pp)[1],]
-FF <- fish_rates(s_params, my_n, my_n_pp)
-FF_resource <- resource_rates(s_params, my_n, my_n_pp)
-dataout <- c(FF_resource,as.vector(FF))
-max(abs(dataout))
+results <- 1:dim(sim@n)[1]
 
+for (T in (1:dim(sim@n)[1])){
+    
+    my_n <- sim@n[T,,]
+    #my_n[1, ] <- 1000*my_n[1, ]
+    my_n_pp <- sim@n_pp[T,]
+    FF <- fish_rates(s_params, my_n, my_n_pp)
+    FF_resource <- resource_rates(s_params, my_n, my_n_pp)
+    dataout <- c(FF_resource,as.vector(FF))
+    results[T] <- max(abs(dataout))
+}
+plot(results,type="l")
 
