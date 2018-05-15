@@ -62,4 +62,24 @@ for (T in (1:dim(sim@n)[1])){
     results[T] <- max(abs(dataout))
 }
 plot(results,type="l")
+########################
+
+used_params <- s_params
+change_function <- function(data_in){
+  my_n_pp <- data_in[1:length(used_params@cc_pp)]
+  #n <- data_in[(length(used_params@cc_pp)+1):length(data_in)]
+ # matrix(vec,nrow = 7,ncol = 7)
+  my_n <- array(data_in[(length(used_params@cc_pp)+1):length(data_in)], dim = dim(used_params@initial_n))
+  
+FF <- fish_rates(used_params, my_n, my_n_pp)
+FF_resource <- resource_rates(used_params, my_n, my_n_pp)
+dataout <- c(FF_resource,as.vector(FF))
+return(dataout)
+}
+
+##########################
+
+trial_data_in <- c(my_n_pp, as.vector(my_n))
+
+ss_go <- multiroot(f = change_function, start = trial_data_in)
 
