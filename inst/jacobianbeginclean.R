@@ -19,7 +19,7 @@ resource_rates <- function(params, n, n_pp){
     return(FF_resource)
 }
 
-
+#
 
 s_params <- set_scaling_model()
 
