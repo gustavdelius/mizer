@@ -21,7 +21,7 @@ resource_rates <- function(params, n, n_pp){
 
 #
 
-s_params <- set_scaling_model(no_sp = 2, no_w = 20)
+s_params <- set_scaling_model(no_sp = 6, no_w = 50)
 
 nstart <- s_params@initial_n
 nstart[1,] <- nstart[1,]
@@ -92,4 +92,8 @@ plot(sim)
 # by the looks of things, this steady state by newton raphson seems to involve the second species being at very low abundance
   sim@n[16,2,]
 
-
+# numerically evaluate the Jacobian
+  
+  mod <- function (t=0,y, parms=NULL,...) {return(change_function(y))}
+  
+  jacobian_numeric <- jacobian.full(y = trial_data_in, func = mod)
