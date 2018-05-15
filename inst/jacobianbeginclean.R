@@ -27,9 +27,25 @@ nstart <- s_params@initial_n
 nstart[1,] <- nstart[1,]
 
 sim <- project(s_params, t_max=15, effort = 0, initial_n = nstart, t_save = 1)
-
-
 plot(sim)
+
+###########################
+
+library("rootSolve")
+
+model <- function(x) {
+   F1 <- x[1] + x[2] + x[3]^2 -12
+   F2 <- x[1]^2 - x[2] + x[3] -2
+   F3 <- 2*x[1] - x[2]^2 + x[3] -1
+   c(F1 = F1, F2 = F2, F3 = F3)
+   }
+
+
+ss <- multiroot(f = model, start = c(1, 1, 1))
+
+ss$root
+
+ss$f.root
 
 ################
 
