@@ -14,6 +14,7 @@ fish_rates <- function(params, n, n_pp){
     } else {
       FF[i,] <- -(X - c(R[1],X[1:(length(X)-1)]))/params@dw - ZZ[i,]*n[i,]
     }
+  }
       return(FF)
 }
 
@@ -25,7 +26,6 @@ resource_rates <- function(params, n, n_pp){
 }
 
 #
-s_params@species_params$w_min_idx
 s_params <- set_scaling_model(no_sp = 6)
 
 nstart <- s_params@initial_n
@@ -93,12 +93,3 @@ root_n <- array(ss_go$root[(length(used_params@cc_pp)+1):length(ss_go$root)], di
 
 sim <- project(used_params, t_max=15, effort = 0, initial_n = root_n, t_save = 1, initial_n_pp = root_n_pp)
 plot(sim)
-
-# by the looks of things, this steady state by newton raphson seems to involve the second species being at very low abundance
-sim@n[16,2,]
-
-# numerically evaluate the Jacobian
-
-mod <- function (t=0,y, parms=NULL,...) {return(change_function(y))}
-
-jacobian_numeric <- jacobian.full(y = trial_data_in, func = mod)
