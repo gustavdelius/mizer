@@ -12,7 +12,7 @@ fish_rates <- function(params, n, n_pp){
     X[params@species_params$w_min_idx[i]-1] <- RR[i]
     FF[i,] <- -(X - c(0,X[1:(length(X)-1)]))/params@dw - ZZ[i,]*n[i,]
     } else {
-      FF[i,] <- -(X - c(R[1],X[1:(length(X)-1)]))/params@dw - ZZ[i,]*n[i,]
+      FF[i,] <- -(X - c(RR[1],X[1:(length(X)-1)]))/params@dw - ZZ[i,]*n[i,]
     }
   }
       return(FF)
