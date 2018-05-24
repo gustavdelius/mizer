@@ -204,7 +204,7 @@ random_ini <- function(L){
 # rr <- c(0.9552858, -2.4299018)
 
 for (i in 1:20){
-rr <- runif(2,-3,3)
+rr <- runif(dim(s_params@initial_n)[1],-3,3)
 print(rr)
 n_start <- s_params@initial_n
 for (i in 1:dim(n_start)[1]){
@@ -218,6 +218,19 @@ lines(s_params@w,RF$n[2,])
 # another steady state N_1 (w) *10^(0.9552858)
 # N_2(w) *10^(-2.4299018)
 
+n_start <- s_params@initial_n
+for (i in 1:dim(n_start)[1]){
+  X <- runif(dim(n_start)[2],0 ,10^(-7))
+  H <- n_start[i,]
+  H[H>0] <- X[H>0]
+  n_start[i,] <- H
+#  n_start[i,] <- runif(0,10^6,dim(n_start)[2])
+}
+RF <- run2fixed(n_start,s_params@initial_n_pp)
+plot(s_params@w,RF$n[1,],log="xy", type="l",ylim=c(min(RF$n[RF$n>0]),max(RF$n)))
+lines(s_params@w,RF$n[2,], col="red")
+sum(RF$n<0)
+plot(project(used_params, t_max=15, effort = 0, initial_n = RF$n, t_save = 1, initial_n_pp = RF$n_pp))
 
 
 #74 rewrote newton raphson solver in terms of `quasi-biomass`, and am running this for 
