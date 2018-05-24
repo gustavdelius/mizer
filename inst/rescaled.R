@@ -117,8 +117,11 @@ ss_goB <- multiroot(f = change_functionB, start = trial_data_inB)
 root_n_ppB <- ss_goB$root[1:length(used_params@cc_pp)]
 root_nB <- array(ss_goB$root[(length(used_params@cc_pp)+1):length(ss_goB$root)], dim = dim(used_params@initial_n))
 
-root_n <- sweep(root_nB, 2, used_params@w^(used_params@lambda), "/")
-root_n_pp <- root_n_ppB*(used_params@w_full^(-used_params@lambda))
+#root_n <- sweep(root_nB, 2, used_params@w^(used_params@lambda), "/")
+#root_n_pp <- root_n_ppB*(used_params@w_full^(-used_params@lambda))
+
+root_n <- sweep(root_nB, 2, used_params@w^(used_params@lambda), "/")*(used_params@initial_n>0)
+root_n_pp <- root_n_ppB*(used_params@w_full^(-used_params@lambda))*(used_params@initial_n_pp>0)
 
 
 sim <- project(used_params, t_max=15, effort = 0, initial_n = root_n, t_save = 1, initial_n_pp = root_n_pp)
@@ -147,7 +150,61 @@ real_partsB <- sapply(EEB$values, function(x) Re(x))
 max(real_partsB)
 
 plot(used_params@w,root_n[2,],log="xy")
+
+################
+
+run2fixed <- function(nI,n_ppI){
+  
+  
+  sim <- project(used_params, t_max=150, effort = 0, initial_n = nI, t_save = 1, initial_n_pp = n_ppI)
+  n <- sim@n[dim(sim@n)[1],,]
+  
+  n_pp <- sim@n_pp[dim(sim@n_pp)[1],]
+  
+  
+  trial_data_inB <- c(n_pp*(s_params@w_full^(s_params@lambda)), 
+                      sweep(n, 2, s_params@w^(s_params@lambda), "*"))
+  
+  ss_goB <- multiroot(f = change_functionB, start = trial_data_inB)
+  
+  
+  
+  root_n_ppB <- ss_goB$root[1:length(used_params@cc_pp)]
+  root_nB <- array(ss_goB$root[(length(used_params@cc_pp)+1):length(ss_goB$root)], dim = dim(used_params@initial_n))
+  
+  
+  
+  root_n <- sweep(root_nB, 2, used_params@w^(used_params@lambda), "/")*(used_params@initial_n>0)
+  root_n_pp <- root_n_ppB*(used_params@w_full^(-used_params@lambda))*(used_params@initial_n_pp>0)
+  
+  return(list(n=root_n,n_pp=root_n_pp))
+  
+}
+
+RF <- run2fixed(s_params@initial_n,s_params@initial_n_pp)
+
+plot(s_params@w,RF$n[1,],log="xy", type="l",ylim=c(min(RF$n[RF$n>0]),max(RF$n)))
+lines(s_params@w,RF$n[2,])
+
+random_ini <- function(L){
+  nn <- s_params@initial_n
+  for (i in 1:dim(nn)[1]){
+    nn[i,] <- nn[i,]*10^(runif(1,-L,L))
+  }
+  return(nn)
+}
+
+n_start <- random_ini(3)
+RF <- run2fixed(n_start,s_params@initial_n_pp)
+plot(s_params@w,RF$n[1,],log="xy", type="l",ylim=c(min(RF$n[RF$n>0]),max(RF$n)))
+lines(s_params@w,RF$n[2,])
+
+
 #74 rewrote newton raphson solver in terms of `quasi-biomass`, and am running this for 
 # the two species scale invariant model. Next is to see if this runs in BB
 
-#74 I fixed the rescaled version, however for some reason the solver is now varying null points
+#74 I fixed the rescaled version, however for some reason the solver is now varyingnull points
+
+#74 done a few random pertubations of two species case, then running mizer (150 yrs), then 
+# newton raphson, so far my few observations support the hypothesis that 
+# there is just one attractive interior steady state
