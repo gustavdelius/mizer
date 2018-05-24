@@ -58,8 +58,12 @@ resource_ratesB <- function(params, nB, n_ppB){
 
 
 #
-#s_params <- set_scaling_model(no_sp = 4, no_w = 50)
-s_params <- set_scaling_model(no_sp = 2)
+#s_params <- set_scaling_model(no_sp = 2)
+s_params <- set_scaling_model(no_sp = 2, no_w = 100)
+
+
+sim <- project(s_params, t_max=15, effort = 0, initial_n = s_params@initial_n, t_save = 1, initial_n_pp = s_params@initial_n_pp)
+plot(sim)
 
 
 nstart <- s_params@initial_n
@@ -194,10 +198,24 @@ random_ini <- function(L){
   return(nn)
 }
 
-n_start <- random_ini(3)
+#n_start <- random_ini(3)
+
+# another steady state where species 2 is not v abundant
+# rr <- c(0.9552858, -2.4299018)
+rr <- runif(2,-3,3)
+rr
+n_start <- s_params@initial_n
+for (i in 1:dim(n_start)[1]){
+  n_start[i,] <- n_start[i,]*10^(rr[i])
+}
 RF <- run2fixed(n_start,s_params@initial_n_pp)
 plot(s_params@w,RF$n[1,],log="xy", type="l",ylim=c(min(RF$n[RF$n>0]),max(RF$n)))
 lines(s_params@w,RF$n[2,])
+
+
+# another steady state N_1 (w) *10^(0.9552858)
+# N_2(w) *10^(-2.4299018)
+
 
 
 #74 rewrote newton raphson solver in terms of `quasi-biomass`, and am running this for 
@@ -208,3 +226,5 @@ lines(s_params@w,RF$n[2,])
 #74 done a few random pertubations of two species case, then running mizer (150 yrs), then 
 # newton raphson, so far my few observations support the hypothesis that 
 # there is just one attractive interior steady state
+
+#74 used 70 weight bins to speed up the code, and found another steady state
