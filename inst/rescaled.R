@@ -1,0 +1,149 @@
+#biomass2density_fish <- function(params, n)
+#density2biomass
+
+# explore two species case more carefully
+
+#fish_rates_B(nB,)
+
+#fish_ratesB <- function(params, nB, n_ppB){
+#  return(fish_rates(params, sweep(nB, 2, params@w^(params@lambda), "/"), n_ppB*(params@w_full^(-params@lambda))))
+#}  
+
+
+################################
+
+library("rootSolve")
+
+
+fish_rates <- function(params, n, n_pp){
+  gg<-getEGrowth(params, n, n_pp )
+  ggnn <- gg*n
+  #ggnn <- gg*n*params@w^(params@lambda)
+  RR <- getRDD(params, n, n_pp)
+  
+  shift <- cbind(rep(0, dim(ggnn)[1]), ggnn[,1:(dim(ggnn)[2]-1)])
+  
+  #for (i in (1:dim(ggnn)[1])){
+  #  shift[i, params@species_params$w_min_idx[i]] <- RR[i]  
+  #}
+  
+  no_sp <- dim(ggnn)[1]
+  indx <- (params@species_params$w_min_idx-1) * no_sp + (1:no_sp)
+  shift[indx] <- RR
+  
+  
+  
+  FF <- sweep(-(ggnn - shift), 2, params@dw, "/") - n*getZ(params, n, n_pp, effort = 0)
+  return(FF)
+}
+
+
+
+resource_rates <- function(params, n, n_pp){
+  m2_background <- getM2Background(params, n=n, n_pp=n_pp)
+  
+  FF_resource <- params@rr_pp*(params@cc_pp-n_pp)-m2_background*n_pp
+  return(FF_resource)
+}
+
+
+fish_ratesB <- function(params, nB, n_ppB){
+  return(fish_rates(params, sweep(nB, 2, params@w^(params@lambda), "/"), n_ppB*(params@w_full^(-params@lambda))))
+}  
+resource_ratesB <- function(params, nB, n_ppB){
+  return(resource_rates(params, sweep(nB, 2, params@w^(params@lambda), "/"), n_ppB*(params@w_full^(-params@lambda))))
+}  
+
+
+#
+#s_params <- set_scaling_model(no_sp = 4, no_w = 50)
+s_params <- set_scaling_model(no_sp = 2)
+
+
+nstart <- s_params@initial_n
+nstart[1,] <- nstart[1,]
+
+#sim <- project(s_params, t_max=2, effort = 0, initial_n = nstart, t_save = 1)
+#plot(sim)
+
+used_params <- s_params
+change_function <- function(data_in){
+  my_n_pp <- data_in[1:length(used_params@cc_pp)]
+  #n <- data_in[(length(used_params@cc_pp)+1):length(data_in)]
+  # matrix(vec,nrow = 7,ncol = 7)
+  my_n <- array(data_in[(length(used_params@cc_pp)+1):length(data_in)], dim = dim(used_params@initial_n))
+  
+  FF <- fish_rates(used_params, my_n, my_n_pp)
+  FF_resource <- resource_rates(used_params, my_n, my_n_pp)
+  dataout <- c(FF_resource,as.vector(FF))
+  return(dataout)
+}
+
+
+used_params <- s_params
+change_functionB <- function(data_in){
+  my_n_pp <- data_in[1:length(used_params@cc_pp)]
+  #n <- data_in[(length(used_params@cc_pp)+1):length(data_in)]
+  # matrix(vec,nrow = 7,ncol = 7)
+  my_n <- array(data_in[(length(used_params@cc_pp)+1):length(data_in)], dim = dim(used_params@initial_n))
+  
+  FF <- fish_ratesB(used_params, my_n, my_n_pp)
+  FF_resource <- resource_ratesB(used_params, my_n, my_n_pp)
+  dataout <- c(FF_resource,as.vector(FF))
+  return(dataout)
+}
+
+
+##########################
+
+#trial_data_in <- c(my_n_pp, as.vector(my_n))
+
+
+trial_data_in <- c(s_params@initial_n_pp, s_params@initial_n)
+
+trial_data_inB <- c(s_params@initial_n_pp*(s_params@w_full^(s_params@lambda)), 
+                   sweep(s_params@initial_n, 2, s_params@w^(s_params@lambda), "*"))
+
+
+#ss_go <- multiroot(f = change_function, start = trial_data_in)
+#root_n_pp <- ss_go$root[1:length(used_params@cc_pp)]
+#root_n <- array(ss_go$root[(length(used_params@cc_pp)+1):length(ss_go$root)], dim = dim(used_params@initial_n))
+
+ss_goB <- multiroot(f = change_functionB, start = trial_data_inB)
+
+
+root_n_ppB <- ss_goB$root[1:length(used_params@cc_pp)]
+root_nB <- array(ss_goB$root[(length(used_params@cc_pp)+1):length(ss_goB$root)], dim = dim(used_params@initial_n))
+
+root_n <- sweep(root_nB, 2, used_params@w^(used_params@lambda), "/")
+root_n_pp <- root_n_ppB*(used_params@w_full^(-used_params@lambda))
+
+
+sim <- project(used_params, t_max=15, effort = 0, initial_n = root_n, t_save = 1, initial_n_pp = root_n_pp)
+plot(sim)
+########################## other stuff from 2speciesattractive.R removed below
+
+
+output_ss <- c(root_n_pp, root_n)
+
+mod <- function (t=0,y, parms=NULL,...) {return(change_function(y))}
+jacobian_numeric <- jacobian.full(y = output_ss, func = mod)
+EE <- eigen(jacobian_numeric)
+
+real_parts <- sapply(EE$values, function(x) Re(x))
+max(real_parts)
+
+######## why does the jacobian (biomass) code below break ?
+
+output_ssB <- c(root_n_ppB, root_nB)
+
+modB <- function (t=0,y, parms=NULL,...) {return(change_functionB(y))}
+jacobian_numericB <- jacobian.full(y = output_ssB, func = modB)
+EEB <- eigen(jacobian_numericB)
+
+real_partsB <- sapply(EEB$values, function(x) Re(x))
+max(real_partsB)
+
+
+#74 rewrote newton raphson solver in terms of `quasi-biomass`, and am running this for 
+# the two species scale invariant model. Next is to see if this runs in BB
