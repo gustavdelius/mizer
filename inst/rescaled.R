@@ -48,10 +48,12 @@ resource_rates <- function(params, n, n_pp){
 
 
 fish_ratesB <- function(params, nB, n_ppB){
-  return(fish_rates(params, sweep(nB, 2, params@w^(params@lambda), "/"), n_ppB*(params@w_full^(-params@lambda))))
+  rate_n <- fish_rates(params, sweep(nB, 2, params@w^(params@lambda), "/"), n_ppB*(params@w_full^(-params@lambda))) 
+  return(sweep(rate_n, 2, params@w^(params@lambda), "*"))
 }  
 resource_ratesB <- function(params, nB, n_ppB){
-  return(resource_rates(params, sweep(nB, 2, params@w^(params@lambda), "/"), n_ppB*(params@w_full^(-params@lambda))))
+  rate_n_pp <-resource_rates(params, sweep(nB, 2, params@w^(params@lambda), "/"), n_ppB*(params@w_full^(-params@lambda)))
+  return(rate_n_pp*(params@w_full^(params@lambda)))
 }  
 
 
