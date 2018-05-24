@@ -203,7 +203,7 @@ random_ini <- function(L){
 # another steady state where species 2 is not v abundant
 # rr <- c(0.9552858, -2.4299018)
 
-for (i in 1:20){
+for (i in 1:2){
   rr <- runif(dim(s_params@initial_n)[1],-3,3)
   print(rr)
   n_start <- s_params@initial_n
