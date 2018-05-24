@@ -202,8 +202,10 @@ random_ini <- function(L){
 
 # another steady state where species 2 is not v abundant
 # rr <- c(0.9552858, -2.4299018)
+
+for (i in 1:20){
 rr <- runif(2,-3,3)
-rr
+print(rr)
 n_start <- s_params@initial_n
 for (i in 1:dim(n_start)[1]){
   n_start[i,] <- n_start[i,]*10^(rr[i])
@@ -211,7 +213,7 @@ for (i in 1:dim(n_start)[1]){
 RF <- run2fixed(n_start,s_params@initial_n_pp)
 plot(s_params@w,RF$n[1,],log="xy", type="l",ylim=c(min(RF$n[RF$n>0]),max(RF$n)))
 lines(s_params@w,RF$n[2,])
-
+}
 
 # another steady state N_1 (w) *10^(0.9552858)
 # N_2(w) *10^(-2.4299018)
