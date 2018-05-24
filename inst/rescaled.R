@@ -146,6 +146,8 @@ EEB <- eigen(jacobian_numericB)
 real_partsB <- sapply(EEB$values, function(x) Re(x))
 max(real_partsB)
 
-
+plot(used_params@w,root_n[2,],log="xy")
 #74 rewrote newton raphson solver in terms of `quasi-biomass`, and am running this for 
 # the two species scale invariant model. Next is to see if this runs in BB
+
+#74 I fixed the rescaled version, however for some reason the solver is now varying null points
