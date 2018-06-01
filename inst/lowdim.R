@@ -71,7 +71,7 @@ ss <- multiroot(f = FF, start = trial_data_in, rtol = 0, atol = 1e-15, ctol = 0)
 
 outputs <- RECvec2n(params, ss$root/wts)
 
-sim <- project(used_params, t_max=15, effort = 0, initial_n = outputs$n, t_save = 1, initial_n_pp = outputs$n_pp)
+sim <- project(params, t_max=15, effort = 0, initial_n = outputs$n, t_save = 1, initial_n_pp = outputs$n_pp)
 plot(sim)
 
 
