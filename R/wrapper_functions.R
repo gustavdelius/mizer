@@ -388,6 +388,40 @@ set_trait_model <- function(no_sp = 10,
 }
 
 
+# Helper function to find steady state solution given a fixed community
+# spectrum
+get_n <- function(params, n_c, n_pp) {
+    no_sp <- dim(params@species_params)[1]
+    # Growth and death rates are determined entirely by community spectrum
+    # To allow us to calculate them using mizer's methods we set up a fake
+    # matrix n that has the community spectrum in the first row and 0 in
+    # all other rows. 
+    n <- matrix(0, nrow = no_sp, ncol = length(params@w))
+    n[1, ] <- n_c
+    mumu <- getZ(params, n, n_pp, effort = 0)
+    gg <- getEGrowth(params, n, n_pp)
+    
+    # Solve species spectra for each species separately
+    n[] <- 0
+    for (sp in 1:no_sp) {
+        w_inf_idx <- sum(params@w < params@species_params$w_inf[sp])
+        w_min_idx <- params@species_params$w_min_idx[sp]
+        idx <- w_min_idx:(w_inf_idx-1)
+        # Steady state solution of the upwind-difference scheme,
+        # keeping egg abundance as before
+        n[sp, w_min_idx:w_inf_idx] <- 
+            c(1, cumprod(gg[sp, idx] / ((gg[sp, ] + mumu[sp, ] * params@dw)[idx+1]))) *
+            params@initial_n[sp, w_min_idx]
+    }
+    if (any(is.infinite(n))) {
+        stop("Steady state holds infinities")
+    }
+    if (any(is.na(n) || is.nan(n))) {
+        stop("Steady state holds none numeric values")
+    }
+    return(n)
+}
+
 #### set_scaling_model ####
 #' Sets up parameters for a scale free trait-based model
 #'
@@ -687,9 +721,10 @@ set_scaling_model <- function(no_sp = 11,
         idxs <- w_min_idx:(w_min_idx+length(n_exact)-1)  
         initial_n[i, idxs] <- n_exact * (w_min[1] / w_min[i]) ^ lambda
     }
+    params@initial_n <- initial_n
     
     # Calculate the community spectrum
-    sc <- colSums(initial_n)
+    n_c <- colSums(initial_n)
     # The following was an attempt to calculate the community for a
     # finer-grained spectrum where species are spaced by just one
     # weight bracket. This level of detail is however not necessary.
@@ -705,10 +740,9 @@ set_scaling_model <- function(no_sp = 11,
     # sc <- sc * 
     #     (10^(delt*(1-lambda)/2) - 10^(-delt*(1-lambda)/2)) /
     #     (10^(dist_sp*(1-lambda)/2) - 10^(-dist_sp*(1-lambda)/2))
-    params@sc <- sc
     
     # Setup plankton
-    plankton_vec <- (kappa * w ^ (-lambda)) - sc
+    plankton_vec <- (kappa * w ^ (-lambda)) - n_c
     # Cut off plankton at maximum size of smallest species
     plankton_vec[w >= min_w_inf] <- 0
     # Do not allow negative plankton abundance
@@ -716,13 +750,9 @@ set_scaling_model <- function(no_sp = 11,
         message("Note: Negative abundance values in background resource overwritten with zeros")
         plankton_vec[plankton_vec < 0] <- 0
     }
-    # The cc_pp factor needs to be higher than the desired steady state in
-    # order to compensate for predation mortality
     params@cc_pp[sum(params@w_full <= w[1]):length(params@cc_pp)] <-
         plankton_vec
     initial_n_pp <- params@cc_pp
-    m2_background <- getM2Background(params, initial_n, initial_n_pp)
-    params@cc_pp <- (1 + m2_background / params@rr_pp) * initial_n_pp
 
     # Setup background death and steplike psi
     m2 <- getM2(params, initial_n, initial_n_pp)
@@ -738,6 +768,27 @@ set_scaling_model <- function(no_sp = 11,
         }
         params@mu_b[i, params@mu_b[i,] < 0] <- 0
     }
+    
+    # Now fine-tune the community spectrum to find an exact steady state
+    #   of the numerical scheme. We do this by an iterative root-finding
+    #   scheme. We start with the above approximate community spectrum sc,
+    #   solve for the species spectra, calculate the difference between
+    #   the sum of these species spectra and sc, and iterate over different
+    #   values for sc until this difference is close to zero.
+
+    fn <- function(n_c) {
+        colSums(get_n(params, n_c, initial_n_pp)) - n_c
+    }
+    n_c_sol <- dfsane(n_c, fn)
+    n_c <- n_c_sol$par
+    initial_n[] <- get_n(params, n_c, initial_n_pp)
+
+    params@sc <- n_c
+    
+    # Set cc_pp so that plankton dynamics has initial_n_pp as steady state
+    m2_background <- getM2Background(params, initial_n, initial_n_pp)
+    params@cc_pp <- (1 + m2_background / params@rr_pp) * initial_n_pp
+    
     # Set erepro to meet boundary condition
     rdi <- getRDI(params, initial_n, initial_n_pp)
     gg <- getEGrowth(params, initial_n, initial_n_pp)
