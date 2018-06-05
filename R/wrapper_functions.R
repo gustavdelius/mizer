@@ -1115,6 +1115,58 @@ setMethod('addSpecies', signature(params = 'MizerParams'),
         retune[largest_back_idx] <- FALSE
         p <- retune_abundance(p, retune)
         
+        # fish_idx is a logical array to address non-egg fish abundances only
+        fish_idx <- (p@initial_n > 0)  # All fish abundances
+        w_min_idx_array_ref <- (p@species_params$w_min_idx-1) * no_sp + (1:no_sp)
+        fish_idx[w_min_idx_array_ref] <- FALSE  # remove egg abundances
+        
+        fn <- function(nn) {
+            n0 <- p@initial_n
+            n0[fish_idx] <- nn
+            mumu <- getZ(p, n0, p@initial_n_pp, effort = effort)
+            gg <- getEGrowth(p, n0, p@initial_n_pp)
+            
+            n <- p@initial_n
+            for (sp in 1:no_sp) {
+                w_inf_idx <- sum(p@w < p@species_params$w_inf[sp])
+                w_min_idx <- p@species_params$w_min_idx[sp]
+                idx <- w_min_idx:(w_inf_idx-1)
+                # Steady state solution of the upwind-difference scheme,
+                # keeping egg abundance as before
+                n[sp, w_min_idx:w_inf_idx] <- 
+                    c(1, cumprod(gg[sp, idx] / ((gg[sp, ] + mumu[sp, ] * p@dw)[idx+1]))) *
+                    n0[sp, w_min_idx]
+            }
+            if (any(is.infinite(n))) {
+                stop("Steady state holds infinities")
+            }
+            if (any(is.na(n) || is.nan(n))) {
+                stop("Steady state holds non-numeric values")
+            }
+            return((n[fish_idx] / nn)-1)
+        }        
+        fn <- function(nn) {
+            n0 <- p@initial_n
+            n0[fish_idx] <- nn
+            mun <- getZ(p, n0, p@initial_n_pp, effort = effort) * n0
+            ggn <- getEGrowth(p, n0, p@initial_n_pp) * n0
+            dn <- vector(mode = "numeric", length = length(nn))
+            dn_idx <- 1
+            for (sp in 1:no_sp) {
+                w_inf_idx <- sum(p@w < p@species_params$w_inf[sp])
+                w_min_idx <- p@species_params$w_min_idx[sp]
+                idx <- (w_min_idx+1):w_inf_idx
+                dnsp <- (ggn[sp, ] + mun[sp, ] * p@dw)[idx] - ggn[sp, idx-1]
+                dn[dn_idx:(dn_idx+length(dnsp)-1)] <- dnsp
+                dn_idx <- dn_idx + length(dnsp)
+            }
+            return(dn)
+        }
+        # This does not converge
+        # nn_sol <- sane(p@initial_n[fish_idx], fn,
+        #                control=list(triter=1, maxit = 10))
+        # p@initial_n[fish_idx] <- nn_sol$par
+        
         # Retune the values of erepro, so that we are at steady state.
         # First get death and growth rates
         mumu <- getZ(p, p@initial_n, p@initial_n_pp, effort = effort)
