@@ -116,3 +116,18 @@ EEB <- eigen(jacobian_numericB)
 real_partsB <- sapply(EEB$values, function(x) Re(x))
 max(real_partsB)
 
+
+####################
+
+library("RSpectra")
+
+EEnew <- eigs(jacobian_numeric, 1, which = "LR")$value
+EEnew
+EEnewB <- eigs(jacobian_numericB, 1, which = "LR")$value
+EEnewB
+
+eigs(matrix(1:9,ncol=3,nrow=3), 1, which = "LR")$value
+
+eigen(matrix(1:9,ncol=3,nrow=3))
+
+
