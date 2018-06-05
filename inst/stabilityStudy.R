@@ -128,6 +128,6 @@ EEnewB
 
 eigs(matrix(1:9,ncol=3,nrow=3), 1, which = "LR")$value
 
-eigen(matrix(1:9,ncol=3,nrow=3))
+eigen(matrix(1:9,ncol=3,nrow=3))$values
 
 
