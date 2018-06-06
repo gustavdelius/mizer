@@ -239,6 +239,10 @@ library("ndtv")
 
 install.ffmpeg()
 
+
+library("installr")
+install.FFmpeg()
+
 ################
 
 
