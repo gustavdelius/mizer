@@ -1,4 +1,61 @@
+---
+title: "Stability Of Scale Invariant Model"
+author: "Richard Southwell"
+date: "6 June, 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r,  fig.show='animate', fig.width=5, fig.height=4}
+#library(ggplot2)
+#for (count in 1:4) {
+#  n <- 10 ^ count
+#  x <- data.frame(var = rnorm(n))
+#  print(ggplot(x) +
+#    geom_histogram(aes(x = var), binwidth = 0.2) +
+#    ggtitle(paste('n =', n)))
+#}
+```
+
+
+```{r,  fig.show='animate', fig.width=5, fig.height=4}
+for (count in 1:4) {
+  plot(count*(1:5))
+}
+```
+
+
+
+
+```{r cars2}
 library("BB")
+library("mizer")
+
 params <- set_scaling_model(no_sp = 5)
 
 
@@ -207,8 +264,13 @@ plot(params@w,tang_nI[1,]*params@w^(params@lambda),log="x",ylim=c(min(HH),max(HH
 for (j in 2:(dim(tang_nI)[1])){
   lines(params@w,tang_nI[j,]*params@w^(params@lambda),col=gray((j-1)/5))
 }
+```
 
-t <- 80
+
+
+```{r,  fig.show='animate', fig.width=5, fig.height=4}
+for (T in 1:70000){
+  t <- 100*T
 a <- Re(EE$values[lead[1]])
 b <- Im(EE$values[lead[1]])
 alpha <- Re(EE$vectors[,lead[1]])
@@ -230,66 +292,5 @@ plot(params@w,tang_nS[1,]*params@w^(params@lambda),log="x",ylim=c(min(HH),max(HH
 for (j in 2:(dim(tang_nS)[1])){
   lines(params@w,tang_nS[j,]*params@w^(params@lambda),col=gray((j-1)/5))
 }
-
-library("ndtv")
-
-#oldwd <- getwd()
-
-#setwd("C:/FFmpeg/bin")
-
-install.ffmpeg()
-
-
-library("installr")
-install.FFmpeg()
-
-save(EE, file = "C:/Users/user/Desktop/mizer projects/steady/mizer/inst/dataEE.RData")
-
-save(params, file = "C:/Users/user/Desktop/mizer projects/steady/mizer/inst/dataparams.RData")
-
-
-################
-
-
-
-# plot leading eigenvector
-
-
-# dot product of normalized eigenvectors (any close to parrallel ?)
-
-
-
-conditional <- kappa(jacobian_numeric)
-conditional
-
-######################
-
-nB <- sweep(params@initial_n, 2, used_params@w^(used_params@lambda), "*")*(used_params@initial_n>0)
-n_ppB <- params@initial_n_pp*(used_params@w_full^(used_params@lambda))*(used_params@initial_n_pp>0)
-
-################
-
-output_ssB <- c(n_ppB, nB)
-
-modB <- function (t=0,y, parms=NULL,...) {return(change_functionB(y))}
-jacobian_numericB <- jacobian.full(y = output_ssB, func = modB)
-EEB <- eigen(jacobian_numericB)
-
-real_partsB <- sapply(EEB$values, function(x) Re(x))
-max(real_partsB)
-
-
-####################
-
-library("RSpectra")
-
-EEnew <- eigs(jacobian_numeric, 1, which = "LR")$value
-EEnew
-EEnewB <- eigs(jacobian_numericB, 1, which = "LR")$value
-EEnewB
-
-eigs(matrix(1:9,ncol=3,nrow=3), 1, which = "LR")$value
-
-eigen(matrix(1:9,ncol=3,nrow=3))$values
-
-
+}
+```
