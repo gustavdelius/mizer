@@ -190,6 +190,52 @@ EE$values[lead[1]]-Conj(EE$values[lead[2]])
 sum(EE$vectors[lead[1]]-Conj(EE$vectors[lead[2]]))
 
 
+tangent_vectorA <- EE$vectors[,lead[1]]
+
+tang_n_ppI <- Im(tangent_vectorA[1:length(params@cc_pp)])
+#n <- data_in[(length(used_params@cc_pp)+1):length(data_in)]
+# matrix(vec,nrow = 7,ncol = 7)
+tang_nI <- Im(array(tangent_vectorA[(length(params@cc_pp)+1):length(tangent_vectorA)], dim = dim(params@initial_n)))
+
+
+
+plot(params@w_full,tang_n_ppI*params@w_full^(params@lambda),log="x")
+
+HH <- sweep(tang_nI, 2, params@w^(params@lambda), "*")
+
+plot(params@w,tang_nI[1,]*params@w^(params@lambda),log="x",ylim=c(min(HH),max(HH)),type="l")
+for (j in 2:(dim(tang_nI)[1])){
+  lines(params@w,tang_nI[j,]*params@w^(params@lambda),col=gray((j-1)/5))
+}
+
+t <- 80
+a <- Re(EE$values[lead[1]])
+b <- Im(EE$values[lead[1]])
+alpha <- Re(EE$vectors[,lead[1]])
+beta <- Im(EE$vectors[,lead[1]])
+osc <- exp(a*t)*(alpha*cos(b*t) - beta*sin(b*t))
+
+################
+
+tang_n_ppS <- osc[1:length(params@cc_pp)]
+#n <- data_in[(length(used_params@cc_pp)+1):length(data_in)]
+# matrix(vec,nrow = 7,ncol = 7)
+tang_nS <- array(osc[(length(params@cc_pp)+1):length(osc)], dim = dim(params@initial_n))
+
+#plot(params@w_full,tang_n_ppS*params@w_full^(params@lambda),log="x")
+
+HH <- sweep(tang_nS, 2, params@w^(params@lambda), "*")
+
+plot(params@w,tang_nS[1,]*params@w^(params@lambda),log="x",ylim=c(min(HH),max(HH)),type="l")
+for (j in 2:(dim(tang_nS)[1])){
+  lines(params@w,tang_nS[j,]*params@w^(params@lambda),col=gray((j-1)/5))
+}
+
+
+################
+
+
+
 # plot leading eigenvector
 
 
