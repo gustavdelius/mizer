@@ -185,6 +185,10 @@ plot(params@w,ss,log="x")
 
 plot(sapply(EE$values, function(x) Mod(x))) 
 
+EE$values[lead[1]]-Conj(EE$values[lead[2]])
+
+sum(EE$vectors[lead[1]]-Conj(EE$vectors[lead[2]]))
+
 
 # plot leading eigenvector
 
