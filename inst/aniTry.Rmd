@@ -45,7 +45,7 @@ tang_nS <- array(osc[(length(params@cc_pp)+1):length(osc)], dim = dim(params@ini
 HH <- sweep(tang_nS, 2, params@w^(params@lambda), "*")
 
 #plot(params@w,tang_nS[1,]*params@w^(params@lambda),log="x",ylim=c(min(HH),max(HH)),type="l")
-plot(params@w,tang_nS[1,]*params@w^(params@lambda),log="x",ylim=c(-10^(-11),10^(-11)),type="l")
+plot(params@w,tang_nS[1,]*params@w^(params@lambda),log="x",ylim=c(-3*10^(-12),3*10^(-12)),type="l")
 for (j in 2:(dim(tang_nS)[1])){
   lines(params@w,tang_nS[j,]*params@w^(params@lambda),col=gray((j-1)/5))
 }
