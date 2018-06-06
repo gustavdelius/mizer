@@ -231,6 +231,13 @@ for (j in 2:(dim(tang_nS)[1])){
   lines(params@w,tang_nS[j,]*params@w^(params@lambda),col=gray((j-1)/5))
 }
 
+library("ndtv")
+
+#oldwd <- getwd()
+
+#setwd("C:/FFmpeg/bin")
+
+install.ffmpeg()
 
 ################
 
