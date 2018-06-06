@@ -170,6 +170,22 @@ for (j in 1:5){
   print(params@w[max((1:length(tang_n[j,]))[tang_n[j,]!=0])])
 }
 
+for (j in 1:5){
+  print(c(params@species_params$w_min[j],params@w[min((1:length(tang_n[j,]))[tang_n[j,]!=0])],tang_n[j,params@species_params$w_min_idx[j]]*params@species_params$w_min[j]^params@lambda
+))
+}
+
+ss <- tang_n[1,]
+ss[] <- 0
+for (j in 1:5){
+  ss <- ss + tang_n[j,]
+}
+plot(params@w,ss,log="x")
+
+
+plot(sapply(EE$values, function(x) Mod(x))) 
+
+
 # plot leading eigenvector
 
 
