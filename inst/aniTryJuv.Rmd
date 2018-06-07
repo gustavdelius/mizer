@@ -1,0 +1,59 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+```{r,  fig.show='animate', fig.width=5, fig.height=4}
+load(file = "C:/Users/user/Desktop/mizer projects/steady/mizer/inst/dataEE.RData")
+
+load(file = "C:/Users/user/Desktop/mizer projects/steady/mizer/inst/dataparams.RData")
+lead <- which(Re(EE$values)==max(Re(EE$values)))
+
+for (T in 1:100){
+  t <- 10*T
+a <- Re(EE$values[lead[1]])
+b <- Im(EE$values[lead[1]])
+alpha <- Re(EE$vectors[,lead[1]])
+beta <- Im(EE$vectors[,lead[1]])
+osc <- exp(a*t)*(alpha*cos(b*t) - beta*sin(b*t))
+
+################
+
+tang_n_ppS <- osc[1:length(params@cc_pp)]
+#n <- data_in[(length(used_params@cc_pp)+1):length(data_in)]
+# matrix(vec,nrow = 7,ncol = 7)
+tang_nS <- array(osc[(length(params@cc_pp)+1):length(osc)], dim = dim(params@initial_n))
+
+#plot(params@w_full,tang_n_ppS*params@w_full^(params@lambda),log="x")
+
+#HH <- sweep(tang_nS, 2, params@w^(params@lambda), "*")
+
+mu0 <- (1 - params@f0) * sqrt(2 * pi) * params@kappa * params@species_params$gamma[1] * params@species_params$sigma[1] *
+  (params@species_params$beta[1] ^ (params@n - 1)) * exp(params@species_params$sigma[1] ^ 2 * (params@n - 1) ^ 2 / 2)
+hbar <- params@species_params$alpha[1] * params@species_params$h[1] * params@f0 - params@species_params$ks[1]
+juvexp <- (mu0/hbar) + params@n
+#juvexp
+
+#plot(params@w,tang_nS[1,]*params@w^(params@lambda),log="x",ylim=c(min(HH),max(HH)),type="l")
+plot(params@w,tang_nS[1,]*params@w^(juvexp),log="x",ylim=c(-5*10^(-13),5*10^(-13)),type="l")
+for (j in 2:(dim(tang_nS)[1])){
+  lines(params@w,tang_nS[j,]*params@w^(juvexp),col=gray((j-1)/5))
+}
+}
+```
