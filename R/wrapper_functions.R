@@ -899,6 +899,38 @@ retune_abundance <- function(params, retune) {
 }
 
 
+#' Calculate the fish abundance represented by a vector of change coefficients
+#' 
+#' This is used to reduce the dimension of the problem of finding a steady
+#' state. Instead of searching the entire function space, we want to search
+#' only through a space of leading Fourier components.
+#' The changed abundance is proportional to original abundance. The relative
+#' difference is given as a sum of Fourier components.
+#' 
+#' @param original_n Array (species x size) of original abundances
+#' @param change Vector of Fourier coefficients describing the change from the
+#'    original abundances. The vector is a concatenation of the coefficient
+#'    vectors for each individual species.
+#' 
+#' The formula for each species sp is
+#' changed_n[sp, ] = original_n[sp, ] + sum_{k=1}^N change[sp, k] sin[k x]
+#'                                    + change[sp, N+1] x
+changed_n <- function(original_n, change) {
+    no_sp <- dim(original_n)[1]
+    changem <- matrix(change, nrow = no_sp)
+    N <- ncol(changem) - 1
+    n <- original_n
+    for (sp in 1:no_sp) {
+        sel <- n[sp, ] > 0
+        len <- sum(sel)
+        fc <- c(0, -changem[sp, 1:N], rep(0, len-2*N-1), rev(changem[sp, 1:N]))
+        n[sp, sel] <- n[sp, sel] + Im(fft(fc)) 
+                                 + seq(0, changem[sp, N+1], length.out = len)
+    }
+    return(n)
+}
+
+
 #### addSpecies ####
 #' Add more species into an ecosystem with background species.
 #'
