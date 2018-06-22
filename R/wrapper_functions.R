@@ -1206,20 +1206,27 @@ setMethod('addSpecies', signature(params = 'MizerParams'),
             ggn <- getEGrowth(p, n0, p@initial_n_pp) * n0
             dn <- vector(mode = "numeric", length = length(change))
             for (sp in 1:no_sp) {
-                len <- sum(p@initial_n > 0)
+                len <- sum(p@initial_n[sp, ] > 0)
                 step <- ceiling(len/(N+1))
                 w_min_idx <- p@species_params$w_min_idx[sp]
                 idx <- seq(w_min_idx+1, by = step, length.out = N+1)
-                dnsp <- (ggn[sp, ] + mun[sp, ] * p@dw)[idx] - ggn[sp, idx-1]
+                # Calculate dn/dt and rescale it so that all entries have
+                # similar size
+                dnsp <- ((ggn[sp, ] + mun[sp, ] * p@dw)[idx] - ggn[sp, idx-1]) *
+                    p@w[idx]^p@n * p@species_params$w_min[sp]^(p@lambda-1-p@n) *
+                    10^14
                 dn[((sp-1) * (N+1) + 1) : (sp * (N + 1))] <- dnsp
             }
             return(dn)
         }
         
-        # This still needs to be tested
-        # sol <- sane(rep(0, (N + 1) * no_sp), fn,
+        # dfsane does not converge
+        # sol <- dfsane(rep(0, (N + 1) * no_sp), fn,
         #                 control=list(triter=1, maxit = 10))
         # p@initial_n <- changed_n(p@initial_n, sol$par)
+        # multiroot converges but is too slow
+        # sol <- multiroot(fn, rep(0, (N + 1) * no_sp))
+        # p@initial_n <- changed_n(p@initial_n, sol$root)
         
         # Retune the values of erepro, so that we are at steady state.
         # First get death and growth rates
