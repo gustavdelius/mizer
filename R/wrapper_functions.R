@@ -913,8 +913,8 @@ retune_abundance <- function(params, retune) {
 #'    vectors for each individual species.
 #' 
 #' The formula for each species sp is
-#' changed_n[sp, ] = original_n[sp, ] + sum_{k=1}^N change[sp, k] sin[k x]
-#'                                    + change[sp, N+1] x
+#' changed_n[sp, ] = original_n[sp, ] * (1 + sum_{k=1}^N change[sp, k] sin[k x]
+#'                                         + change[sp, N+1] x)
 changed_n <- function(original_n, change) {
     no_sp <- dim(original_n)[1]
     changem <- matrix(change, nrow = no_sp)
@@ -924,8 +924,9 @@ changed_n <- function(original_n, change) {
         sel <- n[sp, ] > 0
         len <- sum(sel)
         fc <- c(0, -changem[sp, 1:N], rep(0, len-2*N-1), rev(changem[sp, 1:N]))
-        n[sp, sel] <- n[sp, sel] + Im(fft(fc)) 
-                                 + seq(0, changem[sp, N+1], length.out = len)
+        n[sp, sel] <- n[sp, sel] * 
+                      (1 + Im(fft(fc)) 
+                         + seq(0, changem[sp, N+1], length.out = len))
     }
     return(n)
 }
@@ -1198,6 +1199,27 @@ setMethod('addSpecies', signature(params = 'MizerParams'),
         # nn_sol <- sane(p@initial_n[fish_idx], fn,
         #                control=list(triter=1, maxit = 10))
         # p@initial_n[fish_idx] <- nn_sol$par
+        N <- 20  # Number of Fourier modes to keep
+        fn <- function(change) {
+            n0 <- changed_n(p@initial_n, change)
+            mun <- getZ(p, n0, p@initial_n_pp, effort = effort) * n0
+            ggn <- getEGrowth(p, n0, p@initial_n_pp) * n0
+            dn <- vector(mode = "numeric", length = length(change))
+            for (sp in 1:no_sp) {
+                len <- sum(p@initial_n > 0)
+                step <- ceiling(len/(N+1))
+                w_min_idx <- p@species_params$w_min_idx[sp]
+                idx <- seq(w_min_idx+1, by = step, length.out = N+1)
+                dnsp <- (ggn[sp, ] + mun[sp, ] * p@dw)[idx] - ggn[sp, idx-1]
+                dn[((sp-1) * (N+1) + 1) : (sp * (N + 1))] <- dnsp
+            }
+            return(dn)
+        }
+        
+        # This still needs to be tested
+        # sol <- sane(rep(0, (N + 1) * no_sp), fn,
+        #                 control=list(triter=1, maxit = 10))
+        # p@initial_n <- changed_n(p@initial_n, sol$par)
         
         # Retune the values of erepro, so that we are at steady state.
         # First get death and growth rates
