@@ -1208,8 +1208,8 @@ setMethod('addSpecies', signature(params = 'MizerParams'),
             for (sp in 1:no_sp) {
                 len <- sum(p@initial_n[sp, ] > 0)
                 step <- ceiling(len/(N+1))
-                w_min_idx <- p@species_params$w_min_idx[sp]
-                idx <- seq(w_min_idx+1, by = step, length.out = N+1)
+                w_max_idx <- p@species_params$w_min_idx[sp] + len - 1
+                idx <- seq(w_max_idx - step*N, w_max_idx, by = step)
                 # Calculate dn/dt and rescale it so that all entries have
                 # similar size
                 dnsp <- ((ggn[sp, ] + mun[sp, ] * p@dw)[idx] - ggn[sp, idx-1]) *
@@ -1225,8 +1225,12 @@ setMethod('addSpecies', signature(params = 'MizerParams'),
         #                 control=list(triter=1, maxit = 10))
         # p@initial_n <- changed_n(p@initial_n, sol$par)
         # multiroot converges but is too slow
-        # sol <- multiroot(fn, rep(0, (N + 1) * no_sp))
-        # p@initial_n <- changed_n(p@initial_n, sol$root)
+        sol <- multiroot(fn, rep(0, (N + 1) * no_sp), verbose = TRUE)
+        p@initial_n <- changed_n(p@initial_n, sol$root)
+        
+        # Set cc_pp so that plankton dynamics has initial_n_pp as steady state
+        m2_background <- getM2Background(p, p@initial_n, p@initial_n_pp)
+        p@cc_pp <- (1 + m2_background / p@rr_pp) * p@initial_n_pp
         
         # Retune the values of erepro, so that we are at steady state.
         # First get death and growth rates
