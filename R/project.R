@@ -43,6 +43,10 @@ NULL
 #'   \linkS4class{MizerParams} argument is used.
 #' @param shiny_progress A shiny progress object used to update shiny progress bar.
 #'   Default NULL.
+#' @param fast Boolean switch. If TRUE then code avoids calling the project
+#'   methods and instead runs the necessary code directly. Default FALSE. 
+#'   The purpose is to allow to investigate the overhead that comes from the
+#'   method calls.
 #' @param ... Currently unused.
 #' 
 #' @note The \code{effort} argument specifies the level of fishing effort during
@@ -139,7 +143,8 @@ setMethod('project', signature(object='MizerParams', effort='numeric'),
 #' @rdname project
 setMethod('project', signature(object='MizerParams', effort='array'),
     function(object, effort, t_save=1, dt=0.1, initial_n=object@initial_n, 
-             initial_n_pp=object@initial_n_pp, shiny_progress = NULL, ...){
+             initial_n_pp=object@initial_n_pp, shiny_progress = NULL,
+             fast = FALSE, ...){
         validObject(object)
         # Check that number and names of gears in effort array is same as in MizerParams object
         no_gears <- dim(object@catchability)[1]
@@ -230,6 +235,66 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             proginc <- 1/length(t_dimnames_index)
         }
         for (i_time in 1:t_steps){
+            if (fast) {
+                
+                no_w_full <- length(sim@params@w_full)
+                idx_sp <- (no_w_full - no_w + 1):no_w_full
+                
+                ## get available energy
+                prey <- matrix(0, nrow = no_sp, ncol = no_w_full)        
+                prey[, idx_sp] <- object@interaction %*% n
+                f2 <- sweep(sweep(prey, 2, n_pp, "+"), 2, object@w_full^2, "*")
+                avail_energy <- Re(t(mvfft(t(object@ft_pred_kernel_e) * mvfft(t(f2)),
+                                           inverse = TRUE)))/length(object@w_full)
+                avail_energy <- avail_energy[, idx_sp, drop = FALSE]
+                # Due to numerical errors we might get negative entries. They should be 0
+                avail_energy[avail_energy < 0] <- 0
+                
+                ## get feeding level
+                encount <- object@search_vol * avail_energy
+                feeding_level <- encount/(encount + object@intake_max)
+                
+                ## get predation rate
+                # get period used in spectral integration
+                no_P <- length(object@ft_pred_kernel_p[1,])
+                Q <- matrix(0, nrow = no_sp, ncol = no_P)
+                Q[, idx_sp] <- sweep((1 - feeding_level)*object@search_vol*n, 2, 
+                                     object@w, "*")
+                pred_rate <- Re(t(mvfft(t(object@ft_pred_kernel_p) * 
+                                            mvfft(t(Q)), inverse = TRUE))) / no_P
+                # We drop some of the final columns
+                pred_rate <- pred_rate[, 1:no_w_full, drop = FALSE]
+                # predation rate should never be negative
+                pred_rate[pred_rate < 0] <- 0
+                
+                ## get mortality
+                m2 <- (t(object@interaction) %*% pred_rate)[, idx_sp, drop = FALSE]
+                m2_background <- colSums(pred_rate)
+                f_mort_gear <- object@selectivity  # to get right dimensions
+                # Streamlined for speed increase - note use of recycling
+                f_mort_gear[] <- effort_dt[i_time,] * c(object@catchability) * 
+                    c(object@selectivity)
+                f_mort <- colSums(f_mort_gear)
+                z <- m2 + object@mu_b + f_mort
+                
+                ## get growth
+                # assimilated intake
+                e <- sweep(feeding_level * object@intake_max,1,
+                           object@species_params$alpha,"*", check.margin = FALSE)
+                # Subtract basal metabolism and activity 
+                e <- e - object@std_metab - object@activity
+                e[e < 0] <- 0 # Do not allow negative growth
+                e_spawning <- object@psi * e 
+                e_growth <- e - e_spawning
+                
+                ## get reproduction
+                e_spawning_pop <- drop((e_spawning*n) %*% object@dw)
+                rdi <- sex_ratio*(e_spawning_pop * object@species_params$erepro) /
+                    object@w[object@species_params$w_min_idx]
+                rdd <- object@srr(rdi = rdi, species_params = object@species_params)
+                
+            } else {
+
             # Do it piece by piece to save repeatedly calling methods
             # Calculate amount E_{a,i}(w) of available food
             phi_prey <- getPhiPrey(sim@params, n=n, n_pp=n_pp)
@@ -254,6 +319,7 @@ setMethod('project', signature(object='MizerParams', effort='array'),
             rdi <- getRDI(sim@params, n=n, n_pp=n_pp, e_spawning=e_spawning, sex_ratio=sex_ratio)
             # R_i
             rdd <- getRDD(sim@params, n=n, n_pp=n_pp, rdi=rdi, sex_ratio=sex_ratio)
+            }
 
             # Iterate species one time step forward:
             # See Ken's PDF

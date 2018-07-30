@@ -17,7 +17,7 @@ project(object, effort, ...)
 
 \S4method{project}{MizerParams,array}(object, effort, t_save = 1, dt = 0.1,
   initial_n = object@initial_n, initial_n_pp = object@initial_n_pp,
-  shiny_progress = NULL, ...)
+  shiny_progress = NULL, fast = FALSE, ...)
 }
 \arguments{
 \item{object}{A \linkS4class{MizerParams} object}
@@ -47,6 +47,11 @@ the \code{MizerParams} argument. By default the \code{initial_n_pp} slot of the
 
 \item{shiny_progress}{A shiny progress object used to update shiny progress bar.
 Default NULL.}
+
+\item{fast}{Boolean switch. If TRUE then code avoids calling the project
+methods and instead runs the necessary code directly. Default FALSE. 
+The purpose is to allow to investigate the overhead that comes from the
+method calls.}
 }
 \value{
 An object of type \code{MizerSim}.
