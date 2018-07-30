@@ -1,3 +1,11 @@
+# Experimental branch
+
+This branch is for conserving the results of experiments that we made
+during development that did not lead to stuff that should make it into
+the master branch but that should nevertheless be preserved for future
+reference.
+
+
 # mizer
 
 mizer is a package that implements size-based ecological models.
