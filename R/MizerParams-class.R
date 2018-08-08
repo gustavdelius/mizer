@@ -598,6 +598,10 @@ multispeciesParams <- function(object, interaction,
     if (!("catchability" %in% colnames(object))) {
         object$catchability <- 1
     }
+    if (any(is.na(object$catchability))) {
+        object$catchability <- 1
+    }
+    
     # Sort out h column If not passed in directly, is calculated from f0 and
     # k_vb if they are also passed in
     if (!("h" %in% colnames(object))) {
@@ -607,6 +611,16 @@ multispeciesParams <- function(object, interaction,
         }
         object$h <- ((3 * object$k_vb) / (object$alpha * f0)) * (object$w_inf ^ (1/3))
     }
+    if (any(is.na(object$h))) {
+        message("Note: \tNAs in h column in species data frame so using f0 and k_vb to calculate it.")
+        if (!("k_vb" %in% colnames(object))) {
+            stop("\t\tExcept I can't because there is no k_vb column in the species data frame")
+        }
+        object$h <- ((3 * object$k_vb) / (object$alpha * f0)) * (object$w_inf ^ (1/3))
+    }
+    
+    
+    
     # Sorting out gamma column
     if (!("gamma" %in% colnames(object))) {
         object$gamma <- NA
@@ -630,12 +644,19 @@ multispeciesParams <- function(object, interaction,
         message("Note: \tNo z0 column in species data frame so using z0 = z0pre * w_inf ^ z0exp.")
         object$z0 = z0pre*object$w_inf^z0exp    # background natural mortality
     }
+    if (any(is.na(object$z0))) {
+        message("Note: \tNAs in z0 column in species data frame so using z0 = z0pre * w_inf ^ z0exp.")
+        object$z0 = z0pre*object$w_inf^z0exp    # background natural mortality
+    }
     # Sort out ks column
     if (!("ks" %in% colnames(object))) {
         message("Note: \tNo ks column in species data frame so using ks = h * 0.2.")
         object$ks <- object$h * 0.2
     }
-    
+    if (any(is.na(object$ks))) {
+        message("Note: \tNAs in ks column in species data frame so using ks = h * 0.2.")
+        object$ks <- object$h * 0.2
+    }
     # Check essential columns: species (name), wInf, wMat, h, gamma,  ks, beta, sigma 
     check_species_params_dataframe(object)
     
