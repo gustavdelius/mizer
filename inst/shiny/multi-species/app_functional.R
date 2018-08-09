@@ -104,7 +104,12 @@ server <- function(input, output, session) {
                           value = sp$l25,
                           min = 0,
                           max = 100, 
-                          step = 1)
+                          step = 1),
+             numericInput("SSB", "SSB",
+                          value = sp$SSB,
+                          min = 10^(-20),
+                          max = 10^2, 
+                          step = 10^(-5))
              )
     })
     ## When a species parameter input is changed, only change that
@@ -131,6 +136,7 @@ server <- function(input, output, session) {
         species_params[input$sp_sel, "b"]     <- input$b
         species_params[input$sp_sel, "l50"]   <- input$l50
         species_params[input$sp_sel, "l25"]   <- input$l25
+        species_params[input$sp_sel, "SSB"]   <- input$SSB
         # Create new params object identical to old one except for changed #
         # species params 
         pc <- MizerParams(
@@ -404,7 +410,7 @@ shinyApp(ui = ui, server = server) # this launches your app
 
 # I have added a function that plots a table for SSB. This needs (1) improving, using row names etc. or 
 # replacing with a plot. Also, (2) I need to improve the way SSB is inputted by 
-# doing it through humboldt params, instead of hardcoding. Also, (3) I need to add a slider to 
-# allow the user to control the SSB, and (4) I need to reindent, and clean up
+# doing it through humboldt params, instead of hardcoding. Also, (3) I need to 
+# understand why sliding SSB has little effect, and (4) I need to reindent, and clean up
 
 
