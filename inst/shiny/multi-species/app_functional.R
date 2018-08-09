@@ -205,9 +205,12 @@ server <- function(input, output, session) {
             if (!(p_old@species_params[sp, "gear"] %in% names(effort))) {
                 effort <- c(effort, all_efforts[p_old@species_params[sp, "gear"]])
             }
+            #p <- addSpecies(p, p_old@species_params[sp, ],
+            #                  effort = effort,
+            #              rfac=Inf, SSB=p@species_params$SSB[sp])
             p <- addSpecies(p, p_old@species_params[sp, ],
-                              effort = effort,
-                          rfac=Inf)
+                            effort = effort,
+                            rfac=Inf)
         }
 
         # Run to steady state
