@@ -205,9 +205,15 @@ server <- function(input, output, session) {
             if (!(p_old@species_params[sp, "gear"] %in% names(effort))) {
                 effort <- c(effort, all_efforts[p_old@species_params[sp, "gear"]])
             }
+            if (input$use_SSB){
             p <- addSpecies(p, p_old@species_params[sp, ],
                               effort = effort,
                           rfac=Inf, SSB=input$SSB)
+            } else {
+                p <- addSpecies(p, p_old@species_params[sp, ],
+                                effort = effort,
+                                rfac=Inf)    
+            }
             #p <- addSpecies(p, p_old@species_params[sp, ],
              #               effort = effort,
               #              rfac=Inf)
@@ -381,7 +387,8 @@ ui <- fluidPage(
                     sliderInput("no_bg_sp", "Number of background species",
                                 value=10, min=4, max=20, step=1, round = TRUE),
                     numericInput("min_w_pp", "Minimum plankton weight min_w_pp",
-                                value=1e-12,  step=1e-13)
+                                value=1e-12,  step=1e-13),
+                    checkboxInput("use_SSB", "Use target SSB", value = FALSE)
                 ),
                 tabPanel("Fishing",
                     sliderInput("effort", "General Effort",
