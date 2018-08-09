@@ -23,7 +23,7 @@ server <- function(input, output, session) {
     7.70690253424067e-06,
     0.000645875410082031,
     0.00023397243034225,
-    0.000131377499657936)
+    0.000131377499657936)*0.1
     
     params <- reactiveVal()
     params(humboldt_params)
@@ -205,12 +205,12 @@ server <- function(input, output, session) {
             if (!(p_old@species_params[sp, "gear"] %in% names(effort))) {
                 effort <- c(effort, all_efforts[p_old@species_params[sp, "gear"]])
             }
-            #p <- addSpecies(p, p_old@species_params[sp, ],
-            #                  effort = effort,
-            #              rfac=Inf, SSB=p@species_params$SSB[sp])
             p <- addSpecies(p, p_old@species_params[sp, ],
-                            effort = effort,
-                            rfac=Inf)
+                              effort = effort,
+                          rfac=Inf, SSB=input$SSB)
+            #p <- addSpecies(p, p_old@species_params[sp, ],
+             #               effort = effort,
+              #              rfac=Inf)
         }
 
         # Run to steady state
