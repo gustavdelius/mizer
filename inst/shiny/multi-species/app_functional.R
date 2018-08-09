@@ -105,10 +105,10 @@ server <- function(input, output, session) {
                           min = 0,
                           max = 100, 
                           step = 1),
-             numericInput("SSB", "SSB",
+             numericInput("SSB", "Target SSB",
                           value = sp$SSB,
                           min = 10^(-20),
-                          max = 10^2, 
+                          max = 10^4, 
                           step = 10^(-5))
              )
     })
@@ -281,9 +281,12 @@ server <- function(input, output, session) {
         res[i] <- sum(sim@n[dim(sim@n)[1],i,] *sim@params@w * sim@params@dw * sim@params@psi[i, ])
         
     }
-    trueres <- matrix(0,nrow = length(res),ncol=2)
+    trueres <- matrix(0,nrow = length(res),ncol=3)
     trueres[,1] <- names(sim@params@psi[,1])
-    trueres[,2] <- res
+    trueres[,2] <- sim@params@species_params$SSB
+    trueres[,3] <- res
+    colnames(trueres) <- c("Species","Target SSB","Final SSB")
+    rownames(trueres) <- names(sim@params@psi[,1])
     return(trueres)
     }
     
@@ -408,9 +411,9 @@ ui <- fluidPage(
 
 shinyApp(ui = ui, server = server) # this launches your app
 
-# I have added a function that plots a table for SSB. This needs (1) improving, using row names etc. or 
-# replacing with a plot. Also, (2) I need to improve the way SSB is inputted by 
-# doing it through humboldt params, instead of hardcoding. Also, (3) I need to 
-# understand why sliding SSB has little effect, and (4) I need to reindent, and clean up
+# Got SSB table looking better
+# I have added a function that plots a table for SSB. (1)) I need to improve the way SSB is inputted by 
+# doing it through humboldt params, instead of hardcoding. Also, (2) I need to 
+# understand why sliding SSB has little effect, and (3) I need to reindent, and clean up
 
 
