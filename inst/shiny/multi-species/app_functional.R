@@ -10,6 +10,21 @@ server <- function(input, output, session) {
     
     ## Load params object and store it as a reactive value
     data("humboldt_params")
+    
+    humboldt_params@species_params$SSB <- humboldt_params@species_params$w_mat
+    no_sp <- length(humboldt_params@species_params$SSB)
+    humboldt_params@species_params$SSB[] <- NA
+    # this is a total hack, and I should have added the SSB into the underlying object, 
+    # and I should not reply upon the ordering of the species.
+    humboldt_params@species_params$SSB[(no_sp-7): no_sp] <- c(0.0186762374072649,
+    0.000720757184972784,
+    7.97858473029264e-05,
+    2.51194830974027e-05,
+    7.70690253424067e-06,
+    0.000645875410082031,
+    0.00023397243034225,
+    0.000131377499657936)
+    
     params <- reactiveVal()
     params(humboldt_params)
     
@@ -235,6 +250,41 @@ server <- function(input, output, session) {
         plotBiomass(sim())
     })
     
+    ###################
+    
+    #myfun <- function(params){params@w[1]}
+    #output$printSSB <-  renderPrint({ sum(sim()@n[dim(sim@n)[1],] * sim()@params@w * sim()@params@dw * sim()@params@psi[1, ]) })
+    #output$printSSB <-  renderPrint({ myfun(params()) })
+    
+   ## myfun <- function(sim){
+        #res <- sim@params@species_params$w_mat
+     ##   res <- sim@params@psi[,1]
+      ##  for (i in (1:length(res))){
+    ##        res[i] <- sum(sim@n[dim(sim@n)[1],i,] *sim@params@w * sim@params@dw * sim@params@psi[i, ])
+     ##   }
+      ##  names(res) <- names(sim@params@psi[,1])
+    ##    return(res)
+    ##}
+    
+    #output$printSSB <-  renderText({ 1:5})
+    
+    myfun <- function(sim){
+    res <- sim@params@psi[,1]
+    #res <- (1:length(sim@params@psi[,1]))
+    for (i in (1:length(res))){
+        res[i] <- sum(sim@n[dim(sim@n)[1],i,] *sim@params@w * sim@params@dw * sim@params@psi[i, ])
+        
+    }
+    trueres <- matrix(0,nrow = length(res),ncol=2)
+    trueres[,1] <- names(sim@params@psi[,1])
+    trueres[,2] <- res
+    return(trueres)
+    }
+    
+    ######################
+    output$printSSB <-  renderTable({ myfun(sim())})
+    
+    
     output$plotSSB <- renderPlot({
       #b_new <- getSSB(sim_new())[, "Anchovy"]
       #b <- getSSB(sim())[, "Anchovy"]
@@ -343,10 +393,18 @@ ui <- fluidPage(
                 tabPanel("Growth", plotOutput("plotGrowthCurve")),
                 tabPanel("Biomass", plotOutput("plotBiomass")),
                 tabPanel("Biomass (perturbed)", plotOutput("plotBiomasscomp")),
-                tabPanel("SSB Anchovy", plotOutput("plotSSB"))
+                tabPanel("SSB Anchovy", plotOutput("plotSSB")),
+                tabPanel("SSB targets", tableOutput("printSSB"))
             )
         )  # end mainpanel
     )  # end sidebarlayout
 )
 
 shinyApp(ui = ui, server = server) # this launches your app
+
+# I have added a function that plots a table for SSB. This needs (1) improving, using row names etc. or 
+# replacing with a plot. Also, (2) I need to improve the way SSB is inputted by 
+# doing it through humboldt params, instead of hardcoding. Also, (3) I need to add a slider to 
+# allow the user to control the SSB, and (4) I need to reindent, and clean up
+
+
