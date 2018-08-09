@@ -214,9 +214,6 @@ server <- function(input, output, session) {
                                 effort = effort,
                                 rfac=Inf)    
             }
-            #p <- addSpecies(p, p_old@species_params[sp, ],
-             #               effort = effort,
-              #              rfac=Inf)
         }
 
         # Run to steady state
@@ -265,44 +262,19 @@ server <- function(input, output, session) {
         plotBiomass(sim())
     })
     
-    ###################
-    
-    #myfun <- function(params){params@w[1]}
-    #output$printSSB <-  renderPrint({ sum(sim()@n[dim(sim@n)[1],] * sim()@params@w * sim()@params@dw * sim()@params@psi[1, ]) })
-    #output$printSSB <-  renderPrint({ myfun(params()) })
-    
-   ## myfun <- function(sim){
-        #res <- sim@params@species_params$w_mat
-     ##   res <- sim@params@psi[,1]
-      ##  for (i in (1:length(res))){
-    ##        res[i] <- sum(sim@n[dim(sim@n)[1],i,] *sim@params@w * sim@params@dw * sim@params@psi[i, ])
-     ##   }
-      ##  names(res) <- names(sim@params@psi[,1])
-    ##    return(res)
-    ##}
-    
-    #output$printSSB <-  renderText({ 1:5})
-    
-    myfun <- function(sim){
-    res <- sim@params@psi[,1]
-    #res <- (1:length(sim@params@psi[,1]))
-    for (i in (1:length(res))){
-        res[i] <- sum(sim@n[dim(sim@n)[1],i,] *sim@params@w * sim@params@dw * sim@params@psi[i, ])
-        
+    SSB_table <- function(sim){
+    no_sp <- dim(sim@params@psi)[1]
+    trueres <- matrix(0,nrow = no_sp,ncol=3)
+    for (i in (1:no_sp)){
+        trueres[i,3] <- sum(sim@n[dim(sim@n)[1],i,] *sim@params@w * sim@params@dw * sim@params@psi[i, ])
     }
-    trueres <- matrix(0,nrow = length(res),ncol=3)
     trueres[,1] <- names(sim@params@psi[,1])
     trueres[,2] <- sim@params@species_params$SSB
-    trueres[,3] <- res
     colnames(trueres) <- c("Species","Target SSB","Final SSB")
     rownames(trueres) <- names(sim@params@psi[,1])
     return(trueres)
     }
-    
-    ######################
-    output$printSSB <-  renderTable({ myfun(sim())})
-    
-    
+    output$printSSB <-  renderTable({SSB_table(sim())})
     output$plotSSB <- renderPlot({
       #b_new <- getSSB(sim_new())[, "Anchovy"]
       #b <- getSSB(sim())[, "Anchovy"]
@@ -421,9 +393,9 @@ ui <- fluidPage(
 
 shinyApp(ui = ui, server = server) # this launches your app
 
-# Got SSB table looking better
-# I have added a function that plots a table for SSB. (1)) I need to improve the way SSB is inputted by 
-# doing it through humboldt params, instead of hardcoding. Also, (2) I need to 
-# understand why sliding SSB has little effect, and (3) I need to reindent, and clean up
-
-
+# Just cleaned up SSB code again. 
+#To do:
+# reindent
+# use Mariella's SSB values
+# understand deviation
+# go on to generalizing psi
