@@ -561,6 +561,10 @@ multispeciesParams <- function(object, interaction,
     row.names(object) <- object$species
     no_sp <- nrow(object)
     
+    if (!("m" %in% colnames(object))) {
+        object$m <- (1-n)
+    }
+    
     if (missing(interaction)) {
         interaction <- matrix(1, nrow = no_sp, ncol = no_sp)
     }
@@ -727,10 +731,10 @@ multispeciesParams <- function(object, interaction,
     res@psi[] <- 
         unlist(
             tapply(res@w, 1:length(res@w),
-                   function(wx, w_inf, w_mat,n) {
-                       ((1 + (wx / (w_mat))^-10)^-1) * (wx / w_inf)^(1 - n)
+                   function(wx, w_inf, w_mat,m) {
+                       ((1 + (wx / (w_mat))^-10)^-1) * (wx / w_inf)^m
                    },
-                   w_inf = object$w_inf, w_mat = object$w_mat, n = n
+                   w_inf = object$w_inf, w_mat = object$w_mat, m = object$m
             )
         )
     # Set w < 10% of w_mat to 0
