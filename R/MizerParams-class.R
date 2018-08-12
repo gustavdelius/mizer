@@ -562,7 +562,12 @@ multispeciesParams <- function(object, interaction,
     no_sp <- nrow(object)
     
     if (!("m" %in% colnames(object))) {
-        object$m <- (1-n)
+        object$m <- 1-n
+    }
+    
+    missing <- is.na(object$m)
+    if (any(missing)) {
+        object$m[missing] <- 1-n
     }
     
     if (missing(interaction)) {
@@ -728,6 +733,11 @@ multispeciesParams <- function(object, interaction,
     
     # Now fill up the slots using default formulations:
     # psi - allocation to reproduction - from original Setup() function
+    
+    # m is a species-specific parameter taking its value from 
+    # the data frame, unless it is missing, in which case 
+    # it takes the value of 1-n, by default.
+    
     res@psi[] <- 
         unlist(
             tapply(res@w, 1:length(res@w),
