@@ -122,3 +122,11 @@ resulting_SSB
 # to investigate the accuracy of the model, for different levels of abundance of the foreground species. 
 # We can plot how the relative error in the SSB, as well as the distance from the steady state change 
 # with the amount of foreground species. 
+
+# To do next:
+#
+# next, add computations of deviation from the powerlaw, (could also see sum of squared error of abundances, 
+# over all weights and species, and relative version of this)
+# next write loop and make plots,
+# next add a global foreground abundance multiplier to the app, and investigate it there too,
+# next try and make a version of humboldt that acts like an inert version of the app 
