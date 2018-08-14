@@ -11,7 +11,9 @@ names(l50) <- as.character(params_data$species)
 ###
 
 no_pts <- 10
-foreground_multiplier <- 10^(-(1:no_pts))
+#foreground_multiplier <- 10^(-(1:no_pts))
+foreground_multiplier <- (1:no_pts)*0.1/no_pts
+
 deviation_from_power_law <- 1:no_pts
 for (kk in (1:no_pts)){
     
@@ -112,7 +114,7 @@ power_law_deviation <- sum(((community_abundance-power_law)/power_law)^2)
 
 deviation_from_power_law[kk] <- power_law_deviation
 }
-plot(foreground_multiplier, deviation_from_power_law)
+plot(foreground_multiplier, deviation_from_power_law, type="l")
 
 
 #############
