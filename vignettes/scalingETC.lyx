@@ -384,10 +384,6 @@ A boolean variable `perfect'.
  growth before reproduction and death are perfect power laws.
 \end_layout
 
-\begin_layout Itemize
-perfect = FALSE
-\end_layout
-
 \begin_layout Standard
 h
 \end_layout
@@ -397,27 +393,174 @@ Procedure
 \end_layout
 
 \begin_layout Subsubsection*
-Tidy up inputs
+Tidy up inputs and check validity
 \end_layout
 
 \begin_layout Itemize
-If 
+If community exponent 
 \begin_inset Formula $\lambda$
 \end_inset
 
- was given as an input then 
+ was given as an input then the exponent for volumetric search rate 
 \begin_inset Formula $q$
 \end_inset
 
  is rewritten so 
-\begin_inset Formula $q=\lambda-2+n.$
+\begin_inset Formula $q:=\lambda-2+n,$
+\end_inset
+
+ where 
+\begin_inset Formula $n$
+\end_inset
+
+ is the exponent for max.
+ food intake.
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $R_{fac}\leq1$
+\end_inset
+
+ then 
+\begin_inset Formula $R_{fac}:=1.01.$
 \end_inset
 
 
 \end_layout
 
 \begin_layout Itemize
-j
+The number of weight bins 
+\begin_inset Formula $K$
+\end_inset
+
+ is replaced with the nearest integer to 
+\begin_inset Formula $K$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $T:=round\left(5\log_{10}\left(\frac{W_{\inf}^{H}}{w_{e}^{L}}\right)+1\right).$
+\end_inset
+
+ If 
+\begin_inset Formula $K<T$
+\end_inset
+
+ then 
+\begin_inset Formula $K:=T$
+\end_inset
+
+ [this is done so there are at least 
+\begin_inset Formula $5$
+\end_inset
+
+ bins in the interval from 
+\begin_inset Formula $w$
+\end_inset
+
+ to 
+\begin_inset Formula $10w$
+\end_inset
+
+ [is this true for any w, or only w=w_e etc.
+ ?].
+\end_layout
+
+\begin_layout Itemize
+Check that 
+\begin_inset Formula $K\leq10,000$
+\end_inset
+
+ and 
+\begin_inset Formula $W_{\infty}^{L}<W_{\infty}^{H}$
+\end_inset
+
+ and 
+\begin_inset Formula $w_{e}^{L}<w_{*}^{L}$
+\end_inset
+
+and 
+\begin_inset Formula $s\geq2$
+\end_inset
+
+ and n, q, r_pp, kappa, alpha, h, beta, sigma, ks, f0, knife_edge_size>0
+ If any of these conditions are false then give a warning message, and halt.
+\end_layout
+
+\begin_layout Itemize
+If perfect=TRUE then let 
+\begin_inset Formula $w_{cut}:=\infty$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsubsection*
+Define variables
+\end_layout
+
+\begin_layout Itemize
+Set the exponent of standard metabolism to be 
+\begin_inset Formula $p:=n$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\lambda:=2+q-n$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Define the smallest weight we model fish at to be 
+\begin_inset Formula $W^{L}:=w_{e}^{L}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Define the largest weight we model fish at to be 
+\begin_inset Formula $W^{H}:=W_{\infty}^{H}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $\delta=$
+\end_inset
+
+delt <- (log10(max_w) - log10(min_w)) / (no_w - 1)
+\end_layout
+
+\begin_layout Itemize
+delt <- (log10(max_w) - log10(min_w)) / (no_w - 1) v <- min_w_mat j <- 1
+ + ceiling((log10(v) - log10(min_w)) / delt) v <- 10 ^ (log10(min_w) + (j
+ - 1) * delt) min_w_mat <- v # Round min_w_inf so that it is an integer
+ multiple of the # species spacing away from max_w_inf j <- round((log10(max_w)
+ - log10(min_w_inf)) / (delt * (no_sp - 1))) min_w_inf <- 10 ^ (log10(max_w)
+ - j * (no_sp - 1) * delt) w_min_idx <- seq(1, by = j, length.out = no_sp)
+ # Determine maximum egg size max_egg <- max_w * min_egg / min_w_inf log10_minim
+um_egg <- log10(min_egg) log10_maximum_egg <- log10(max_egg) # Determine
+ logarithmic spacing of egg weights dist_sp <- (log10_maximum_egg - log10_minimu
+m_egg) / (no_sp - 1) # Determine egg weights w_min for all species x_min
+ <- seq(log10_minimum_egg, by = dist_sp, length.out = no_sp) w_min <- 10
+ ^ x_min # Use ratios to determine w_inf and w_mat from w_min w_inf <- w_min
+ * min_w_inf / min_egg w_mat <- w_min * min_w_mat / min_egg # Build Params
+ Object erepro <- 0.1 # Will be changed later to achieve coexistence
 \end_layout
 
 \end_body
