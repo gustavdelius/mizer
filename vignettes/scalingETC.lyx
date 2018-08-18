@@ -1658,6 +1658,18 @@ Use the combined dataframe
 \end_layout
 
 \begin_layout Itemize
+Use the plankton carrying capacity and plankton abundance 
+\begin_inset Formula $N_{R}(w)$
+\end_inset
+
+ from 
+\begin_inset Formula $\mathbb{P}.$
+\end_inset
+
+ [dont we have to re-adjust the plankton abundance ?].
+\end_layout
+
+\begin_layout Itemize
 
 \end_layout
 
