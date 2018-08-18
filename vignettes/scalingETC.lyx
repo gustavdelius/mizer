@@ -160,7 +160,11 @@ The number of weight bins no_w =
 \end_layout
 
 \begin_layout Itemize
-The minimum weight of plankton modeled, min_w_pp is set to 
+The minimum weight of plankton modeled, 
+\begin_inset Formula $W_{min}^{P}$
+\end_inset
+
+ min_w_pp is set to 
 \begin_inset Formula $\frac{\min\left\{ w_{e.i}:i\in\left\{ 1,..,s\right\} \right\} }{\beta e^{5\sigma}}$
 \end_inset
 
@@ -539,28 +543,387 @@ Define the largest weight we model fish at to be
 \end_layout
 
 \begin_layout Itemize
-Let 
-\begin_inset Formula $\delta=$
+To round the minimum maturity weight 
+\begin_inset Formula $w_{*}^{L}$
 \end_inset
 
-delt <- (log10(max_w) - log10(min_w)) / (no_w - 1)
+ up to a grid point we let 
+\begin_inset Formula $\delta=\frac{\log_{10}(W^{H})-\log_{10}(W^{L})}{K-1}$
+\end_inset
+
+ and 
+\begin_inset Formula $j=1+\left\lceil \frac{\log_{10}(w_{*}^{L})-\log_{10}(W^{L})}{\delta}\right\rceil $
+\end_inset
+
+ and 
+\begin_inset Formula $v=10^{\log_{10}(W^{L})+(j-1)\delta}$
+\end_inset
+
+ and we round the minimum maturity weight up by letting 
+\begin_inset Formula $w_{*}^{L}:=v.$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
-delt <- (log10(max_w) - log10(min_w)) / (no_w - 1) v <- min_w_mat j <- 1
- + ceiling((log10(v) - log10(min_w)) / delt) v <- 10 ^ (log10(min_w) + (j
- - 1) * delt) min_w_mat <- v # Round min_w_inf so that it is an integer
- multiple of the # species spacing away from max_w_inf j <- round((log10(max_w)
- - log10(min_w_inf)) / (delt * (no_sp - 1))) min_w_inf <- 10 ^ (log10(max_w)
- - j * (no_sp - 1) * delt) w_min_idx <- seq(1, by = j, length.out = no_sp)
- # Determine maximum egg size max_egg <- max_w * min_egg / min_w_inf log10_minim
-um_egg <- log10(min_egg) log10_maximum_egg <- log10(max_egg) # Determine
- logarithmic spacing of egg weights dist_sp <- (log10_maximum_egg - log10_minimu
-m_egg) / (no_sp - 1) # Determine egg weights w_min for all species x_min
- <- seq(log10_minimum_egg, by = dist_sp, length.out = no_sp) w_min <- 10
- ^ x_min # Use ratios to determine w_inf and w_mat from w_min w_inf <- w_min
- * min_w_inf / min_egg w_mat <- w_min * min_w_mat / min_egg # Build Params
- Object erepro <- 0.1 # Will be changed later to achieve coexistence
+To round the minimum asymptotic weight 
+\begin_inset Formula $w_{\infty}^{L}$
+\end_inset
+
+ to the nearest grid point we and 
+\begin_inset Formula $J=1+\left\lceil \frac{\log_{10}(W^{H})-\log_{10}(W_{\infty}^{L})}{\delta(s-1)}\right\rceil $
+\end_inset
+
+ where 
+\begin_inset Formula $s$
+\end_inset
+
+ is the number of species.
+ We let 
+\begin_inset Formula $W_{\infty}^{L}:=10^{\log_{10}(W^{H})-J(s-1)\delta}.$
+\end_inset
+
+ [actually is a round() function used here instead ? maybe we should use
+ the same approach in more places].
+\end_layout
+
+\begin_layout Itemize
+Prepare to setup egg weights: Let 
+\begin_inset Formula $I[e,i]\in\left\{ 1,..,K\right\} $
+\end_inset
+
+ denote the index of the weights that corresponds with the weight such that
+ 
+\begin_inset Formula $w_{I[e,i]}=w_{e.i}.$
+\end_inset
+
+ We set 
+\begin_inset Formula $(I[e,1],I[e,2],..,I[e,s]):=(1,J+1,2J+1,..,(s-1)J+1).$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+We set the maximum egg size to be 
+\begin_inset Formula $w_{e}^{H}=w_{e}^{L}\left(\frac{W^{H}}{W_{\infty}^{L}}\right).$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Determine logarithmic spacing of egg weights 
+\begin_inset Formula $\Delta=\frac{\log_{10}(w_{e}^{H})-\log_{10}(w_{e}^{L})}{s-1}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $(x_{e.1},x_{e.2},..,x_{e.s})=(\log_{10}(w_{e}^{L}),\log_{10}(w_{e}^{L})+\Delta,..,\log_{10}(w_{e}^{L})+(s-1)\Delta).$
+\end_inset
+
+ The egg weight of background species 
+\begin_inset Formula $i$
+\end_inset
+
+ is set to 
+\begin_inset Formula $w_{e.i}:=10^{x_{e.i}}.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+The asymptotic weight of background species 
+\begin_inset Formula $i$
+\end_inset
+
+ is set to 
+\begin_inset Formula $W_{\infty.i}:=w_{e.i}\left(\frac{W_{\infty}^{L}}{w_{e}^{L}}\right).$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The maturity weight of background species 
+\begin_inset Formula $i$
+\end_inset
+
+ is set to 
+\begin_inset Formula $w_{*i}:=w_{e.i}\left(\frac{w_{*}^{L}}{w_{e}^{L}}\right).$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The value of the reproduction effeciciency is set to 
+\begin_inset Formula $\epsilon=0.1,$
+\end_inset
+
+ although it is overwritten later.
+\end_layout
+
+\begin_layout Subsubsection*
+Setting up the data structure
+\end_layout
+
+\begin_layout Itemize
+A dataframe 
+\begin_inset Formula $\mathbb{F}$
+\end_inset
+
+ is made holding the species-specific information, together with a declaration
+ that 
+\begin_inset Formula $z_{0}=0,$
+\end_inset
+
+ [where 
+\begin_inset Formula $z_{0}$
+\end_inset
+
+ is the pre-multiplier of mizer's traditional background death term I presume],
+ however we do use a different type of background death term that is described
+ later.
+ The other information included in the data frame are the names of the species,
+ 
+\begin_inset Formula $1,..,s$
+\end_inset
+
+ and w_min, w_inf, w_mat, w_min_idx, h, ks, beta, sigma, alpha, erepro,
+ sel_func = "knife_edge", knife_edge_size = knife_edge_size, gear = gear_names.
+\end_layout
+
+\begin_layout Itemize
+A mizer params object 
+\begin_inset Formula $\mathbb{P}$
+\end_inset
+
+ is made by using 
+\begin_inset Formula $\mathbb{F}$
+\end_inset
+
+ and 
+\begin_inset Formula $p,n,q,\lambda,f_{0},\kappa,W^{L},W^{H},K,W_{min}^{P},w_{cut},r_{0}$
+\end_inset
+
+ as inputs to MizerParams().
+ Here 
+\begin_inset Formula $W_{min}^{P}$
+\end_inset
+
+ is the minimum weight of plankton modeled, and 
+\begin_inset Formula $r_{0}$
+\end_inset
+
+ is the replenishment rate of the plankton.
+ The values of 
+\begin_inset Formula $\gamma,w$
+\end_inset
+
+ and 
+\begin_inset Formula $dw$
+\end_inset
+
+ are (re)computed by calling MizerParams(), and we use such updated values.
+\end_layout
+
+\begin_layout Subsubsection*
+Steady state solution for species one
+\end_layout
+
+\begin_layout Itemize
+Compute coefficient of predation death rate that would be induced by a power
+ law spectrum of background species: 
+\begin_inset Formula $\mu_{0}:=(1-f_{0})\sqrt{2\pi}\kappa\gamma\sigma\beta^{n-1}\exp\left(\sigma^{2}(n-1)^{2}/2\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Compute coefficient of energy available for reproduction and growth, at
+ power law state 
+\begin_inset Formula $\hbar:=\alpha hf_{0}-k_{s}.$
+\end_inset
+
+ If 
+\begin_inset Formula $\hbar<0$
+\end_inset
+
+ then halt.
+\end_layout
+
+\begin_layout Itemize
+We define pow=
+\begin_inset Formula $B:=\frac{\mu_{0}}{\hbar(1-n)},$
+\end_inset
+
+ and if 
+\begin_inset Formula $B<1$
+\end_inset
+
+ then an error message is displayed about how at steady state the ratio
+ of death rate to growth rate is too small, leading to an accumulation of
+ fish at their largest size.[check the 1-n really goes on the denominator].
+\end_layout
+
+\begin_layout Itemize
+The death rate at steady state is 
+\begin_inset Formula $\mu(w):=\mu_{0}w^{n-1}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The growth rate of species 
+\begin_inset Formula $1$
+\end_inset
+
+ at steady state is 
+\begin_inset Formula $g(w):=\hbar w^{n}(1-\psi_{1}(w)),$
+\end_inset
+
+ where 
+\begin_inset Formula $\psi_{1}(w)$
+\end_inset
+
+ is the fraction of their energy that a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ member of species 
+\begin_inset Formula $1$
+\end_inset
+
+ diverts to reproduction.
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $I[\infty,i]$
+\end_inset
+
+ denote the index such that 
+\begin_inset Formula $w_{I[\infty,i]}=W_{\infty.i}$
+\end_inset
+
+, that gives the asymptotic weight of the 
+\begin_inset Formula $i$
+\end_inset
+
+th species.
+ Let 
+\begin_inset Formula $\mathbb{I}=\left\{ 1,2,..,I[\infty,1]-1\right\} $
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The unscaled steady state abundance 
+\begin_inset Formula $\widehat{N_{1}}(w)$
+\end_inset
+
+ of species 
+\begin_inset Formula $1$
+\end_inset
+
+ is such that 
+\begin_inset Formula $\widehat{N_{1}}(w_{1})=1,$
+\end_inset
+
+ and for each 
+\begin_inset Formula $j\in\left\{ 2,..,K\right\} $
+\end_inset
+
+ we have that 
+\begin_inset Formula $\widehat{N_{1}}(w_{j})=0$
+\end_inset
+
+ if 
+\begin_inset Formula $j>I[\infty,1]$
+\end_inset
+
+ and otherwise, 
+\begin_inset Formula $(\widehat{N_{1}}(w_{1}),\widehat{N_{1}}(w_{2}),\widehat{N_{1}}(w_{3}),..,\widehat{N_{1}}(w_{K}))$
+\end_inset
+
+ is set equal to 
+\begin_inset Formula $(1,H[1],H[2],..,H[I[\infty,1]-1],0,0,..,0)$
+\end_inset
+
+.
+ Here 
+\begin_inset Formula $H[k]==\Pi_{u=1}^{k}\frac{g(w_{u})}{g(w_{u+1})+\mu(w_{u+1})dw_{u+1}}$
+\end_inset
+
+ [This is to match with the steady state of the upwind difference scheme,
+ but I'd better check I've got the indices correct, etc., and simplify].
+\end_layout
+
+\begin_layout Itemize
+Rescale the abundance of species 
+\begin_inset Formula $1$
+\end_inset
+
+ so it lies on a power law.
+ Let 
+\begin_inset Formula $M=\kappa/\sum_{j=1}^{I[\infty,1]}\widehat{N_{1}}(w_{j})w_{j}^{\lambda-1}dw_{j}$
+\end_inset
+
+ be the multiplier, and generate the properly scaled abundance of species
+ 
+\begin_inset Formula $1,$
+\end_inset
+
+ which we set to be 
+\begin_inset Formula $N_{1}^{*}(w):=\widehat{N_{1}}(w)(10^{\Delta(1-\lambda)/2}-10^{-\Delta(1-\lambda)/2})M/(1-\lambda).$
+\end_inset
+
+ [I am not sure where the 
+\begin_inset Formula $(10^{\Delta(1-\lambda)/2}-10^{-\Delta(1-\lambda)/2})$
+\end_inset
+
+ renormalization factor comes from]
+\end_layout
+
+\begin_layout Subsubsection*
+Finish computing steady state solution
+\end_layout
+
+\begin_layout Standard
+j
+\end_layout
+
+\begin_layout Itemize
+Initially set 
+\begin_inset Formula $N_{i}(w_{j})=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+For each species 
+\begin_inset Formula $i\in\left\{ 1,..,s\right\} $
+\end_inset
+
+ let 
+\begin_inset Formula $I[e,i]$
+\end_inset
+
+ be the egg weight index, so 
+\begin_inset Formula $w_{I[e,i]}=w_{e.i}$
+\end_inset
+
+
 \end_layout
 
 \end_body
