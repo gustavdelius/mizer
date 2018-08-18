@@ -244,7 +244,210 @@ then the final value of the reproduction efficiency is $\left(\frac{R_{fac}}{R_{
 This is to compensate for using a stock recruitment relationship. 
 \item Add $N_{R}(w),N_{i}(w),\epsilon$ to our MizerParams object $\mathbb{P}$ 
 \item Use these values to find $R_{p.i}^{*}=\frac{\epsilon}{2w_{e.i}}\int_{0}^{\infty}N_{i}(w)E_{r.i}(w)\psi_{i}(w)dw$
-and reset the stock recruitment relationship so $R_{max.i}=(R_{fac}-1)R_{p.i}^{*}.$
+and reset the stock recruitment relationship so $R_{max.i}=(R_{fac}-1)R_{p.i}^{*}.${[}am
+a bit confused about rfac{]}
+\item Return $\mathbb{P}$
+\end{itemize}
+
+\section*{retune\_abundance()}
+
+\subsubsection*{Inputs}
+\begin{itemize}
+\item A MizerParams object $\mathbb{P}$
+\item A Boolean vector called `retune', that determines whether a species
+can be retuned or not. Let $L\subseteq\left\{ 1,..,s\right\} $ denote
+the set of species $i$ that we want to retune the abundance multipliers
+of, to make the aggregate abundance fit the power law.
+\item A cutoff value $C.$ A species $i$ with an abundance $N_{i}(w_{*i})$
+at maturity size $w_{*i}$ will be removed if $N_{i}(w_{*i})<CN_{C}(w),$
+where $N_{C}(w)=\sum_{i=1}^{s}N_{i}(w)$. The default value is $10^{-3}.$ 
+\end{itemize}
+
+\subsubsection*{Procedure}
+\begin{itemize}
+\item If no species $i$ are such that retune{[}i{]}=TRUE then return $\mathbb{P}$
+and halt. 
+\item Let $\mathbb{I}^{L}$ and $\mathbb{I}^{H}$ be the weight indices
+such that $w[\mathbb{I}^{L}]=\min\left\{ w_{*i}\right\} $ and $w[\mathbb{I}^{H}]=\max\left\{ W_{\infty.i}\right\} $
+that are the limits between which we try to match the near power law
+$N_{C}(w)$ with the aggregate renormalized species abundance curves
+between the maturity size of the smallest species and the maximum
+size of the largest species. More precisely, we find the abundance
+multipliers $A_{i}$ so that the integral of the square of the relative
+$\left(\sum_{i\notin L}A_{i}N_{i}(w)+\sum_{i\in L}N_{i}(w)-N_{C}(w)\right)/N_{C}(w)$
+over w, between our limits, is minimized, where $L$ is the set of
+all retuneable species.
+\item We just focus on the set $S\subset\left\{ 1,..,K\right\} $ of weight
+indices $k$ such that $N_{C}(w_{k})>0.$ Let $\rho=\text{\ensuremath{\sum}}_{i\in\left\{ 1,..,K\right\} -S}N_{i}(w)$
+be the aggregate abundance of species that will not be retuned (using
+the mizer state saved with $\mathbb{P}$).
+\item Construct an $\left|L\right|\times\left|S\right|$ matrix $M$ such
+that for $i\in\left\{ 1,..,\left|L\right|\right\} $ and $j\in\left\{ 1,..,\left|S\right|\right\} $
+let $M_{i,j}=\frac{N_{L[i]}(w_{S[j]})}{N_{C}(w_{S[j]})}$.
+\item Let $b(w)=(N_{C}(w)-\rho)/N_{C}(w).$
+\item Apply singular value decomposition {[}I should read Numerical Recipes
+section 15.4.2 to better understand{]} to $M$. Let $d$ be a vector
+containing the singular values of $A$, sorted in decreasing order.
+Let $\overline{d}=\left(1/d_{1},1/d_{2},..,\right)$ denote the inverses
+of the singular values. Let $u$ and $v$ be the associated variables
+from the singular value decomposition. We exclude entries from $\overline{d}$
+over $10^{8}.$ 
+\item For the $i$th retunnable species $L[i]$ we have that the abundance
+multiplier that should be used is $A_{L[i]}^{*}=x_{i}$ where $x=yu^{T}b$
+and $y_{ij}=v_{ij}\overline{d}_{i}$. {[}I want to understand this
+better{]}.
+\item Remove any species $i$ such that $N_{i}(w_{*i})<CN_{C}(w),$ where
+$C$ is the cutoff. 
+\item Return the resulting MizerParams object, with the newly setup near
+steady state.
+\end{itemize}
+{[}I am wondering if the code could be improved by adding a function
+that retunes the abundance multipliers so that the death rates are
+like those in the scale invariant system. A viable modelling philosophy
+might be to begin by setting up the real world model, with proper
+fishing etc., but in the initial model, just initially use background
+species, setup to look like an average fish in the system. Then we
+can add the explicit species. We already have a function that retunes
+the abundance multipliers of the background species to get a power
+law and ensure (among other things) that the background species experience
+the same growth rates in the new, heterogeneous system, as they did
+in the original, purely scale invariant system. I think it might be
+a good idea to include an extra procedure, that retunes the abundance
+multipliers of the background species to try and make it so that background
+species experience the same death rates as they did in the original
+system. So basically I am saying, if we get a `pure background' model
+setup properly first, then we could try and add the explicit species
+in such a way that the species in the pure background system experience
+the same growth and death rates as they did in the `pure background'
+model. Perhaps this idea is misguided, or in some way I have not fathomed
+yet, we are already doing it. I will be able to say more when I have
+finished the code review. Also, preserving the death rates of the
+background species corresponds with an extra constraint that we may
+not want to have, and there could be a tricky aspect to joint optimizing
+over the growth and death rates. Anyhow, I'm not sure if this could
+help us improve the accuracy of our growth rates and SSB values{]}
+
+{[}I wonder if it could be helpful to add another procedure morph(P,Q)
+to mizer, that takes a system with parameters P, at steady state S,
+and Quasi-continuously deforms the system from P to system with parameters
+Q, along the line from P to Q in parameter space, while keeping track
+of the steady state using steady(). I wonder if we could make the
+step size involved in the deformation variable to ensure that steady()
+has the best change of successfully tracking the steady state.{]}
+
+\section*{addSpecies()}
+
+\subsubsection*{Inputs}
+\begin{itemize}
+\item A MizerParams object $\mathbb{P}$ for the system we want to add species
+to
+\item A dataframe $\mathbb{F}$ of parameters of the species we want to
+add. 
+\item A vector $S_{B}$ where $S_{B.i}$ is the target spawning stock biomass
+(SSB) of species $i.$ By default these are not specified.
+\item A value of $R_{fac}$ that determines the strength of the non-linearity
+in the Beverton-Holt stock-recruitment relationship. The maximal recruitment
+will be set to $R_{fac}$ times the normal steady-state recruitment.
+Default is $10.$
+\item The fishing effort $e,$ default value is $0.$ 
+\end{itemize}
+
+\subsubsection*{Check paramaters are valid }
+\begin{itemize}
+\item If $R_{fac}\leq1$ then change it to $1.01.$
+\item Check no species are being added that are the same as those which
+are already there.
+\item Set the reproduction efficiency $\epsilon=0.1$
+\item Include line type and line color of species, from $\mathbb{F}$ into
+the output MizerParams object $\mathbb{Q}.$ Fill out any missing
+columns of $\mathbb{F}$ with NAs (`not available' markers), and similarly
+fill out the dataframe of $\mathbb{P.}$
+\end{itemize}
+
+\subsubsection*{Make data structure for combined system }
+\begin{itemize}
+\item Combine the dataframe $\mathbb{F}$ with the dataframe of the original
+system $\mathbb{P}$ to get a new dataframe $\mathbb{F}'$ that holds
+data on all species.
+\item Use the combined dataframe $\mathbb{F}'$ together with the values
+p, n, q, lambda, f0, kappa, min\_w, max\_w, no\_w, min\_w\_pp , w\_pp\_cutoff
+and $r_{0}$ {[}as extracted from rr\_pp{]} and from the original
+mizer params object $\mathbb{P}$.
+\item Use the plankton carrying capacity and plankton abundance $N_{R}(w)$
+from $\mathbb{P}.$ {[}dont we have to re-adjust the plankton abundance
+?{]}. Add this data to the output $\mathbb{Q}$
+\item Let $s+1$ be the index of the new species, and let $s^{*}=s+1$ be
+the number of species in the output $\mathbb{Q}$. {[}earlier the
+code suggested that multiple species were being added simultaineously,
+but actually only one species is being added{]}.
+\item For each original species $i\in\left\{ 1,..,s^{*}-1\right\} ,$ set
+the abundance $N_{i}(w)$ of $i$ (associated with the output $\mathbb{Q})$
+initially equal to its abundance in the original system $\mathbb{P}.$ 
+\item Pass the values $N_{C}(w)$ and $\psi_{i}(w),$ and $\mu_{b.i}(w)$
+and the stock recruitment function (srr), from the original MizerParams
+object $\mathbb{P}$ into the output $\mathbb{Q}.$ Set the background
+death for the new species to be the same as the one for the first
+species in $\mathbb{P}.$ {[}we are basically assuming the background
+death terms are the same for the different species, so maybe there
+should be a check for this. Also, I'm so far a bit unclear how the
+psi value gets filled in for the new species. Also, I guess srr will
+be rewritted when we have changed erepro, rfac,rmax{]}.
+\end{itemize}
+
+\subsubsection*{Find near steady conditions for new species}
+\begin{itemize}
+\item Set self interaction $\theta_{s*s*}=0$, of the new species to zero,
+so we can determine the growth rates, and death rates induced upon
+it by the pre-existing species.
+\item Compute the total death rate for new species $\mu_{s*}(w),$ and the
+growth rate $g_{s*}(w)$ for the new species, in the system with pre-existing
+species as previously setup.
+\item Let $\mathbb{I}[\infty]$ denote the weight index such that $w_{\mathbb{I}[\infty]}=W_{\infty.s*}$
+, this is the index of the asymptotic weight of the new species. 
+\item Let $\mathbb{I}=\left(\mathbb{I}[e,s^{*}],\mathbb{I}[e,s^{*}]+1,..,\mathbb{I}[\infty]-1\right)$
+be the weight indices upon which we shall fill in the new species
+abundace. If $g_{s*}(w_{k})=0$ for any $k\in\mathbb{I}$ then halt,
+because algorithm would encounter division by zero. {[}do we do this
+when we solve scale invariant system ?{]}
+\item Initially fill out the near steady solution $N_{s*}(w)$ with zeros.
+\item Let $\mathbb{H}=\left(I[e,s*],I[e,s*]+1,..,I[\infty,s*]\right)$ denotes
+the weight indices we shall fill out non-zero values to. 
+\item For each $k\in\left\{ 1,..,\left|\mathbb{H}\right|\right\} $ let
+$N_{s*}(w[\mathbb{H}_{k}]):=U_{k}$ where $\left(U_{1},U_{2},..,U_{\left|\mathbb{H}\right|}\right)=\left(1,V_{1},V_{2},..,V_{\mathbb{\left|H\right|}-1}\right)$
+where $V_{k}=\Pi_{u=1}^{k}\frac{g(w[\mathbb{I}_{u}])}{g(w[\mathbb{I}_{u+1}])+\mu(w[\mathbb{I}_{u+1}])dw[\mathbb{I}_{u+1}]}$.
+This is solving for a steady condition under the Mckendrick von Foerster
+equation. Check that this candidate steady state does not hold any
+infinities or non-numerical values. 
+\item If the spawning stock biomass $S_{B}$ of the new species $s^{*}$
+is not specified then normalise the new species steady state solution
+so that at its maximum it lies at half the power law, and then calculate
+its SSB. We choose the maximum of the biomass density in log space
+because that is always an increasing function at small size. Let $\mathbb{I}$
+be the weight index that maximizes $N_{s*}(w_{\mathbb{I}})w_{\mathbb{I}}^{\lambda}$
+and re-normalize the solution to be $N_{s*}(w_{i}):=N_{s*}(w_{i})\kappa w_{\mathbb{I}}^{-\lambda}/(2N_{s*}(w_{\mathbb{I}})),$
+and record the resulting stock spawning biomass $SSB:=\sum_{k}N_{s*}(w_{k})w_{k}\psi_{s*}(w_{k})dw_{k}$.
+Alternatively, if the spawning stock biomass $S_{B}$ of the new species
+$s^{*}$ is $N_{s*}(w_{i}):=N_{s*}(w_{i})SSB/SSB^{*}.$
+\item The SSB values are recorded as part of a vector A in the output $\mathbb{Q}.$
+\item Reset the self interaction value of $\theta_{s*s*}:=1$ {[}did we
+check theta started out all ones ?{]}
+\end{itemize}
+
+\subsubsection*{Finish setting up new steady state}
+\begin{itemize}
+\item Apply retune() to recreate the aggregate abundance spectrum of the
+old params object, allowing all the abundance multipliers to vary
+in free/background species, as indicated by the vector A which describes
+which SSB values are known. {[}maybe we could use less names for these
+things{]}.
+\item Reset the reproduction efficiency $\epsilon_{i}:=\epsilon_{i}N_{i}(w_{e.i})(g_{i}(w_{e.i})+dw_{I[e,i]}+\mu(w_{e.i}))/R_{p.i}$
+as long as unmodified reproductive output $R_{p.i}$ is non-zero,
+in which case set $\epsilon_{i}:=0.1.$ 
+\item Rewrite the reproduction efficiency to be $\epsilon_{i}:=\epsilon_{i}/(1-1/R_{fac})$
+{[}again I have to better understand this rfac stuff{]}.
+\item $R_{max.i}=(R_{fac}-1)R_{p.i}^{*}$ where $R_{p.i}^{*}$ is the recalculated
+reproductive output. 
+\item Gather data and output it as MizerParams object $\mathbb{Q}.$
 \end{itemize}
 
 \end{document}

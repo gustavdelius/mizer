@@ -1650,7 +1650,7 @@ Use the combined dataframe
 \begin_inset Formula $r_{0}$
 \end_inset
 
- [as extracted from rr_pp] from the original mizer params object 
+ [as extracted from rr_pp] and from the original mizer params object 
 \begin_inset Formula $\mathbb{P}$
 \end_inset
 
@@ -1667,9 +1667,303 @@ Use the plankton carrying capacity and plankton abundance
 \end_inset
 
  [dont we have to re-adjust the plankton abundance ?].
+ Add this data to the output 
+\begin_inset Formula $\mathbb{Q}$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
+Let 
+\begin_inset Formula $s+1$
+\end_inset
+
+ be the index of the new species, and let 
+\begin_inset Formula $s^{*}=s+1$
+\end_inset
+
+ be the number of species in the output 
+\begin_inset Formula $\mathbb{Q}$
+\end_inset
+
+.
+ [earlier the code suggested that multiple species were being added simultaineou
+sly, but actually only one species is being added].
+\end_layout
+
+\begin_layout Itemize
+For each original species 
+\begin_inset Formula $i\in\left\{ 1,..,s^{*}-1\right\} ,$
+\end_inset
+
+ set the abundance 
+\begin_inset Formula $N_{i}(w)$
+\end_inset
+
+ of 
+\begin_inset Formula $i$
+\end_inset
+
+ (associated with the output 
+\begin_inset Formula $\mathbb{Q})$
+\end_inset
+
+ initially equal to its abundance in the original system 
+\begin_inset Formula $\mathbb{P}.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+Pass the values 
+\begin_inset Formula $N_{C}(w)$
+\end_inset
+
+ and 
+\begin_inset Formula $\psi_{i}(w),$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu_{b.i}(w)$
+\end_inset
+
+ and the stock recruitment function (srr), from the original MizerParams
+ object 
+\begin_inset Formula $\mathbb{P}$
+\end_inset
+
+ into the output 
+\begin_inset Formula $\mathbb{Q}.$
+\end_inset
+
+ Set the background death for the new species to be the same as the one
+ for the first species in 
+\begin_inset Formula $\mathbb{P}.$
+\end_inset
+
+ [we are basically assuming the background death terms are the same for
+ the different species, so maybe there should be a check for this.
+ Also, I'm so far a bit unclear how the psi value gets filled in for the
+ new species.
+ Also, I guess srr will be rewritted when we have changed erepro, rfac,rmax].
+\end_layout
+
+\begin_layout Subsubsection*
+Find near steady conditions for new species
+\end_layout
+
+\begin_layout Itemize
+Set self interaction 
+\begin_inset Formula $\theta_{s*s*}=0$
+\end_inset
+
+, of the new species to zero, so we can determine the growth rates, and
+ death rates induced upon it by the pre-existing species.
+\end_layout
+
+\begin_layout Itemize
+Compute the total death rate for new species 
+\begin_inset Formula $\mu_{s*}(w),$
+\end_inset
+
+ and the growth rate 
+\begin_inset Formula $g_{s*}(w)$
+\end_inset
+
+ for the new species, in the system with pre-existing species as previously
+ setup.
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $\mathbb{I}[\infty]$
+\end_inset
+
+ denote the weight index such that 
+\begin_inset Formula $w_{\mathbb{I}[\infty]}=W_{\infty.s*}$
+\end_inset
+
+ , this is the index of the asymptotic weight of the new species.
+ 
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $\mathbb{I}=\left(\mathbb{I}[e,s^{*}],\mathbb{I}[e,s^{*}]+1,..,\mathbb{I}[\infty]-1\right)$
+\end_inset
+
+ be the weight indices upon which we shall fill in the new species abundace.
+ If 
+\begin_inset Formula $g_{s*}(w_{k})=0$
+\end_inset
+
+ for any 
+\begin_inset Formula $k\in\mathbb{I}$
+\end_inset
+
+ then halt, because algorithm would encounter division by zero.
+ [do we do this when we solve scale invariant system ?]
+\end_layout
+
+\begin_layout Itemize
+Initially fill out the near steady solution 
+\begin_inset Formula $N_{s*}(w)$
+\end_inset
+
+ with zeros.
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $\mathbb{H}=\left(I[e,s*],I[e,s*]+1,..,I[\infty,s*]\right)$
+\end_inset
+
+ denotes the weight indices we shall fill out non-zero values to.
+ 
+\end_layout
+
+\begin_layout Itemize
+For each 
+\begin_inset Formula $k\in\left\{ 1,..,\left|\mathbb{H}\right|\right\} $
+\end_inset
+
+ let 
+\begin_inset Formula $N_{s*}(w[\mathbb{H}_{k}]):=U_{k}$
+\end_inset
+
+ where 
+\begin_inset Formula $\left(U_{1},U_{2},..,U_{\left|\mathbb{H}\right|}\right)=\left(1,V_{1},V_{2},..,V_{\mathbb{\left|H\right|}-1}\right)$
+\end_inset
+
+ where 
+\begin_inset Formula $V_{k}=\Pi_{u=1}^{k}\frac{g(w[\mathbb{I}_{u}])}{g(w[\mathbb{I}_{u+1}])+\mu(w[\mathbb{I}_{u+1}])dw[\mathbb{I}_{u+1}]}$
+\end_inset
+
+.
+ This is solving for a steady condition under the Mckendrick von Foerster
+ equation.
+ Check that this candidate steady state does not hold any infinities or
+ non-numerical values.
+ 
+\end_layout
+
+\begin_layout Itemize
+If the spawning stock biomass 
+\begin_inset Formula $S_{B}$
+\end_inset
+
+ of the new species 
+\begin_inset Formula $s^{*}$
+\end_inset
+
+ is not specified then normalise the new species steady state solution so
+ that at its maximum it lies at half the power law, and then calculate its
+ SSB.
+ We choose the maximum of the biomass density in log space because that
+ is always an increasing function at small size.
+ Let 
+\begin_inset Formula $\mathbb{I}$
+\end_inset
+
+ be the weight index that maximizes 
+\begin_inset Formula $N_{s*}(w_{\mathbb{I}})w_{\mathbb{I}}^{\lambda}$
+\end_inset
+
+ and re-normalize the solution to be 
+\begin_inset Formula $N_{s*}(w_{i}):=N_{s*}(w_{i})\kappa w_{\mathbb{I}}^{-\lambda}/(2N_{s*}(w_{\mathbb{I}})),$
+\end_inset
+
+ and record the resulting stock spawning biomass 
+\begin_inset Formula $SSB:=\sum_{k}N_{s*}(w_{k})w_{k}\psi_{s*}(w_{k})dw_{k}$
+\end_inset
+
+.
+ Alternatively, if the spawning stock biomass 
+\begin_inset Formula $S_{B}$
+\end_inset
+
+ of the new species 
+\begin_inset Formula $s^{*}$
+\end_inset
+
+ is 
+\begin_inset Formula $N_{s*}(w_{i}):=N_{s*}(w_{i})SSB/SSB^{*}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The SSB values are recorded as part of a vector A in the output 
+\begin_inset Formula $\mathbb{Q}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Reset the self interaction value of 
+\begin_inset Formula $\theta_{s*s*}:=1$
+\end_inset
+
+ [did we check theta started out all ones ?]
+\end_layout
+
+\begin_layout Subsubsection*
+Finish setting up new steady state
+\end_layout
+
+\begin_layout Itemize
+Apply retune() to recreate the aggregate abundance spectrum of the old params
+ object, allowing all the abundance multipliers to vary in free/background
+ species, as indicated by the vector A which describes which SSB values
+ are known.
+ [maybe we could use less names for these things].
+\end_layout
+
+\begin_layout Itemize
+Reset the reproduction efficiency 
+\begin_inset Formula $\epsilon_{i}:=\epsilon_{i}N_{i}(w_{e.i})(g_{i}(w_{e.i})+dw_{I[e,i]}+\mu(w_{e.i}))/R_{p.i}$
+\end_inset
+
+ as long as unmodified reproductive output 
+\begin_inset Formula $R_{p.i}$
+\end_inset
+
+ is non-zero, in which case set 
+\begin_inset Formula $\epsilon_{i}:=0.1.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+Rewrite the reproduction efficiency to be 
+\begin_inset Formula $\epsilon_{i}:=\epsilon_{i}/(1-1/R_{fac})$
+\end_inset
+
+ [again I have to better understand this rfac stuff].
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $R_{max.i}=(R_{fac}-1)R_{p.i}^{*}$
+\end_inset
+
+ where 
+\begin_inset Formula $R_{p.i}^{*}$
+\end_inset
+
+ is the recalculated reproductive output.
+ 
+\end_layout
+
+\begin_layout Itemize
+Gather data and output it as MizerParams object 
+\begin_inset Formula $\mathbb{Q}.$
+\end_inset
+
 
 \end_layout
 
