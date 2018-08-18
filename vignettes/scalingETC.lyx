@@ -1182,6 +1182,482 @@ Use these values to find
 \begin_inset Formula $R_{max.i}=(R_{fac}-1)R_{p.i}^{*}.$
 \end_inset
 
+[am a bit confused about rfac]
+\end_layout
+
+\begin_layout Itemize
+Return 
+\begin_inset Formula $\mathbb{P}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+retune_abundance()
+\end_layout
+
+\begin_layout Subsubsection*
+Inputs
+\end_layout
+
+\begin_layout Itemize
+A MizerParams object 
+\begin_inset Formula $\mathbb{P}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+A Boolean vector called `retune', that determines whether a species can
+ be retuned or not.
+ Let 
+\begin_inset Formula $L\subseteq\left\{ 1,..,s\right\} $
+\end_inset
+
+ denote the set of species 
+\begin_inset Formula $i$
+\end_inset
+
+ that we want to retune the abundance multipliers of, to make the aggregate
+ abundance fit the power law.
+\end_layout
+
+\begin_layout Itemize
+A cutoff value 
+\begin_inset Formula $C.$
+\end_inset
+
+ A species 
+\begin_inset Formula $i$
+\end_inset
+
+ with an abundance 
+\begin_inset Formula $N_{i}(w_{*i})$
+\end_inset
+
+ at maturity size 
+\begin_inset Formula $w_{*i}$
+\end_inset
+
+ will be removed if 
+\begin_inset Formula $N_{i}(w_{*i})<CN_{C}(w),$
+\end_inset
+
+ where 
+\begin_inset Formula $N_{C}(w)=\sum_{i=1}^{s}N_{i}(w)$
+\end_inset
+
+.
+ The default value is 
+\begin_inset Formula $10^{-3}.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Procedure
+\end_layout
+
+\begin_layout Itemize
+If no species 
+\begin_inset Formula $i$
+\end_inset
+
+ are such that retune[i]=TRUE then return 
+\begin_inset Formula $\mathbb{P}$
+\end_inset
+
+ and halt.
+ 
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $\mathbb{I}^{L}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathbb{I}^{H}$
+\end_inset
+
+ be the weight indices such that 
+\begin_inset Formula $w[\mathbb{I}^{L}]=\min\left\{ w_{*i}\right\} $
+\end_inset
+
+ and 
+\begin_inset Formula $w[\mathbb{I}^{H}]=\max\left\{ W_{\infty.i}\right\} $
+\end_inset
+
+ that are the limits between which we try to match the near power law 
+\begin_inset Formula $N_{C}(w)$
+\end_inset
+
+ with the aggregate renormalized species abundance curves between the maturity
+ size of the smallest species and the maximum size of the largest species.
+ More precisely, we find the abundance multipliers 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+ so that the integral of the square of the relative 
+\begin_inset Formula $\left(\sum_{i\notin L}A_{i}N_{i}(w)+\sum_{i\in L}N_{i}(w)-N_{C}(w)\right)/N_{C}(w)$
+\end_inset
+
+ over w, between our limits, is minimized, where 
+\begin_inset Formula $L$
+\end_inset
+
+ is the set of all retuneable species.
+\end_layout
+
+\begin_layout Itemize
+We just focus on the set 
+\begin_inset Formula $S\subset\left\{ 1,..,K\right\} $
+\end_inset
+
+ of weight indices 
+\begin_inset Formula $k$
+\end_inset
+
+ such that 
+\begin_inset Formula $N_{C}(w_{k})>0.$
+\end_inset
+
+ Let 
+\begin_inset Formula $\rho=\text{\sum}_{i\in\left\{ 1,..,K\right\} -S}N_{i}(w)$
+\end_inset
+
+ be the aggregate abundance of species that will not be retuned (using the
+ mizer state saved with 
+\begin_inset Formula $\mathbb{P}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Itemize
+Construct an 
+\begin_inset Formula $\left|L\right|\times\left|S\right|$
+\end_inset
+
+ matrix 
+\begin_inset Formula $M$
+\end_inset
+
+ such that for 
+\begin_inset Formula $i\in\left\{ 1,..,\left|L\right|\right\} $
+\end_inset
+
+ and 
+\begin_inset Formula $j\in\left\{ 1,..,\left|S\right|\right\} $
+\end_inset
+
+ let 
+\begin_inset Formula $M_{i,j}=\frac{N_{L[i]}(w_{S[j]})}{N_{C}(w_{S[j]})}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $b(w)=(N_{C}(w)-\rho)/N_{C}(w).$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Apply singular value decomposition [I should read Numerical Recipes section
+ 15.4.2 to better understand] to 
+\begin_inset Formula $M$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $d$
+\end_inset
+
+ be a vector containing the singular values of 
+\begin_inset Formula $A$
+\end_inset
+
+, sorted in decreasing order.
+ Let 
+\begin_inset Formula $\overline{d}=\left(1/d_{1},1/d_{2},..,\right)$
+\end_inset
+
+ denote the inverses of the singular values.
+ Let 
+\begin_inset Formula $u$
+\end_inset
+
+ and 
+\begin_inset Formula $v$
+\end_inset
+
+ be the associated variables from the singular value decomposition.
+ We exclude entries from 
+\begin_inset Formula $\overline{d}$
+\end_inset
+
+ over 
+\begin_inset Formula $10^{8}.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+For the 
+\begin_inset Formula $i$
+\end_inset
+
+th retunnable species 
+\begin_inset Formula $L[i]$
+\end_inset
+
+ we have that the abundance multiplier that should be used is 
+\begin_inset Formula $A_{L[i]}^{*}=x_{i}$
+\end_inset
+
+ where 
+\begin_inset Formula $x=yu^{T}b$
+\end_inset
+
+ and 
+\begin_inset Formula $y_{ij}=v_{ij}\overline{d}_{i}$
+\end_inset
+
+.
+ [I want to understand this better].
+\end_layout
+
+\begin_layout Itemize
+Remove any species 
+\begin_inset Formula $i$
+\end_inset
+
+ such that 
+\begin_inset Formula $N_{i}(w_{*i})<CN_{C}(w),$
+\end_inset
+
+ where 
+\begin_inset Formula $C$
+\end_inset
+
+ is the cutoff.
+ 
+\end_layout
+
+\begin_layout Itemize
+Return the resulting MizerParams object, with the newly setup near steady
+ state.
+\end_layout
+
+\begin_layout Standard
+[I am wondering if the code could be improved by adding a function that
+ retunes the abundance multipliers so that the death rates are like those
+ in the scale invariant system.
+ A viable modelling philosophy might be to begin by setting up the real
+ world model, with proper fishing etc., but in the initial model, just initially
+ use background species, setup to look like an average fish in the system.
+ Then we can add the explicit species.
+ We already have a function that retunes the abundance multipliers of the
+ background species to get a power law and ensure (among other things) that
+ the background species experience the same growth rates in the new, heterogeneo
+us system, as they did in the original, purely scale invariant system.
+ I think it might be a good idea to include an extra procedure, that retunes
+ the abundance multipliers of the background species to try and make it
+ so that background species experience the same death rates as they did
+ in the original system.
+ So basically I am saying, if we get a `pure background' model setup properly
+ first, then we could try and add the explicit species in such a way that
+ the species in the pure background system experience the same growth and
+ death rates as they did in the `pure background' model.
+ Perhaps this idea is misguided, or in some way I have not fathomed yet,
+ we are already doing it.
+ I will be able to say more when I have finished the code review.
+ Also, preserving the death rates of the background species corresponds
+ with an extra constraint that we may not want to have, and there could
+ be a tricky aspect to joint optimizing over the growth and death rates.
+ Anyhow, I'm not sure if this could help us improve the accuracy of our
+ growth rates and SSB values]
+\end_layout
+
+\begin_layout Standard
+[I wonder if it could be helpful to add another procedure morph(P,Q) to
+ mizer, that takes a system with parameters P, at steady state S, and Quasi-cont
+inuously deforms the system from P to system with parameters Q, along the
+ line from P to Q in parameter space, while keeping track of the steady
+ state using steady().
+ I wonder if we could make the step size involved in the deformation variable
+ to ensure that steady() has the best change of successfully tracking the
+ steady state.]
+\end_layout
+
+\begin_layout Section*
+addSpecies()
+\end_layout
+
+\begin_layout Subsubsection*
+Inputs
+\end_layout
+
+\begin_layout Itemize
+A MizerParams object 
+\begin_inset Formula $\mathbb{P}$
+\end_inset
+
+ for the system we want to add species to
+\end_layout
+
+\begin_layout Itemize
+A dataframe 
+\begin_inset Formula $\mathbb{F}$
+\end_inset
+
+ of parameters of the species we want to add.
+ 
+\end_layout
+
+\begin_layout Itemize
+A vector 
+\begin_inset Formula $S_{B}$
+\end_inset
+
+ where 
+\begin_inset Formula $S_{B.i}$
+\end_inset
+
+ is the target spawning stock biomass (SSB) of species 
+\begin_inset Formula $i.$
+\end_inset
+
+ By default these are not specified.
+\end_layout
+
+\begin_layout Itemize
+A value of 
+\begin_inset Formula $R_{fac}$
+\end_inset
+
+ that determines the strength of the non-linearity in the Beverton-Holt
+ stock-recruitment relationship.
+ The maximal recruitment will be set to 
+\begin_inset Formula $R_{fac}$
+\end_inset
+
+ times the normal steady-state recruitment.
+ Default is 
+\begin_inset Formula $10.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The fishing effort 
+\begin_inset Formula $e,$
+\end_inset
+
+ default value is 
+\begin_inset Formula $0.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Check paramaters are valid 
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $R_{fac}\leq1$
+\end_inset
+
+ then change it to 
+\begin_inset Formula $1.01.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Check no species are being added that are the same as those which are already
+ there.
+\end_layout
+
+\begin_layout Itemize
+Set the reproduction efficiency 
+\begin_inset Formula $\epsilon=0.1$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Include line type and line color of species, from 
+\begin_inset Formula $\mathbb{F}$
+\end_inset
+
+ into the output MizerParams object 
+\begin_inset Formula $\mathbb{Q}.$
+\end_inset
+
+ Fill out any missing columns of 
+\begin_inset Formula $\mathbb{F}$
+\end_inset
+
+ with NAs (`not available' markers), and similarly fill out the dataframe
+ of 
+\begin_inset Formula $\mathbb{P.}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Make data structure for combined system 
+\end_layout
+
+\begin_layout Itemize
+Combine the dataframe 
+\begin_inset Formula $\mathbb{F}$
+\end_inset
+
+ with the dataframe of the original system 
+\begin_inset Formula $\mathbb{P}$
+\end_inset
+
+ to get a new dataframe 
+\begin_inset Formula $\mathbb{F}'$
+\end_inset
+
+ that holds data on all species.
+\end_layout
+
+\begin_layout Itemize
+Use the combined dataframe 
+\begin_inset Formula $\mathbb{F}'$
+\end_inset
+
+ together with the values p, n, q, lambda, f0, kappa, min_w, max_w, no_w,
+ min_w_pp , w_pp_cutoff and 
+\begin_inset Formula $r_{0}$
+\end_inset
+
+ [as extracted from rr_pp] from the original mizer params object 
+\begin_inset Formula $\mathbb{P}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
 
 \end_layout
 
