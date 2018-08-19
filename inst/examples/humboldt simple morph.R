@@ -61,16 +61,59 @@ p <- steady(p, effort = effort, t_max = 500,  tol = 1e-3)
 sim <- project(p, t_max = 15, t_save = 0.1, effort = effort)
 plot(sim)
 
-
-
+############## varying effort demonstration
+r <- p
 effort2 <- 2*effort
 T <- 5
 for (t in 1:T){
     X <- effort2*(t/T)+effort*(1-t/T)
-    p <- steady(p, effort = X, t_max = 500,  tol = 1e-2)
+    r <- steady(r, effort = X, t_max = 500,  tol = 1e-2)
 }
-sim <- project(p, t_max = 15, t_save = 0.1, effort = effort)
+sim <- project(r, t_max = 15, t_save = 0.1, effort = effort)
 plot(sim)
+
+
+
+################ Trying out the morph idea with code that takes the current homboldt system
+# P at steady state, with its interaction matrix full of ones, and then considers another 
+# system Q, which is just the same as P, except the interaction matrix of Q is full of psudorandomly generated 
+# real numbers between 0 and 1. Then we use the morph idea, gradually changing from P to Q, by 
+# gradually changing the interaction matrix, and keeping track of the steady state as we do this.
+# Next I want to design an algorithm that does the deformation with variable step size, as follows: 
+# The progress from P to Q can be kept track of by a fraction 0<=L<=1, meaning we are looking 
+# for a steady state of LQ+(1-L)P, and the step size s is the difference between the next and 
+# current L values consider, which generating the sucsession of sequences. In the algorithms here 
+# I keep the step size constant, but what we could do, if we are able to sucsessfully find 
+# a steady state over the last step of our procedure, then we can multiply the step size by a `ramp up` 
+# constant bigger than 1, wheras if the procedure fails to find the next steady state in the 
+# sequence, that means that the step size is too large, and so we multiply the step size by a 
+# `ramp down` constant, less than one. Also, we keep count of how many failures we have, 
+# and if they exceed a given threshold we halt. We could also include newton raphson, then 
+# I guess as long as the steady state remains present and changes continuously throughout deformation,
+# from P to Q the morph procedure should always 
+# work in principal, in the ideal continuous case with unlimited run time.
+
+
+new_theta <- p@interaction
+new_theta[]<-((1:length( p@interaction) %% 17)+1)/17 # psuedo random interaction matrix, for testing
+q <- p
+q@interaction <- new_theta
+r <- p
+T <- 50
+for (t in 1:T){
+    rr <- r
+    rr@interaction <- q@interaction*(t/T)+ p@interaction*(1-t/T)
+    r <- steady(rr, effort = effort, t_max = 500,  tol = 1e-2) 
+}
+sim <- project(r, t_max = 15, t_save = 0.1, effort = effort)
+plot(sim)
+
+##########################
+
+
+#new_theta <- p@interaction
+#new_theta[]<-runif(length( p@interaction))
+
 
 
 # To illustraite this morph idea, in a simple way, I got the humboldt system at steady state P, 
