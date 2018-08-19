@@ -82,10 +82,10 @@ plot(sim)
 # Next I want to design an algorithm that does the deformation with variable step size, as follows: 
 # The progress from P to Q can be kept track of by a fraction 0<=L<=1, meaning we are looking 
 # for a steady state of LQ+(1-L)P, and the step size s is the difference between the next and 
-# current L values consider, which generating the sucsession of sequences. In the algorithms here 
+# current L values consider, which generating the sucsession of mizer systems. In the algorithms here 
 # I keep the step size constant, but what we could do, if we are able to sucsessfully find 
 # a steady state over the last step of our procedure, then we can multiply the step size by a `ramp up` 
-# constant bigger than 1, wheras if the procedure fails to find the next steady state in the 
+# constant bigger than 1 (but not making the step size too big to overshoot the destination L=1), wheras if the procedure fails to find the next steady state in the 
 # sequence, that means that the step size is too large, and so we multiply the step size by a 
 # `ramp down` constant, less than one. Also, we keep count of how many failures we have, 
 # and if they exceed a given threshold we halt. We could also include newton raphson, then 
