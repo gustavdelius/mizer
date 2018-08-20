@@ -119,4 +119,77 @@ plot(sim)
 # To illustraite this morph idea, in a simple way, I got the humboldt system at steady state P, 
 # and I let Q be the same system, but with twice the fishing effort, and then I gradually 
 # changed the system from P to Q, and was able to use steady to sucsessfully track the steady state. 
-# 
+
+
+#########################
+
+morph <- function(P,Q,T=50){
+    r <- P
+    for (t in 1:T){
+        L <- t/T
+        new_sp_data <- data.frame(
+            species = Q@species_params$species,
+            w_min = L*Q@species_params$w_min+(1-L)*P@species_params$w_min,
+            w_inf = L*Q@species_params$w_inf+(1-L)*P@species_params$w_inf,
+            w_mat = L*Q@species_params$w_mat+(1-L)*P@species_params$w_mat,
+            w_min_idx = new_min_idx(Q@w,(L*Q@species_params$w_min+(1-L)*P@species_params$w_min)),
+            h = L*Q@species_params$h+(1-L)*P@species_params$h,
+            ks = L*Q@species_params$ks+(1-L)*P@species_params$ks,
+            beta = L*Q@species_params$beta+(1-L)*P@species_params$beta,
+            sigma = L*Q@species_params$sigma+(1-L)*P@species_params$sigma,
+            z0 = L*Q@species_params$z0+(1-L)*P@species_params$z0,
+            alpha = L*Q@species_params$alpha+(1-L)*P@species_params$alpha,
+            erepro = L*Q@species_params$erepro+(1-L)*P@species_params$erepro,
+            sel_func = Q@species_params$sel_func,
+            # not used but required
+            knife_edge_size = L*Q@species_params$knife_edge_size+(1-L)*P@species_params$knife_edge_size,
+            gear = Q@species_params$gear,
+            m = L*Q@species_params$m+(1-L)*P@species_params$m,
+            w25 = L*Q@species_params$w25+(1-L)*P@species_params$w25,
+            k = L*Q@species_params$k+(1-L)*P@species_params$k,
+            gamma = L*Q@species_params$gamma+(1-L)*P@species_params$gamma,
+            r_max = L*Q@species_params$r_max+(1-L)*P@species_params$r_max,
+            linetype = Q@species_params$linetype,
+            linecolour = Q@species_params$linecolour,
+            l25 = L*Q@species_params$l25+(1-L)*P@species_params$l25,
+            l50 = L*Q@species_params$l50+(1-L)*P@species_params$l50,
+            k_vb = L*Q@species_params$k_vb+(1-L)*P@species_params$k_vb,
+            a = L*Q@species_params$a+(1-L)*P@species_params$a,
+            b = L*Q@species_params$b+(1-L)*P@species_params$b
+        )
+        
+        rr <- multispeciesParams(object = new_sp_data,
+                                 interaction = Q@interaction*L+ P@interaction*(1-L),
+                                 min_w = min(Q@w)*L+(1-L)*min(P@w),
+                                 max_w = max(Q@w)*L+(1-L)*max(P@w),
+                                 no_w = length(P@w), # this better be the same in p and q
+                                 min_w_pp = min(Q@w_full)*L+(1-L)*min(P@w_full),
+                                 n = L*Q@n+(1-L)*P@n,
+                                 p = L*Q@p+(1-L)*P@p,
+                                 q = L*Q@p+(1-L)*P@q,
+                                 r_pp = L*(Q@rr_pp / (Q@w_full ^ (Q@p - 1)))[1]+(1-L)*(P@rr_pp / (P@w_full ^ (P@p - 1)))[1],
+                                 kappa = L*Q@kappa + (1-L)*P@kappa,
+                                 lambda = L*Q@lambda + (1-L)*P@lambda,
+                                 w_pp_cutoff = max(Q@w), # not sure about how to set this, it would be nice if it were passed along
+                                 f0 = L*Q@f0+(1-L)*P@f0 # ,
+                                 # z0pre = 0.6, z0exp = n - 1  # these arnt mentioned in addSpecies either
+        )
+        
+        rr@initial_n <- r@initial_n
+        rr@initial_n_pp <- r@initial_n_pp
+        
+        
+        r <- steady(rr, effort = effort, t_max = 500,  tol = 1e-2) 
+    }
+    return(r)
+}
+########### testing it ############
+
+PP <- p
+QQ <- PP
+QQ@interaction <- ((1:length( p@interaction) %% 17)+1)/17 # psuedo random interaction matrix, for testing
+RR <- morph(P,Q,50)
+sim <- project(RR, t_max = 15, t_save = 0.1, effort = effort)
+plot(sim)
+
+# wrote a draft of the morph procedure so far. I want to debug it, and introduce variable step size.
