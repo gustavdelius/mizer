@@ -458,7 +458,7 @@ set_trait_model <- function(no_sp = 10,
 #'   is min_egg/(beta*exp(5*sigma)) so that it covers the entire range of the
 #'   feeding kernel of even the smallest fish larva.
 #' @param w_pp_cutoff The largest size of the plankton spectrum. Default
-#'   value is max_w_inf unless \code{perfect = TRUE} when it is Inf.
+#'   value is min_w_inf unless \code{perfect = TRUE} when it is Inf.
 #' @param n Scaling of the intake. Default value is 2/3.
 #' @param q Exponent of the search volume. Default value is 3/4 unless 
 #'   \code{lambda} is provided, in which case this argument is ignored and
