@@ -123,6 +123,15 @@ plot(sim)
 
 #########################
 
+new_min_idx <- function(w,w_min){
+    res <- w_min
+    for (i in 1:length(res)){
+        res[i] <- sum(w<=w_min[i])
+    }
+    return(res)
+}
+
+
 morph <- function(P,Q,T=50){
     r <- P
     for (t in 1:T){
@@ -187,8 +196,8 @@ morph <- function(P,Q,T=50){
 
 PP <- p
 QQ <- PP
-QQ@interaction <- ((1:length( p@interaction) %% 17)+1)/17 # psuedo random interaction matrix, for testing
-RR <- morph(P,Q,50)
+QQ@interaction[] <- ((1:length(PP@interaction) %% 17)+1)/17 # psuedo random interaction matrix, for testing
+RR <- morph(PP,QQ,50)
 sim <- project(RR, t_max = 15, t_save = 0.1, effort = effort)
 plot(sim)
 
