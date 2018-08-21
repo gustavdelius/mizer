@@ -202,3 +202,55 @@ sim <- project(RR, t_max = 15, t_save = 0.1, effort = effort)
 plot(sim)
 
 # wrote a draft of the morph procedure so far. I want to debug it, and introduce variable step size.
+
+# take apart and reconstruct and reconstruct a params object
+# write morph procedure, but initiallly just changing theta
+# gradually introduce other global variables into morph, checking it runs as we add flexability
+# also allow dataframes to change
+# introduce variable step size by using the following code structure for morph instead
+
+r <- p
+T <- 50
+for (t in 1:T){
+    rr <- r
+    rr@interaction <- q@interaction*(t/T)+ p@interaction*(1-t/T)
+    r <- steady(rr, effort = effort, t_max = 500,  tol = 1e-2) 
+}
+sim <- project(r, t_max = 15, t_save = 0.1, effort = effort)
+plot(sim)
+
+
+r <- p
+new_theta <- r@interaction
+new_theta[]<-((1:length(r@interaction) %% 17)+1)/17 # psuedo random interaction matrix, for testing
+q <- p
+q@interaction <- new_theta
+
+max_fails <- 100
+fail_count <- 0
+T <- 50
+dL <- 1/50
+L <- 0
+ramp_up <- 1.1
+ramp_down <- 0.99
+while (L<1){
+    L_try <- L + dL
+    rr <- r
+    rr@interaction <- q@interaction*(t/T)+ p@interaction*(1-t/T)
+    r_try <- steady(rr, effort = effort, t_max = 500,  tol = 1e-2)
+    if (steady was successful) {
+        r <- r_try
+        L <- L_try
+        dL <- max(c(dL*ramp_up,1-L))
+    } else {
+        fail_count <- fail_count+1
+        if (fail_count>max_fails){
+            break
+        }
+        dL <- dL*ramp_down
+    }
+}
+# r is our objective
+
+# written procedure structure for the morph code with variable step size, but have to figure 
+# out how to detect and get a numerical trigger from when steady() fails to converge.
