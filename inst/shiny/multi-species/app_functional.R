@@ -323,7 +323,31 @@ server <- function(input, output, session) {
         theme(text = element_text(size = 18))
     })
     
+    #ggplot(data.frame(x=1:3,y=c(2,3,9),z=6:8), aes(x=x,y=y))+geom_col(aes(x=x,y=y),color="RED")+geom_col(aes(x=x,y=z,width=0.5))
+    #ggplot(data.frame(x=1:3,y=c(2,3,9),z=6:8), aes(x=x,y=y))+geom_col(aes(x=x-0.25,y=y),color="RED",width = 0.25)+geom_col(aes(x=x+0.25,y=z,width=0.25),color="BLUE")
     
+    
+    SSB_frame <- function(sim){
+        no_sp <- dim(sim@params@psi)[1]
+        trueres <- matrix(0,nrow = no_sp,ncol=3)
+        for (i in (1:no_sp)){
+            trueres[i,3] <- sum(sim@n[dim(sim@n)[1],i,] *sim@params@w * sim@params@dw * sim@params@psi[i, ])
+        }
+        trueres[,1] <- names(sim@params@psi[,1])
+        trueres[,2] <- sim@params@species_params$SSB
+        colnames(trueres) <- c("Species","Target SSB","Final SSB")
+        rownames(trueres) <- names(sim@params@psi[,1])
+        X <- data.frame(species = sim@params@species_params$species, observed_SSB = trueres[,2], model_SSB = trueres[,3])
+        return(X)
+    }
+    
+    
+    output$plot_SSB_ob <- renderPlot({
+        ggplot(SSB_frame(sim()))+geom_col(aes(x=species,y=observed_SSB),color="RED")+geom_col(aes(x=species,y=model_SSB,width=0.5),color="BLUE")
+        #ggplot(data.frame(x=1:3,y=c(2,3,9),z=6:8), aes(x=x,y=y))+geom_col(aes(x=x,y=y),color="RED")+geom_col(aes(x=x,y=z,width=0.5))
+        #ggplot(data.frame(x=1:3,y=c(2,3,9),z=6:8), aes(x=x,y=y))+geom_col(aes(x=x-0.25,y=y),color="RED",width = 0.25)+geom_col(aes(x=x+0.25,y=z,width=0.25),color="BLUE")
+        
+    })
      
     output$plot_erepro <- renderPlot({
         ggplot(params()@species_params, aes(x = species, y = erepro)) + 
@@ -379,6 +403,7 @@ ui <- fluidPage(
         
         mainPanel(
             plotOutput("plot_erepro", height = "150px"),
+            plotOutput("plot_SSB_ob", height = "150px"),
             tabsetPanel(type = "tabs",
                 tabPanel("Spectra", plotOutput("plotSpectra")),
                 tabPanel("Growth", plotOutput("plotGrowthCurve")),
