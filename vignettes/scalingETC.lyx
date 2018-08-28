@@ -1967,5 +1967,46 @@ Gather data and output it as MizerParams object
 
 \end_layout
 
+\begin_layout Section*
+Project.R
+\end_layout
+
+\begin_layout Standard
+The central PDE evolver behind mizer.
+\end_layout
+
+\begin_layout Subsection*
+Project()
+\end_layout
+
+\begin_layout Subsubsection*
+Inputs
+\end_layout
+
+\begin_layout Itemize
+A mizer params object 
+\begin_inset Formula $\mathbb{P}.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+An effort levcl 
+\begin_inset Formula $e,$
+\end_inset
+
+ [ In the most general form, effort is specified for each gear, and each
+ time step of the simulation.
+ Each gear may target a subset of species.
+ But I guess no species can be targetted by more than one gear.
+\end_layout
+
+\begin_layout Itemize
+project <- function(params, effort = 0, t_max = 100, dt = 0.1, t_save=1,
+ initial_n = params@initial_n, initial_n_pp = params@initial_n_pp, shiny_progres
+s = NULL, ...)
+\end_layout
+
 \end_body
 \end_document
