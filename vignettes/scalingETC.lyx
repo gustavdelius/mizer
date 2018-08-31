@@ -1992,20 +1992,110 @@ A mizer params object
 \end_layout
 
 \begin_layout Itemize
-An effort levcl 
+A fishing effort levcl 
 \begin_inset Formula $e,$
 \end_inset
 
  [ In the most general form, effort is specified for each gear, and each
  time step of the simulation.
  Each gear may target a subset of species.
- But I guess no species can be targetted by more than one gear.
+ But I guess no species can be targetted by more than one gear].
+ Default is 
+\begin_inset Formula $0.$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
-project <- function(params, effort = 0, t_max = 100, dt = 0.1, t_save=1,
- initial_n = params@initial_n, initial_n_pp = params@initial_n_pp, shiny_progres
-s = NULL, ...)
+The run time for the simulation 
+\begin_inset Formula $T^{H}.$
+\end_inset
+
+ Default is 
+\begin_inset Formula $100$
+\end_inset
+
+ (years)
+\end_layout
+
+\begin_layout Itemize
+The time step size 
+\begin_inset Formula $dt$
+\end_inset
+
+ used in the discretisted PDE solver.
+ Default is 
+\begin_inset Formula $0.1$
+\end_inset
+
+ [although values significantly lower could be used].
+\end_layout
+
+\begin_layout Itemize
+The amount of time 
+\begin_inset Formula $T^{S}$
+\end_inset
+
+ between saving PDE.
+ 
+\end_layout
+
+\begin_layout Itemize
+The initial fish abundance 
+\begin_inset Formula $N_{i}^{0}(w),$
+\end_inset
+
+ that acts as part of the initial condition.
+ The default is the initial fish abundance associated with the mizer params
+ object 
+\begin_inset Formula $\mathbb{P}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The initial plankton abundance 
+\begin_inset Formula $N_{R}^{0}(w),$
+\end_inset
+
+ that acts as part of the initial condition.
+ The default is the initial plankton abundance associated with the mizer
+ params object 
+\begin_inset Formula $\mathbb{P}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+An option to include a progress bar when this procedure is used within the
+ shiny app.
+\end_layout
+
+\begin_layout Itemize
+
+\end_layout
+
+\begin_layout Subsubsection*
+Initialization
+\end_layout
+
+\begin_layout Itemize
+Check that 
+\begin_inset Formula $\mathbb{P}$
+\end_inset
+
+ is a valid mizer params object.
+\end_layout
+
+\begin_layout Itemize
+If effort is a vector of length greater than one then check it length and
+ entry names corresponding to the set of gears.
+ Check effort names match gear names.
+ And produce more general time by gear array of fishing efforts [what are
+ `recycling rules`, and why is the transpose of effort used ?].
 \end_layout
 
 \end_body
