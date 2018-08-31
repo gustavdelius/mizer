@@ -1177,8 +1177,9 @@ setBackground <- function(params, species = dimnames(params@initial_n)$sp) {
 #'   production RDI over a t_per is less than rel_tol for every background
 #'   species. Default value is 1/100.
 #' @export
-steady <- function(params, effort = 0, t_max = 50, t_per = 2, tol = 10^(-2),
-                   shiny_progress = NULL) {
+steady <- function(params, effort = 0, t_max = 50, t_per = 2, t_save = t_per,
+                   tol = 10^(-2), mult_rdd = rep(1, length(params@species_params$species)),
+                   shiny_progress = NULL, dt=0.1) {
     p <- params
     
     if (hasArg(shiny_progress)) {
@@ -1188,14 +1189,15 @@ steady <- function(params, effort = 0, t_max = 50, t_per = 2, tol = 10^(-2),
     }
     # Force the recruitment to stay at the current level
     rdd <- getRDD(p, p@initial_n, p@initial_n_pp)
-    p@srr <- function(rdi, species_params) {rdd}
+    p@srr <- function(rdi, species_params) {rdd * mult_rdd}
     
     n <- p@initial_n
     n_pp <- p@initial_n_pp
     old_rdi <- getRDI(p, n, n_pp)
     for (ti in (1:ceiling(t_max/t_per))){
-        sim <- project(p, t_max = t_per, t_save = t_per, effort = effort, 
-                       initial_n = n, initial_n_pp = n_pp)
+        sim <- project(p, t_max = t_per, t_save = t_save, effort = effort, 
+                       initial_n = n, initial_n_pp = n_pp, dt=dt)
+        plotBiomass(sim)
         # advance shiny progress bar
         if (hasArg(shiny_progress)) {
             shiny_progress$inc(amount = proginc)
@@ -1240,6 +1242,6 @@ steady <- function(params, effort = 0, t_max = 50, t_per = 2, tol = 10^(-2),
             (p@initial_n[i, p@w_min_idx[i]] *
                  (gg0 + DW * mumu0)) / rdd[i]
     }
-    
+    browser()
     return(p)
 }
