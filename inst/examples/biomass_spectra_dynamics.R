@@ -114,3 +114,19 @@ persp3D(z=truncated_log_biomass_spectra_dynamics,y=log(p@w),x=my_times,xlab="tim
 # correspond to death effects, but I think it might be cleaner to visualize the 
 # death and biomass flow digraphs seperately.
 
+
+NC <- sim@n[,1,]
+NC[] <- 0
+for (i in 1:dim(sim@n)[2]){
+    NC <- NC + sim@n[,i,]
+}
+
+biomass_spectra_dynamics_aggregate <- sweep(NC,2,p@w,multi)
+
+truncated_log_biomass_spectra_dynamics_aggregate <- log(biomass_spectra_dynamics_aggregate)
+truncated_log_biomass_spectra_dynamics_aggregate[biomass_spectra_dynamics_aggregate==0] <- min(log(biomass_spectra_dynamics_aggregate)[biomass_spectra_dynamics_aggregate>0])-1
+contour2D(z=truncated_log_biomass_spectra_dynamics_aggregate,y=log(p@w),x=my_times,xlab="time", ylab="log(weight)")
+
+#made perp3D plot of biomass density of species 1 in the humboldt system changing over time
+persp3D(z=truncated_log_biomass_spectra_dynamics_aggregate,y=log(p@w),x=my_times,xlab="time", ylab="log(weight)", zlab = "log(biomass_density",zlim=c(min(truncated_log_biomass_spectra_dynamics),-0.1),phi = 40, theta = 40)
+
