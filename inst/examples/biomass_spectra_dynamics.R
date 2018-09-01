@@ -89,13 +89,17 @@ persp3D(z=log(biomass_spectra_dynamics),y=log(p@w),x=my_times,
 L <- log(min(biomass_spectra_dynamics[biomass_spectra_dynamics>0]))
 
 truncated_log_biomass_spectra_dynamics <- log(biomass_spectra_dynamics)
-truncated_log_biomass_spectra_dynamics[biomass_spectra_dynamics==0] <- 0
+truncated_log_biomass_spectra_dynamics[biomass_spectra_dynamics==0] <- min(log(biomass_spectra_dynamics)[biomass_spectra_dynamics>0])-1
 contour2D(z=truncated_log_biomass_spectra_dynamics,y=log(p@w),x=my_times,xlab="time", ylab="log(weight)")
+
+#made perp3D plot of biomass density of species 1 in the humboldt system changing over time
+persp3D(z=truncated_log_biomass_spectra_dynamics,y=log(p@w),x=my_times,xlab="time", ylab="log(weight)", zlab = "log(biomass_density",zlim=c(min(truncated_log_biomass_spectra_dynamics),-0.1),phi = 40, theta = 40)
+
 
 # finding new ways to plot size spectrum dynamics
 #z = log(biomass_density), for species 1 in humboldt.R (lines 1..60) system, 
 #starting from a state like the steady state, but with the initial abundance of
-#species 1 multiplied by 10. 
+#species 1 multiplied by 10.  
 # after this we should look at ways of visualizing biomass flow, and influences 
 # of species on one anothers death and growth using digraphs with edge thickness 
 # corresponding to interaction levels. Or one could just plot the k strongest links. 
