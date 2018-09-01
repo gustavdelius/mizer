@@ -61,7 +61,7 @@ p <- steady(p, effort = effort, t_max = 500,  tol = 1e-3)
 #sim <- project(p, t_max = 15, t_save = 0.1, effort = effort)
 #plot(sim)
 
-dim(sim@n)
+#dim(sim@n)
 
 nn <- p@initial_n
 nn[1, ] <- 10*nn[1,]
@@ -70,7 +70,7 @@ t_save <- 0.1
 sim <- project(p, t_max = t_max, t_save = t_save, effort = effort, initial_n = nn)
 plot(sim)
 
-sim@n[,1,]
+#sim@n[,1,]
 
 library("plot3D")
 
@@ -78,15 +78,15 @@ multi <- function(x,y){x*y}
 
 biomass_spectra_dynamics <- sweep(sim@n[,1,],2,p@w,multi)
 plot(p@w,biomass_spectra_dynamics[1,],log="xy")
-persp(biomass_spectra_dynamics)
+#persp(biomass_spectra_dynamics)
 my_times <- seq(from = 0, to = t_max, by = t_save)
-contour2D(z=biomass_spectra_dynamics,y=log(p@w),x=my_times)
-persp(z=log(biomass_spectra_dynamics),y=log(p@w),x=my_times,
-      zlim = c(log(min(biomass_spectra_dynamics[biomass_spectra_dynamics>0])),max(log(biomass_spectra_dynamics))))
-persp3D(z=log(biomass_spectra_dynamics),y=log(p@w),x=my_times,
-      zlim = c(log(min(biomass_spectra_dynamics[biomass_spectra_dynamics>0])),max(log(biomass_spectra_dynamics))))
+#contour2D(z=biomass_spectra_dynamics,y=log(p@w),x=my_times)
+#persp(z=log(biomass_spectra_dynamics),y=log(p@w),x=my_times,
+#      zlim = c(log(min(biomass_spectra_dynamics[biomass_spectra_dynamics>0])),max(log(biomass_spectra_dynamics))))
+#persp3D(z=log(biomass_spectra_dynamics),y=log(p@w),x=my_times,
+#      zlim = c(log(min(biomass_spectra_dynamics[biomass_spectra_dynamics>0])),max(log(biomass_spectra_dynamics))))
 
-L <- log(min(biomass_spectra_dynamics[biomass_spectra_dynamics>0]))
+#L <- log(min(biomass_spectra_dynamics[biomass_spectra_dynamics>0]))
 
 truncated_log_biomass_spectra_dynamics <- log(biomass_spectra_dynamics)
 truncated_log_biomass_spectra_dynamics[biomass_spectra_dynamics==0] <- min(log(biomass_spectra_dynamics)[biomass_spectra_dynamics>0])-1
