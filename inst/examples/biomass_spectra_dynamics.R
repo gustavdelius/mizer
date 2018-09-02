@@ -134,4 +134,38 @@ contour2D(z=truncated_log_biomass_spectra_dynamics_aggregate,y=log(p@w),x=my_tim
 
 #made perp3D plot of biomass density of the aggregation of all species over time
 persp3D(z=truncated_log_biomass_spectra_dynamics_aggregate,y=log(p@w),x=my_times,xlab="time", ylab="log(weight)", zlab = "log(biomass_density",zlim=c(min(truncated_log_biomass_spectra_dynamics),-0.1),phi = 35, theta = 130)
+library(rgl)
+plot3d(z=truncated_log_biomass_spectra_dynamics_aggregate,y=log(p@w),x=my_times)
+
+
+open3d()
+persp3d(z=truncated_log_biomass_spectra_dynamics_aggregate,y=log(p@w),x=my_times, col = "blue")
+#grid3d(c("x", "y+", "z"))
+
+############## same as above, but using N_i(w)*w^2 instead of N_i(w)*w
+
+biomass_spectra_dynamics_aggregate2 <- sweep(NC,2,p@w^2,multi)
+
+truncated_log_biomass_spectra_dynamics_aggregate2 <- log(biomass_spectra_dynamics_aggregate2)
+truncated_log_biomass_spectra_dynamics_aggregate2[biomass_spectra_dynamics_aggregate2==0] <- min(log(biomass_spectra_dynamics_aggregate2)[biomass_spectra_dynamics_aggregate2>0])-1
+persp3d(z=truncated_log_biomass_spectra_dynamics_aggregate2,y=log(p@w),x=my_times, col = "blue")
+
+############### next get multiple surfaces on one plot
+# https://stackoverflow.com/questions/39948720/plot-multiple-surfaces
+# #Create Plotly object
+# plot_ly(showscale = FALSE) %>%
+#     
+#     #Volcano surface    
+#     add_surface(z = volcano) %>%
+#     
+#     #First rectangle
+#     add_surface(x = c(10, 60),
+#                 y = c(10, 50),
+#                 z = matrix(160, nrow = 2, ncol = 2)) %>%
+#     
+#     #Second rectangle
+#     add_surface(x = c(10, 60),
+#                 y = c(10, 50),
+#                 z = matrix(180, nrow = 2, ncol = 2))
+
 
