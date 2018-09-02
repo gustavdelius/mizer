@@ -249,7 +249,7 @@ plot_ly(showscale = FALSE)
             add_surface(z = ~z4, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
             add_surface(z = ~z5, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
             add_surface(z = ~z6, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
-            add_surface(z = ~z7, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
+            add_surface(z = ~z7, x = ~my_times, y = ~log(p@w), opacity = 0.98,color="red")  %>%
             add_surface(z = ~z8, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
             add_surface(z = ~z9, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
             add_surface(z = ~z10, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
