@@ -250,34 +250,81 @@ plot_ly(showscale = FALSE)
             add_surface(z = ~z5, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
             add_surface(z = ~z6, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
             add_surface(z = ~z7, x = ~my_times, y = ~log(p@w), opacity = 0.98,color="red")  %>%
-            add_surface(z = ~z8, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
-            add_surface(z = ~z9, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
-            add_surface(z = ~z10, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
-            add_surface(z = ~z11, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
-            add_surface(z = ~z12, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
-            add_surface(z = ~z13, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
+            add_surface(z = ~z8, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="blue")  %>%
+            add_surface(z = ~z9, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="green")  %>%
+            add_surface(z = ~z10, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="orange")  %>%
+            add_surface(z = ~z11, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="yellow")  %>%
+            add_surface(z = ~z12, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="purple")  %>%
+            add_surface(z = ~z13, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="pink")  %>%
             add_surface(z = ~z14, x = ~my_times, y = ~log(p@w), opacity = 0.98) 
             
         
-        ####################
+    #     ####################
+    #     
+    #     plot_ly(showscale = FALSE) %>%
+    #         add_surface(z = ~z) %>%
+    #         add_surface(z = ~z2, opacity = 0.98) %>%
+    #         add_surface(z = ~z3, opacity = 0.98)
+    #     
+    #         persp3D(z=truncated_log_biomass_spectra_dynamics,y=log(p@w),x=my_times,xlab="time", ylab="log(weight)", zlab = "log(biomass_density",zlim=c(min(truncated_log_biomass_spectra_dynamics),-0.1),phi = 40, theta = 40)
+    #     
+    #     
+    #     
+    #     #################
+    #     
+    #     
+    #     z3 <- z - 1
+    #     
+    #     plot_ly(showscale = FALSE) %>%
+    #         add_surface(z = ~z) %>%
+    #         add_surface(z = ~z2, opacity = 0.98) %>%
+    #         add_surface(z = ~z3, opacity = 0.98)
+    #     
+    # }
+
+        ########################### multiply by w^2 instead to get flatter plots #####
+        
+        #   species_sheet_plot <- function(sim,weight_exp=1,t_save=0.1,t_max=15){
+        weight_exp<- 2
+        
+        my_times <- seq(from = 0, to = t_max, by = t_save)
+        
+        biomass_spectra_dynamics_gen <- sweep(sim@n,3,sim@params@w^weight_exp,multi)
+        
+        truncated_log_biomass_spectra_dynamics_gen <- log(biomass_spectra_dynamics_gen)
+        truncated_log_biomass_spectra_dynamics_gen[biomass_spectra_dynamics_gen==0] <- min(log(biomass_spectra_dynamics_gen)[biomass_spectra_dynamics_gen>0])-1
+        
+        #x <- my_times
+        #y <- log(p@w)
+        z1 <- truncated_log_biomass_spectra_dynamics_gen[,1,]
+        z2 <- truncated_log_biomass_spectra_dynamics_gen[,2,]
+        z3 <- truncated_log_biomass_spectra_dynamics_gen[,3,]
+        z4 <- truncated_log_biomass_spectra_dynamics_gen[,4,]
+        z5 <- truncated_log_biomass_spectra_dynamics_gen[,5,]
+        z6 <- truncated_log_biomass_spectra_dynamics_gen[,6,]
+        z7 <- truncated_log_biomass_spectra_dynamics_gen[,7,]
+        z8 <- truncated_log_biomass_spectra_dynamics_gen[,8,]
+        z9 <- truncated_log_biomass_spectra_dynamics_gen[,9,]
+        z10 <- truncated_log_biomass_spectra_dynamics_gen[,10,]
+        z11 <- truncated_log_biomass_spectra_dynamics_gen[,11,]
+        z12 <- truncated_log_biomass_spectra_dynamics_gen[,12,]
+        z13 <- truncated_log_biomass_spectra_dynamics_gen[,13,]
+        z14 <- truncated_log_biomass_spectra_dynamics_gen[,14,]
         
         plot_ly(showscale = FALSE) %>%
-            add_surface(z = ~z) %>%
-            add_surface(z = ~z2, opacity = 0.98) %>%
-            add_surface(z = ~z3, opacity = 0.98)
+            add_surface(z = ~z1, x = ~my_times, y = ~log(p@w), opacity = 0.5) %>%
+            add_surface(z = ~z2, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
+            add_surface(z = ~z3, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
+            add_surface(z = ~z4, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
+            add_surface(z = ~z5, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
+            add_surface(z = ~z6, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
+            add_surface(z = ~z7, x = ~my_times, y = ~log(p@w), opacity = 0.98,color="red")  %>%
+            add_surface(z = ~z8, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="blue")  %>%
+            add_surface(z = ~z9, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="green")  %>%
+            add_surface(z = ~z10, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="orange")  %>%
+            add_surface(z = ~z11, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="yellow")  %>%
+            add_surface(z = ~z12, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="purple")  %>%
+            add_surface(z = ~z13, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="pink")  %>%
+            add_surface(z = ~z14, x = ~my_times, y = ~log(p@w), opacity = 0.98) 
         
-            persp3D(z=truncated_log_biomass_spectra_dynamics,y=log(p@w),x=my_times,xlab="time", ylab="log(weight)", zlab = "log(biomass_density",zlim=c(min(truncated_log_biomass_spectra_dynamics),-0.1),phi = 40, theta = 40)
         
-        
-        
-        #################
-        
-        
-        z3 <- z - 1
-        
-        plot_ly(showscale = FALSE) %>%
-            add_surface(z = ~z) %>%
-            add_surface(z = ~z2, opacity = 0.98) %>%
-            add_surface(z = ~z3, opacity = 0.98)
-        
-    }
