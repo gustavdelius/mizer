@@ -243,12 +243,12 @@ plot_ly(showscale = FALSE)
         z14 <- truncated_log_biomass_spectra_dynamics_gen[,14,]
         
         plot_ly(showscale = FALSE) %>%
-            add_surface(z = ~z1, x = ~my_times, y = ~log(p@w)) %>%
-            add_surface(z = ~z2, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
-            add_surface(z = ~z3, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
-            add_surface(z = ~z4, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
-            add_surface(z = ~z5, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
-            add_surface(z = ~z6, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
+            add_surface(z = ~z1, x = ~my_times, y = ~log(p@w), opacity = 0.5) %>%
+            add_surface(z = ~z2, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
+            add_surface(z = ~z3, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
+            add_surface(z = ~z4, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
+            add_surface(z = ~z5, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
+            add_surface(z = ~z6, x = ~my_times, y = ~log(p@w), opacity = 0.5)  %>%
             add_surface(z = ~z7, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
             add_surface(z = ~z8, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
             add_surface(z = ~z9, x = ~my_times, y = ~log(p@w), opacity = 0.98)  %>%
