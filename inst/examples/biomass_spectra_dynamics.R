@@ -348,11 +348,13 @@ for (t in 1:dim(sim@n)[1]){
     res[t,5] <- sum(sim@params@w*sim@params@dw*sim@n[t,sp,])
 }
 
-plot(res[,1],res[,2],xlab="abundance @ egg",ylab="abundance @ maturity" )
+plot(res[,1],res[,2],xlab="abundance @ egg",ylab="abundance @ maturity", log="xy" )
 
-plot(res[,1],res[,3],xlab="abundance @ egg",ylab="abundance @ asymptotic size" )
+plot(res[,1],res[,3],xlab="abundance @ egg",ylab="abundance @ asymptotic size",log="xy" )
 
-plot(res[,4],res[,5],xlab="total count",ylab="total biomass" )
+plot(res[,2],res[,3],xlab="abundance @ mature",ylab="abundance @ asymptotic size",log="xy" )
+
+plot(res[,4],res[,5],xlab="total count",ylab="total biomass", log="xy" )
 
 # we have made phase plots comparing abundance at egg size, maturity size and asymptotic size. 
 # also comparing total count, and total biomass
