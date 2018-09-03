@@ -327,4 +327,36 @@ plot_ly(showscale = FALSE)
             add_surface(z = ~z13, x = ~my_times, y = ~log(p@w), opacity = 0.98, color="pink")  %>%
             add_surface(z = ~z14, x = ~my_times, y = ~log(p@w), opacity = 0.98) 
         
-        
+##################################### phase plot: N_i(w_e) vs N_i(W_inf)
+no_sp <- length(sim@params@species_params$w_mat)
+w_mat_idx <- sim@params@species_params$w_mat
+w_inf_idx <- sim@params@species_params$w_mat
+
+for (i in 1:no_sp){
+    w_mat_idx[i] <- sum(sim@params@w<=sim@params@species_params$w_mat[i])
+    w_inf_idx[i] <- sum(sim@params@w<=sim@params@species_params$w_inf[i])
+}
+
+sp <- 1
+res <- matrix(0,nrow = dim(sim@n)[1], ncol = 5)
+
+for (t in 1:dim(sim@n)[1]){
+    res[t,1] <- sim@n[t,sp,sim@params@species_params$w_min_idx[sp]]
+    res[t,2] <- sim@n[t,sp,w_mat_idx[sp]]
+    res[t,3] <- sim@n[t,sp,w_inf_idx[sp]]
+    res[t,4] <- sum(sim@params@dw*sim@n[t,sp,])
+    res[t,5] <- sum(sim@params@w*sim@params@dw*sim@n[t,sp,])
+}
+
+plot(res[,1],res[,2],xlab="abundance @ egg",ylab="abundance @ maturity" )
+
+plot(res[,1],res[,3],xlab="abundance @ egg",ylab="abundance @ asymptotic size" )
+
+plot(res[,4],res[,5],xlab="total count",ylab="total biomass" )
+
+# we have made phase plots comparing abundance at egg size, maturity size and asymptotic size. 
+# also comparing total count, and total biomass
+# To do: overlay lots of these plots, and look at the previous plot ly and 
+# figure out how to fix plot ly, and make phase plots with multiple species, and choose good color scheme, 
+# and read the jump growth papers (capitan's and datta's), and think about potential
+
