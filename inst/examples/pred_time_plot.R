@@ -221,6 +221,6 @@ MM[]
 ####################
 #For a given species, I guess we can show how the dominant predators change over time by visualizing the colour changing on the weight line using a 2D diagram similar to the space time diagrams used for 1D cellular automata
 #The diagram would be a grid where cell (x,y) is given the colour corresponding to the dominant predator species on weight y at time x
-#
+# I guess we can also use these colored plots to visualize which is the most abundant species, at different weights and times.
 
             `
