@@ -223,4 +223,18 @@ MM[]
 #The diagram would be a grid where cell (x,y) is given the colour corresponding to the dominant predator species on weight y at time x
 # I guess we can also use these colored plots to visualize which is the most abundant species, at different weights and times.
 
+########## weight-time plot showing most abundant species
+
+MMa <- matrix(0,nrow = dim(sim@n)[1], ncol = dim(sim@n)[3])
+
+for (t in (1:dim(sim@n)[1])){
+    for (w in 1:dim(sim@n)[3]){
+        MMa[t,w] <- which.max(sim@n[t,,w])
+    }
+    
+}
+myImagePlot(MMa)
+
+#Here is a weight-time plot for abundance, in humboldt system, starting from random initial conditions. The color of cell (X,Y) corresponds to the most abundant species at weight X and time Y
+
             `
