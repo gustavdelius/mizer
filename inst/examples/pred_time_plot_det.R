@@ -264,12 +264,23 @@ ggplot(df) + geom_raster(aes(fill=value,x=2*Var1,y=Var2))+
 #rgb(115,74,18)
 
 
-##################
+################## working finished code for ggplot2 and making weight-time plot
+
+library(reshape2)
+library(ggplot2)
+
+
+t_max <- 15
+t_save <- 0.1
+times <- seq(0,t_max,length.out = dim(sim@n)[1])
+weights <- sim@params@w
 m <- MMa
 df <- melt(m)
 df$value <- as.factor(df$value)
-colnames(df) <- c("time",  "weight",  "value")
-ggplot(df) + geom_raster(aes(fill=value,x=time,y=weight))+
+colnames(df) <- c("time",  "log10_weight",  "value")
+df$time <- times[df$time]
+df$log10_weight <- log10(weights[df$log10_weight])
+ggplot(df) + geom_raster(aes(fill=value,x=time,y=log10_weight))+
     scale_fill_manual(values = sapply((1:max(as.numeric(df$value))),function(x) rgb(x/max(as.numeric(df$value)),.74,.18))
     )
 
