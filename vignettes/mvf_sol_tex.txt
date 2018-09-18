@@ -1,0 +1,318 @@
+% Preview source code
+
+%% LyX 2.2.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{babel}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[unicode=true]
+ {hyperref}
+\begin{document}
+
+\subsection*{PDE scheme Using formula to solve MVF over small time blocks where
+growth and death rates are assumed fixed.}
+
+\subsection*{Richard Southwell}
+
+Idea: try and describe a formula based PDE solver to get abundance
+value $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$ over end to end time
+blocks $[L,H]$ that are sufficiently small. Solutions are done repeatedly,
+for end to end time blocks, to provide a, hopefully, more accurate
+method of PDE evolution than the upwind difference scheme currently
+implemented in mizer (which relieves on truncating the Taylor expansion
+for the abundance, and so loses more info than just assuming constant
+growth and death over its time steps). Perhaps the scheme we propose
+here is inferior to the upwind difference scheme for some reason we
+have not yet considered, or perhaps there are further problems which
+could crop up with trying to implement the PDE evolver we describe
+here. We shall have to wait and see as we have not yet tried to implement
+this PDE evolver idea with code. But, it still looks worth investigating,
+irrespective of its practical benefits, because considering how this
+new algorithm works seems (at least to me) quite informative about
+how information flows across characteristic curves, and is influenced
+by reproduction, and by the initial condition, in size spectrum models.
+
+This scheme we propose, ``of repeatedly using formula to solve the
+PDE exactly over small time blocks, under the assumption that the
+growth and death rates are the same across the whole block, as they
+were at the start of the time block'', repeatedly over many small
+end to end time blocks could provide improvements
+
+Let $A_{i}(w)=\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw'$ denote the
+age of a weight $w$ member of species $i$ with egg size $w_{0.i}$.
+
+$X_{i}(t,w)=F_{i}(t-A_{i}(w))\exp\left(-\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'\right)=N_{i}(t,w)g_{i}.$
+
+If $\tau\geq0$ {[}case 1{]} then $F_{i}(\tau)=R_{i}(\tau):=\frac{\epsilon_{i}}{2w_{0.i}}\int_{0}^{\infty}N_{i}(\tau,w')E_{r.i}(w')\psi_{i}(w').dw'=X_{i}(t,w_{0.i})$
+
+or if $\tau<0$ {[}case 2{]} then $F_{i}(\tau)$ is defined, so that
+$\forall w\in[w_{0.i},W_{\infty.i}]$ we have 
+
+$X_{0.i}(w)=X_{i}(0,w)=F_{i}(-A_{i}(w))\exp(-B_{i}(w))$ where $B_{i}(w)=\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'.$
+In particular, let $C_{i}(w)=-A_{i}(w),$ and since 
+
+$C_{i}(w)$ is continuous and monotonic, we can define $C_{i}^{-1}(u)$
+as the unique $w$ such that $C_{i}(w)=u.$
+
+Now $X_{i}(0,w)=F_{i}(C_{i}(w))\exp(-B_{i}(w))$ so $X_{i}(0,C_{i}^{-1}(u))=F_{i}(u)\exp(-B_{i}(C_{i}^{-1}(u)))$
+so $F_{i}(u)=X_{i}(0,C_{i}^{-1}(u))\exp(B_{i}(C_{i}^{-1}(u)))$ in
+this case.
+
+$F_{i}(\tau)=\begin{cases}
+RDD_{i}(\tau) & \text{if }\text{\ensuremath{\tau\geq}0}\\
+X_{i}(0,C_{i}^{-1}(\tau))\exp(B_{i}(C_{i}^{-1}(\tau))) & \text{if \ensuremath{\tau<0}}
+\end{cases}$
+
+where $RDD_{i}(\tau$)=
+
+$X_{0.i}(-A_{i}^{-1}(u))=F_{i}(-A_{i}(-A_{i}^{-1}(u)))\exp(-B_{i}(-A_{i}^{-1}(u)))$
+
+there exists a function $V_{0.i}()$ such that we can write the initial 
+
+condition as 
+
+We can divide time into blocks, over which we assume g and mu have
+constant values, and we run over a block, 
+
+(what is the physical interpretation of $B_{i}(w)$ ?) 
+
+B\_\{i\}(w)
+
+weight like or time like trajectories of growth
+
+\subsection*{Description}
+
+Under the assumption of time invariant growth rate $g_{i}(w)$ and
+time invariant death rate $\mu_{i}(w)$ the McKendrick\textendash von
+Foerster equation $\frac{\partial N_{i}(t,w)}{\partial t}=-\frac{\partial[N_{i}(t,w)g_{i}(w)]}{\partial t}-\mu_{i}(w)N_{i}(t,w).$
+This equation can be rewritten as $\frac{1}{g_{i}(w)}\frac{\partial X_{i}(t,w)}{\partial t}+\frac{\partial X_{i}(t,w)}{\partial w}=-\frac{\mu_{i}(w)}{g_{i}(w)}X_{i}(t,w)$
+where $X_{i}(t,w):=N_{i}(t,w)g_{i}(w).$ According to the MathItUpCanada
+YouTube video on solving partial differential equations,
+
+\href{https://www.youtube.com/watch?v=PTvvoVLzVCE&t=93s}{PDE YouTube Video}
+
+we can find a solution to this type of partial differential equation
+by equating the following three infinitesimal quantities:
+
+$g_{i}(w).dt=dw=-\frac{g_{i}(w)}{\mu_{i}(w)}\frac{1}{X_{i}}dX_{i}.$ 
+
+Equating the first and second quantities yields the equation 
+
+$t=\int_{0}^{t}dt=a+\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw',$ which
+can be rearranged to describe the constant of integration as $a=t-\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw'$
+which corresponds to the birth time of fish which is of weight $w$
+at time $t.$ Equating the first and third of our infinitesimal quantities
+yields the equation
+
+$b+\int_{w_{0.i}}^{w}-\frac{\mu_{i}(w')}{g_{i}(w')}dw'=\int_{0}^{X_{i}}\frac{1}{X_{i}'}dX_{i}'=\ln X_{i}.$
+
+Now 
+
+$X_{i}(t,w)=B\exp\left(-\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}\right),$
+where $B=\exp(b).$ Now, to complete the solution, we write the constant
+from integration $B,$ as an arbitrary function $F_{i}$ of the previous
+constant of integration $a,$ so we write $B=F_{i}(a)=F_{i}(t-A_{i}(w))$
+where $A_{i}(w)=\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw'$ is the
+age of a weight $w$ member of species $i,$ which began life at egg
+size $w_{0.i}$. So, provided we can find the form of our function
+$F_{i}$ (which we can), it is possible to write an algebraic description
+of the solution of this system. In particular we have $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$
+where $X_{i}(t,w)=F_{i}(t-A_{i}(w))\exp(-B_{i}(w))$ where $B_{i}(w)=\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'.$
+Soon we shall describe how to determine the value of $F_{i}(\tau)$
+where $\tau=t-A_{i}(w).$ 
+
+However, first, let us define $C_{i}(w)=-A_{i}(w).$ Since $w\in[w_{0,i},W_{\infty.i})\Rightarrow g_{i}(w)>0,$
+we have that $A_{i}(w)$ is monotonically increasing with $w,$ and
+$C_{i}(w)$ is monotonically decreasing. I guess that if $C_{i}(w)$
+is strictly decreasing and continuous then it will be invertible,
+but anyhow, suppose $C_{i}(w)$ is invertible, and let $C_{i}^{-1}(u)$
+denote the $w$ such that $C_{i}(w)=-A_{i}(w)=u$.
+
+Now we can continue our description of how to find $F_{i}(\tau)$
+for $\tau=t-A_{i}(w).$ (Note that $\tau$ corresponds to the birth
+time of the fish which is of size $w$ at time $t$) 
+
+If $\tau\geq0$ then we let $F_{i}(\tau)=RDD_{i}(\tau)=\frac{R_{max.i}R_{i}(\tau)}{R_{max.i}+R_{i}(\tau)}$
+where $R_{i}(\tau)=\frac{\epsilon_{i}}{2w_{0.i}}\int_{0}^{\infty}N_{i}(\tau,w')E_{r.i}(w')\psi_{i}(w').dw'$
+is the egg production at the previous time $\tau.$ This corresponds
+to the case where we have to look at a the amount of reproduction
+on the previous year $\tau$ in order to determine the size of the
+current cohort.
+
+If $\tau<0$ then we let $F_{i}(\tau)=X_{i}(0,C_{i}^{-1}(\tau))\exp(B_{i}(C_{i}^{-1}(\tau)))$
+where $X_{i}(0,w)=N_{i}(0,w)g_{i}(w).$ The reasoning for this is
+as follows, we have $X_{i}(0,w)=F_{i}(-A_{i}(w))\exp(-B_{i}(w))=F_{i}(C_{i}(w))\exp(-B_{i}(w))$
+and , substituting $w=C_{i}^{-1}(\tau)$ into this expression for
+$X_{i}(0,w)$ gives us $X_{i}(0,C_{i}^{-1}(\tau))=F_{i}(\tau)\exp(-B_{i}(C_{i}^{-1}(\tau)))$
+and we rearrange this expression to get our recipe $F_{i}(\tau)=X_{i}(0,C_{i}^{-1}(\tau))\exp(B_{i}(C_{i}^{-1}(\tau)))$
+for choosing $F_{i}(\tau)$ when $\tau<0.$ This corresponds to the
+case where the `time of birth' $\tau$ is negative, and therefore
+the fish was alive (and in post birth state) at the beginning of the
+{[}partial differential equation trajectory{]}, and it turns out that,
+in a similar way to how to `time like' $RDD_{i}(\tau)$ information,
+informs us about the initial condition, by shaping $F$ when $\tau\geq0,$
+we similarly have that when $\tau<0$ we have that $F_{i}(w)$ is
+determined by the `weight like' initial condition $X_{i}(0,w)$ we
+wish to calculate. One way to state this relationship is to say that
+the values of $F_{i}(\tau)$ for $\tau<0$ are chosen so that, $\forall w\in[w_{0.i},W_{\infty.i}]$
+we have $X_{i}(0,w)=F_{i}(-A_{i}(w))\exp(-B_{i}(w))=F_{i}(C_{i}(w))\exp(-B_{i}(w))$
+and we have that {[}{*}need to check this{]} this turns out to be
+equivalent to saying, for some generic $\tau<0$ that $F_{i}(\tau)=X_{i}(0,C_{i}^{-1}(\tau))\exp(B_{i}(C_{i}^{-1}(\tau)))$
+as argued above.
+
+So the above describes how to solve the partial differential equation,
+now we will describe how this idea could be used to provide a, hopefully,
+more accurate time evolution scheme then the PDE solver currently
+employed. The above is an accurate way of determining $X_{i}(t,w),$
+and hence $N_{i}(t,w)$ for all $t\in[L,H]$ and all $w\in[w_{0.i},W_{\infty.i}],$
+provided {[}either {[}the time interval $[L,H]$ is sufficiently short{]}
+or {[}the populations involved in the $N_{i}(t,w)$ fluctuations are
+insufficiently large to have a significant effect on changing the
+growth rates and death rates{]}, we will have an instance where our
+assumption $g_{i}(t,w)\thickapprox g_{i}(L,w),$ $\mu_{i}(t,w)\thickapprox\mu_{i}(L,w)$
+that the growth rate and the death rate can be approximated by the
+value at the left hand side of the `(time) block' $[L,H]$, for each
+time point $t\in[L,H]$ and for each weight $w\in$ As I said above
+(perhaps in somewhat confusing language), ensuring that $[L,H]$ is
+sufficiently small, is one way to make sure that this ``growth and
+death rates do not change'' hypothesis is sufficiently valid to justify
+this approach. 
+
+So now we have described how we used a formula based PDE solution
+to get abundance value $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$ over
+a time block $[L,H]$ that is sufficiently small, and this could be
+used repeatedly, for end to end time blocks, to provide a, hopefully,
+more accurate method of PDE evolution than the upwind difference scheme
+currently implemented in mizer (which relieves on truncating the Taylor
+expansion for the abundance, and so loses more info than just assuming
+constant growth and death over its time steps. This scheme we propose,
+``of repeatedly using formula to solve the PDE exactly over small
+time blocks, under the assumption that the growth and death rates
+are the same across the whole block, as they were at the start of
+the time block'', repeatedly over many small end to end time blocks
+could provide improvements (maybe not, we have to wait and try it
+first, but it seems interesting to think of mizer from this perspective
+anyhow, since these ideas can be studied with analytically solveable
+cases, and we could use such cases as guinie pigs for linear stability
+analysis, to determine when this `g and mu dont change' criterion
+may occur in more practical situations, but I digress.,). 
+
+So a basic idea in this ``repeated formula based PDE solution thing
+over end to end time blocks'' thing to work, is that in order to
+determine $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$ we need to determine
+$X_{i}(t,w)=F_{i}(t-A_{i}(w))\exp(-B_{i}(w))$ (recall $A_{i}(w)=\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw'$
+and $B_{i}(w)=\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'.$)
+so we need to determine $F_{i}(\tau)$ for each $\tau=t-A_{i}(w)$
+such that $t\in[L,H]$ and $w\in[w_{0.i},W_{\infty.i}].$ We need
+to determine the values of $F_{i}(\tau)$ that appear for the different
+values of $\tau=t-A_{i}(w)$ for points $(t,w)\in[L,H]\times[w_{0.i},W_{\infty.i}]$
+that appear during the evolution of the time block. When $\tau<0$
+we can determine the value of $F_{i}(\tau)$ by considering the initial
+condition $X_{i}(0,w)=N_{i}(0,w)g_{i}(w),$ using the `c-inversion'
+based formula given above. We have already described how to determine
+$F_{i}(\tau)$ when $\tau<0$ by consulting the initial condition
+$X_{i}(0,w).$ The other case, which we must describe how to deal
+with, in order to complete the description of the this new PDE evolving
+scheme, is how to determine $F_{i}(\tau)$ when $\tau\geq0.$ In this
+case, since $0\leq\tau\leq t$ we have $F_{i}(\tau)=RDD_{i}(\tau)=\frac{R_{max.i}R_{i}(\tau)}{R_{max.i}+R_{i}(\tau)}$
+where $R_{i}(\tau)=\frac{\epsilon_{i}}{2w_{0.i}}\int_{0}^{\infty}N_{i}(\tau,w')E_{r.i}(w')\psi_{i}(w').dw'$
+is the egg production at the previous time $\tau.$ . One approach
+(?) could be using the exact formula for the $N_{i}(\tau,w')$ values,
+for the chosen $\tau,$ to calculate $R_{i}(\tau)$ exactly, `on demand'.
+(is there some recursive process that works with exact formula, and
+looks back over generations, to get explicit formula for current condition
+in terms of it ?) process recursively, if one wishes to exactly solve
+the system this, one could try this way. 
+
+In practice, filling out $X_{i}(t,w)$ can be done by working over
+blocks, and saving all evolution values down to some fine grain time
+values. To save memory, one could just store the initial condition,
+and keep record of the high resolution reproduction RDD(t) data, over
+previous slots, although, actually, come to think of it, I wonder
+if there is any need to carry such discrete data around, I mean, under
+the supposed assumptions of this PDE evolver, we get algebraic formula
+for how the N's change over out successive time blocks, and so we
+have this information directly at our disposal, to calculate at any
+resolution we wish. So rather than a time series, I am hoping this
+approach could yield a formula for the final state, in terms of the
+initial condition (somehow successive generations get re-threaded
+into the reproduction integral, in order to give a description of
+$X_{i}(t,w)$ directly in terms of the initial condition).
+
+Anyhow, so summarize, we break the time up into blocks, and these
+are sufficiently small that the assumption that growth and death are
+held fixed across a block is valid, then we can use the PDE solution
+formula to describe how abundances change across any given time block.
+Our scheme may hence be used, much like the current mizer scheme,
+to iterate forwards, although I hope that the PDE evolver I propose
+here will be more accurate because it tracks the way that the abundances
+change in a higher order way. However, as I have mentioned, there
+may be ways to use this scheme to provide information for arbitrary
+$(t,w)$ by appealing directly to formula, I am a little confused
+about this (think it has something to do with iterating over the reproduction
+equation, will check later), but that is something else to look into
+later. 
+
+Notes:
+
+(It is also worth bearing in mind that the interaction matrix theta
+having a peculiar structure (so the population fluctuations from the
+PDE evolution over the block do not have a significant effect on the
+growth and mortality rates, and , so the assumption of static growth
+and mortality rates remains valid).
+
+(It is interesting, if somewhat tangential, to note that, for a PDE
+solver this scheme can be useful, because it allows one to simulate
+the simulation down to as fine a time scale at high resolution quickly,
+because it gets the information about all the brief time evolution
+quickly from a formula, rather than as one wishes (i.e., as one knows
+about , or cares to interpolate, the values of tangential case, is
+what the population fluctuations are among a subset of the population
+which, for whatever reason (perhaps they are infuffiectly numerous
+etc.) they display this type .
+
+\begin{comment}
+\#\#\#
+
+this case be done by consulting previously simulated solutions, perhaps
+within previous time blocks 
+
+\&\&\&
+
+$F_{i}(\tau)=RDD_{i}(\tau)=\frac{R_{max.i}R_{i}(\tau)}{R_{max.i}+R_{i}(\tau)}$
+where $R_{i}(\tau)=\frac{\epsilon_{i}}{2w_{0.i}}\int_{0}^{\infty}N_{i}(\tau,w')E_{r.i}(w')\psi_{i}(w').dw'$
+is the egg production at the previous time $\tau.$
+
+\&\&\&
+
+\&\&\&
+
+e $A_{i}(w)=\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw'$ is the age
+of a weight $w$ member of species $i,$ which began life at egg size
+$w_{0.i}$. So, provided we can find the form of our function $F_{i}$
+(which we can), it is possible to write an algebraic description of
+the solution of this system. In particular we have $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$
+where $X_{i}(t,w)=F_{i}(t-A_{i}(w))\exp(-B_{i}(w))$ where $B_{i}(w)=\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'.$
+Soon we shall describe how to determine the value of $F_{i}(\tau)$
+where $\tau=t-A_{i}(w).$ 
+
+\#\#\# ?? where does below go ??
+
+Perhaps this is not so, but the potential for using these type of
+formula based solutions, with g and mu approximated as smoothly interpolating
+between the discrete points it is measured at, allows us to get information
+on any time scale, provided we have enought information to properly
+determine how g and mu change over those time scales (and provided
+the `no alteration of $g$ and $\mu$ rule' is not broken, (i.e.,
+if it relied on choosing a small enough time scale for ) g and mu
+interpolation
+
+\&\&\& 
+\end{comment}
+
+\end{document}
+

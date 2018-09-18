@@ -1,0 +1,1062 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Subsection*
+PDE scheme Using formula to solve MVF over small time blocks where growth
+ and death rates are assumed fixed.
+\end_layout
+
+\begin_layout Subsection*
+Richard Southwell
+\end_layout
+
+\begin_layout Standard
+Idea: try and describe a formula based PDE solver to get abundance value
+ 
+\begin_inset Formula $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$
+\end_inset
+
+ over end to end time blocks 
+\begin_inset Formula $[L,H]$
+\end_inset
+
+ that are sufficiently small.
+ Solutions are done repeatedly, for end to end time blocks, to provide a,
+ hopefully, more accurate method of PDE evolution than the upwind difference
+ scheme currently implemented in mizer (which relieves on truncating the
+ Taylor expansion for the abundance, and so loses more info than just assuming
+ constant growth and death over its time steps).
+ Perhaps the scheme we propose here is inferior to the upwind difference
+ scheme for some reason we have not yet considered, or perhaps there are
+ further problems which could crop up with trying to implement the PDE evolver
+ we describe here.
+ We shall have to wait and see as we have not yet tried to implement this
+ PDE evolver idea with code.
+ But, it still looks worth investigating, irrespective of its practical
+ benefits, because considering how this new algorithm works seems (at least
+ to me) quite informative about how information flows across characteristic
+ curves, and is influenced by reproduction, and by the initial condition,
+ in size spectrum models.
+\end_layout
+
+\begin_layout Standard
+This scheme we propose, 
+\begin_inset Quotes eld
+\end_inset
+
+of repeatedly using formula to solve the PDE exactly over small time blocks,
+ under the assumption that the growth and death rates are the same across
+ the whole block, as they were at the start of the time block
+\begin_inset Quotes erd
+\end_inset
+
+, repeatedly over many small end to end time blocks could provide improvements
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $A_{i}(w)=\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw'$
+\end_inset
+
+ denote the age of a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ member of species 
+\begin_inset Formula $i$
+\end_inset
+
+ with egg size 
+\begin_inset Formula $w_{0.i}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $X_{i}(t,w)=F_{i}(t-A_{i}(w))\exp\left(-\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'\right)=N_{i}(t,w)g_{i}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\tau\geq0$
+\end_inset
+
+ [case 1] then 
+\begin_inset Formula $F_{i}(\tau)=R_{i}(\tau):=\frac{\epsilon_{i}}{2w_{0.i}}\int_{0}^{\infty}N_{i}(\tau,w')E_{r.i}(w')\psi_{i}(w').dw'=X_{i}(t,w_{0.i})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or if 
+\begin_inset Formula $\tau<0$
+\end_inset
+
+ [case 2] then 
+\begin_inset Formula $F_{i}(\tau)$
+\end_inset
+
+ is defined, so that 
+\begin_inset Formula $\forall w\in[w_{0.i},W_{\infty.i}]$
+\end_inset
+
+ we have 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $X_{0.i}(w)=X_{i}(0,w)=F_{i}(-A_{i}(w))\exp(-B_{i}(w))$
+\end_inset
+
+ where 
+\begin_inset Formula $B_{i}(w)=\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'.$
+\end_inset
+
+ In particular, let 
+\begin_inset Formula $C_{i}(w)=-A_{i}(w),$
+\end_inset
+
+ and since 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $C_{i}(w)$
+\end_inset
+
+ is continuous and monotonic, we can define 
+\begin_inset Formula $C_{i}^{-1}(u)$
+\end_inset
+
+ as the unique 
+\begin_inset Formula $w$
+\end_inset
+
+ such that 
+\begin_inset Formula $C_{i}(w)=u.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now 
+\begin_inset Formula $X_{i}(0,w)=F_{i}(C_{i}(w))\exp(-B_{i}(w))$
+\end_inset
+
+ so 
+\begin_inset Formula $X_{i}(0,C_{i}^{-1}(u))=F_{i}(u)\exp(-B_{i}(C_{i}^{-1}(u)))$
+\end_inset
+
+ so 
+\begin_inset Formula $F_{i}(u)=X_{i}(0,C_{i}^{-1}(u))\exp(B_{i}(C_{i}^{-1}(u)))$
+\end_inset
+
+ in this case.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $F_{i}(\tau)=\begin{cases}
+RDD_{i}(\tau) & \text{if }\text{\tau\geq0}\\
+X_{i}(0,C_{i}^{-1}(\tau))\exp(B_{i}(C_{i}^{-1}(\tau))) & \text{if \ensuremath{\tau<0}}
+\end{cases}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $RDD_{i}(\tau$
+\end_inset
+
+)=
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $X_{0.i}(-A_{i}^{-1}(u))=F_{i}(-A_{i}(-A_{i}^{-1}(u)))\exp(-B_{i}(-A_{i}^{-1}(u)))$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+there exists a function 
+\begin_inset Formula $V_{0.i}()$
+\end_inset
+
+ such that we can write the initial 
+\end_layout
+
+\begin_layout Standard
+condition as 
+\end_layout
+
+\begin_layout Standard
+We can divide time into blocks, over which we assume g and mu have constant
+ values, and we run over a block, 
+\end_layout
+
+\begin_layout Standard
+(what is the physical interpretation of 
+\begin_inset Formula $B_{i}(w)$
+\end_inset
+
+ ?) 
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+B_{i}(w)
+\end_layout
+
+\begin_layout Standard
+weight like or time like trajectories of growth
+\end_layout
+
+\begin_layout Subsection*
+Description
+\end_layout
+
+\begin_layout Standard
+Under the assumption of time invariant growth rate 
+\begin_inset Formula $g_{i}(w)$
+\end_inset
+
+ and time invariant death rate 
+\begin_inset Formula $\mu_{i}(w)$
+\end_inset
+
+ the McKendrick–von Foerster equation 
+\begin_inset Formula $\frac{\partial N_{i}(t,w)}{\partial t}=-\frac{\partial[N_{i}(t,w)g_{i}(w)]}{\partial t}-\mu_{i}(w)N_{i}(t,w).$
+\end_inset
+
+ This equation can be rewritten as 
+\begin_inset Formula $\frac{1}{g_{i}(w)}\frac{\partial X_{i}(t,w)}{\partial t}+\frac{\partial X_{i}(t,w)}{\partial w}=-\frac{\mu_{i}(w)}{g_{i}(w)}X_{i}(t,w)$
+\end_inset
+
+ where 
+\begin_inset Formula $X_{i}(t,w):=N_{i}(t,w)g_{i}(w).$
+\end_inset
+
+ According to the MathItUpCanada YouTube video on solving partial differential
+ equations,
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name "PDE YouTube Video"
+target "https://www.youtube.com/watch?v=PTvvoVLzVCE&t=93s"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+we can find a solution to this type of partial differential equation by
+ equating the following three infinitesimal quantities:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $g_{i}(w).dt=dw=-\frac{g_{i}(w)}{\mu_{i}(w)}\frac{1}{X_{i}}dX_{i}.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Equating the first and second quantities yields the equation 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $t=\int_{0}^{t}dt=a+\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw',$
+\end_inset
+
+ which can be rearranged to describe the constant of integration as 
+\begin_inset Formula $a=t-\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw'$
+\end_inset
+
+ which corresponds to the birth time of fish which is of weight 
+\begin_inset Formula $w$
+\end_inset
+
+ at time 
+\begin_inset Formula $t.$
+\end_inset
+
+ Equating the first and third of our infinitesimal quantities yields the
+ equation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $b+\int_{w_{0.i}}^{w}-\frac{\mu_{i}(w')}{g_{i}(w')}dw'=\int_{0}^{X_{i}}\frac{1}{X_{i}'}dX_{i}'=\ln X_{i}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $X_{i}(t,w)=B\exp\left(-\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}\right),$
+\end_inset
+
+ where 
+\begin_inset Formula $B=\exp(b).$
+\end_inset
+
+ Now, to complete the solution, we write the constant from integration 
+\begin_inset Formula $B,$
+\end_inset
+
+ as an arbitrary function 
+\begin_inset Formula $F_{i}$
+\end_inset
+
+ of the previous constant of integration 
+\begin_inset Formula $a,$
+\end_inset
+
+ so we write 
+\begin_inset Formula $B=F_{i}(a)=F_{i}(t-A_{i}(w))$
+\end_inset
+
+ where 
+\begin_inset Formula $A_{i}(w)=\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw'$
+\end_inset
+
+ is the age of a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ member of species 
+\begin_inset Formula $i,$
+\end_inset
+
+ which began life at egg size 
+\begin_inset Formula $w_{0.i}$
+\end_inset
+
+.
+ So, provided we can find the form of our function 
+\begin_inset Formula $F_{i}$
+\end_inset
+
+ (which we can), it is possible to write an algebraic description of the
+ solution of this system.
+ In particular we have 
+\begin_inset Formula $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$
+\end_inset
+
+ where 
+\begin_inset Formula $X_{i}(t,w)=F_{i}(t-A_{i}(w))\exp(-B_{i}(w))$
+\end_inset
+
+ where 
+\begin_inset Formula $B_{i}(w)=\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'.$
+\end_inset
+
+ Soon we shall describe how to determine the value of 
+\begin_inset Formula $F_{i}(\tau)$
+\end_inset
+
+ where 
+\begin_inset Formula $\tau=t-A_{i}(w).$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+However, first, let us define 
+\begin_inset Formula $C_{i}(w)=-A_{i}(w).$
+\end_inset
+
+ Since 
+\begin_inset Formula $w\in[w_{0,i},W_{\infty.i})\Rightarrow g_{i}(w)>0,$
+\end_inset
+
+ we have that 
+\begin_inset Formula $A_{i}(w)$
+\end_inset
+
+ is monotonically increasing with 
+\begin_inset Formula $w,$
+\end_inset
+
+ and 
+\begin_inset Formula $C_{i}(w)$
+\end_inset
+
+ is monotonically decreasing.
+ I guess that if 
+\begin_inset Formula $C_{i}(w)$
+\end_inset
+
+ is strictly decreasing and continuous then it will be invertible, but anyhow,
+ suppose 
+\begin_inset Formula $C_{i}(w)$
+\end_inset
+
+ is invertible, and let 
+\begin_inset Formula $C_{i}^{-1}(u)$
+\end_inset
+
+ denote the 
+\begin_inset Formula $w$
+\end_inset
+
+ such that 
+\begin_inset Formula $C_{i}(w)=-A_{i}(w)=u$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Now we can continue our description of how to find 
+\begin_inset Formula $F_{i}(\tau)$
+\end_inset
+
+ for 
+\begin_inset Formula $\tau=t-A_{i}(w).$
+\end_inset
+
+ (Note that 
+\begin_inset Formula $\tau$
+\end_inset
+
+ corresponds to the birth time of the fish which is of size 
+\begin_inset Formula $w$
+\end_inset
+
+ at time 
+\begin_inset Formula $t$
+\end_inset
+
+) 
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\tau\geq0$
+\end_inset
+
+ then we let 
+\begin_inset Formula $F_{i}(\tau)=RDD_{i}(\tau)=\frac{R_{max.i}R_{i}(\tau)}{R_{max.i}+R_{i}(\tau)}$
+\end_inset
+
+ where 
+\begin_inset Formula $R_{i}(\tau)=\frac{\epsilon_{i}}{2w_{0.i}}\int_{0}^{\infty}N_{i}(\tau,w')E_{r.i}(w')\psi_{i}(w').dw'$
+\end_inset
+
+ is the egg production at the previous time 
+\begin_inset Formula $\tau.$
+\end_inset
+
+ This corresponds to the case where we have to look at a the amount of reproduct
+ion on the previous year 
+\begin_inset Formula $\tau$
+\end_inset
+
+ in order to determine the size of the current cohort.
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\tau<0$
+\end_inset
+
+ then we let 
+\begin_inset Formula $F_{i}(\tau)=X_{i}(0,C_{i}^{-1}(\tau))\exp(B_{i}(C_{i}^{-1}(\tau)))$
+\end_inset
+
+ where 
+\begin_inset Formula $X_{i}(0,w)=N_{i}(0,w)g_{i}(w).$
+\end_inset
+
+ The reasoning for this is as follows, we have 
+\begin_inset Formula $X_{i}(0,w)=F_{i}(-A_{i}(w))\exp(-B_{i}(w))=F_{i}(C_{i}(w))\exp(-B_{i}(w))$
+\end_inset
+
+ and , substituting 
+\begin_inset Formula $w=C_{i}^{-1}(\tau)$
+\end_inset
+
+ into this expression for 
+\begin_inset Formula $X_{i}(0,w)$
+\end_inset
+
+ gives us 
+\begin_inset Formula $X_{i}(0,C_{i}^{-1}(\tau))=F_{i}(\tau)\exp(-B_{i}(C_{i}^{-1}(\tau)))$
+\end_inset
+
+ and we rearrange this expression to get our recipe 
+\begin_inset Formula $F_{i}(\tau)=X_{i}(0,C_{i}^{-1}(\tau))\exp(B_{i}(C_{i}^{-1}(\tau)))$
+\end_inset
+
+ for choosing 
+\begin_inset Formula $F_{i}(\tau)$
+\end_inset
+
+ when 
+\begin_inset Formula $\tau<0.$
+\end_inset
+
+ This corresponds to the case where the `time of birth' 
+\begin_inset Formula $\tau$
+\end_inset
+
+ is negative, and therefore the fish was alive (and in post birth state)
+ at the beginning of the [partial differential equation trajectory], and
+ it turns out that, in a similar way to how to `time like' 
+\begin_inset Formula $RDD_{i}(\tau)$
+\end_inset
+
+ information, informs us about the initial condition, by shaping 
+\begin_inset Formula $F$
+\end_inset
+
+ when 
+\begin_inset Formula $\tau\geq0,$
+\end_inset
+
+ we similarly have that when 
+\begin_inset Formula $\tau<0$
+\end_inset
+
+ we have that 
+\begin_inset Formula $F_{i}(w)$
+\end_inset
+
+ is determined by the `weight like' initial condition 
+\begin_inset Formula $X_{i}(0,w)$
+\end_inset
+
+ we wish to calculate.
+ One way to state this relationship is to say that the values of 
+\begin_inset Formula $F_{i}(\tau)$
+\end_inset
+
+ for 
+\begin_inset Formula $\tau<0$
+\end_inset
+
+ are chosen so that, 
+\begin_inset Formula $\forall w\in[w_{0.i},W_{\infty.i}]$
+\end_inset
+
+ we have 
+\begin_inset Formula $X_{i}(0,w)=F_{i}(-A_{i}(w))\exp(-B_{i}(w))=F_{i}(C_{i}(w))\exp(-B_{i}(w))$
+\end_inset
+
+ and we have that [*need to check this] this turns out to be equivalent
+ to saying, for some generic 
+\begin_inset Formula $\tau<0$
+\end_inset
+
+ that 
+\begin_inset Formula $F_{i}(\tau)=X_{i}(0,C_{i}^{-1}(\tau))\exp(B_{i}(C_{i}^{-1}(\tau)))$
+\end_inset
+
+ as argued above.
+\end_layout
+
+\begin_layout Standard
+So the above describes how to solve the partial differential equation, now
+ we will describe how this idea could be used to provide a, hopefully, more
+ accurate time evolution scheme then the PDE solver currently employed.
+ The above is an accurate way of determining 
+\begin_inset Formula $X_{i}(t,w),$
+\end_inset
+
+ and hence 
+\begin_inset Formula $N_{i}(t,w)$
+\end_inset
+
+ for all 
+\begin_inset Formula $t\in[L,H]$
+\end_inset
+
+ and all 
+\begin_inset Formula $w\in[w_{0.i},W_{\infty.i}],$
+\end_inset
+
+ provided [either [the time interval 
+\begin_inset Formula $[L,H]$
+\end_inset
+
+ is sufficiently short] or [the populations involved in the 
+\begin_inset Formula $N_{i}(t,w)$
+\end_inset
+
+ fluctuations are insufficiently large to have a significant effect on changing
+ the growth rates and death rates], we will have an instance where our assumptio
+n 
+\begin_inset Formula $g_{i}(t,w)\thickapprox g_{i}(L,w),$
+\end_inset
+
+ 
+\begin_inset Formula $\mu_{i}(t,w)\thickapprox\mu_{i}(L,w)$
+\end_inset
+
+ that the growth rate and the death rate can be approximated by the value
+ at the left hand side of the `(time) block' 
+\begin_inset Formula $[L,H]$
+\end_inset
+
+, for each time point 
+\begin_inset Formula $t\in[L,H]$
+\end_inset
+
+ and for each weight 
+\begin_inset Formula $w\in$
+\end_inset
+
+ As I said above (perhaps in somewhat confusing language), ensuring that
+ 
+\begin_inset Formula $[L,H]$
+\end_inset
+
+ is sufficiently small, is one way to make sure that this ``growth and death
+ rates do not change'' hypothesis is sufficiently valid to justify this
+ approach.
+ 
+\end_layout
+
+\begin_layout Standard
+So now we have described how we used a formula based PDE solution to get
+ abundance value 
+\begin_inset Formula $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$
+\end_inset
+
+ over a time block 
+\begin_inset Formula $[L,H]$
+\end_inset
+
+ that is sufficiently small, and this could be used repeatedly, for end
+ to end time blocks, to provide a, hopefully, more accurate method of PDE
+ evolution than the upwind difference scheme currently implemented in mizer
+ (which relieves on truncating the Taylor expansion for the abundance, and
+ so loses more info than just assuming constant growth and death over its
+ time steps.
+ This scheme we propose, 
+\begin_inset Quotes eld
+\end_inset
+
+of repeatedly using formula to solve the PDE exactly over small time blocks,
+ under the assumption that the growth and death rates are the same across
+ the whole block, as they were at the start of the time block
+\begin_inset Quotes erd
+\end_inset
+
+, repeatedly over many small end to end time blocks could provide improvements
+ (maybe not, we have to wait and try it first, but it seems interesting
+ to think of mizer from this perspective anyhow, since these ideas can be
+ studied with analytically solveable cases, and we could use such cases
+ as guinie pigs for linear stability analysis, to determine when this `g
+ and mu dont change' criterion may occur in more practical situations, but
+ I digress.,).
+ 
+\end_layout
+
+\begin_layout Standard
+So a basic idea in this 
+\begin_inset Quotes eld
+\end_inset
+
+repeated formula based PDE solution thing over end to end time blocks
+\begin_inset Quotes erd
+\end_inset
+
+ thing to work, is that in order to determine 
+\begin_inset Formula $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$
+\end_inset
+
+ we need to determine 
+\begin_inset Formula $X_{i}(t,w)=F_{i}(t-A_{i}(w))\exp(-B_{i}(w))$
+\end_inset
+
+ (recall 
+\begin_inset Formula $A_{i}(w)=\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw'$
+\end_inset
+
+ and 
+\begin_inset Formula $B_{i}(w)=\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'.$
+\end_inset
+
+) so we need to determine 
+\begin_inset Formula $F_{i}(\tau)$
+\end_inset
+
+ for each 
+\begin_inset Formula $\tau=t-A_{i}(w)$
+\end_inset
+
+ such that 
+\begin_inset Formula $t\in[L,H]$
+\end_inset
+
+ and 
+\begin_inset Formula $w\in[w_{0.i},W_{\infty.i}].$
+\end_inset
+
+ We need to determine the values of 
+\begin_inset Formula $F_{i}(\tau)$
+\end_inset
+
+ that appear for the different values of 
+\begin_inset Formula $\tau=t-A_{i}(w)$
+\end_inset
+
+ for points 
+\begin_inset Formula $(t,w)\in[L,H]\times[w_{0.i},W_{\infty.i}]$
+\end_inset
+
+ that appear during the evolution of the time block.
+ When 
+\begin_inset Formula $\tau<0$
+\end_inset
+
+ we can determine the value of 
+\begin_inset Formula $F_{i}(\tau)$
+\end_inset
+
+ by considering the initial condition 
+\begin_inset Formula $X_{i}(0,w)=N_{i}(0,w)g_{i}(w),$
+\end_inset
+
+ using the `c-inversion' based formula given above.
+ We have already described how to determine 
+\begin_inset Formula $F_{i}(\tau)$
+\end_inset
+
+ when 
+\begin_inset Formula $\tau<0$
+\end_inset
+
+ by consulting the initial condition 
+\begin_inset Formula $X_{i}(0,w).$
+\end_inset
+
+ The other case, which we must describe how to deal with, in order to complete
+ the description of the this new PDE evolving scheme, is how to determine
+ 
+\begin_inset Formula $F_{i}(\tau)$
+\end_inset
+
+ when 
+\begin_inset Formula $\tau\geq0.$
+\end_inset
+
+ In this case, since 
+\begin_inset Formula $0\leq\tau\leq t$
+\end_inset
+
+ we have 
+\begin_inset Formula $F_{i}(\tau)=RDD_{i}(\tau)=\frac{R_{max.i}R_{i}(\tau)}{R_{max.i}+R_{i}(\tau)}$
+\end_inset
+
+ where 
+\begin_inset Formula $R_{i}(\tau)=\frac{\epsilon_{i}}{2w_{0.i}}\int_{0}^{\infty}N_{i}(\tau,w')E_{r.i}(w')\psi_{i}(w').dw'$
+\end_inset
+
+ is the egg production at the previous time 
+\begin_inset Formula $\tau.$
+\end_inset
+
+ .
+ One approach (?) could be using the exact formula for the 
+\begin_inset Formula $N_{i}(\tau,w')$
+\end_inset
+
+ values, for the chosen 
+\begin_inset Formula $\tau,$
+\end_inset
+
+ to calculate 
+\begin_inset Formula $R_{i}(\tau)$
+\end_inset
+
+ exactly, `on demand'.
+ (is there some recursive process that works with exact formula, and looks
+ back over generations, to get explicit formula for current condition in
+ terms of it ?) process recursively, if one wishes to exactly solve the
+ system this, one could try this way.
+ 
+\end_layout
+
+\begin_layout Standard
+In practice, filling out 
+\begin_inset Formula $X_{i}(t,w)$
+\end_inset
+
+ can be done by working over blocks, and saving all evolution values down
+ to some fine grain time values.
+ To save memory, one could just store the initial condition, and keep record
+ of the high resolution reproduction RDD(t) data, over previous slots, although,
+ actually, come to think of it, I wonder if there is any need to carry such
+ discrete data around, I mean, under the supposed assumptions of this PDE
+ evolver, we get algebraic formula for how the N's change over out successive
+ time blocks, and so we have this information directly at our disposal,
+ to calculate at any resolution we wish.
+ So rather than a time series, I am hoping this approach could yield a formula
+ for the final state, in terms of the initial condition (somehow successive
+ generations get re-threaded into the reproduction integral, in order to
+ give a description of 
+\begin_inset Formula $X_{i}(t,w)$
+\end_inset
+
+ directly in terms of the initial condition).
+\end_layout
+
+\begin_layout Standard
+Anyhow, so summarize, we break the time up into blocks, and these are sufficient
+ly small that the assumption that growth and death are held fixed across
+ a block is valid, then we can use the PDE solution formula to describe
+ how abundances change across any given time block.
+ Our scheme may hence be used, much like the current mizer scheme, to iterate
+ forwards, although I hope that the PDE evolver I propose here will be more
+ accurate because it tracks the way that the abundances change in a higher
+ order way.
+ However, as I have mentioned, there may be ways to use this scheme to provide
+ information for arbitrary 
+\begin_inset Formula $(t,w)$
+\end_inset
+
+ by appealing directly to formula, I am a little confused about this (think
+ it has something to do with iterating over the reproduction equation, will
+ check later), but that is something else to look into later.
+ 
+\end_layout
+
+\begin_layout Standard
+Notes:
+\end_layout
+
+\begin_layout Standard
+(It is also worth bearing in mind that the interaction matrix theta having
+ a peculiar structure (so the population fluctuations from the PDE evolution
+ over the block do not have a significant effect on the growth and mortality
+ rates, and , so the assumption of static growth and mortality rates remains
+ valid).
+\end_layout
+
+\begin_layout Standard
+(It is interesting, if somewhat tangential, to note that, for a PDE solver
+ this scheme can be useful, because it allows one to simulate the simulation
+ down to as fine a time scale at high resolution quickly, because it gets
+ the information about all the brief time evolution quickly from a formula,
+ rather than as one wishes (i.e., as one knows about , or cares to interpolate,
+ the values of tangential case, is what the population fluctuations are
+ among a subset of the population which, for whatever reason (perhaps they
+ are infuffiectly numerous etc.) they display this type .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+###
+\end_layout
+
+\begin_layout Plain Layout
+this case be done by consulting previously simulated solutions, perhaps
+ within previous time blocks 
+\end_layout
+
+\begin_layout Plain Layout
+&&&
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Formula $F_{i}(\tau)=RDD_{i}(\tau)=\frac{R_{max.i}R_{i}(\tau)}{R_{max.i}+R_{i}(\tau)}$
+\end_inset
+
+ where 
+\begin_inset Formula $R_{i}(\tau)=\frac{\epsilon_{i}}{2w_{0.i}}\int_{0}^{\infty}N_{i}(\tau,w')E_{r.i}(w')\psi_{i}(w').dw'$
+\end_inset
+
+ is the egg production at the previous time 
+\begin_inset Formula $\tau.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+&&&
+\end_layout
+
+\begin_layout Plain Layout
+&&&
+\end_layout
+
+\begin_layout Plain Layout
+e 
+\begin_inset Formula $A_{i}(w)=\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw'$
+\end_inset
+
+ is the age of a weight 
+\begin_inset Formula $w$
+\end_inset
+
+ member of species 
+\begin_inset Formula $i,$
+\end_inset
+
+ which began life at egg size 
+\begin_inset Formula $w_{0.i}$
+\end_inset
+
+.
+ So, provided we can find the form of our function 
+\begin_inset Formula $F_{i}$
+\end_inset
+
+ (which we can), it is possible to write an algebraic description of the
+ solution of this system.
+ In particular we have 
+\begin_inset Formula $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$
+\end_inset
+
+ where 
+\begin_inset Formula $X_{i}(t,w)=F_{i}(t-A_{i}(w))\exp(-B_{i}(w))$
+\end_inset
+
+ where 
+\begin_inset Formula $B_{i}(w)=\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'.$
+\end_inset
+
+ Soon we shall describe how to determine the value of 
+\begin_inset Formula $F_{i}(\tau)$
+\end_inset
+
+ where 
+\begin_inset Formula $\tau=t-A_{i}(w).$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+### ?? where does below go ??
+\end_layout
+
+\begin_layout Plain Layout
+Perhaps this is not so, but the potential for using these type of formula
+ based solutions, with g and mu approximated as smoothly interpolating between
+ the discrete points it is measured at, allows us to get information on
+ any time scale, provided we have enought information to properly determine
+ how g and mu change over those time scales (and provided the `no alteration
+ of 
+\begin_inset Formula $g$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu$
+\end_inset
+
+ rule' is not broken, (i.e., if it relied on choosing a small enough time
+ scale for ) g and mu interpolation
+\end_layout
+
+\begin_layout Plain Layout
+&&& 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
