@@ -70,18 +70,22 @@
 
 \begin_body
 
-\begin_layout Subsection*
-PDE scheme Using formula to solve MVF over small time blocks where growth
- and death rates are assumed fixed.
+\begin_layout Section*
+New MvF PDE scheme 
 \end_layout
 
 \begin_layout Subsection*
 Richard Southwell
 \end_layout
 
+\begin_layout Subsection*
+Introduction
+\end_layout
+
 \begin_layout Standard
-Idea: try and describe a formula based PDE solver to get abundance value
- 
+Idea: Use a formula to solve MVF over small time blocks where growth and
+ death rates are assumed fixed.
+ Get a formula based PDE solver to get abundance value 
 \begin_inset Formula $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$
 \end_inset
 
@@ -90,11 +94,12 @@ Idea: try and describe a formula based PDE solver to get abundance value
 \end_inset
 
  that are sufficiently small.
- Solutions are done repeatedly, for end to end time blocks, to provide a,
- hopefully, more accurate method of PDE evolution than the upwind difference
- scheme currently implemented in mizer (which relieves on truncating the
- Taylor expansion for the abundance, and so loses more info than just assuming
- constant growth and death over its time steps).
+ Solutions are done successively, over end to end time blocks, to provide
+ a, hopefully, more accurate method of PDE evolution than the upwind difference
+ scheme currently implemented in mizer (which relied on truncating the Taylor
+ expansion for the abundance, unlike our proposed PDE evolver that uses
+ a formula to describe the solution over a trajectory where the growth and
+ death rate can be treated as constant).
  Perhaps the scheme we propose here is inferior to the upwind difference
  scheme for some reason we have not yet considered, or perhaps there are
  further problems which could crop up with trying to implement the PDE evolver
@@ -119,186 +124,11 @@ of repeatedly using formula to solve the PDE exactly over small time blocks,
 \begin_inset Quotes erd
 \end_inset
 
-, repeatedly over many small end to end time blocks could provide improvements
-\end_layout
-
-\begin_layout Standard
-Let 
-\begin_inset Formula $A_{i}(w)=\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw'$
-\end_inset
-
- denote the age of a weight 
-\begin_inset Formula $w$
-\end_inset
-
- member of species 
-\begin_inset Formula $i$
-\end_inset
-
- with egg size 
-\begin_inset Formula $w_{0.i}$
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $X_{i}(t,w)=F_{i}(t-A_{i}(w))\exp\left(-\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'\right)=N_{i}(t,w)g_{i}.$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If 
-\begin_inset Formula $\tau\geq0$
-\end_inset
-
- [case 1] then 
-\begin_inset Formula $F_{i}(\tau)=R_{i}(\tau):=\frac{\epsilon_{i}}{2w_{0.i}}\int_{0}^{\infty}N_{i}(\tau,w')E_{r.i}(w')\psi_{i}(w').dw'=X_{i}(t,w_{0.i})$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-or if 
-\begin_inset Formula $\tau<0$
-\end_inset
-
- [case 2] then 
-\begin_inset Formula $F_{i}(\tau)$
-\end_inset
-
- is defined, so that 
-\begin_inset Formula $\forall w\in[w_{0.i},W_{\infty.i}]$
-\end_inset
-
- we have 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $X_{0.i}(w)=X_{i}(0,w)=F_{i}(-A_{i}(w))\exp(-B_{i}(w))$
-\end_inset
-
- where 
-\begin_inset Formula $B_{i}(w)=\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'.$
-\end_inset
-
- In particular, let 
-\begin_inset Formula $C_{i}(w)=-A_{i}(w),$
-\end_inset
-
- and since 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $C_{i}(w)$
-\end_inset
-
- is continuous and monotonic, we can define 
-\begin_inset Formula $C_{i}^{-1}(u)$
-\end_inset
-
- as the unique 
-\begin_inset Formula $w$
-\end_inset
-
- such that 
-\begin_inset Formula $C_{i}(w)=u.$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Now 
-\begin_inset Formula $X_{i}(0,w)=F_{i}(C_{i}(w))\exp(-B_{i}(w))$
-\end_inset
-
- so 
-\begin_inset Formula $X_{i}(0,C_{i}^{-1}(u))=F_{i}(u)\exp(-B_{i}(C_{i}^{-1}(u)))$
-\end_inset
-
- so 
-\begin_inset Formula $F_{i}(u)=X_{i}(0,C_{i}^{-1}(u))\exp(B_{i}(C_{i}^{-1}(u)))$
-\end_inset
-
- in this case.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $F_{i}(\tau)=\begin{cases}
-RDD_{i}(\tau) & \text{if }\text{\tau\geq0}\\
-X_{i}(0,C_{i}^{-1}(\tau))\exp(B_{i}(C_{i}^{-1}(\tau))) & \text{if \ensuremath{\tau<0}}
-\end{cases}$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-where 
-\begin_inset Formula $RDD_{i}(\tau$
-\end_inset
-
-)=
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $X_{0.i}(-A_{i}^{-1}(u))=F_{i}(-A_{i}(-A_{i}^{-1}(u)))\exp(-B_{i}(-A_{i}^{-1}(u)))$
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-there exists a function 
-\begin_inset Formula $V_{0.i}()$
-\end_inset
-
- such that we can write the initial 
-\end_layout
-
-\begin_layout Standard
-condition as 
-\end_layout
-
-\begin_layout Standard
-We can divide time into blocks, over which we assume g and mu have constant
- values, and we run over a block, 
-\end_layout
-
-\begin_layout Standard
-(what is the physical interpretation of 
-\begin_inset Formula $B_{i}(w)$
-\end_inset
-
- ?) 
-\end_layout
-
-\begin_layout Standard
-
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\uuline off
-\uwave off
-\noun off
-\color none
-B_{i}(w)
-\end_layout
-
-\begin_layout Standard
-weight like or time like trajectories of growth
+, successively over many small end to end time blocks could provide improvements
 \end_layout
 
 \begin_layout Subsection*
-Description
+Solution
 \end_layout
 
 \begin_layout Standard
@@ -455,6 +285,14 @@ Now
 \end_layout
 
 \begin_layout Standard
+(what is the physical interpretation of 
+\begin_inset Formula $B_{i}(w)$
+\end_inset
+
+ ?)
+\end_layout
+
+\begin_layout Standard
 However, first, let us define 
 \begin_inset Formula $C_{i}(w)=-A_{i}(w).$
 \end_inset
@@ -485,7 +323,7 @@ However, first, let us define
 \begin_inset Formula $C_{i}(w)$
 \end_inset
 
- is invertible, and let 
+ is invertible (at least, over considered values), and let 
 \begin_inset Formula $C_{i}^{-1}(u)$
 \end_inset
 
@@ -649,11 +487,16 @@ If
  as argued above.
 \end_layout
 
+\begin_layout Subsection*
+Application
+\end_layout
+
 \begin_layout Standard
 So the above describes how to solve the partial differential equation, now
  we will describe how this idea could be used to provide a, hopefully, more
- accurate time evolution scheme then the PDE solver currently employed.
- The above is an accurate way of determining 
+ accurate time evolution scheme then the PDE solver currently employed in
+ mizer.
+ The above scheme is an accurate way of determining 
 \begin_inset Formula $X_{i}(t,w),$
 \end_inset
 
@@ -669,17 +512,28 @@ So the above describes how to solve the partial differential equation, now
 \begin_inset Formula $w\in[w_{0.i},W_{\infty.i}],$
 \end_inset
 
- provided [either [the time interval 
+ provided that the assumption of growth and death rates staying constant
+ is an accurate assumption.
+ There are several reasons why it might be reasonable to assume such static
+ growth and death rates over a time block, for example: (1) the time interval
+ 
 \begin_inset Formula $[L,H]$
 \end_inset
 
- is sufficiently short] or [the populations involved in the 
+ could be very short or (2) the populations involved in the 
 \begin_inset Formula $N_{i}(t,w)$
 \end_inset
 
  fluctuations are insufficiently large to have a significant effect on changing
- the growth rates and death rates], we will have an instance where our assumptio
-n 
+ the growth rates and death rates or (3) the growth and death could be largely
+ governed by external forces (like plankton blooms and fishing), and so
+ self interaction could be negligible.
+ 
+\end_layout
+
+\begin_layout Standard
+Anyhow, whatever the justification, our PDE evolver relies on the assumption
+ 
 \begin_inset Formula $g_{i}(t,w)\thickapprox g_{i}(L,w),$
 \end_inset
 
@@ -700,15 +554,18 @@ n
 \begin_inset Formula $w\in$
 \end_inset
 
- As I said above (perhaps in somewhat confusing language), ensuring that
- 
+ Making sure that 
 \begin_inset Formula $[L,H]$
 \end_inset
 
  is sufficiently small, is one way to make sure that this ``growth and death
- rates do not change'' hypothesis is sufficiently valid to justify this
- approach.
+ rates do not change'' hypothesis is sufficiently close to the truth to
+ justify this approach.
  
+\end_layout
+
+\begin_layout Subsection*
+Summary
 \end_layout
 
 \begin_layout Standard
@@ -738,12 +595,6 @@ of repeatedly using formula to solve the PDE exactly over small time blocks,
 \end_inset
 
 , repeatedly over many small end to end time blocks could provide improvements
- (maybe not, we have to wait and try it first, but it seems interesting
- to think of mizer from this perspective anyhow, since these ideas can be
- studied with analytically solveable cases, and we could use such cases
- as guinie pigs for linear stability analysis, to determine when this `g
- and mu dont change' criterion may occur in more practical situations, but
- I digress.,).
  
 \end_layout
 
@@ -917,8 +768,8 @@ ly small that the assumption that growth and death are held fixed across
  
 \end_layout
 
-\begin_layout Standard
-Notes:
+\begin_layout Subsection*
+Notes
 \end_layout
 
 \begin_layout Standard
@@ -937,7 +788,16 @@ Notes:
  rather than as one wishes (i.e., as one knows about , or cares to interpolate,
  the values of tangential case, is what the population fluctuations are
  among a subset of the population which, for whatever reason (perhaps they
- are infuffiectly numerous etc.) they display this type .
+ are insufficiently numerous etc.) they display this type .)
+\end_layout
+
+\begin_layout Standard
+(maybe not, we have to wait and try it first, but it seems interesting to
+ think of mizer from this perspective anyhow, since these ideas can be studied
+ with analytically solveable cases, and we could use such cases as guinie
+ pigs for linear stability analysis, to determine when this `g and mu dont
+ change' criterion may occur in more practical situations, but I digress.,).
+ 
 \end_layout
 
 \begin_layout Standard

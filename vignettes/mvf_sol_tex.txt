@@ -7,84 +7,46 @@
 \usepackage[latin9]{inputenc}
 \usepackage{babel}
 \usepackage{verbatim}
-\usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{esint}
 \usepackage[unicode=true]
  {hyperref}
 \begin{document}
 
-\subsection*{PDE scheme Using formula to solve MVF over small time blocks where
-growth and death rates are assumed fixed.}
+\section*{New MvF PDE scheme }
 
 \subsection*{Richard Southwell}
 
-Idea: try and describe a formula based PDE solver to get abundance
-value $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$ over end to end time
-blocks $[L,H]$ that are sufficiently small. Solutions are done repeatedly,
-for end to end time blocks, to provide a, hopefully, more accurate
-method of PDE evolution than the upwind difference scheme currently
-implemented in mizer (which relieves on truncating the Taylor expansion
-for the abundance, and so loses more info than just assuming constant
-growth and death over its time steps). Perhaps the scheme we propose
-here is inferior to the upwind difference scheme for some reason we
-have not yet considered, or perhaps there are further problems which
-could crop up with trying to implement the PDE evolver we describe
-here. We shall have to wait and see as we have not yet tried to implement
-this PDE evolver idea with code. But, it still looks worth investigating,
-irrespective of its practical benefits, because considering how this
-new algorithm works seems (at least to me) quite informative about
-how information flows across characteristic curves, and is influenced
-by reproduction, and by the initial condition, in size spectrum models.
+\subsection*{Introduction}
+
+Idea: Use a formula to solve MVF over small time blocks where growth
+and death rates are assumed fixed. Get a formula based PDE solver
+to get abundance value $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$ over
+end to end time blocks $[L,H]$ that are sufficiently small. Solutions
+are done successively, over end to end time blocks, to provide a,
+hopefully, more accurate method of PDE evolution than the upwind difference
+scheme currently implemented in mizer (which relied on truncating
+the Taylor expansion for the abundance, unlike our proposed PDE evolver
+that uses a formula to describe the solution over a trajectory where
+the growth and death rate can be treated as constant). Perhaps the
+scheme we propose here is inferior to the upwind difference scheme
+for some reason we have not yet considered, or perhaps there are further
+problems which could crop up with trying to implement the PDE evolver
+we describe here. We shall have to wait and see as we have not yet
+tried to implement this PDE evolver idea with code. But, it still
+looks worth investigating, irrespective of its practical benefits,
+because considering how this new algorithm works seems (at least to
+me) quite informative about how information flows across characteristic
+curves, and is influenced by reproduction, and by the initial condition,
+in size spectrum models.
 
 This scheme we propose, ``of repeatedly using formula to solve the
 PDE exactly over small time blocks, under the assumption that the
 growth and death rates are the same across the whole block, as they
-were at the start of the time block'', repeatedly over many small
+were at the start of the time block'', successively over many small
 end to end time blocks could provide improvements
 
-Let $A_{i}(w)=\int_{w_{0.i}}^{w}\frac{1}{g_{i}(w')}dw'$ denote the
-age of a weight $w$ member of species $i$ with egg size $w_{0.i}$.
-
-$X_{i}(t,w)=F_{i}(t-A_{i}(w))\exp\left(-\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'\right)=N_{i}(t,w)g_{i}.$
-
-If $\tau\geq0$ {[}case 1{]} then $F_{i}(\tau)=R_{i}(\tau):=\frac{\epsilon_{i}}{2w_{0.i}}\int_{0}^{\infty}N_{i}(\tau,w')E_{r.i}(w')\psi_{i}(w').dw'=X_{i}(t,w_{0.i})$
-
-or if $\tau<0$ {[}case 2{]} then $F_{i}(\tau)$ is defined, so that
-$\forall w\in[w_{0.i},W_{\infty.i}]$ we have 
-
-$X_{0.i}(w)=X_{i}(0,w)=F_{i}(-A_{i}(w))\exp(-B_{i}(w))$ where $B_{i}(w)=\int_{w_{0.i}}^{w}\frac{\mu_{i}(w')}{g_{i}(w')}.dw'.$
-In particular, let $C_{i}(w)=-A_{i}(w),$ and since 
-
-$C_{i}(w)$ is continuous and monotonic, we can define $C_{i}^{-1}(u)$
-as the unique $w$ such that $C_{i}(w)=u.$
-
-Now $X_{i}(0,w)=F_{i}(C_{i}(w))\exp(-B_{i}(w))$ so $X_{i}(0,C_{i}^{-1}(u))=F_{i}(u)\exp(-B_{i}(C_{i}^{-1}(u)))$
-so $F_{i}(u)=X_{i}(0,C_{i}^{-1}(u))\exp(B_{i}(C_{i}^{-1}(u)))$ in
-this case.
-
-$F_{i}(\tau)=\begin{cases}
-RDD_{i}(\tau) & \text{if }\text{\ensuremath{\tau\geq}0}\\
-X_{i}(0,C_{i}^{-1}(\tau))\exp(B_{i}(C_{i}^{-1}(\tau))) & \text{if \ensuremath{\tau<0}}
-\end{cases}$
-
-where $RDD_{i}(\tau$)=
-
-$X_{0.i}(-A_{i}^{-1}(u))=F_{i}(-A_{i}(-A_{i}^{-1}(u)))\exp(-B_{i}(-A_{i}^{-1}(u)))$
-
-there exists a function $V_{0.i}()$ such that we can write the initial 
-
-condition as 
-
-We can divide time into blocks, over which we assume g and mu have
-constant values, and we run over a block, 
-
-(what is the physical interpretation of $B_{i}(w)$ ?) 
-
-B\_\{i\}(w)
-
-weight like or time like trajectories of growth
-
-\subsection*{Description}
+\subsection*{Solution}
 
 Under the assumption of time invariant growth rate $g_{i}(w)$ and
 time invariant death rate $\mu_{i}(w)$ the McKendrick\textendash von
@@ -125,12 +87,14 @@ where $X_{i}(t,w)=F_{i}(t-A_{i}(w))\exp(-B_{i}(w))$ where $B_{i}(w)=\int_{w_{0.i
 Soon we shall describe how to determine the value of $F_{i}(\tau)$
 where $\tau=t-A_{i}(w).$ 
 
+(what is the physical interpretation of $B_{i}(w)$ ?)
+
 However, first, let us define $C_{i}(w)=-A_{i}(w).$ Since $w\in[w_{0,i},W_{\infty.i})\Rightarrow g_{i}(w)>0,$
 we have that $A_{i}(w)$ is monotonically increasing with $w,$ and
 $C_{i}(w)$ is monotonically decreasing. I guess that if $C_{i}(w)$
 is strictly decreasing and continuous then it will be invertible,
-but anyhow, suppose $C_{i}(w)$ is invertible, and let $C_{i}^{-1}(u)$
-denote the $w$ such that $C_{i}(w)=-A_{i}(w)=u$.
+but anyhow, suppose $C_{i}(w)$ is invertible (at least, over considered
+values), and let $C_{i}^{-1}(u)$ denote the $w$ such that $C_{i}(w)=-A_{i}(w)=u$.
 
 Now we can continue our description of how to find $F_{i}(\tau)$
 for $\tau=t-A_{i}(w).$ (Note that $\tau$ corresponds to the birth
@@ -164,23 +128,34 @@ and we have that {[}{*}need to check this{]} this turns out to be
 equivalent to saying, for some generic $\tau<0$ that $F_{i}(\tau)=X_{i}(0,C_{i}^{-1}(\tau))\exp(B_{i}(C_{i}^{-1}(\tau)))$
 as argued above.
 
+\subsection*{Application}
+
 So the above describes how to solve the partial differential equation,
 now we will describe how this idea could be used to provide a, hopefully,
 more accurate time evolution scheme then the PDE solver currently
-employed. The above is an accurate way of determining $X_{i}(t,w),$
-and hence $N_{i}(t,w)$ for all $t\in[L,H]$ and all $w\in[w_{0.i},W_{\infty.i}],$
-provided {[}either {[}the time interval $[L,H]$ is sufficiently short{]}
-or {[}the populations involved in the $N_{i}(t,w)$ fluctuations are
-insufficiently large to have a significant effect on changing the
-growth rates and death rates{]}, we will have an instance where our
+employed in mizer. The above scheme is an accurate way of determining
+$X_{i}(t,w),$ and hence $N_{i}(t,w)$ for all $t\in[L,H]$ and all
+$w\in[w_{0.i},W_{\infty.i}],$ provided that the assumption of growth
+and death rates staying constant is an accurate assumption. There
+are several reasons why it might be reasonable to assume such static
+growth and death rates over a time block, for example: (1) the time
+interval $[L,H]$ could be very short or (2) the populations involved
+in the $N_{i}(t,w)$ fluctuations are insufficiently large to have
+a significant effect on changing the growth rates and death rates
+or (3) the growth and death could be largely governed by external
+forces (like plankton blooms and fishing), and so self interaction
+could be negligible. 
+
+Anyhow, whatever the justification, our PDE evolver relies on the
 assumption $g_{i}(t,w)\thickapprox g_{i}(L,w),$ $\mu_{i}(t,w)\thickapprox\mu_{i}(L,w)$
 that the growth rate and the death rate can be approximated by the
 value at the left hand side of the `(time) block' $[L,H]$, for each
-time point $t\in[L,H]$ and for each weight $w\in$ As I said above
-(perhaps in somewhat confusing language), ensuring that $[L,H]$ is
-sufficiently small, is one way to make sure that this ``growth and
-death rates do not change'' hypothesis is sufficiently valid to justify
-this approach. 
+time point $t\in[L,H]$ and for each weight $w\in$ Making sure that
+$[L,H]$ is sufficiently small, is one way to make sure that this
+``growth and death rates do not change'' hypothesis is sufficiently
+close to the truth to justify this approach. 
+
+\subsection*{Summary}
 
 So now we have described how we used a formula based PDE solution
 to get abundance value $N_{i}(t,w)=\frac{X_{i}(t,w)}{g_{i}(w)}$ over
@@ -194,12 +169,7 @@ constant growth and death over its time steps. This scheme we propose,
 time blocks, under the assumption that the growth and death rates
 are the same across the whole block, as they were at the start of
 the time block'', repeatedly over many small end to end time blocks
-could provide improvements (maybe not, we have to wait and try it
-first, but it seems interesting to think of mizer from this perspective
-anyhow, since these ideas can be studied with analytically solveable
-cases, and we could use such cases as guinie pigs for linear stability
-analysis, to determine when this `g and mu dont change' criterion
-may occur in more practical situations, but I digress.,). 
+could provide improvements 
 
 So a basic idea in this ``repeated formula based PDE solution thing
 over end to end time blocks'' thing to work, is that in order to
@@ -257,7 +227,7 @@ about this (think it has something to do with iterating over the reproduction
 equation, will check later), but that is something else to look into
 later. 
 
-Notes:
+\subsection*{Notes}
 
 (It is also worth bearing in mind that the interaction matrix theta
 having a peculiar structure (so the population fluctuations from the
@@ -272,8 +242,15 @@ because it gets the information about all the brief time evolution
 quickly from a formula, rather than as one wishes (i.e., as one knows
 about , or cares to interpolate, the values of tangential case, is
 what the population fluctuations are among a subset of the population
-which, for whatever reason (perhaps they are infuffiectly numerous
-etc.) they display this type .
+which, for whatever reason (perhaps they are insufficiently numerous
+etc.) they display this type .)
+
+(maybe not, we have to wait and try it first, but it seems interesting
+to think of mizer from this perspective anyhow, since these ideas
+can be studied with analytically solveable cases, and we could use
+such cases as guinie pigs for linear stability analysis, to determine
+when this `g and mu dont change' criterion may occur in more practical
+situations, but I digress.,). 
 
 \begin{comment}
 \#\#\#
