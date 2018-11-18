@@ -403,6 +403,314 @@ Need to descibe discretization scheme, and function to find zero of, for
  Newton-Raphson solving.
 \end_layout
 
+\begin_layout Subsection
+Grid point setup
+\end_layout
+
+\begin_layout Standard
+In size spectrum models we wish to keep track of the abundance of fish for
+ a continuum of different weights, however in computer simulations we only
+ keep track of the abundance for weights belonging to a finite set of discrete
+ grid points.
+ The fish grid points 
+\begin_inset Formula $w_{k}$
+\end_inset
+
+ give the weights at which we track the abundance of fish.
+ In mizer the fish grid points are specified by the following three numbers:
+\end_layout
+
+\begin_layout Standard
+.
+ The number of fish grid points 
+\begin_inset Formula $|w|,$
+\end_inset
+
+ the minimum fish egg size of a species 
+\begin_inset Formula $W_{e}.$
+\end_inset
+
+ The maximum fish size of a species 
+\begin_inset Formula $W_{+}.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The vector 
+\begin_inset Formula $w$
+\end_inset
+
+ has length 
+\begin_inset Formula $|w|,$
+\end_inset
+
+ and is such that 
+\begin_inset Formula $w_{1}=W_{e}$
+\end_inset
+
+ and 
+\begin_inset Formula $w_{|w|}=W_{+}.$
+\end_inset
+
+ Also the log of 
+\begin_inset Formula $w$
+\end_inset
+
+ is a vector with a constant difference between successive entries.
+ In other words, 
+\begin_inset Formula $\forall k\in\left\{ 1,..,|w|\right\} $
+\end_inset
+
+ we have 
+\begin_inset Formula $w_{k}=10^{y_{k}}$
+\end_inset
+
+ where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{k}=\log_{10}(W_{e})+(k-1)\left(\frac{\log_{10}(W_{+})-\log_{10}(W_{e})}{|w|-1}\right).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A vector 
+\begin_inset Formula $\Delta w$
+\end_inset
+
+ of differences is useful for Riemann sums and PDE schemes.
+ For each 
+\begin_inset Formula $k\in\left\{ 1,..,|w|-1\right\} $
+\end_inset
+
+ this is defined as 
+\begin_inset Formula $\left(\Delta w\right)_{k}=w_{k+1}-w_{k}.$
+\end_inset
+
+ It is most natural to continue the pattern (that there is a constant ratio
+ between successive entries of 
+\begin_inset Formula $\Delta w$
+\end_inset
+
+) to specify 
+\begin_inset Formula $\left(\Delta w\right)_{|w|}.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+however, unfortunately the original version of mizer instead defined 
+\begin_inset Formula $\left(\Delta w\right)_{|w|}=\left(\Delta w\right)_{|w|-1}.$
+\end_inset
+
+ [[is this still the case]] 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The plankton grid points 
+\begin_inset Formula $w_{k}^{full}$
+\end_inset
+
+ consist of the fish grid points together with extra points that refer to
+ smaller weights of plankton, below the fish egg size.
+ In mizer the plankton grid points are specified by two numbers: the number
+ of plankton grid points 
+\begin_inset Formula $|w^{full}|$
+\end_inset
+
+ and the smallest considered plankton size 
+\begin_inset Formula $W_{-}.$
+\end_inset
+
+ The vector 
+\begin_inset Formula $w^{full}$
+\end_inset
+
+ is defined such that 
+\begin_inset Formula $\forall k\in\left\{ 1,\dots,|w^{full}|-|w|\right\} $
+\end_inset
+
+ we have 
+\begin_inset Formula $w_{k}=10^{z_{k}}$
+\end_inset
+
+ where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+z_{k}=\log_{10}(W_{-})+(k-1)\left(\frac{\log_{10}(W_{e}-\left(\Delta w\right)_{1})-\log_{10}(W_{-})}{|w^{full}|-|w|-1}\right)
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the remaining 
+\begin_inset Formula $|w|$
+\end_inset
+
+ terms are given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(w_{|w^{full}|-|w|+1}^{full},w_{|w^{full}|-|w|+2}^{full},\dots,w_{|w^{full}|}^{full}\right)=\left(w_{1},w_{2},\dots,w_{|w|}\right).
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This means, if we take the log of 
+\begin_inset Formula $w^{full}$
+\end_inset
+
+ we get a vector within which there is a constant spacing between points
+ referring to the size range of fish, while there is a larger spacing between
+ successive terms of the vector that refer to weights below that of a fish
+ egg.
+ 
+\end_layout
+
+\begin_layout Standard
+For each 
+\begin_inset Formula $k\in\left\{ 1,\dots,|w^{full}|-1\right\} $
+\end_inset
+
+ this is defined as 
+\begin_inset Formula $\left(\Delta w^{full}\right)_{k}=w_{k+1}^{full}-w_{k}^{full}.$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Unfortunately, again, the original version of mizer defined 
+\begin_inset Formula $\left(\Delta w^{full}\right)_{|w^{full}|}$
+\end_inset
+
+ as being equal to 
+\begin_inset Formula $\left(\Delta w^{full}\right)_{|w^{full}|-1}.$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Setting Plankton Seperately
+\end_layout
+
+\begin_layout Standard
+Sometimes we know the form that the plankton density 
+\begin_inset Formula $N_{R}(w)$
+\end_inset
+
+ should take.
+ And sometimes using the Newton-Raphson algorithm to find a steady state
+ is faster if we only have to determine the density of fish species.
+ We shall describe how to construct a steady state by varing the fish density
+ 
+\begin_inset Formula $N_{i}(w),$
+\end_inset
+
+ and the carying capacity 
+\begin_inset Formula $c_{p}(w),$
+\end_inset
+
+ given that the plankton density is 
+\begin_inset Formula $N_{R}(w).$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+The procedure is as follows:
+\end_layout
+
+\begin_layout Standard
+First we solve for a steady state 
+\begin_inset Formula $N_{i}(w)$
+\end_inset
+
+ for the fish.
+ Under the assumption that we know 
+\begin_inset Formula $N_{R}(w),$
+\end_inset
+
+ we can get the growth rate 
+\begin_inset Formula $g_{i}(w)$
+\end_inset
+
+ for our fish, and solve for their steady state density.
+ This can be done by using Netwton Raphson, or by evolving the system with
+ the plankton held fixed.
+ Once we have determined the fish densitiy functions 
+\begin_inset Formula $N_{i}(w)$
+\end_inset
+
+ that correspond to steady states of the MVF, we determine the predation
+ rate 
+\begin_inset Formula $\mu_{p}$
+\end_inset
+
+ from 
+\begin_inset Formula $N_{i}(w),$
+\end_inset
+
+ and then retune the plankton carrying capacity to be:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $c_{p}(w)=N_{R}(w)\left(1+\frac{\mu_{p}(w)}{r_{0}w^{p-1}}\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This ensures that the resulting state 
+\begin_inset Formula $(N_{R},N)$
+\end_inset
+
+ is a steady state when the semischemostat dynamics are considered, in addition
+ to the MVF.
+\end_layout
+
 \begin_layout Section
 Ideas
 \end_layout
@@ -417,11 +725,160 @@ Homogenous case
 \end_layout
 
 \begin_layout Standard
-Faster way to find steady state in the case where all species have the same
- feeding kernel.
+There is a faster way to find steady state in the case where all species
+ have the same feeding kernel.
  In this case, the growth and death rate of each species just depeds upon
  the total abundance, aggregated over all species.
+ We shall suppose that 
+\begin_inset Formula $\theta_{ij}=1,\forall i,j$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi_{1}=..=\phi_{s}$
+\end_inset
+
+ and 
+\begin_inset Formula $\gamma_{1}=..=\gamma_{s}.$
+\end_inset
+
+ In this case, there a way to lowen the dimension of the space that Newton-Raphs
+on has to search through, to find a steady state.
+ We shall consider a case where we are allowed to retune the carrying capacity
+ of the background resource 
+\begin_inset Formula $c_{p}(w)$
+\end_inset
+
+, and the reproduction efficiency 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ at the end to complete our construction of the steady state.
+ We let 
+\begin_inset Formula $N_{c}(w)=\sum_{i}N_{i}(w)$
+\end_inset
+
+ denote the aggregate abundance.
+ We start by specifying a function 
+\begin_inset Formula $F,$
+\end_inset
+
+ that takes, as an input, 
+\begin_inset Formula $N_{c}$
+\end_inset
+
+ at all modeled discrete values of 
+\begin_inset Formula $w,$
+\end_inset
+
+ and outputs a vector of the same length.
+ Also, suppose we know that the density of plankton at steady state should
+ be 
+\begin_inset Formula $N_{R}(w).$
+\end_inset
+
+ Our procedure will be to use Newton -Raphson to find a zero of 
+\begin_inset Formula $F.$
+\end_inset
+
+ Starting with 
+\begin_inset Formula $N_{c},$
+\end_inset
+
+ we find 
+\begin_inset Formula $F(N_{c})$
+\end_inset
+
+ as follows:
+\end_layout
+
+\begin_layout Itemize
+Determine growth 
+\begin_inset Formula $g_{i}(w)$
+\end_inset
+
+ and 
+\begin_inset Formula $\mu_{i}(w)$
+\end_inset
+
+ functions from 
+\begin_inset Formula $N_{c}$
+\end_inset
+
+ (this is possible since all species have similar feeding behaivours).
+\end_layout
+
+\begin_layout Itemize
+Solve for the steady state density * of each species 
+\begin_inset Formula $i$
+\end_inset
+
+ up to a multiplicative constant 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Choose the 
+\begin_inset Formula $A_{i}'s$
+\end_inset
+
+ to minimize the integral * (or some similar, reweighted integral)
+\end_layout
+
+\begin_layout Itemize
+Return *
+\end_layout
+
+\begin_layout Standard
+We use newton raphson to find an 
+\begin_inset Formula $N_{C}$
+\end_inset
+
+ that is a zero of 
+\begin_inset Formula $F.$
+\end_inset
+
+ We extract the 
+\begin_inset Formula $A_{i}'s$
+\end_inset
+
+ that minimize the involved integral, and the resultong density functions
  
+\begin_inset Formula $N_{i}(w)$
+\end_inset
+
+ for the different species 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+We can use this resulting 
+\begin_inset Formula $N_{c}$
+\end_inset
+
+ to determine the predation mortality rate on the plankton.
+ Since we also assume that the plankton is at density 
+\begin_inset Formula $N_{R}(w)$
+\end_inset
+
+ we can solve for the carrying capacity function 
+\begin_inset Formula $c_{p}(w)$
+\end_inset
+
+ used to make sure that the steady state equation is satisfied by our semi-chemo
+stat equation for the background resource.
+ The values of the reproduction efficiency 
+\begin_inset Formula $\epsilon_{i}$
+\end_inset
+
+ can then be re-selected so that the actual egg production is balanced by
+ growing or dying fledgings, so that the system will be at steady state.
 \end_layout
 
 \end_body
