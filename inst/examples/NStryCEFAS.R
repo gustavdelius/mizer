@@ -13,7 +13,7 @@ plot(simR)
 ########## run old system, with new effort levels
 
 
-simRe <- project(params, effort = 1.1, t_max = 10, dt = 0.1, t_save = 1,
+simRe <- project(params, effort = 1.1, t_max = 30, dt = 0.1, t_save = 1,
                  initial_n = simR@n[dim(simR@n)[1],,], initial_n_pp = 
                      simR@n_pp[dim(simR@n_pp)[1],])
 plot(simRe)
@@ -31,7 +31,7 @@ plot(simF)
 
 ############# run new system, with different fishing effort
 
-simFe <- project(params, effort = 1.1, t_max = 50, dt = 0.1, t_save = 1,
+simFe <- project(params, effort = 1.1, t_max = 30, dt = 0.1, t_save = 1,
                  initial_n = simF@n[dim(simF@n)[1],,], initial_n_pp = 
                      simF@n_pp[dim(simF@n_pp)[1],])
 
