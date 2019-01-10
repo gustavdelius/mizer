@@ -6,6 +6,7 @@ library(mizer)
 data(inter)
 params_data_NS <- read.csv("./vignettes/NS_species_params.csv")
 params <- MizerParams(params_data_NS, interaction = inter,r_pp=5)
+# default r_pp = 10
 # run to a steady state of the original system
 sim <- project(params, effort = 1, t_max = 50, dt = 0.1, t_save = 1)
 plot(sim)
