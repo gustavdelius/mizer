@@ -8,7 +8,7 @@ params_data_NS <- read.csv("./vignettes/NS_species_params.csv")
 params <- MizerParams(params_data_NS, interaction = inter,r_pp=10)
 # default r_pp = 10
 # run to a steady state of the original system
-sim <- project(params, effort = 1, t_max = 50, dt = 0.1, t_save = 1)
+sim <- project(params, effort = 1, t_max = 500, dt = 0.1, t_save = 1)
 plot(sim)
 # use steady state as new initial condition
 params@initial_n <- sim@n[dim(sim@n)[1],,]
