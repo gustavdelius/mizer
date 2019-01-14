@@ -6,7 +6,7 @@ data(inter)
 params_data_NS <- read.csv("./vignettes/NS_species_params.csv")
 r_pp <- 10
 params <- MizerParams(params_data_NS, interaction = inter, r_pp=r_pp)
-#sim <- project(params, effort = 1, t_max = 50, dt = 0.1, t_save = 1)
+sim <- project(params, effort = 1, t_max = 50, dt = 0.1, t_save = 1)
 #plot(sim)
 params@initial_n <- sim@n[dim(sim@n)[1],,]
 params@initial_n_pp <- sim@n_pp[dim(sim@n_pp)[1],]
@@ -61,3 +61,7 @@ params@species_params$erepro
 
 # got code that sets up a system with a given r_pp, runs it to steady state with repro off,
 # and retunes erepro so the resulting system is steady
+
+# When r_pp = 10 there are small oscillations
+# when r_pp = 5, more stable but still oscillations
+# when r_pp = 20, unstable with many species multiplying
