@@ -1,6 +1,8 @@
 ---
 title: "Feeding preference of Anchovy and Sardine"
-output: html_notebook
+output:
+  pdf_document: default
+  html_notebook: default
 ---
 
 Mariella has data of stomach content for anchovy and sardine.
@@ -187,15 +189,15 @@ or by using maximum likelihood.
 The probability density function for the prey size is now
 $$f_W(w)\propto N(w)\phi(w)= 
 \begin{cases}
-\cal{N}w^{\alpha-\lambda} & w_{min} \leq w \leq w_{max}\\
+\mathcal{N}w^{\alpha-\lambda} & w_{min} \leq w \leq w_{max}\\
 0&\text{otherwise}
 \end{cases}$$
-The normalisation factor $\cal{N}$ is easy to calculate:
-$$\cal{N}=\frac{w_{max}^{1+\alpha-\lambda}-w_{min}^{1+\alpha-\lambda}}
+The normalisation factor $\mathcal{N}$ is easy to calculate:
+$$\mathcal{N}=\frac{w_{\text{max}}^{1+\alpha-\lambda}-w_{\text{min}}^{1+\alpha-\lambda}}
 {1+\alpha-\lambda}.$$
 The density function for the log of the prey size is therefore
 $$f_{\log(W)}(x)=
 \begin{cases}
-\cal{N}\exp\left((1+\alpha-\lambda)x\right) & \log(w_{min}) \leq x \leq \log(w_{max})\\
+\mathcal{N}\exp\left((1+\alpha-\lambda)x\right) & \log(w_{min}) \leq x \leq \log(w_{max})\\
 0&\text{otherwise}
 \end{cases}$$
