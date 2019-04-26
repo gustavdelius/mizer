@@ -11,6 +11,10 @@ knitr::opts_chunk$set(
   fig.path = "docs/dev/reference/figures/"
 )
 ```
+# This branch
+Here I am working on a vignette describing the mathematical details behind the
+numerical schemes in mizer, in particular the size discretisation and the
+evaluation of the convolution integrals via FFT.
 
 # mizer
 [![CRAN Status](https://www.r-pkg.org/badges/version/mizer)](https://cran.r-project.org/package=mizer)
