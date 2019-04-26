@@ -11,6 +11,11 @@ knitr::opts_chunk$set(
   fig.path = "docs/dev/reference/figures/"
 )
 ```
+# This branch
+In this branch I am developing the `plotDistribution()` function that
+plots the cummulative distribution function similar to how `plotSpectra()`
+plots the density function. 
+
 
 # mizer
 [![CRAN Status](https://www.r-pkg.org/badges/version/mizer)](https://cran.r-project.org/package=mizer)
