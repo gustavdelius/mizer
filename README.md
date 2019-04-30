@@ -1,6 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# This branch
+
+In this branch we are working towards modelling the Blanes fishing area.
+
 # mizer
 
 [![CRAN
