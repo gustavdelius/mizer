@@ -22,7 +22,7 @@ test_that("Scaling model is set up correctly", {
     hbar <- alpha * h * p@f0 - ks
     # Check encounter rate
     lm2 <- p@lambda - 2
-    e <- getEncounter(p, p@initial_n, p@initial_n_pp)[sp, ] * p@w^(lm2 - p@q)
+    e <- getEncounter(p)[sp, ] * p@w^(lm2 - p@q)
     ae <- gamma * p@kappa * exp(lm2^2 * sigma^2 / 2) *
         beta^lm2 * sqrt(2 * pi) * sigma * 
         # The following factor takes into account the cutoff in the integral
@@ -30,16 +30,16 @@ test_that("Scaling model is set up correctly", {
     # TODO: not precise enough yet
     expect_equivalent(e, rep(ae, length(e)), tolerance = 1e-1)
     # Check feeding level
-    f <- getFeedingLevel(p, p@initial_n, p@initial_n_pp)[sp, ]
+    f <- getFeedingLevel(p)[sp, ]
     names(f) <- NULL
     expect_equal(f, rep(f[1], length(f)), tolerance = 1e-14)
     # Death rate
-    mu <- getMort(p, p@initial_n, p@initial_n_pp, effort = 0)[sp, ]
+    mu <- getMort(p, effort = 0)[sp, ]
     mumu <- mu  # To set the right names
     mumu[] <- mu0 * p@w^(p@n - 1)
     expect_equal(mu, mumu, tolerance = 1e-15)
     # Growth rate
-    g <- getEGrowth(p, p@initial_n, p@initial_n_pp)[sp, ]
+    g <- getEGrowth(p)[sp, ]
     gg <- g  # To set the right names
     gg[] <- hbar * p@w^p@n * (1 - p@psi[sp, ])
     # TODO: not precise enough yet

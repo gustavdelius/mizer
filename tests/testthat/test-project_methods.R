@@ -32,7 +32,7 @@ lm2 <- p@lambda - 2
 # getEncounter --------------------------------------------------------------
 
 test_that("getEncounter approximates analytic result when feeding on plankton only", {
-    e <- getEncounter(p, p@initial_n, p@initial_n_pp)[sp, ] * p@w^(lm2 - p@q)
+    e <- getEncounter(p)[sp, ] * p@w^(lm2 - p@q)
     # Check that this is constant
     expect_equivalent(e, rep(e[1], length(e)))
     # Check that it agrees with analytic result
@@ -495,14 +495,14 @@ test_that("Test that fft based integrator gives similar result as old code", {
     # create a second params object that does not use fft
     params2 <- setPredKernel(params, pred_kernel = getPredKernel(params))
     # Test encounter rate integral
-    efft <- getEncounter(params, params@initial_n, params@initial_n_pp)
-    e <- getEncounter(params2, params@initial_n, params@initial_n_pp)
+    efft <- getEncounter(params)
+    e <- getEncounter(params2)
     # Only check values at fish sizes
     fish <- outer(1:no_sp, 1:no_w, function(i, a) a >= params@w_min_idx[i])
     expect_equivalent(efft[fish], e[fish], tolerance = 3e-14)
     # Test available energy integral
-    prfft <- getPredRate(params, params@initial_n, params@initial_n_pp)
-    pr <- getPredRate(params2, params@initial_n, params@initial_n_pp)
+    prfft <- getPredRate(params)
+    pr <- getPredRate(params2)
     expect_equivalent(prfft, pr, tolerance = 1e-15)
 })
 
