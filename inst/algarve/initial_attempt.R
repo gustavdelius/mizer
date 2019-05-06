@@ -1,17 +1,22 @@
 # Our first attempt at setting up a mizer model for the lagoon
 species_params <- read.csv("inst/algarve/parameters.csv")[1:24, ]
 names(species_params)[names(species_params) == "Species"] <- "species"
+<<<<<<< HEAD
 species_params$beta[is.na(species_params$beta)] <- 100
 species_params$sigma[is.na(species_params$sigma)] <- 2
 species_params$w_mat[species_params$w_mat == 0] <- NA
 species_params$r_max <- Inf
 
 species_params$ks <- 0
+=======
+>>>>>>> bd6456e706404d0e13937c821fe8a68d4ef7a5ae
 
 interaction <- read.csv("inst/algarve/interation_matrix.csv", row.names = 1)
 interaction <- as.matrix(interaction)
 
+
 resource_params <- list("detritus_external" = 0)
+
 resource_dynamics <- list("detritus" = function(params, n, n_pp, B, rates, dt, ...) B["detritus"])
 
 params <- MizerParams(species_params,
