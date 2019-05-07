@@ -21,11 +21,16 @@ params <- MizerParams(species_params,
                       resource_dynamics = resource_dynamics,
                       resource_params = resource_params)
 
-params@initial_B[] <- 10^8
+params@initial_B[] <- 0.0001
 plotlySpectra(params, plankton = FALSE)
 
 # Run to steady state with constant reproduction
 (rdd <- getRDD(params))
+oldsrr <- params@srr
+params@srr <- function(rdi, species_params) {rdd}
+sim <- project(params, t_max = 100)
+plotBiomass(sim)
+params@srr <- oldsrr
 params <- steady(params, t_max = 100)
 plotlySpectra(params)
 
@@ -38,6 +43,8 @@ plotlySpectra(params)
 
 # Calculate total biomass
 biomass <- rowSums(sweep(params@initial_n, 2, params@w * params@dw, "*"))
+biomass
+
 
 # rescale abundances
 factor <- 1e-14
