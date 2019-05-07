@@ -40,15 +40,17 @@ Default is TRUE.}
 
 \item{highlight}{Name or vector of names of the species to be highlighted.}
 
-\item{...}{Arguments passed on to \code{\link[=get_size_range_array]{get_size_range_array}}
+\item{...}{Other arguments (currently unused)}
+
+\item{...}{Arguments passed on to \code{get_size_range_array}
 \describe{
-  \item{\code{min_w}}{Smallest weight in size range. Defaults to smallest weight in
+  \item{min_w}{Smallest weight in size range. Defaults to smallest weight in
 the model.}
-  \item{\code{max_w}}{Largest weight in size range. Defaults to largest weight in the
+  \item{max_w}{Largest weight in size range. Defaults to largest weight in the
 model.}
-  \item{\code{min_l}}{Smallest length in size range. If supplied, this takes
+  \item{min_l}{Smallest length in size range. If supplied, this takes
 precedence over \code{min_w}.}
-  \item{\code{max_l}}{Largest length in size range. If supplied, this takes precedence
+  \item{max_l}{Largest length in size range. If supplied, this takes precedence
 over \code{max_w}.}
 }}
 }
