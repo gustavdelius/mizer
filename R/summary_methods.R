@@ -338,7 +338,8 @@ getGrowthCurves <- function(object,
     if (is(object, "MizerSim")) {
         params <- object@params
         t <- dim(object@n)[1]
-        n <- object@n[t, , ]
+        n <- params@initial_n  # to initialise array of correct dimensions
+        n[] <- object@n[t, , ]
         n_pp <- object@n_pp[t, ]
     } else if (is(object, "MizerParams")) {
         params <- object
