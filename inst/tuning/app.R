@@ -58,6 +58,15 @@ server <- function(input, output, session) {
     # Update the reactive params object
     params(p)
     
+    # Update species selector
+    species <- as.character(p@species_params$species[!is.na(p@A)])
+    # updateSelectInput(session, "sp", selected = species[1])
+    output$sp_sel <- renderUI({
+      p <- isolate(params())
+      species <- as.character(p@species_params$species[!is.na(p@A)])
+      selectInput("sp", "Species:", species) 
+    })
+    
     # Trigger an update of sliders
     trigger_update(runif(1))
   })
