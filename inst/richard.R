@@ -43,6 +43,7 @@ params <- set_multispecies_model(
     kappa = 100 * 10^(-3*lambda),
     w_pp_cutoff = 0.1,
     q = 0.8)
+params@rr_pp[] <- params@w_full^(0.85 - 1)
 
 plotlySpectra(params)
 
