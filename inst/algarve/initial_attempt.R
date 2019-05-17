@@ -31,11 +31,6 @@ params <- MizerParams(species_params,
 
 params@initial_B[] <- 1
 
-# Set allometric background death
-mu_b0 <- rep(1, no_sp)
-mu_b <- outer(mu_b0, params@w^(n - 1))
-params <- setBMort(params, mu_b = mu_b)
-
 # Start with no interaction
 interaction0 <- interaction
 interaction0[] <- 0
@@ -99,6 +94,8 @@ params <- setInteraction(params, interaction = interaction * epsilon)
 
 params <- steady(params, t_max = 100)
 plotlySpectra(params)
+
+saveRDS(params, file = "inst/algarve/params.rds")
 
 # Slowly switch off background
 params@species_params$rho_detritus[species_params$rho_detritus == 0] <- 
