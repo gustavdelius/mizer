@@ -119,6 +119,11 @@ server <- function(input, output, session) {
                   min = signif(sp$sigma / 2, 2),
                   max = signif(sp$sigma * 1.5, 2),
                   step = 0.05),
+      sliderInput("interaction_p", "Plankton interaction",
+                  value = sp$interaction_p,
+                  min = 0,
+                  max = 1,
+                  step = 0.05),
       tags$h3("Fishing"),
       sliderInput("catchability", "Catchability",
                    value = sp$catchability, min = 0, max = 1),
@@ -358,7 +363,8 @@ server <- function(input, output, session) {
     species_params[sp, "h"]     <- input$h
     species_params[sp, "beta"]  <- input$beta
     species_params[sp, "sigma"] <- input$sigma
-    species_params[sp, "catchability"]   <- input$catchability
+    species_params[sp, "interaction_p"] <- input$interaction_p
+    species_params[sp, "catchability"]  <- input$catchability
     species_params[sp, "l50"]   <- input$l50
     species_params[sp, "l25"]   <- input$l50 - input$ldiff
     species_params[sp, "alpha"] <- input$alpha
