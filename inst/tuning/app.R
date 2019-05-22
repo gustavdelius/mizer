@@ -177,14 +177,26 @@ server <- function(input, output, session) {
       sliderInput("alpha", "Assimilation efficiency alpha",
                   value = sp$alpha,
                   min = 0,
-                  max = 1)
+                  max = 1),
+      tags$h3("Prey interactions")
     )
+    for (i in p@species_params$species) {
+      inter_var <- paste0("inter_", i)
+      l1 <- c(l1, list(
+        sliderInput(inter_var, i,
+                    value = p@interaction[input$sp, i],
+                    min = 0,
+                    max = 1,
+                    step = 0.05)
+      ))
+    }
+    
     if (length(p@resource_dynamics) > 0) {
+      l1 <- c(l1, list(tags$h3("Resource encounter")))
       for (res in names(p@resource_dynamics)) {
         res_var <- paste0("rho_", res)
         l1 <- c(l1, list(
-                sliderInput(res_var, 
-                            paste(res, "feeding rate"),
+                sliderInput(res_var, res,
                             value = sp[[res_var]],
                             min = signif(max(0, sp[[res_var]] - 0.1) / 2, 2),
                             max = signif((sp[[res_var]] + 0.1) * 1.5, 2),
@@ -286,7 +298,7 @@ server <- function(input, output, session) {
       # Create new params object identical to old one except for changed
       # species params
       p@species_params <- species_params
-      pc <- setParams(p)
+      pc <- setParams(p, interaction = p@interaction)
       pc@initial_n <- p@initial_n
       pc@initial_n_pp <- p@initial_n_pp
       pc@initial_B <- p@initial_B
@@ -379,6 +391,10 @@ server <- function(input, output, session) {
         res_var <- paste0("rho_", res)
         species_params[sp, res_var] <- input[[res_var]]
       }
+    }
+    for (i in p@species_params$species) {
+      inter_var <- paste0("inter_", i)
+      p@interaction[sp, i] <- input[[inter_var]]
     }
     
     
