@@ -979,6 +979,12 @@ server <- function(input, output, session) {
       geom_point(aes(x = xp, y = 0), size = 4, colour = "blue")
   })
   
+  ## Plot diet ####
+  output$plot_diet <- renderPlotly({
+    req(input$sp)
+    plotDiet(params(), input$sp)
+  })
+  
   ## Plot predators ####
   output$plot_pred <- renderPlotly({
     req(input$sp)
@@ -1119,6 +1125,8 @@ ui <- fluidPage(
         tabPanel("Prey",
                  uiOutput("pred_size_slider"),
                  plotlyOutput("plot_prey")),
+        tabPanel("Diet",
+                 plotlyOutput("plot_diet")),
         tabPanel("Predators",
                  plotlyOutput("plot_pred")),
         tabPanel("psi",
