@@ -1284,11 +1284,14 @@ plotDiet <- function(object, species) {
         w = params@w,
         Prey = rep(prey, each = length(params@w)))
     plot_dat <- plot_dat[plot_dat$Proportion > 0, ]
+    # Need fill colours also for unstructured resources. 
+    # This should be handled centrally in the future
+    linecolour = c(params@linecolour, detritus = "blue")
     ggplot(plot_dat) +
         geom_area(aes(x = w, y = Proportion, fill = Prey)) +
         scale_x_log10() +
         labs(x = "Size [g]") +
-        scale_fill_manual(values = params@linecolour)
+        scale_fill_manual(values = linecolour)
 }
 
 
