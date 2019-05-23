@@ -1019,20 +1019,21 @@ server <- function(input, output, session) {
     # Make data.frame for plot
     plot_dat <- 
       rbind(
-        data.frame(value = c(pred_rate),
-                   Cause = species,
-                   w = rep(p@w, each = dim(pred_rate)[[1]])),
         data.frame(value = background,
                    Cause = "Background",
                    w = p@w),
         data.frame(value = fishing,
                    Cause = "Fishing",
-                   w = p@w)
+                   w = p@w),
+        data.frame(value = c(pred_rate),
+                   Cause = species,
+                   w = rep(p@w, each = dim(pred_rate)[[1]]))
       )
     ggplot(plot_dat) +
-      geom_line(aes(x = w, y = value, color = Cause)) +
+      geom_area(aes(x = w, y = value, fill = Cause)) +
       scale_x_log10() +
-      labs(x = "Size [g]", y = "Proportion of all death")
+      labs(x = "Size [g]", y = "Proportion of all death") +
+      scale_fill_manual(values = p@linecolour)
   })
   
   ## Plot psi ####
