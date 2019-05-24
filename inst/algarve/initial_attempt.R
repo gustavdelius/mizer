@@ -10,8 +10,8 @@ species_params$cutoff_size <- species_params$minimum.sampling.size..g.
 species_params$cutoff_size[24] <- species_params$w_inf[24] / 2
 species_params$biomass_observed <- species_params$Biomass.in.habitat.area..gDWm.2.
 
-interaction <- read.csv("inst/algarve/interation_matrix.csv", row.names = 1)
-interaction <- as.matrix(interaction)
+params@interaction <- read.csv("inst/algarve/interation_matrix.csv", row.names = 1)
+interaction <- t(as.matrix(interaction))
 
 resource_params <- list("detritus_external" = 0)
 resource_dynamics <- list("detritus" = function(params, n, n_pp, B, rates, dt, ...) B["detritus"])
