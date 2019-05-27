@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot total fishing mortality of each species by size with plotly — plotlyFMort • mizer</title>
+<title>Plot diet — plotDiet • mizer</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,11 +30,9 @@
 
 
 
-<meta property="og:title" content="Plot total fishing mortality of each species by size with plotly — plotlyFMort" />
+<meta property="og:title" content="Plot diet — plotDiet" />
 
-<meta property="og:description" content="After running a projection, plot the predation mortality rate of each species
-by size. The mortality rate is averaged over the specified time range (a
-single value for the time range can be used to plot a single time step)." />
+<meta property="og:description" content="Plot diet" />
 <meta name="twitter:card" content="summary" />
 
 <meta name="robots" content="noindex">
@@ -113,21 +111,18 @@ single value for the time range can be used to plot a single time step)." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot total fishing mortality of each species by size with plotly</h1>
+    <h1>Plot diet</h1>
     <small class="dont-index"><a href='https://github.com/sizespectrum/mizer/edit/master/R/plots.R'>Edit this page. &nbsp;</a> Source: <a href='https://github.com/sizespectrum/mizer/blob/master/R/plots.R'><code>R/plots.R</code></a></small>
-    <div class="hidden name"><code>plotlyFMort.Rd</code></div>
+    <div class="hidden name"><code>plotDiet.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>After running a projection, plot the predation mortality rate of each species
-by size. The mortality rate is averaged over the specified time range (a
-single value for the time range can be used to plot a single time step).</p>
+    <p>Plot diet</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>plotlyFMort</span>(<span class='no'>object</span>, <span class='kw'>species</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>time_range</span>, <span class='kw'>print_it</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>highlight</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>plotDiet</span>(<span class='no'>object</span>, <span class='no'>species</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -141,26 +136,6 @@ single value for the time range can be used to plot a single time step).</p>
       <td><p>Name or vector of names of the species to be plotted. By
 default all species are plotted.</p></td>
     </tr>
-    <tr>
-      <th>time_range</th>
-      <td><p>The time range (either a vector of values, a vector of min
-and max time, or a single value) to average the abundances over. Default is
-the final time step. Ignored when called with a <a href='MizerParams-class.html'>MizerParams</a>
-object.</p></td>
-    </tr>
-    <tr>
-      <th>print_it</th>
-      <td><p>Display the plot, or just return the ggplot2 object.
-Defaults to FALSE</p></td>
-    </tr>
-    <tr>
-      <th>highlight</th>
-      <td><p>Name or vector of names of the species to be highlighted.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Other arguments (currently unused)</p></td>
-    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -171,12 +146,12 @@ Defaults to FALSE</p></td>
 
     <div class='dont-index'><p>Other plotting functions: <code><a href='displayFrames.html'>displayFrames</a></code>,
   <code><a href='plotMizerSim.html'>plot,MizerSim,missing-method</a></code>,
-  <code><a href='plotBiomass.html'>plotBiomass</a></code>, <code><a href='plotDiet.html'>plotDiet</a></code>,
-  <code><a href='plotFMort.html'>plotFMort</a></code>, <code><a href='plotFeedingLevel.html'>plotFeedingLevel</a></code>,
+  <code><a href='plotBiomass.html'>plotBiomass</a></code>, <code><a href='plotFMort.html'>plotFMort</a></code>,
+  <code><a href='plotFeedingLevel.html'>plotFeedingLevel</a></code>,
   <code><a href='plotGrowthCurves.html'>plotGrowthCurves</a></code>,
   <code><a href='plotPredMort.html'>plotPredMort</a></code>, <code><a href='plotSpectra.html'>plotSpectra</a></code>,
   <code><a href='plotYieldGear.html'>plotYieldGear</a></code>, <code><a href='plotYield.html'>plotYield</a></code>,
-  <code><a href='plotlyBiomass.html'>plotlyBiomass</a></code>,
+  <code><a href='plotlyBiomass.html'>plotlyBiomass</a></code>, <code><a href='plotlyFMort.html'>plotlyFMort</a></code>,
   <code><a href='plotlyFeedingLevel.html'>plotlyFeedingLevel</a></code>,
   <code><a href='plotlyGrowthCurves.html'>plotlyGrowthCurves</a></code>,
   <code><a href='plotlyPredMort.html'>plotlyPredMort</a></code>,

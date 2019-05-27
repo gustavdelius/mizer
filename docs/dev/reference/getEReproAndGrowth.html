@@ -168,9 +168,11 @@ using the <code><a href='getFeedingLevel.html'>getFeedingLevel</a></code> functi
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A two dimensional array (species x size) holding
-$$E_{r.i}(w) = \max(0, \alpha_i\, {\tt encounter}_i(w) - {\tt metab}_i(w)).$$
+$$E_{r.i}(w) = \max(0, \alpha_i\, (1 - {\tt feeding\_level}_i(w))\, 
+                           {\tt encounter}_i(w) - {\tt metab}_i(w)).$$
 The assimilation rate \(\alpha_i\) is taken from the species parameter
-data frame in <code>params</code>. The metabolic rate is taken from <code>params</code>.</p>
+data frame in <code>params</code>. The metabolic rate <code>metab</code> is taken from 
+<code>params</code>.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 

@@ -40,17 +40,15 @@ Default is TRUE.}
 
 \item{highlight}{Name or vector of names of the species to be highlighted.}
 
-\item{...}{Other arguments (currently unused)}
-
-\item{...}{Arguments passed on to \code{get_size_range_array}
+\item{...}{Arguments passed on to \code{\link[=get_size_range_array]{get_size_range_array}}
 \describe{
-  \item{min_w}{Smallest weight in size range. Defaults to smallest weight in
+  \item{\code{min_w}}{Smallest weight in size range. Defaults to smallest weight in
 the model.}
-  \item{max_w}{Largest weight in size range. Defaults to largest weight in the
+  \item{\code{max_w}}{Largest weight in size range. Defaults to largest weight in the
 model.}
-  \item{min_l}{Smallest length in size range. If supplied, this takes
+  \item{\code{min_l}}{Smallest length in size range. If supplied, this takes
 precedence over \code{min_w}.}
-  \item{max_l}{Largest length in size range. If supplied, this takes precedence
+  \item{\code{max_l}}{Largest length in size range. If supplied, this takes precedence
 over \code{max_w}.}
 }}
 }
@@ -65,8 +63,8 @@ against time. The biomass is calculated within user defined size limits
 \seealso{
 Other plotting functions: \code{\link{displayFrames}},
   \code{\link{plot,MizerSim,missing-method}},
-  \code{\link{plotBiomass}}, \code{\link{plotFMort}},
-  \code{\link{plotFeedingLevel}},
+  \code{\link{plotBiomass}}, \code{\link{plotDiet}},
+  \code{\link{plotFMort}}, \code{\link{plotFeedingLevel}},
   \code{\link{plotGrowthCurves}},
   \code{\link{plotPredMort}}, \code{\link{plotSpectra}},
   \code{\link{plotYieldGear}}, \code{\link{plotYield}},
