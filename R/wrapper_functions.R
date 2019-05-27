@@ -1082,9 +1082,9 @@ addSpecies <- function(params, species_params, SSB = NA,
     # growth rates, and death rates induced upon it by the pre-existing species
     p@interaction[new_sp, new_sp] <- 0
     # compute death rate for new species
-    mumu <- getMort(p, p@initial_n, p@initial_n_pp, effort = effort)[new_sp, ]
+    mumu <- getMort(p, effort = effort)[new_sp, ]
     # compute growth rate for new species
-    gg <- getEGrowth(p, p@initial_n, p@initial_n_pp)[new_sp, ]
+    gg <- getEGrowth(p)[new_sp, ]
     
     # Compute solution for new species
     w_inf_idx <- sum(p@w < p@species_params$w_inf[new_sp])
@@ -1134,9 +1134,9 @@ addSpecies <- function(params, species_params, SSB = NA,
     
     # Retune the values of erepro, so that we are at steady state.
     # First get death, growth and reproduction rates
-    mumu <- getMort(p, p@initial_n, p@initial_n_pp, effort = effort)
-    gg <- getEGrowth(p, p@initial_n, p@initial_n_pp)
-    rdi <- getRDI(p, p@initial_n, p@initial_n_pp)
+    mumu <- getMort(p, effort = effort)
+    gg <- getEGrowth(p)
+    rdi <- getRDI(p)
     erepro_final <- 1:no_sp  # set up vector of right dimension
     for (i in (1:no_sp)) {
         gg0 <- gg[i, p@w_min_idx[i]]
@@ -1161,7 +1161,7 @@ addSpecies <- function(params, species_params, SSB = NA,
     p@species_params$r_max <- p@species_params$w_inf
     # set rmax = rfac*RDD = (rfac - 1)*RDI
     p@species_params$r_max <-
-        (rfac - 1) * getRDI(p, p@initial_n, p@initial_n_pp)
+        (rfac - 1) * getRDI(p)
     return(p)
 }
 

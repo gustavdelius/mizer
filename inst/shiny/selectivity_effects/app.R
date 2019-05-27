@@ -136,9 +136,9 @@ server <- function(input, output, session) {
         
         # Retune the values of erepro so that we get the correct level of
         # recruitment without stock-recruitment relationship
-        mumu <- getZ(p, p@initial_n, p@initial_n_pp, effort = fixed_effort)
-        gg <- getEGrowth(p, p@initial_n, p@initial_n_pp)
-        rdi <- getRDI(p, p@initial_n, p@initial_n_pp)
+        mumu <- getZ(p, effort = fixed_effort)
+        gg <- getEGrowth(p)
+        rdi <- getRDI(p)
         for (i in (1:no_sp)) {
             gg0 <- gg[i, p@w_min_idx[i]]
             mumu0 <- mumu[i, p@w_min_idx[i]]
