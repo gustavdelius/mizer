@@ -79,7 +79,7 @@ server <- function(input, output, session) {
       saveRDS(params(), file = file)
     })
   
-  ## UI for species parameters ####
+  ## UI for side bar ####
   output$sp_sel <- renderUI({
     p <- isolate(params())
     species <- as.character(p@species_params$species[!is.na(p@A)])
@@ -96,11 +96,15 @@ server <- function(input, output, session) {
     n0 <- p@initial_n[input$sp, p@w_min_idx[input$sp]]
     
     l1 <- list(
+      tags$h3(tags$a(id = "biomass"), "Biomass"),
       sliderInput("n0", "Egg density",
                   value = n0,
                   min = signif(n0 / 10, 3),
                   max = signif(n0 * 10, 3)),
-      tags$h3("Predation"),
+      sliderInput("rescale", "Rescale all", value = 1,
+                  min = 0.1,
+                  max = 5),
+      tags$h3(tags$a(id = "predation"), "Predation"),
       sliderInput("gamma", "Predation rate coefficient gamma",
                   value = sp$gamma,
                   min = signif(sp$gamma / 2, 3),
@@ -122,7 +126,7 @@ server <- function(input, output, session) {
     )
     
     if (length(p@resource_dynamics) > 0) {
-      l1 <- c(l1, list(tags$h3("Resource encounter")))
+      l1 <- c(l1, list(tags$h3(tags$a(id = "resource"), "Resource encounter")))
       for (res in names(p@resource_dynamics)) {
         res_var <- paste0("rho_", res)
         l1 <- c(l1, list(
@@ -134,7 +138,7 @@ server <- function(input, output, session) {
       }
     }
     
-    l1 <- c(l1, list(tags$h3("Fishing"),
+    l1 <- c(l1, list(tags$h3(tags$a(id = "fishing"), "Fishing"),
       sliderInput("catchability", "Catchability",
                    value = sp$catchability, min = 0, max = 1),
       sliderInput("l50", "L50",
@@ -147,7 +151,7 @@ server <- function(input, output, session) {
                    min = 0.1, 
                    max = signif(sp$l50 / 10, 2),
                   step = 0.1),
-      tags$h3("Maturity"),
+      tags$h3(tags$a(id = "maturity"), "Maturity"),
       sliderInput("w_mat", "w_mat", value = sp$w_mat,
                   min = signif(sp$w_mat / 2, 2),
                   max = signif(sp$w_mat * 1.5, 2)),
@@ -159,7 +163,7 @@ server <- function(input, output, session) {
                   min = 0,
                   max = 2,
                   step = 0.01),
-      tags$h3("Metabolism"),
+      tags$h3(tags$a(id = "others"), "Others"),
       sliderInput("ks", "Coefficient of standard metabolism ks",
                   value = sp$ks,
                   min = signif(sp$ks / 2, 2),
@@ -170,21 +174,16 @@ server <- function(input, output, session) {
                   min = signif(sp$k / 2, 2),
                   max = signif((sp$k + 0.1) * 1.5, 2),
                   step = 0.01),
-      tags$h3("Mortality"),
-      sliderInput("z0", "Coefficient z0",
+      sliderInput("z0", "Mortality",
                   value = sp$z0,
                   min = signif(sp$z0 / 2, 2),
                   max = signif((sp$z0 + 0.1) * 1.5, 2),
                   step = 0.05),
-      tags$h3("Others"),
-      sliderInput("rescale", "Rescale abundance", value = 1,
-                  min = 0.1,
-                  max = 5),
       sliderInput("alpha", "Assimilation efficiency alpha",
                   value = sp$alpha,
                   min = 0,
                   max = 1),
-      tags$h3("Prey interactions"),
+      tags$h3(tags$a(id = "interactions"), "Prey interactions"),
       sliderInput("interaction_p", "Plankton",
                   value = sp$interaction_p,
                   min = 0,
@@ -204,7 +203,7 @@ server <- function(input, output, session) {
     }
     
     l1 <- c(l1, list(
-      tags$h3("Plankton"),
+      tags$h3(tags$a(id = "plankton"), "Plankton"),
       numericInput("lambda", "Sheldon exponent lambda",
                    value = p@lambda, min = 1.9, max = 2.2, step = 0.005),
       sliderInput("kappa", "Plankton coefficient kappa",
@@ -216,30 +215,19 @@ server <- function(input, output, session) {
       numericInput("w_pp_cutoff", "Largest plankton",
                    value = p@w_full[which.min(p@cc_pp > 0)],
                    min = 1e-10,
-                   max = 1e3)
+                   max = 1e3),
+      tags$h3(tags$a(id = "file"), "File management"),
+      downloadButton("params", "Download params object"),
+      checkboxInput("log_steady", "Log steady states",
+                    value = FALSE),
+      checkboxInput("log_sp", "Log species parameters",
+                    value = FALSE),
+      tags$hr(),
+      textOutput("filename"),
+      fileInput("upload", "Upload new params object", 
+                accept = ".rds")
     ))
     l1
-  })
-  
-  ## UI for general parameters ####
-
-  output$general_params <- renderUI({
-    p <- isolate(params())
-    w_pp_cutoff <- p@w_full[which.min(p@cc_pp > 0)]
-    list(
-      numericInput("lambda", "Sheldon exponent lambda",
-                   value = p@lambda, min = 1.9, max = 2.2, step = 0.005),
-      sliderInput("kappa", "Plankton coefficient kappa",
-                  value = p@kappa, 
-                  min = signif(p@kappa / 10, 3),
-                  max = signif(p@kappa * 10, 3)),
-      sliderInput("log_r_pp", "log10 Plankton replenishment rate",
-                  value = 1, min = -4, max = 4),
-      numericInput("w_pp_cutoff", "Largest plankton",
-                   value = w_pp_cutoff,
-                   min = 1e-10,
-                   max = 1e3)
-    )
   })
   
   ## Rescale abundance ####
@@ -1151,44 +1139,34 @@ ui <- fluidPage(
   sidebarLayout(
     
     ## Sidebar ####
-    sidebarPanel(
-      tabsetPanel(
-        id = "sidebarTabs",
-        tabPanel(
-          "Species",
-          tags$br(),
-          actionButton("sp_interact", "Interact"),
-          actionButton("sp_steady", "Steady"),
-          tags$br(),
-          uiOutput("sp_sel"),
-          uiOutput("sp_params"),
-          tags$head(tags$style(
-            type = 'text/css',
-            '#sp_params { max-height: 70vh; overflow-y: auto; }'
-          ))
-        ),
-        # tabPanel(
-        #   "General",
-        #   tags$br(),
-        #   actionButton("bg_go", "Go"),
-        #   sliderInput("effort", "Effort",
-        #               value = 1, min = 0, max = 2, step = 0.05),
-        #   uiOutput("general_params")
-        # ),
-        tabPanel(
-          "File",
-          tags$br(),
-          downloadButton("params", "Download current params object"),
-          checkboxInput("log_steady", "Log steady states",
-                        value = FALSE),
-          checkboxInput("log_sp", "Log species parameters",
-                        value = FALSE),
-          tags$hr(),
-          textOutput("filename"),
-          fileInput("upload", "Upload new params object", 
-                    accept = ".rds")
-        )
-      ),
+    sidebarPanel("->",
+      tags$a("Biomass", href = "#biomass"),
+      "->",
+      tags$a("Predation", href = "#predation"),
+      "->",
+      tags$a("Resources", href = "#resource"),
+      "->",
+      tags$a("Fishing", href = "#fishing"),
+      "->",
+      tags$a("Maturity", href = "#maturity"),
+      "->",
+      tags$a("Others", href = "#others"),
+      "->",
+      tags$a("Prey", href = "#interactions"),
+      "->",
+      tags$a("Plankton", href = "#plankton"),
+      "->",
+      tags$a("File", href = "#file"),
+      tags$br(),
+      actionButton("sp_interact", "Interact"),
+      actionButton("sp_steady", "Steady"),
+      tags$br(),
+      uiOutput("sp_sel"),
+      uiOutput("sp_params"),
+      tags$head(tags$style(
+        type = 'text/css',
+        '#sp_params { max-height: 60vh; overflow-y: auto; }'
+      )),
       width = 3
     ),  # endsidebarpanel
     
