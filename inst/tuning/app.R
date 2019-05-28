@@ -30,8 +30,9 @@ server <- function(input, output, session) {
   output$filename <- renderText(paste0("Previously uploaded file: ", filename))
   
   # Define some globals to skip certain observers
-  skip_update <- TRUE
-  skip_update_n0 <- TRUE
+  sp_old <- 1
+  sp_old_predation <- 1
+  sp_old_n0 <- 1
   # Define a reactive value for triggering an update of species sliders
   trigger_update <- reactiveVal(0)
   
@@ -94,12 +95,11 @@ server <- function(input, output, session) {
     sp <- p@species_params[input$sp, ]
     n0 <- p@initial_n[input$sp, p@w_min_idx[input$sp]]
     
-    # We do not want the updating of the slider to triger an update of the
-    # params object
-    skip_update <<- TRUE
-    skip_update_n0 <<- TRUE
-    
     l1 <- list(
+      sliderInput("n0", "Egg density",
+                  value = n0,
+                  min = signif(n0 / 10, 3),
+                  max = signif(n0 * 10, 3)),
       tags$h3("Predation"),
       sliderInput("gamma", "Predation rate coefficient gamma",
                   value = sp$gamma,
@@ -118,13 +118,23 @@ server <- function(input, output, session) {
                   value = sp$sigma,
                   min = signif(sp$sigma / 2, 2),
                   max = signif(sp$sigma * 1.5, 2),
-                  step = 0.05),
-      sliderInput("interaction_p", "Plankton interaction",
-                  value = sp$interaction_p,
-                  min = 0,
-                  max = 1,
-                  step = 0.05),
-      tags$h3("Fishing"),
+                  step = 0.05)
+    )
+    
+    if (length(p@resource_dynamics) > 0) {
+      l1 <- c(l1, list(tags$h3("Resource encounter")))
+      for (res in names(p@resource_dynamics)) {
+        res_var <- paste0("rho_", res)
+        l1 <- c(l1, list(
+          sliderInput(res_var, res,
+                      value = sp[[res_var]],
+                      min = signif(max(0, sp[[res_var]] - 0.1) / 2, 2),
+                      max = signif((sp[[res_var]] + 0.1) * 1.5, 2),
+                      step = 0.01)))
+      }
+    }
+    
+    l1 <- c(l1, list(tags$h3("Fishing"),
       sliderInput("catchability", "Catchability",
                    value = sp$catchability, min = 0, max = 1),
       sliderInput("l50", "L50",
@@ -167,18 +177,20 @@ server <- function(input, output, session) {
                   max = signif((sp$z0 + 0.1) * 1.5, 2),
                   step = 0.05),
       tags$h3("Others"),
-      sliderInput("kappa", "kappa", value = p@kappa,
-                  min = signif(p@kappa / 2, 2),
-                  max = signif(p@kappa * 1.5, 2)),
-      sliderInput("n0", "Egg density",
-                  value = n0,
-                  min = signif(n0 / 2, 3),
-                  max = signif(n0 * 1.5, 3)),
+      sliderInput("rescale", "Rescale abundance", value = 1,
+                  min = 0.1,
+                  max = 5),
       sliderInput("alpha", "Assimilation efficiency alpha",
                   value = sp$alpha,
                   min = 0,
                   max = 1),
-      tags$h3("Prey interactions")
+      tags$h3("Prey interactions"),
+      sliderInput("interaction_p", "Plankton",
+                  value = sp$interaction_p,
+                  min = 0,
+                  max = 1,
+                  step = 0.05)
+    )
     )
     for (i in p@species_params$species) {
       inter_var <- paste0("inter_", i)
@@ -191,18 +203,21 @@ server <- function(input, output, session) {
       ))
     }
     
-    if (length(p@resource_dynamics) > 0) {
-      l1 <- c(l1, list(tags$h3("Resource encounter")))
-      for (res in names(p@resource_dynamics)) {
-        res_var <- paste0("rho_", res)
-        l1 <- c(l1, list(
-                sliderInput(res_var, res,
-                            value = sp[[res_var]],
-                            min = signif(max(0, sp[[res_var]] - 0.1) / 2, 2),
-                            max = signif((sp[[res_var]] + 0.1) * 1.5, 2),
-                            step = 0.01)))
-      }
-    }
+    l1 <- c(l1, list(
+      tags$h3("Plankton"),
+      numericInput("lambda", "Sheldon exponent lambda",
+                   value = p@lambda, min = 1.9, max = 2.2, step = 0.005),
+      sliderInput("kappa", "Plankton coefficient kappa",
+                  value = p@kappa, 
+                  min = signif(p@kappa / 10, 3),
+                  max = signif(p@kappa * 10, 3)),
+      sliderInput("log_r_pp", "log10 Plankton replenishment rate",
+                  value = 1, min = -4, max = 4),
+      numericInput("w_pp_cutoff", "Largest plankton",
+                   value = p@w_full[which.min(p@cc_pp > 0)],
+                   min = 1e-10,
+                   max = 1e3)
+    ))
     l1
   })
   
@@ -210,31 +225,36 @@ server <- function(input, output, session) {
 
   output$general_params <- renderUI({
     p <- isolate(params())
-    
+    w_pp_cutoff <- p@w_full[which.min(p@cc_pp > 0)]
     list(
-      numericInput("lambda", "Sheldon exponent",
+      numericInput("lambda", "Sheldon exponent lambda",
                    value = p@lambda, min = 1.9, max = 2.2, step = 0.005),
+      sliderInput("kappa", "Plankton coefficient kappa",
+                  value = p@kappa, 
+                  min = signif(p@kappa / 10, 3),
+                  max = signif(p@kappa * 10, 3)),
       sliderInput("log_r_pp", "log10 Plankton replenishment rate",
-                  value = -1, min = -4, max = 0),
+                  value = 1, min = -4, max = 4),
+      numericInput("w_pp_cutoff", "Largest plankton",
+                   value = w_pp_cutoff,
+                   min = 1e-10,
+                   max = 1e3)
     )
   })
   
-  ## Adjust kappa ####
+  ## Rescale abundance ####
   observe({
-    req(input$kappa)
+    req(input$rescale)
     p <- isolate(params())
-    # We want a change in kappa to rescale all abundances by the same factor
-    p@initial_n <- p@initial_n * input$kappa / p@kappa
-    p@initial_n_pp <- p@initial_n_pp * input$kappa / p@kappa
-    p@cc_pp <- p@cc_pp * input$kappa / p@kappa
+    # We want to rescale all abundances by the same factor
+    p@initial_n <- p@initial_n * input$rescale
+    p@initial_n_pp <- p@initial_n_pp * input$rescale
+    p@cc_pp <- p@cc_pp * input$rescale
+    p@kappa <- p@kappa * input$rescale
     # To keep the same per-capity behaviour, we have to scale down the
     # search volume
-    p@species_params$gamma <- p@species_params$gamma / (input$kappa / p@kappa)
-    p@search_vol <- p@search_vol / (input$kappa / p@kappa)
-    p@kappa <- input$kappa
-    updateSliderInput(session, "kappa",
-                      min = signif(input$kappa / 2, 2),
-                      max = signif(input$kappa * 1.5, 2))
+    p@species_params$gamma <- p@species_params$gamma / input$rescale
+    p@search_vol <- p@search_vol / input$rescale
     params(p)
     
     # Trigger an update of sliders
@@ -275,12 +295,15 @@ server <- function(input, output, session) {
     p <- isolate(params())
     sp <- isolate(input$sp)
     
-    if (skip_update_n0) {
-      skip_update_n0 <<- FALSE
+    if (sp != sp_old_n0) {
+      # We came here after changing the species selector. This automatically
+      # rewrote all sliders, so no need to update them. Also we do not want
+      # update the params object.
+      sp_old_n0 <<- sp
     } else {
       updateSliderInput(session, "n0",
-                        min = signif(n0 / 2, 3),
-                        max = signif(n0 * 1.5, 3))
+                        min = signif(n0 / 10, 3),
+                        max = signif(n0 * 10, 3))
       # rescale abundance to new egg density
       p@initial_n[sp, ] <- p@initial_n[sp, ] * n0 / 
         p@initial_n[sp, p@w_min_idx[sp]]
@@ -290,27 +313,74 @@ server <- function(input, output, session) {
     }
   })
   
-  ## Adjust species parameters ####
-  update_species <- function(sp, p, species_params) {
+  ## Adjust plankton ####
+  observe({
+    req(input$kappa,
+        input$lambda,
+        input$log_r_pp,
+        input$w_pp_cutoff)
+    p <- isolate(params())
+    p <- setPlankton(p, 
+                     kappa = input$kappa, 
+                     lambda = input$lambda,
+                     r_pp = 10^input$log_r_pp,
+                     w_pp_cutoff = input$w_pp_cutoff)
+    p@initial_n_pp <- p@cc_pp
+    updateSliderInput(session, "kappa",
+                min = signif(p@kappa / 10, 3),
+                max = signif(p@kappa * 10, 3))
+    params(p)
+  })
+  
+  ## Adjust predation ####
+  observe({
+    req(input$beta, input$sigma, input$gamma, input$h)
+    p <- isolate(params())
+    sp <- isolate(input$sp)
+    
+    if (sp != sp_old_predation) {
+      # We came here after changing the species selector. This automatically
+      # rewrote all sliders, so no need to update them. Also we do not want
+      # update the params object.
+      sp_old_predation <<- sp
+    } else {
+      # Update slider min/max so that they are a fixed proportion of the 
+      # parameter value
+      updateSliderInput(session, "beta",
+                        min = signif(input$beta / 2, 2),
+                        max = signif(input$beta * 1.5, 2))
+      updateSliderInput(session, "sigma",
+                        min = signif(input$sigma / 2, 2),
+                        max = signif(input$sigma * 1.5, 2))
+      updateSliderInput(session, "gamma",
+                        min = signif(input$gamma / 2, 3),
+                        max = signif(input$gamma * 1.5, 3))
+      updateSliderInput(session, "h",
+                        min = signif(input$h / 2, 2),
+                        max = signif(input$h * 1.5, 2))
+      p@species_params[sp, "beta"]  <- input$beta
+      p@species_params[sp, "sigma"] <- input$sigma
+      p@species_params[sp, "gamma"] <- input$gamma
+      p@species_params[sp, "h"]     <- input$h
+      p <- setPredKernel(p)
+      p <- setSearchVolume(p)
+      p <- setIntakeMax(p)
+      update_species(sp, p)
+    }
+  })
+  
+  update_species <- function(sp, p) {
     # wrap the code in trycatch so that when there is a problem we can
     # simply stay with the old parameters
     tryCatch({
-      # Create new params object identical to old one except for changed
-      # species params
-      p@species_params <- species_params
-      pc <- setParams(p, interaction = p@interaction)
-      pc@initial_n <- p@initial_n
-      pc@initial_n_pp <- p@initial_n_pp
-      pc@initial_B <- p@initial_B
-      
       # The spectrum for the changed species is calculated with new
       # parameters but in the context of the original community
       # Compute death rate for changed species
-      mumu <- getMort(pc, effort = 0)[sp, ]
+      mumu <- getMort(p, effort = 0)[sp, ]
       # compute growth rate for changed species
-      gg <- getEGrowth(pc)[sp, ]
+      gg <- getEGrowth(p)[sp, ]
       # Compute solution for changed species
-      w_inf_idx <- sum(pc@w < pc@species_params[sp, "w_inf"])
+      w_inf_idx <- sum(p@w < p@species_params[sp, "w_inf"])
       idx <- p@w_min_idx[sp]:(w_inf_idx - 1)
       if (any(gg[idx] == 0)) {
         weight <- p@w[which.max(gg[idx] == 0)]
@@ -322,36 +392,36 @@ server <- function(input, output, session) {
         ))
       }
       n0 <- p@initial_n[sp, p@w_min_idx[sp]]
-      pc@initial_n[sp, ] <- 0
-      pc@initial_n[sp, pc@w_min_idx[sp]:w_inf_idx] <-
-        c(1, cumprod(gg[idx] / ((gg + mumu * pc@dw)[idx + 1]))) *
+      p@initial_n[sp, ] <- 0
+      p@initial_n[sp, p@w_min_idx[sp]:w_inf_idx] <-
+        c(1, cumprod(gg[idx] / ((gg + mumu * p@dw)[idx + 1]))) *
         n0
-      if (any(is.infinite(pc@initial_n))) {
+      if (any(is.infinite(p@initial_n))) {
         stop("Candidate steady state holds infinities")
       }
-      if (any(is.na(pc@initial_n) || is.nan(pc@initial_n))) {
-        stop("Candidate steady state holds none numeric values")
+      if (any(is.na(p@initial_n) || is.nan(p@initial_n))) {
+        stop("Candidate steady state holds non-numeric values")
       }
       
       # Retune the value of erepro so that we get the correct level of
       # recruitment
-      i <- which(pc@species_params$species == sp)
-      rdd <- getRDD(pc, pc@initial_n, pc@initial_n_pp)[i]
-      gg0 <- gg[pc@w_min_idx[i]]
-      mumu0 <- mumu[pc@w_min_idx[i]]
-      DW <- pc@dw[pc@w_min_idx[i]]
-      pc@species_params$erepro[i] <- pc@species_params$erepro[i] *
+      i <- which(p@species_params$species == sp)
+      rdd <- getRDD(p, p@initial_n, p@initial_n_pp)[i]
+      gg0 <- gg[p@w_min_idx[i]]
+      mumu0 <- mumu[p@w_min_idx[i]]
+      DW <- p@dw[p@w_min_idx[i]]
+      p@species_params$erepro[i] <- p@species_params$erepro[i] *
         n0 * (gg0 + DW * mumu0) / rdd
       
       if (input$log_sp) {
         # Save new species params to disk
         time = format(Sys.time(), "_%Y_%m_%d_at_%H_%M_%S")
         file = paste0("species_params", time, ".rds")
-        saveRDS(pc@species_params, file = file)
+        saveRDS(p@species_params, file = file)
       }
       
       # Update the reactive params object
-      params(pc)
+      params(p)
     }, 
     error = function(e) {
       showModal(modalDialog(
@@ -364,17 +434,14 @@ server <- function(input, output, session) {
     )
   }
   
+  ## Adjust species parameters ####
   observe({
-    req(input$sigma)
+    req(input$interaction_p)
     p <- isolate(params())
     sp <- isolate(input$sp)
     
     # Create updated species params data frame
     species_params <- p@species_params
-    species_params[sp, "gamma"] <- input$gamma
-    species_params[sp, "h"]     <- input$h
-    species_params[sp, "beta"]  <- input$beta
-    species_params[sp, "sigma"] <- input$sigma
     species_params[sp, "interaction_p"] <- input$interaction_p
     species_params[sp, "catchability"]  <- input$catchability
     species_params[sp, "l50"]   <- input$l50
@@ -397,24 +464,14 @@ server <- function(input, output, session) {
       p@interaction[sp, i] <- input[[inter_var]]
     }
     
-    
-    if (skip_update) {
-      skip_update <<- FALSE
+    if (sp != sp_old) {
+      # We came here after changing the species selector. This automatically
+      # rewrote all sliders, so no need to update them. Also we do not want
+      # update the params object.
+      sp_old <<- sp
     } else {
       # Update slider min/max so that they are a fixed proportion of the 
       # parameter value
-      updateSliderInput(session, "gamma",
-                        min = signif(input$gamma / 2, 3),
-                        max = signif(input$gamma * 1.5, 3))
-      updateSliderInput(session, "h",
-                        min = signif(input$h / 2, 2),
-                        max = signif(input$h * 1.5, 2))
-      updateSliderInput(session, "beta",
-                        min = signif(input$beta / 2, 2),
-                        max = signif(input$beta * 1.5, 2))
-      updateSliderInput(session, "sigma",
-                        min = signif(input$sigma / 2, 2),
-                        max = signif(input$sigma * 1.5, 2))
       updateSliderInput(session, "l50",
                         max = signif(input$l50 * 2, 2))
       updateSliderInput(session, "ldiff",  
@@ -440,7 +497,16 @@ server <- function(input, output, session) {
                             max = signif((input[[res_var]] + 0.1) * 1.5, 2))
         }
       }
-      update_species(sp, p, species_params)
+      # Create new params object identical to old one except for changed
+      # species params
+      p@species_params <- species_params
+      p <- setInteraction(p)
+      p <- setMetab(p)
+      p <- setBMort(p)
+      p <- setReproduction(p)
+      p <- setFishing(p)
+      p <- setResourceEncounter(p)
+      update_species(sp, p)
     }
   })
   
@@ -544,36 +610,14 @@ server <- function(input, output, session) {
       # Create a Progress object
       progress <- shiny::Progress$new(session)
       on.exit(progress$close())
-      
-      p_old <- params()
-      
-      p <- markBackground(
-        set_scaling_model(
-          min_w_pp = input$min_w_pp, 
-          no_sp = input$no_bg_sp, no_w = input$no_w,
-          min_w_inf = 2, max_w_inf = 6e6,
-          min_egg = 1e-4, min_w_mat = 2 / 10^0.8,
-          lambda = input$lambda, knife_edge_size = Inf,
-          beta = 500, sigma = 2,
-          f0 = input$f0, h = input$h_bkgd, r_pp = 10^input$log_r_pp
-        )
-      )
-      
-      # Loop over all foreground species and add them one-by-one to the new
-      # background
-      gears <- "knife_edge"
-      no_sp <- length(p_old@A)
-      for (sp in (1:no_sp)[!is.na(p_old@A)]) {
-        if (p_old@species_params$species[sp] == "Anchovy") {
-          gear <- "sigmoid_gear_Anchovy"
-        } else {
-          gear <- "sigmoid_gear"
-        }
-        gears <- union(gears, gear)
-        p <- addSpecies(p, p_old@species_params[sp, ],
-                        effort = 0, rfac = Inf)    
-      }
-      
+      p <- setPlankton(params(), 
+                       kappa = input$kappa, 
+                       lambda = input$lambda,
+                       r_pp = 10^input$log_r_pp,
+                       w_pp_cutoff = input$w_pp_cutoff)
+      updateSliderInput(session, "kappa",
+                        min = signif(p@kappa / 10, 3),
+                        max = signif(p@kappa * 10, 3))
       # Run to steady state
       p <- steady(p, effort = 0, 
                   t_max = 100, tol = 1e-2,
@@ -656,6 +700,10 @@ server <- function(input, output, session) {
         is.na(species_params$biomass_observed)) {
       species_params$biomass_observed <- 0
     }
+    if (is.null(species_params$abundance_observed) ||
+        is.na(species_params$abundance_observed)) {
+      species_params$abundance_observed <- 0
+    }
     if (is.null(species_params$cutoff_size) ||
         is.na(species_params$cutoff_size)) {
       species_params$cutoff_size <- 0
@@ -665,6 +713,10 @@ server <- function(input, output, session) {
           numericInput("biomass_observed", 
                        paste0("Observed biomass for ", sp),
                        value = species_params$biomass_observed)),
+      div(style = "display:inline-block",
+          numericInput("abundance_observed", 
+                       paste0("Observed abundance for ", sp),
+                       value = species_params$abundance_observed)),
       div(style = "display:inline-block",
           numericInput("cutoff_size", "Lower cutoff",
                        value = species_params$cutoff_size))
@@ -730,6 +782,40 @@ server <- function(input, output, session) {
       geom_col(aes(x = Species, y = Biomass, fill = Type),
                position = "dodge") +
       scale_y_continuous(name = "Biomass", trans = "log10",
+                         breaks = log_breaks()) +
+      theme_grey(base_size = base_size) +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+  })
+  output$plotTotalAbundance <- renderPlotly({
+    p <- params()
+    no_sp <- length(p@species_params$species)
+    cutoff <- p@species_params$cutoff_size
+    # When no cutoff known, set it to maturity weight / 20
+    if (is.null(cutoff)) cutoff <- p@species_params$w_mat / 20
+    cutoff[is.na(cutoff)] <- p@species_params$w_mat[is.na(cutoff)] / 20
+    observed <- p@species_params$abundance_observed
+    if (is.null(observed)) observed <- 0
+    
+    abundance_model <- 1:no_sp  # create vector of right length
+    for (sp in 1:no_sp) {
+      cum_abundance <- cumsum(p@initial_n[sp, ] * p@dw)
+      cutoff_idx <- which.max(p@w >= cutoff[sp])
+      abundance_model[sp] <- max(cum_abundance) - cum_abundance[cutoff_idx]
+    }
+    species <- factor(p@species_params$species,
+                      levels = p@species_params$species)
+    df <- rbind(
+      data.frame(Species = species,
+                 Type = "Observed",
+                 Abundance = observed),
+      data.frame(Species = species,
+                 Type = "Model",
+                 Abundance = abundance_model)
+    )
+    ggplot(df) +
+      geom_col(aes(x = Species, y = Abundance, fill = Type),
+               position = "dodge") +
+      scale_y_continuous(name = "Abundance", trans = "log10",
                          breaks = log_breaks()) +
       theme_grey(base_size = base_size) +
       theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
@@ -1117,6 +1203,7 @@ ui <- fluidPage(
         ),
         tabPanel("Biomass",
                  plotlyOutput("plotTotalBiomass"),
+                 plotlyOutput("plotTotalAbundance"),
                  uiOutput("biomass_sel"),
                  plotlyOutput("plotBiomassDist")),
         tabPanel("Growth",
