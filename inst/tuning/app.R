@@ -100,8 +100,9 @@ server <- function(input, output, session) {
       sliderInput("n0", "Egg density",
                   value = n0,
                   min = signif(n0 / 10, 3),
-                  max = signif(n0 * 10, 3)),
-      sliderInput("rescale", "Rescale all", value = 1,
+                  max = signif(n0 * 10, 3),
+                  step = n0 / 50),
+      sliderInput("rescale", "Rescale all by", value = 1,
                   min = 0.1,
                   max = 5),
       tags$h3(tags$a(id = "predation"), "Predation"),
@@ -159,6 +160,9 @@ server <- function(input, output, session) {
                   min = 0.5,
                   max = 1,
                   step = 0.01),
+      sliderInput("w_inf", "w_inf", value = sp$w_inf,
+                  min = signif(sp$w_inf / 2, 2),
+                  max = signif(sp$w_inf * 1.5, 2)),
       sliderInput("m", "m", value = sp$m,
                   min = 0,
                   max = 2,
@@ -217,14 +221,14 @@ server <- function(input, output, session) {
                    min = 1e-10,
                    max = 1e3),
       tags$h3(tags$a(id = "file"), "File management"),
-      downloadButton("params", "Download params object"),
+      downloadButton("params", "Download params"),
       checkboxInput("log_steady", "Log steady states",
                     value = FALSE),
       checkboxInput("log_sp", "Log species parameters",
                     value = FALSE),
       tags$hr(),
       textOutput("filename"),
-      fileInput("upload", "Upload new params object", 
+      fileInput("upload", "Upload new params", 
                 accept = ".rds")
     ))
     l1
@@ -234,19 +238,36 @@ server <- function(input, output, session) {
   observe({
     req(input$rescale)
     p <- isolate(params())
+    n0 <- isolate(input$n0)
+    sp <- isolate(input$sp)
     # We want to rescale all abundances by the same factor
     p@initial_n <- p@initial_n * input$rescale
     p@initial_n_pp <- p@initial_n_pp * input$rescale
+    p@initial_B <- p@initial_B * input$rescale
     p@cc_pp <- p@cc_pp * input$rescale
     p@kappa <- p@kappa * input$rescale
+    n0 <- n0 * input$rescale
     # To keep the same per-capity behaviour, we have to scale down the
     # search volume
     p@species_params$gamma <- p@species_params$gamma / input$rescale
     p@search_vol <- p@search_vol / input$rescale
     params(p)
     
-    # Trigger an update of sliders
-    trigger_update(runif(1))
+    updateSliderInput(session, "kappa",
+                value = p@kappa, 
+                min = signif(p@kappa / 10, 3),
+                max = signif(p@kappa * 10, 3))
+    gamma <- p@species_params[sp, "gamma"]
+    updateSliderInput(session, "gamma",
+                value = gamma,
+                min = signif(gamma / 2, 3),
+                max = signif(gamma * 1.5, 3),
+                step = gamma / 50)
+    updateSliderInput(session, "n0",
+                value = n0,
+                min = signif(n0 / 10, 3),
+                max = signif(n0 * 10, 3))
+    updateSliderInput(session, "rescale", value = 1)
   })
   
   ## Adjust k_vb ####
@@ -439,6 +460,7 @@ server <- function(input, output, session) {
     species_params[sp, "k"]     <- input$k
     species_params[sp, "w_mat25"]   <- input$w_mat * input$wfrac
     species_params[sp, "w_mat"]   <- input$w_mat
+    species_params[sp, "w_inf"]   <- input$w_inf
     species_params[sp, "m"]     <- input$m
     species_params[sp, "z0"]     <- input$z0
     if (length(p@resource_dynamics) > 0) {
@@ -476,6 +498,9 @@ server <- function(input, output, session) {
       updateSliderInput(session, "w_mat",
                         min = signif(input$w_mat / 2, 2),
                         max = signif(input$w_mat * 1.5, 2))
+      updateSliderInput(session, "w_inf",
+                        min = signif(input$w_inf / 2, 2),
+                        max = signif(input$w_inf * 1.5, 2))
       
       if (length(p@resource_dynamics) > 0) {
         for (res in names(p@resource_dynamics)) {
@@ -1139,7 +1164,12 @@ ui <- fluidPage(
   sidebarLayout(
     
     ## Sidebar ####
-    sidebarPanel("->",
+    sidebarPanel(
+      actionButton("sp_interact", "Interact"),
+      actionButton("sp_steady", "Steady"),
+      tags$br(),
+      uiOutput("sp_sel"),
+      "->",
       tags$a("Biomass", href = "#biomass"),
       "->",
       tags$a("Predation", href = "#predation"),
@@ -1158,10 +1188,6 @@ ui <- fluidPage(
       "->",
       tags$a("File", href = "#file"),
       tags$br(),
-      actionButton("sp_interact", "Interact"),
-      actionButton("sp_steady", "Steady"),
-      tags$br(),
-      uiOutput("sp_sel"),
       uiOutput("sp_params"),
       tags$head(tags$style(
         type = 'text/css',
