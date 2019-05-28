@@ -1107,26 +1107,29 @@ server <- function(input, output, session) {
     p <- params()
     species <- factor(p@species_params$species,
                       levels = p@species_params$species)
-    fish_idx <- (length(p@w_full) - length(p@w) + 1):length(p@w_full)
+    fish_idx_full <- (p@w_full >= p@species_params[sp, "w_min"]) &
+      (p@w_full <= p@species_params[sp, "w_inf"])
+    fish_idx <- (p@w >= p@species_params[sp, "w_min"]) &
+      (p@w <= p@species_params[sp, "w_inf"])
     pred_rate <- p@interaction[, sp] * 
-      getPredRate(p, p@initial_n, p@initial_n_pp, p@initial_B)[, fish_idx]
-    fishing <- getFMort(p, effort = 0)[sp, ]
-    total <- colSums(pred_rate) + p@mu_b[sp, ] + fishing
+      getPredRate(p, p@initial_n, p@initial_n_pp, p@initial_B)[, fish_idx_full]
+    fishing <- getFMort(p, effort = 0)[sp, fish_idx]
+    total <- colSums(pred_rate) + p@mu_b[sp, fish_idx] + fishing
     pred_rate <- pred_rate / rep(total, each = dim(pred_rate)[[1]])
-    background <- p@mu_b[sp, ] / total
+    background <- p@mu_b[sp, fish_idx] / total
     fishing <- fishing / total
     # Make data.frame for plot
     plot_dat <- 
       rbind(
         data.frame(value = background,
                    Cause = "Background",
-                   w = p@w),
+                   w = p@w[fish_idx]),
         data.frame(value = fishing,
                    Cause = "Fishing",
-                   w = p@w),
+                   w = p@w[fish_idx]),
         data.frame(value = c(pred_rate),
                    Cause = species,
-                   w = rep(p@w, each = dim(pred_rate)[[1]]))
+                   w = rep(p@w[fish_idx], each = dim(pred_rate)[[1]]))
       )
     ggplot(plot_dat) +
       geom_area(aes(x = w, y = value, fill = Cause)) +
