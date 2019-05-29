@@ -102,9 +102,9 @@ server <- function(input, output, session) {
                   min = signif(n0 / 10, 3),
                   max = signif(n0 * 10, 3),
                   step = n0 / 50),
-      sliderInput("rescale", "Rescale all by", value = 1,
-                  min = 0.1,
-                  max = 5),
+      # sliderInput("rescale", "Rescale all by", value = 1,
+      #             min = 0.1,
+      #             max = 5),
       tags$h3(tags$a(id = "predation"), "Predation"),
       sliderInput("gamma", "Predation rate coefficient gamma",
                   value = sp$gamma,
@@ -215,7 +215,7 @@ server <- function(input, output, session) {
                   min = signif(p@kappa / 10, 3),
                   max = signif(p@kappa * 10, 3)),
       sliderInput("log_r_pp", "log10 Plankton replenishment rate",
-                  value = 1, min = -4, max = 4),
+                  value = 1, min = -1, max = 4, step = 0.05),
       numericInput("w_pp_cutoff", "Largest plankton",
                    value = p@w_full[which.min(p@cc_pp > 0)],
                    min = 1e-10,
@@ -235,6 +235,7 @@ server <- function(input, output, session) {
   })
   
   ## Rescale abundance ####
+  # This is still buggy
   observe({
     req(input$rescale)
     p <- isolate(params())
@@ -1215,7 +1216,8 @@ ui <- fluidPage(
                  plotlyOutput("plotBiomassDist")),
         tabPanel("Growth",
                  plotlyOutput("plotGrowthCurve"),
-                 uiOutput("k_vb_sel")),
+                 uiOutput("k_vb_sel"),
+                 plotlyOutput("plot_psi")),
         tabPanel("Repro",
                  plotlyOutput("plot_erepro")),
         tabPanel("Catch",
@@ -1239,9 +1241,7 @@ ui <- fluidPage(
         tabPanel("Diet",
                  plotlyOutput("plot_diet")),
         tabPanel("Predators",
-                 plotlyOutput("plot_pred")),
-        tabPanel("psi",
-                 plotlyOutput("plot_psi"))
+                 plotlyOutput("plot_pred"))
       )
     )  # end mainpanel
   )  # end sidebarlayout
