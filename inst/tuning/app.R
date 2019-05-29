@@ -223,7 +223,7 @@ server <- function(input, output, session) {
       tags$h3(tags$a(id = "file"), "File management"),
       downloadButton("params", "Download params"),
       checkboxInput("log_steady", "Log steady states",
-                    value = FALSE),
+                    value = TRUE),
       checkboxInput("log_sp", "Log species parameters",
                     value = FALSE),
       tags$hr(),
