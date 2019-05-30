@@ -35,6 +35,8 @@ server <- function(input, output, session) {
   sp_old_n0 <- 1
   # Define a reactive value for triggering an update of species sliders
   trigger_update <- reactiveVal(0)
+  # Fishing effort
+  effort <- reactiveVal(1)
   
   # Load catch distribution
   catchdist <- readRDS("catchdistribution.rds")
@@ -94,6 +96,7 @@ server <- function(input, output, session) {
     p <- isolate(params())
     sp <- p@species_params[input$sp, ]
     n0 <- p@initial_n[input$sp, p@w_min_idx[input$sp]]
+    eff <- isolate(effort())
     
     l1 <- list(
       tags$h3(tags$a(id = "biomass"), "Biomass"),
@@ -140,8 +143,12 @@ server <- function(input, output, session) {
     }
     
     l1 <- c(l1, list(tags$h3(tags$a(id = "fishing"), "Fishing"),
+      sliderInput("effort", "Effort",
+                  value = eff, 
+                  min = signif(eff / 2, 2),
+                  max = signif(eff * 1.5, 2)),
       sliderInput("catchability", "Catchability",
-                   value = sp$catchability, min = 0, max = 1),
+                  value = sp$catchability, min = 0, max = 1),
       sliderInput("l50", "L50",
                    value = sp$l50, 
                    min = 1, 
@@ -271,6 +278,15 @@ server <- function(input, output, session) {
     updateSliderInput(session, "rescale", value = 1)
   })
   
+  ## Adjust effort ####
+  observe({
+    req(input$effort)
+    effort(input$effort)
+    updateSliderInput(session, "effort",
+                min = signif(effort() / 2, 2),
+                max = signif(effort() * 1.5, 2))
+  })
+  
   ## Adjust k_vb ####
   observe({
     p <- isolate(params())
@@ -386,7 +402,7 @@ server <- function(input, output, session) {
       # The spectrum for the changed species is calculated with new
       # parameters but in the context of the original community
       # Compute death rate for changed species
-      mumu <- getMort(p, effort = 0)[sp, ]
+      mumu <- getMort(p, effort = effort())[sp, ]
       # compute growth rate for changed species
       gg <- getEGrowth(p)[sp, ]
       # Compute solution for changed species
@@ -534,7 +550,7 @@ server <- function(input, output, session) {
       plankton_mort <- getPlanktonMort(p)
       p@initial_n_pp <- p@rr_pp * p@cc_pp / (p@rr_pp + plankton_mort)
       # Recompute all species
-      mumu <- getMort(p, effort = 0)
+      mumu <- getMort(p, effort = effort())
       gg <- getEGrowth(p)
       for (sp in 1:length(p@species_params$species)) {
         w_inf_idx <- min(sum(p@w < p@species_params[sp, "w_inf"]) + 1,
@@ -553,7 +569,7 @@ server <- function(input, output, session) {
       
       # Retune the values of erepro so that we get the correct level of
       # recruitment
-      mumu <- getMort(p, effort = 0)
+      mumu <- getMort(p, effort = effort())
       gg <- getEGrowth(p)
       rdd <- getRDD(p)
       # TODO: vectorise this
@@ -592,7 +608,7 @@ server <- function(input, output, session) {
       on.exit(progress$close())
       
       # Run to steady state
-      p <- steady(p, effort = 0, t_max = 100, tol = 1e-2,
+      p <- steady(p, effort = effort(), t_max = 100, tol = 1e-2,
                   progress_bar = progress)
       
       if (input$log_steady) {
@@ -601,41 +617,6 @@ server <- function(input, output, session) {
         file = paste0("mizer_params", time, ".rds")
         saveRDS(p, file = file)
       }
-      
-      # Update the reactive params object
-      params(p)
-    },
-    error = function(e) {
-      showModal(modalDialog(
-        title = "Invalid parameters",
-        HTML(paste0("These parameter do not lead to an acceptable steady state.",
-                    "Please choose other values.<br>",
-                    "The error message was:<br>", e)),
-        easyClose = TRUE
-      ))}
-    )
-  })
-  
-  ## Reconstruct params object ####
-  # This is triggered by the "Go" button on the "General" tab
-  observeEvent(input$bg_go, {
-    
-    tryCatch({
-      # Create a Progress object
-      progress <- shiny::Progress$new(session)
-      on.exit(progress$close())
-      p <- setPlankton(params(), 
-                       kappa = input$kappa, 
-                       lambda = input$lambda,
-                       r_pp = 10^input$log_r_pp,
-                       w_pp_cutoff = input$w_pp_cutoff)
-      updateSliderInput(session, "kappa",
-                        min = signif(p@kappa / 10, 3),
-                        max = signif(p@kappa * 10, 3))
-      # Run to steady state
-      p <- steady(p, effort = 0, 
-                  t_max = 100, tol = 1e-2,
-                  progress_bar = progress)
       
       # Update the reactive params object
       params(p)
@@ -868,7 +849,7 @@ server <- function(input, output, session) {
     w <- p@w[w_sel]
     l = (p@w[w_sel] / a) ^ (1 / b)
     
-    catch_w <- getFMort(p, effort = 0)[sp, w_sel] * 
+    catch_w <- getFMort(p, effort = effort())[sp, w_sel] * 
       p@initial_n[sp, w_sel]
     # We just want the distribution, so we rescale the density so its area is 1
     if (sum(catch_w) > 0) catch_w <- catch_w / sum(catch_w * p@dw[w_sel])
@@ -927,7 +908,7 @@ server <- function(input, output, session) {
       p@species_params$catch_observed <- 0
     }
     biomass <- sweep(p@initial_n, 2, p@w * p@dw, "*")
-    catch <- rowSums(biomass * getFMort(p, effort = 0))
+    catch <- rowSums(biomass * getFMort(p, effort = effort()))
     df <- rbind(
       data.frame(Species = p@species_params$species,
                  Type = "Observed",
@@ -1021,9 +1002,9 @@ server <- function(input, output, session) {
                rep("Fishing", len),
                rep("Background", len)),
       value = c(getMort(p, p@initial_n, p@initial_n_pp,
-                        effort = 0)[sp,sel],
+                        effort = effort())[sp,sel],
                 getPredMort(p, p@initial_n, p@initial_n_pp)[sp, sel],
-                getFMort(p, effort = 0)[sp, sel],
+                getFMort(p, effort = effort())[sp, sel],
                 p@mu_b[sp,sel])
     )
     pl <- ggplot(df, aes(x = w, y = value, color = Type)) + 
@@ -1114,7 +1095,7 @@ server <- function(input, output, session) {
       (p@w <= p@species_params[sp, "w_inf"])
     pred_rate <- p@interaction[, sp] * 
       getPredRate(p, p@initial_n, p@initial_n_pp, p@initial_B)[, fish_idx_full]
-    fishing <- getFMort(p, effort = 0)[sp, fish_idx]
+    fishing <- getFMort(p, effort = effort())[sp, fish_idx]
     total <- colSums(pred_rate) + p@mu_b[sp, fish_idx] + fishing
     pred_rate <- pred_rate / rep(total, each = dim(pred_rate)[[1]])
     background <- p@mu_b[sp, fish_idx] / total
