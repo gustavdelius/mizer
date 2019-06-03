@@ -5,8 +5,6 @@ species_params <- read.csv("inst/blanes/species_params.csv")
 species_params$interaction_p <- 1
 species_params$r_max <- Inf
 species_params$ks <- 0
-species_params$w_mat[21] <- species_params$w_inf[21] / 2
-species_params$w_mat[23] <- species_params$w_inf[23] / 2
 
 theta <- read.csv("inst/blanes/theta.csv", header = FALSE)
 theta <- t(as.matrix(theta))
@@ -16,7 +14,7 @@ q <- 0.88
 n <- 0.7
 p <- 0.7
 lambda <- 2 + q - n
-kappa <- 1000
+kappa <- 1/1000
 
 no_sp <- length(species_params$species)
 
@@ -91,10 +89,11 @@ for (i in 1:no_sp) {
 params <- steady(params, t_max = 100)
 plotlySpectra(params)
 
-# Slowly switch on interaction
-epsilon <- 1
-params@species_params$interaction_p[] <- interaction_p * epsilon
-params <- setInteraction(params, interaction = theta * epsilon)
+# Switch off plankton
+params@species_params$interaction_p[] <- 0
+params <- setInteraction(params)
+params@species_params$rho_detritus <- params@species_params$rho_detritus * 2
+params@species_params$rho_carrion <- params@species_params$rho_carrion * 2
 
 params <- steady(params, t_max = 100)
 plotlySpectra(params)
