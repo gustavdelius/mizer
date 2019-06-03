@@ -663,7 +663,7 @@ server <- function(input, output, session) {
     } else {
       power <- 1
     }
-    plotSpectra(params(), power = power, highlight = input$sp) + 
+    plotSpectra(params(), power = power, highlight = input$sp, total = TRUE) + 
       theme_grey(base_size = base_size)
   })
   
