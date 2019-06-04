@@ -578,44 +578,8 @@ server <- function(input, output, session) {
     p <- params()
     
     tryCatch({
-      # Recompute plankton
-      plankton_mort <- getPlanktonMort(p)
-      p@initial_n_pp <- p@rr_pp * p@cc_pp / (p@rr_pp + plankton_mort)
-      # Recompute all species
-      mumu <- getMort(p, effort = effort())
-      gg <- getEGrowth(p)
-      for (sp in 1:length(p@species_params$species)) {
-        w_inf_idx <- min(sum(p@w < p@species_params[sp, "w_inf"]) + 1,
-                         length(p@w))
-        idx <- p@w_min_idx[sp]:(w_inf_idx - 1)
-        validate(
-          need(!any(gg[sp, idx] == 0),
-               "Can not compute steady state due to zero growth rates")
-        )
-        n0 <- p@initial_n[sp, p@w_min_idx[sp]]
-        p@initial_n[sp, ] <- 0
-        p@initial_n[sp, p@w_min_idx[sp]:w_inf_idx] <- 
-          c(1, cumprod(gg[sp, idx] / ((gg[sp, ] + mumu[sp, ] * p@dw)[idx + 1]))) *
-          n0
-      }
-      
-      # Retune the values of erepro so that we get the correct level of
-      # recruitment
-      mumu <- getMort(p, effort = effort())
-      gg <- getEGrowth(p)
-      rdd <- getRDD(p)
-      # TODO: vectorise this
-      for (i in (1:length(p@species_params$species))) {
-        gg0 <- gg[i, p@w_min_idx[i]]
-        mumu0 <- mumu[i, p@w_min_idx[i]]
-        DW <- p@dw[p@w_min_idx[i]]
-        p@species_params$erepro[i] <- p@species_params$erepro[i] *
-          p@initial_n[i, p@w_min_idx[i]] *
-          (gg0 + DW * mumu0) / rdd[i]
-      }
-      
       # Update the reactive params object
-      params(p)
+      params(updateInitial(p, effort()))
     },
     error = function(e) {
       showModal(modalDialog(
