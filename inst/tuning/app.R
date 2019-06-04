@@ -126,7 +126,10 @@ server <- function(input, output, session) {
                   value = sp$sigma,
                   min = signif(sp$sigma / 2, 2),
                   max = signif(sp$sigma * 1.5, 2),
-                  step = 0.05)
+                  step = 0.05),
+      numericInput("n", "Exponent of feeding rate",
+                   value = p@n,
+                   min = 0.6, max = 0.8, step = 0.005)
     )
     
     if (length(p@resource_dynamics) > 0) {
@@ -237,6 +240,24 @@ server <- function(input, output, session) {
                 accept = ".rds")
     ))
     l1
+  })
+  
+
+  ## Adjust growth exponent ####
+  observe({
+    req(input$n)
+    p <- isolate(params())
+    sp <- isolate(input$sp)
+    # change all h so that max intake rate at maturity stays the same
+    p@species_params$h <- p@species_params$h * 
+      p@species_params$w_mat^(p@n - input$n)
+    p <- setIntakeMax(p, n = input$n)
+    params(p)
+    h <- p@species_params[sp, "h"]
+    updateSliderInput(session, "h",
+                      value = h,
+                      min = signif(h / 2, 2),
+                      max = signif(h * 1.5, 2))
   })
   
   ## Rescale abundance ####
