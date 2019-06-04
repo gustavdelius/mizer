@@ -183,6 +183,9 @@ server <- function(input, output, session) {
                   min = signif(sp$ks / 2, 2),
                   max = signif((sp$ks + 0.1) * 1.5, 2),
                   step = 0.05),
+      numericInput("p", "Exponent of metabolism",
+                   value = p@p,
+                   min = 0.6, max = 0.8, step = 0.005),
       sliderInput("k", "Coefficient of activity k",
                   value = sp$k,
                   min = signif(sp$k / 2, 2),
@@ -258,6 +261,23 @@ server <- function(input, output, session) {
                       value = h,
                       min = signif(h / 2, 2),
                       max = signif(h * 1.5, 2))
+  })
+  
+  ## Adjust metabolism exponent ####
+  observe({
+    req(input$p)
+    p <- isolate(params())
+    sp <- isolate(input$sp)
+    # change all ks so that metabolic rate at maturity stays the same
+    p@species_params$ks <- p@species_params$ks * 
+      p@species_params$w_mat^(p@p - input$p)
+    p <- setMetab(p, p = input$p)
+    params(p)
+    ks <- p@species_params[sp, "ks"]
+    updateSliderInput(session, "ks",
+                      value = ks,
+                      min = signif(ks / 2, 2),
+                      max = signif((ks + 0.1) * 1.5, 2))
   })
   
   ## Rescale abundance ####
