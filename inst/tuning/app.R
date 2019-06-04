@@ -783,7 +783,7 @@ server <- function(input, output, session) {
     ggplot(df) +
       geom_col(aes(x = Species, y = Biomass, fill = Type),
                position = "dodge") +
-      scale_y_continuous(name = "Biomass", trans = "log10",
+      scale_y_continuous(name = "Biomass [g]", trans = "log10",
                          breaks = log_breaks()) +
       theme_grey(base_size = base_size) +
       theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
@@ -975,7 +975,7 @@ server <- function(input, output, session) {
     geom_vline(xintercept = p@species_params[sp, "w_inf"], 
                linetype = "dotted") +
     theme_grey(base_size = base_size) +
-    labs(x = "Size [g]", y = "Rate")  +
+    labs(x = "Size [g]", y = "Rate [g/year]")  +
     geom_text(aes(x = p@species_params[sp, "w_mat"], 
                   y = max(value * 0.2),
                   label = "\nMaturity"), 
@@ -1021,7 +1021,7 @@ server <- function(input, output, session) {
       geom_vline(xintercept = p@species_params[sp, "w_inf"], 
                  linetype = "dotted") +
       theme_grey(base_size = base_size) +
-      labs(x = "Size [g]", y = "Rate")  +
+      labs(x = "Size [g]", y = "Rate [1/year]")  +
       geom_text(aes(x = p@species_params[sp, "w_mat"], 
                     y = max(value * 0.2),
                     label = "\nMaturity"), 
