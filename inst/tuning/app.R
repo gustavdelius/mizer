@@ -217,10 +217,8 @@ server <- function(input, output, session) {
       tags$h3(tags$a(id = "plankton"), "Plankton"),
       numericInput("lambda", "Sheldon exponent lambda",
                    value = p@lambda, min = 1.9, max = 2.2, step = 0.005),
-      sliderInput("kappa", "Plankton coefficient kappa",
-                  value = p@kappa, 
-                  min = signif(p@kappa / 10, 3),
-                  max = signif(p@kappa * 10, 3)),
+      numericInput("kappa", "Plankton coefficient kappa",
+                   value = p@kappa),
       sliderInput("log_r_pp", "log10 Plankton replenishment rate",
                   value = 1, min = -1, max = 4, step = 0.05),
       numericInput("w_pp_cutoff", "Largest plankton",
@@ -261,10 +259,6 @@ server <- function(input, output, session) {
     p@search_vol <- p@search_vol / input$rescale
     params(p)
     
-    updateSliderInput(session, "kappa",
-                value = p@kappa, 
-                min = signif(p@kappa / 10, 3),
-                max = signif(p@kappa * 10, 3))
     gamma <- p@species_params[sp, "gamma"]
     updateSliderInput(session, "gamma",
                 value = gamma,
@@ -352,9 +346,6 @@ server <- function(input, output, session) {
                      r_pp = 10^input$log_r_pp,
                      w_pp_cutoff = input$w_pp_cutoff)
     p@initial_n_pp <- p@cc_pp
-    updateSliderInput(session, "kappa",
-                min = signif(p@kappa / 10, 3),
-                max = signif(p@kappa * 10, 3))
     params(p)
   })
   
