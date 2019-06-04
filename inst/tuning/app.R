@@ -29,6 +29,10 @@ server <- function(input, output, session) {
   params(p)
   output$filename <- renderText(paste0("Previously uploaded file: ", filename))
   
+  # Prepare simple undo functionality
+  params_stack_1 <- p  # will hold previous-to-last steady state
+  params_stack_2 <- p  # will hold last steady state
+  
   # Define some globals to skip certain observers
   sp_old <- 1
   sp_old_predation <- 1
@@ -60,6 +64,8 @@ server <- function(input, output, session) {
     p@species_params$r_max <- Inf
     # Update the reactive params object
     params(p)
+    params_stack_1 <<- params_stack_2
+    params_stack_2 <<- p
     
     # Update species selector
     species <- as.character(p@species_params$species[!is.na(p@A)])
@@ -572,26 +578,14 @@ server <- function(input, output, session) {
     }
   })
   
-  ## Recompute all species ####
-  # triggered by "Interact" button on "Species" tab
-  observeEvent(input$sp_interact, {
-    p <- params()
-    
-    tryCatch({
-      # Update the reactive params object
-      params(updateInitial(p, effort()))
-    },
-    error = function(e) {
-      showModal(modalDialog(
-        title = "Invalid parameters",
-        HTML(paste0("These parameter do not lead to an acceptable steady state.",
-                    "Please choose other values.<br>",
-                    "The error message was:<br>", e)),
-        easyClose = TRUE
-      ))}
-    )
+  ## Undo ####
+  observeEvent(input$undo, {
+    # pop params from our two-level stack
+    params(params_stack_2)
+    params_stack_2 <<- params_stack_1
+    # Trigger an update of sliders
+    trigger_update(runif(1))
   })
-    
     
   ## Find new steady state ####
   # triggered by "Steady" button on "species" tab
@@ -616,6 +610,8 @@ server <- function(input, output, session) {
       
       # Update the reactive params object
       params(p)
+      params_stack_1 <<- params_stack_2
+      params_stack_2 <<- p
     },
     error = function(e) {
       showModal(modalDialog(
@@ -1146,8 +1142,8 @@ ui <- fluidPage(
     
     ## Sidebar ####
     sidebarPanel(
-      actionButton("sp_interact", "Interact"),
       actionButton("sp_steady", "Steady"),
+      actionButton("undo", "Undo"),
       tags$br(),
       uiOutput("sp_sel"),
       "->",
