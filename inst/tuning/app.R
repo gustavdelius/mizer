@@ -257,16 +257,31 @@ server <- function(input, output, session) {
     req(input$n)
     p <- isolate(params())
     sp <- isolate(input$sp)
+    
     # change all h so that max intake rate at maturity stays the same
     p@species_params$h <- p@species_params$h * 
       p@species_params$w_mat^(p@n - input$n)
-    p <- setIntakeMax(p, n = input$n)
-    params(p)
     h <- p@species_params[sp, "h"]
     updateSliderInput(session, "h",
                       value = h,
                       min = signif(h / 2, 2),
                       max = signif(h * 1.5, 2))
+    
+    # change all rho so that encounter rate at maturity stays the same
+    for (res in names(p@resource_dynamics)) {
+      res_var <- paste0("rho_", res)
+      p@species_params[, res_var] <- p@species_params[, res_var] * 
+        p@species_params$w_mat^(p@n - input$n)
+      new <- p@species_params[sp, res_var]
+      updateSliderInput(session, res_var,
+                  value = new,
+                  min = signif(max(0, new - 0.1) / 2, 2),
+                  max = signif((new + 0.1) * 1.5, 2))
+    }
+    
+    p <- setIntakeMax(p, n = input$n)
+    p <- setResourceEncounter(p, n = input$n)
+    params(p)
   })
   
   ## Adjust metabolism exponent ####
