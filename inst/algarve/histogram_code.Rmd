@@ -20,26 +20,31 @@ fish_sizes_sp <- read_csv("fish_sizes_sp.csv", skip = 1)
 ```
 
 Now we can make plots. This too needs to go into an R code block.
-> hist(fish_sizes_sp$Dourada, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$Choupa, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$baila, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$toadfish, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$Eel, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$Pargo, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$garfish, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$Seabass, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$sole, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$Mucharra, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$Safia, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$silverside, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$`red mullet`, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$`Sargo`, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$`Salema`, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$`wrasse`, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$`goby`, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$`anchovy`, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$`sardine`, breaks = bins, xlim = y, freq = TRUE)
-> hist(fish_sizes_sp$`grey mullet`, breaks = bins, xlim = y, freq = TRUE)
+```{r}
+hist(fish_sizes_sp$Dourada, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$Choupa, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$baila, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$toadfish, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$Eel, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$Pargo, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$garfish, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$Seabass, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$sole, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$Mucharra, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$Safia, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$silverside, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$`red mullet`, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$`Sargo`, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$`Salema`, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$`wrasse`, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$`goby`, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$`anchovy`, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$`sardine`, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$`grey mullet`, breaks = bins, xlim = y, freq = TRUE)
+```
+
+
+
 
 
 
