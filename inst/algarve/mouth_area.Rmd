@@ -16,6 +16,11 @@ A = a_A L^{b_A}.
 $$
 The values of $a_A$ and $b_A$ are given for different species in the papers,
 with $L$ measured in cm and $A$ measured in cm^2.
+```{r}
+species <- c()
+aA <- c()
+bA <- c()
+```
 
 We also have an allometric relationship between the predator length $L$ and the 
 predator weight $w$:
@@ -53,6 +58,13 @@ $$
 $$
 We don't know $a_p$, so let us just choose some reasonable value, say 
 $a_p = 0.1$.
+```{r}
+params <- readRDS("params.rds")
+ap <- 0.1
+a <- params@species_params$a
+b <- params@species_params$b
+beta <- a / ap * aA^(b/bA)
+```
 
 
 ## Guessing sigma
