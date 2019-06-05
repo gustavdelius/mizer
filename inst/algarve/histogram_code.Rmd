@@ -21,8 +21,9 @@ fish_sizes_sp <- read_csv("fish_sizes_sp.csv", skip = 1)
 
 Now we can make plots. This too needs to go into an R code block.
 ```{r}
-hist(fish_sizes_sp$Dourada, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$Choupa, breaks = bins, xlim = y, freq = TRUE)
+y <- c(0.8, 2500)
+hist(fish_sizes_sp$Dourada, breaks = bins, xlim = y)
+hist(fish_sizes_sp$Choupa, breaks = bins, xlim = y)
 hist(fish_sizes_sp$baila, breaks = bins, xlim = y, freq = TRUE)
 hist(fish_sizes_sp$toadfish, breaks = bins, xlim = y, freq = TRUE)
 hist(fish_sizes_sp$Eel, breaks = bins, xlim = y, freq = TRUE)
@@ -42,9 +43,46 @@ hist(fish_sizes_sp$`anchovy`, breaks = bins, xlim = y, freq = TRUE)
 hist(fish_sizes_sp$`sardine`, breaks = bins, xlim = y, freq = TRUE)
 hist(fish_sizes_sp$`grey mullet`, breaks = bins, xlim = y, freq = TRUE)
 ```
+```{r}
 
+```
 
+We can also use ggplot2 package for plots.
+```{r}
+library(ggplot2)
+library(plotly)
+```
+It works with long dataframes. The reshape2 package has a nice command for
+converting short data frames into long ones.
+```{r}
+library(reshape2)
+df <- melt(fish_sizes_sp, na.rm = TRUE)
+```
+Let's look at the first few entries
+```{r}
+head(df)
+```
+Now we can plot
+```{r}
+ggplot(df[df$variable != "sardine",], aes(value)) + geom_histogram(breaks = bins) +
+  coord_trans(x = "log10") +
+    facet_wrap(vars(variable))
+```
+```{r}
+ggplot(df[df$variable == "Choupa",], aes(value)) + geom_histogram(breaks = bins) +
+  coord_trans(x = "log10") 
+```
+```{r}
+plotSpectra(params, plankton = FALSE, total = TRUE, power = 0)
+```
+Using base plot again.
+```{r}
+plot(params@w, params@initial_n["Choupa",], type="l", log="xy")
+```
+Calculate the number density from the observational data. This means we need to count the number of individuals in each size bracket and then divide that vector by the vector params@dw which holds the widths of the size brackets. Then we can plot that vector on top of the above plot.
+```{r}
 
+```
 
 
 
