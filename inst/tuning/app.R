@@ -29,6 +29,10 @@ server <- function(input, output, session) {
   params(p)
   output$filename <- renderText(paste0("Previously uploaded file: ", filename))
   
+  # Prepare simple undo functionality
+  params_stack_1 <- p  # will hold previous-to-last steady state
+  params_stack_2 <- p  # will hold last steady state
+  
   # Define some globals to skip certain observers
   sp_old <- 1
   sp_old_predation <- 1
@@ -60,6 +64,8 @@ server <- function(input, output, session) {
     p@species_params$r_max <- Inf
     # Update the reactive params object
     params(p)
+    params_stack_1 <<- params_stack_2
+    params_stack_2 <<- p
     
     # Update species selector
     species <- as.character(p@species_params$species[!is.na(p@A)])
@@ -126,7 +132,10 @@ server <- function(input, output, session) {
                   value = sp$sigma,
                   min = signif(sp$sigma / 2, 2),
                   max = signif(sp$sigma * 1.5, 2),
-                  step = 0.05)
+                  step = 0.05),
+      numericInput("n", "Exponent of feeding rate",
+                   value = p@n,
+                   min = 0.6, max = 0.8, step = 0.005)
     )
     
     if (length(p@resource_dynamics) > 0) {
@@ -180,6 +189,9 @@ server <- function(input, output, session) {
                   min = signif(sp$ks / 2, 2),
                   max = signif((sp$ks + 0.1) * 1.5, 2),
                   step = 0.05),
+      numericInput("p", "Exponent of metabolism",
+                   value = p@p,
+                   min = 0.6, max = 0.8, step = 0.005),
       sliderInput("k", "Coefficient of activity k",
                   value = sp$k,
                   min = signif(sp$k / 2, 2),
@@ -237,6 +249,56 @@ server <- function(input, output, session) {
                 accept = ".rds")
     ))
     l1
+  })
+  
+
+  ## Adjust growth exponent ####
+  observe({
+    req(input$n)
+    p <- isolate(params())
+    sp <- isolate(input$sp)
+    
+    # change all h so that max intake rate at maturity stays the same
+    p@species_params$h <- p@species_params$h * 
+      p@species_params$w_mat^(p@n - input$n)
+    h <- p@species_params[sp, "h"]
+    updateSliderInput(session, "h",
+                      value = h,
+                      min = signif(h / 2, 2),
+                      max = signif(h * 1.5, 2))
+    
+    # change all rho so that encounter rate at maturity stays the same
+    for (res in names(p@resource_dynamics)) {
+      res_var <- paste0("rho_", res)
+      p@species_params[, res_var] <- p@species_params[, res_var] * 
+        p@species_params$w_mat^(p@n - input$n)
+      new <- p@species_params[sp, res_var]
+      updateSliderInput(session, res_var,
+                  value = new,
+                  min = signif(max(0, new - 0.1) / 2, 2),
+                  max = signif((new + 0.1) * 1.5, 2))
+    }
+    
+    p <- setIntakeMax(p, n = input$n)
+    p <- setResourceEncounter(p, n = input$n)
+    params(p)
+  })
+  
+  ## Adjust metabolism exponent ####
+  observe({
+    req(input$p)
+    p <- isolate(params())
+    sp <- isolate(input$sp)
+    # change all ks so that metabolic rate at maturity stays the same
+    p@species_params$ks <- p@species_params$ks * 
+      p@species_params$w_mat^(p@p - input$p)
+    p <- setMetab(p, p = input$p)
+    params(p)
+    ks <- p@species_params[sp, "ks"]
+    updateSliderInput(session, "ks",
+                      value = ks,
+                      min = signif(ks / 2, 2),
+                      max = signif((ks + 0.1) * 1.5, 2))
   })
   
   ## Rescale abundance ####
@@ -531,62 +593,14 @@ server <- function(input, output, session) {
     }
   })
   
-  ## Recompute all species ####
-  # triggered by "Interact" button on "Species" tab
-  observeEvent(input$sp_interact, {
-    p <- params()
-    
-    tryCatch({
-      # Recompute plankton
-      plankton_mort <- getPlanktonMort(p)
-      p@initial_n_pp <- p@rr_pp * p@cc_pp / (p@rr_pp + plankton_mort)
-      # Recompute all species
-      mumu <- getMort(p, effort = effort())
-      gg <- getEGrowth(p)
-      for (sp in 1:length(p@species_params$species)) {
-        w_inf_idx <- min(sum(p@w < p@species_params[sp, "w_inf"]) + 1,
-                         length(p@w))
-        idx <- p@w_min_idx[sp]:(w_inf_idx - 1)
-        validate(
-          need(!any(gg[sp, idx] == 0),
-               "Can not compute steady state due to zero growth rates")
-        )
-        n0 <- p@initial_n[sp, p@w_min_idx[sp]]
-        p@initial_n[sp, ] <- 0
-        p@initial_n[sp, p@w_min_idx[sp]:w_inf_idx] <- 
-          c(1, cumprod(gg[sp, idx] / ((gg[sp, ] + mumu[sp, ] * p@dw)[idx + 1]))) *
-          n0
-      }
-      
-      # Retune the values of erepro so that we get the correct level of
-      # recruitment
-      mumu <- getMort(p, effort = effort())
-      gg <- getEGrowth(p)
-      rdd <- getRDD(p)
-      # TODO: vectorise this
-      for (i in (1:length(p@species_params$species))) {
-        gg0 <- gg[i, p@w_min_idx[i]]
-        mumu0 <- mumu[i, p@w_min_idx[i]]
-        DW <- p@dw[p@w_min_idx[i]]
-        p@species_params$erepro[i] <- p@species_params$erepro[i] *
-          p@initial_n[i, p@w_min_idx[i]] *
-          (gg0 + DW * mumu0) / rdd[i]
-      }
-      
-      # Update the reactive params object
-      params(p)
-    },
-    error = function(e) {
-      showModal(modalDialog(
-        title = "Invalid parameters",
-        HTML(paste0("These parameter do not lead to an acceptable steady state.",
-                    "Please choose other values.<br>",
-                    "The error message was:<br>", e)),
-        easyClose = TRUE
-      ))}
-    )
+  ## Undo ####
+  observeEvent(input$undo, {
+    # pop params from our two-level stack
+    params(params_stack_2)
+    params_stack_2 <<- params_stack_1
+    # Trigger an update of sliders
+    trigger_update(runif(1))
   })
-    
     
   ## Find new steady state ####
   # triggered by "Steady" button on "species" tab
@@ -611,6 +625,8 @@ server <- function(input, output, session) {
       
       # Update the reactive params object
       params(p)
+      params_stack_1 <<- params_stack_2
+      params_stack_2 <<- p
     },
     error = function(e) {
       showModal(modalDialog(
@@ -767,7 +783,7 @@ server <- function(input, output, session) {
     ggplot(df) +
       geom_col(aes(x = Species, y = Biomass, fill = Type),
                position = "dodge") +
-      scale_y_continuous(name = "Biomass", trans = "log10",
+      scale_y_continuous(name = "Biomass [g]", trans = "log10",
                          breaks = log_breaks()) +
       theme_grey(base_size = base_size) +
       theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
@@ -959,7 +975,7 @@ server <- function(input, output, session) {
     geom_vline(xintercept = p@species_params[sp, "w_inf"], 
                linetype = "dotted") +
     theme_grey(base_size = base_size) +
-    labs(x = "Size [g]", y = "Rate")  +
+    labs(x = "Size [g]", y = "Rate [g/year]")  +
     geom_text(aes(x = p@species_params[sp, "w_mat"], 
                   y = max(value * 0.2),
                   label = "\nMaturity"), 
@@ -1005,7 +1021,7 @@ server <- function(input, output, session) {
       geom_vline(xintercept = p@species_params[sp, "w_inf"], 
                  linetype = "dotted") +
       theme_grey(base_size = base_size) +
-      labs(x = "Size [g]", y = "Rate")  +
+      labs(x = "Size [g]", y = "Rate [1/year]")  +
       geom_text(aes(x = p@species_params[sp, "w_mat"], 
                     y = max(value * 0.2),
                     label = "\nMaturity"), 
@@ -1141,8 +1157,8 @@ ui <- fluidPage(
     
     ## Sidebar ####
     sidebarPanel(
-      actionButton("sp_interact", "Interact"),
       actionButton("sp_steady", "Steady"),
+      actionButton("undo", "Undo"),
       tags$br(),
       uiOutput("sp_sel"),
       "->",

@@ -1,0 +1,104 @@
+---
+title: "Mouth area"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Estimating $\beta$
+
+From the papers we have an allometric expression for the mouth area $A$ as
+a function of predator length $L$:
+$$
+A = a_A L^{b_A}.
+$$
+The values of $a_A$ and $b_A$ are given for different species in the papers,
+with $L$ measured in cm and $A$ measured in cm^2.
+
+We also have an allometric relationship between the predator length $L$ and the 
+predator weight $w$:
+$$
+w = a L^b.
+$$
+We can invert that to get $L$ in terms of $w$:
+$$
+L = \left(\frac{w}{a}\right)^{1/b}.
+$$
+We now make the assumption that the preferred prey size $w_p$ scales with the mouth
+area as
+$$
+w_p = a_p A^{b_p}.
+$$
+We don't know $a_p$ and $b_p$ but at least $b_p$ we will be able to eliminate
+below. Substituting the expression for $A$ and then expressing $L$ by $w$ gives
+$$
+w_p = a_p \left(a_A \left(\frac{w}{a}\right)^{b_A/b}\right)^{b_p}
+= a_p\ a_A^{b_p}\ a^{-(b_Ab_p)/b}\ w^{(b_Ab_p)/b}.
+$$
+Now we know that we want the preferred prey size $w_p$ to be a fixed fraction
+of the pedator size $w$,
+$$
+w_p = w / \beta,
+$$
+where $\beta$ is the preferred predator/prey size ratio $\beta = w/w_p$.
+Comparing the two above equations tells us that $(b_Ab_p)/b = 1$ and hence
+$$
+b_p = \frac{b}{b_A}
+$$
+and
+$$
+\beta = w/w_p = \frac{a}{a_p}a_A^{b/b_A}.
+$$
+We don't know $a_p$, so let us just choose some reasonable value, say 
+$a_p = 0.1$.
+
+
+## Guessing sigma
+
+Of course a fish does not only feed on exactly its preferred size but also
+on prey sizes close to its preferred size. This is described by the feeding
+kernel which gives the relative importance of different predator/prey
+size ratios $x$. By default in mizer the feeding kernel is chosen to take the form
+$$
+  \tilde{\phi}(x) = 
+  \exp \left( \dfrac{-(\ln(x / \beta))^2}{2\sigma^2} \right).
+$$
+This is peaked at $x=\beta$. The parameter $\sigma$ describes the width of
+the kernel, i.e., the larger $\sigma$ the less fussy the predator is. Viewed
+as a function of $\ln(x)$ the kernel is a Gaussian bell curve. We know that
+95% of the area of such a curve is concentrated between $\log(\beta)-2\sigma$
+and $\log(\beta)+2\sigma$. So I propose to identify $\log(\beta) - 2\sigma$ with
+the log of the smallest possible predator/prey size ratio,
+$$
+x_{min} = \frac{w}{w_{p.max}} = \beta e^{-2\sigma},
+$$
+where $w_{p.max}$ is the size of the largest prey that fits into the predator's
+mouth. 
+Again we assume that this scales with mouth area,
+$$
+w_{p.max} = a_{p.max} A^{b_p}
+$$
+with the same exponent $b_p$ as before, so that the ratio between the maximum 
+prey size $w_{p.max}$ and the prefered prey size $w_p$ is a constant,
+$$
+w_{p.max} / w_p = a_{p.max} / a_p = \beta / x_{min} = e^{2\sigma}
+$$
+or
+$$
+\sigma = \frac12 \ln(w_{p.max}/w_p).
+$$
+We again have to make an assumption of what this ratio is. I propose to
+choose $a_{p.max}=1$ so that the ratio is $10$.
+That gives
+$$
+\sigma = \frac12 \ln(10).
+$$
+```{r}
+sigma <- log(10)/2
+sigma
+```
+But of course I am just guessing.
+
+
