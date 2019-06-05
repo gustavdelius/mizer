@@ -1,30 +1,25 @@
 ---
 title: "R Notebook"
 output: html_notebook
--
+---
 
-> params_36 <- readRDS("~/Marine Biology MSC/Thesis Project/Data/MIZER code/mizer/inst/algarve/params_36.rds")
-> params_36@w
+## A title
+Some explanation of what you are doing. Then some code in an R code block.
+We should use file paths relative to the directory this notebook is in.
+```{r}
+params <- readRDS("params_36.rds")
+```
+Now that we have the params object we can just get the bins from there
+```{r}
+bins <- params@w
+```
+Let's load the data
+```{r}
+library(readr)
+fish_sizes_sp <- read_csv("fish_sizes_sp.csv", skip = 1)
+```
 
-> bins <-c(4.752000e-04, 5.657960e-04, 6.736640e-04, 8.020967e-04, 9.550150e-04, 1.137087e-03, 1.353870e-03, 1.611983e-03, 1.919305e-03, 2.285217e-03, 2.720889e-03, 3.239621e-03,
-+ 3.857249e-03, 4.592627e-03, 5.468202e-03, 6.510705e-03, 7.751959e-03, 9.229855e-03,
-+ 1.098951e-02, 1.308464e-02, 1.557920e-02, 1.854935e-02, 2.208575e-02, 2.629635e-02,
-+ 3.130970e-02, 3.727884e-02, 4.438598e-02, 5.284809e-02, 6.292348e-02, 7.491972e-02,
-+ 8.920303e-02, 1.062094e-01, 1.264580e-01, 1.505670e-01, 1.792724e-01, 2.134503e-01,
-+ 2.541442e-01, 3.025963e-01, 3.602858e-01, 4.289736e-01, 5.107566e-01, 6.081314e-01,
-+ 7.240705e-01, 8.621132e-01, 1.026474e+00, 1.222169e+00, 1.455173e+00, 1.732599e+00,
-+ 2.062916e+00, 2.456207e+00, 2.924478e+00, 3.482024e+00, 4.145866e+00, 4.936268e+00,
-+ 5.877358e+00, 6.997865e+00, 8.331995e+00, 9.920475e+00, 1.181179e+01, 1.406369e+01,
-+ 1.674491e+01, 1.993729e+01, 2.373830e+01, 2.826396e+01, 3.365244e+01, 4.006821e+01,
-+ 4.770714e+01, 5.680242e+01, 6.763170e+01, 8.052555e+01, 9.587760e+01, 1.141565e+02,
-+ 1.359202e+02, 1.618331e+02, 1.926863e+02, 2.294216e+02, 2.731604e+02, 3.252380e+02,
-+ 3.872440e+02, 4.610713e+02, 5.489737e+02, 6.536345e+02, 7.782487e+02, 9.266204e+02,
-+ 1.103279e+03, 1.313617e+03, 1.564056e+03, 1.862240e+03, 2.217272e+03, 2.639991e+03,
-+ 3.143301e+03, 3.742565e+03, 4.456078e+03, 5.305621e+03, 6.317128e+03, 7.521477e+03,
-+ 8.955433e+03, 1.066277e+04, 1.269561e+04, 1.511600e+04)
-
-> fish_sizes_sp <- read_csv("inst/algarve/fish_sizes_sp.csv", 
-+     skip = 1)
+Now we can make plots. This too needs to go into an R code block.
 > hist(fish_sizes_sp$Dourada, breaks = bins, xlim = y, freq = TRUE)
 > hist(fish_sizes_sp$Choupa, breaks = bins, xlim = y, freq = TRUE)
 > hist(fish_sizes_sp$baila, breaks = bins, xlim = y, freq = TRUE)
