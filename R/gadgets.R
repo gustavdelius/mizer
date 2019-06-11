@@ -31,8 +31,8 @@ tuneParams <- function(p, catchdist = NULL) {
     log_idx <- 0
     add_to_logs <- function(p) {
         # Save params object to disk
-        time = format(Sys.time(), "_%Y_%m_%d_at_%H_%M_%OS4")
-        file = paste0("tmp_mizer_params", time, ".rds")
+        time = format(Sys.time(), "_%Y_%m_%d_at_%H_%M_%S")
+        file = paste0(tempdir(), "/mizer_params", time, ".rds")
         saveRDS(p, file = file)
         # Update logs
         if (log_idx < length(logs)) {
@@ -1183,8 +1183,8 @@ tuneParams <- function(p, catchdist = NULL) {
             br <- pr * p@w_full
             pr <- pr / sum(pr * dx)
             br <- br / sum(br * dx)
-            df <- tibble(x, Kernel = phix, Biomass = br, Abundance = pr) %>%
-                gather(type, y, Kernel, Biomass, Abundance)
+            df <- tibble::tibble(x, Kernel = phix, Biomass = br, Abundance = pr) %>%
+                tidyr::gather(type, y, Kernel, Biomass, Abundance)
             ggplot(df) +
                 geom_line(aes(x, y, color = type)) +
                 labs(x = "log(w)", y = "Density") +
