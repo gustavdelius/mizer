@@ -10,9 +10,44 @@
 #' @export
 tuneParams <- function(p, catchdist = NULL) {
     
+    # Define some globals to skip certain observers
+    sp_old <- 1
+    sp_old_predation <- 1
+    sp_old_n0 <- 1
+    
+    prepare_params <- function(p) {
+        p <- set_species_param_default(p, "a", 0.006)
+        p <- set_species_param_default(p, "b", 3)
+        p <- set_species_param_default(p, "t0", 0)
+        rdi <- getRDI(p)
+        rdd <- getRDD(p)
+        p@species_params$erepro <- p@species_params$erepro * rdd / rdi
+        p@species_params$r_max <- Inf
+        return(p)
+    }
+    
+    # Prepare logs for undo/redo functionality
+    logs <- vector(mode = "character")
+    log_idx <- 0
+    add_to_logs <- function(p) {
+        # Save params object to disk
+        time = format(Sys.time(), "_%Y_%m_%d_at_%H_%M_%OS4")
+        file = paste0("tmp_mizer_params", time, ".rds")
+        saveRDS(p, file = file)
+        # Update logs
+        if (log_idx < length(logs)) {
+            file.remove(logs[(log_idx + 1):length(logs)])
+        }
+        logs <<- append(logs[min(1, log_idx):log_idx], file)
+        log_idx <<- log_idx + 1
+        shinyjs::disable("redo")
+        if (log_idx > 1) shinyjs::enable("undo")
+    }
+    
+    
     # User interface ----
     ui <- fluidPage(
-        
+        shinyjs::useShinyjs(),
         # titlePanel("Humboldt current ecosystem"),
         
         sidebarLayout(
@@ -21,6 +56,7 @@ tuneParams <- function(p, catchdist = NULL) {
             sidebarPanel(
                 actionButton("sp_steady", "Steady"),
                 actionButton("undo", "Undo"),
+                actionButton("redo", "Redo"),
                 actionButton("done", "Done",
                              onclick = "setTimeout(function(){window.close();},500);"),
                 tags$br(),
@@ -103,27 +139,16 @@ tuneParams <- function(p, catchdist = NULL) {
         # Size of plot labels
         base_size <- 12
         
-        ## Load params object and store it as a reactive value ####
+        ## Store params object as a reactive value ####
         params <- reactiveVal()
         validObject(p)
-        p <- set_species_param_default(p, "a", 0.006)
-        p <- set_species_param_default(p, "b", 3)
-        p <- set_species_param_default(p, "t0", 0)
-        rdi <- getRDI(p)
-        rdd <- getRDD(p)
-        p@species_params$erepro <- p@species_params$erepro * rdd / rdi
-        p@species_params$r_max <- Inf
+        p <- prepare_params(p)
         params(p)
-        output$filename <- renderText("No previously uploaded file")
+        add_to_logs(p)
+        shinyjs::disable("redo")
+        shinyjs::disable("undo")
+        output$filename <- renderText("")
         
-        # Prepare simple undo functionality
-        params_stack_1 <- p  # will hold previous-to-last steady state
-        params_stack_2 <- p  # will hold last steady state
-        
-        # Define some globals to skip certain observers
-        sp_old <- 1
-        sp_old_predation <- 1
-        sp_old_n0 <- 1
         # Define a reactive value for triggering an update of species sliders
         trigger_update <- reactiveVal(0)
         # Fishing effort
@@ -132,40 +157,34 @@ tuneParams <- function(p, catchdist = NULL) {
         ## Handle upload of params object ####
         observeEvent(input$upload, {
             inFile <- input$upload
-            output$filename <- renderText(paste0("Previously uploaded file: ", 
-                                                 inFile$name))
-            tryCatch(
-                p <- readRDS(inFile$datapath),
-                error = function(e) {stop(safeError(e))}
+            tryCatch({
+                p <- readRDS(inFile$datapath)
+                validObject(p)
+                # Update species selector
+                species <- as.character(p@species_params$species[!is.na(p@A)])
+                updateSelectInput(session, "sp",
+                                  choices = species,
+                                  selected = species[1])
+                
+                # Update the reactive params object
+                params(prepare_params(p))
+                output$filename <- renderText(paste0("Previously uploaded file: ", 
+                                                     inFile$name))
+            },
+            error = function(e) {
+                showModal(modalDialog(
+                    title = "Invalid parameter file",
+                    HTML(paste0("Trying to load that file led to an error.<br>",
+                                "The error message was:<br>", e)),
+                    easyClose = TRUE
+                ))
+                p <- params()}
             )
-            validObject(p)
-            
-            # Update species selector
-            species <- as.character(p@species_params$species[!is.na(p@A)])
-            updateSelectInput(session, "sp",
-                              choices = species,
-                              selected = species[1])
-            # output$sp_sel <- renderUI({
-            #     p <- isolate(params())
-            #     species <- as.character(p@species_params$species[!is.na(p@A)])
-            #     selectInput("sp", "Species:", species) 
-            # })
-            
-            p <- set_species_param_default(p, "a", 0.006)
-            p <- set_species_param_default(p, "b", 3)
-            p <- set_species_param_default(p, "t0", 0)
-            rdi <- getRDI(p)
-            rdd <- getRDD(p)
-            p@species_params$erepro <- p@species_params$erepro * rdd / rdi
-            p@species_params$r_max <- Inf
-            # Update the reactive params object
-            params(p)
-            params_stack_1 <<- params_stack_2
-            params_stack_2 <<- p
         })
         
-        ## Handle the Done button ####
+        ## Done ####
         observeEvent(input$done, {
+            file.remove(logs)
             stopApp(params())
         })
         
@@ -327,15 +346,10 @@ tuneParams <- function(p, catchdist = NULL) {
                              min = 1e-10,
                              max = 1e3),
                 tags$h3(tags$a(id = "file"), "File management"),
-                downloadButton("params", "Download params"),
-                checkboxInput("log_steady", "Log steady states",
-                              value = TRUE),
-                checkboxInput("log_sp", "Log species parameters",
-                              value = FALSE),
-                tags$hr(),
                 textOutput("filename"),
                 fileInput("upload", "Upload new params", 
-                          accept = ".rds")
+                          accept = ".rds"),
+                downloadButton("params", "Download params")
             ))
             l1
         })
@@ -581,13 +595,6 @@ tuneParams <- function(p, catchdist = NULL) {
                 p@species_params$erepro[i] <- p@species_params$erepro[i] *
                     n0 * (gg0 + DW * mumu0) / rdd
                 
-                if (input$log_sp) {
-                    # Save new species params to disk
-                    time = format(Sys.time(), "_%Y_%m_%d_at_%H_%M_%S")
-                    file = paste0("species_params", time, ".rds")
-                    saveRDS(p@species_params, file = file)
-                }
-                
                 # Update the reactive params object
                 params(p)
             }, 
@@ -684,11 +691,32 @@ tuneParams <- function(p, catchdist = NULL) {
         
         ## Undo ####
         observeEvent(input$undo, {
-            # pop params from our two-level stack
-            params(params_stack_2)
-            params_stack_2 <<- params_stack_1
+            if (log_idx <= 1) return()
+            file <- logs[log_idx]
+            p_new <- readRDS(file)
+            p_old <- params()
+            # if the params have not changed, go to the previous one
+            if (all(p_old@species_params == p_new@species_params, na.rm = TRUE)) {
+                log_idx <<- log_idx - 1
+                shinyjs::enable("redo")
+                file <- logs[log_idx]
+                p_new <- readRDS(file)
+                if (log_idx == 1) shinyjs::disable("undo")
+            }
+            params(p_new)
             # Trigger an update of sliders
             trigger_update(runif(1))
+        })
+        ## Redo ####
+        observeEvent(input$redo, {
+            if (log_idx >= length(logs)) return()
+            log_idx <<- log_idx + 1
+            file <- logs[log_idx]
+            params(readRDS(file))
+            # Trigger an update of sliders
+            trigger_update(runif(1))
+            shinyjs::enable("undo")
+            if (log_idx == length(logs)) shinyjs::disable("redo")
         })
         
         ## Find new steady state ####
@@ -705,17 +733,9 @@ tuneParams <- function(p, catchdist = NULL) {
                 p <- steady(p, effort = effort(), t_max = 100, tol = 1e-2,
                             progress_bar = progress)
                 
-                if (input$log_steady) {
-                    # Save new params object to disk
-                    time = format(Sys.time(), "_%Y_%m_%d_at_%H_%M_%S")
-                    file = paste0("mizer_params", time, ".rds")
-                    saveRDS(p, file = file)
-                }
-                
                 # Update the reactive params object
                 params(p)
-                params_stack_1 <<- params_stack_2
-                params_stack_2 <<- p
+                add_to_logs(p)
             },
             error = function(e) {
                 showModal(modalDialog(
