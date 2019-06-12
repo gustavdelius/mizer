@@ -7,7 +7,8 @@
 tuneParams(p, catchdist = NULL)
 }
 \arguments{
-\item{p}{MizerParams object to tune}
+\item{p}{MizerParams object to tune. If missing, the gadget tries to recover
+information from log files left over from aborted previous runs.}
 
 \item{catchdist}{Data frame holding observed catch distribution with
 columns \code{length} (the start of each size bin in cm), \code{catch}

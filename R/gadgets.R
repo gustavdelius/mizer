@@ -1,6 +1,7 @@
 #' Launch gadget for tuning parameters
 #' 
-#' @param p MizerParams object to tune
+#' @param p MizerParams object to tune. If missing, the gadget tries to recover
+#'   information from log files left over from aborted previous runs.
 #' @param catchdist Data frame holding observed catch distribution with
 #'   columns \code{length} (the start of each size bin in cm), \code{catch}
 #'   (the number of individuals of a particular species caught in this size bin)
@@ -44,6 +45,21 @@ tuneParams <- function(p, catchdist = NULL) {
         if (log_idx > 1) shinyjs::enable("undo")
     }
     
+    if (missing(p)) {
+        # Try to recover old log files
+        logs <- sort(list.files(path = tempdir(), 
+                                pattern = "mizer_params_...._.._.._at_.._.._..\\.rds",
+                                full.names = TRUE))
+        log_idx <- length(logs)
+        if (log_idx == 0) {
+            stop("You need to specify a MizerParams object. ",
+                 "There are no temporary parameter files to recover.")
+        }
+        p <- readRDS(logs[log_idx])
+    } else {
+        validObject(p)
+        p <- prepare_params(p)
+    }
     
     # User interface ----
     ui <- fluidPage(
@@ -141,12 +157,10 @@ tuneParams <- function(p, catchdist = NULL) {
         
         ## Store params object as a reactive value ####
         params <- reactiveVal()
-        validObject(p)
-        p <- prepare_params(p)
         params(p)
         add_to_logs(p)
-        shinyjs::disable("redo")
-        shinyjs::disable("undo")
+        if (log_idx == length(logs)) shinyjs::disable("redo")
+        if (log_idx <= 1) shinyjs::disable("undo")
         output$filename <- renderText("")
         
         # Define a reactive value for triggering an update of species sliders
