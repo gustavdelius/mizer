@@ -30,7 +30,9 @@ Imports:
     plyr,
     progress,
     Rcpp,
-    reshape2
+    reshape2,
+    shiny,
+    shinyjs
 LinkingTo: Rcpp
 Depends:
     R (>= 3.1)
@@ -38,9 +40,7 @@ Suggests:
     testthat,
     roxygen2,
     knitr,
-    shiny,
     shinyBS,
-    shinyjs,
     rmarkdown,
     pkgdown,
     covr
