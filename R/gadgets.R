@@ -144,7 +144,11 @@ tuneParams <- function(p, catchdist = NULL) {
                                      plotlyOutput("plot_prey")),
                             tabPanel("Diet",
                                      plotlyOutput("plot_diet")),
-                            tabPanel("Predators",
+                            tabPanel("Death",
+                                     radioButtons("death_prop", "Show",
+                                                  choices = c("Proportion", "Rate"), 
+                                                  selected = "Proportion", 
+                                                  inline = TRUE),
                                      plotlyOutput("plot_pred"))
                 )
             )  # end mainpanel
@@ -279,7 +283,8 @@ tuneParams <- function(p, catchdist = NULL) {
                                          min = signif(eff / 2, 2),
                                          max = signif(eff * 1.5, 2)),
                              sliderInput("catchability", "Catchability",
-                                         value = sp$catchability, min = 0, max = 1),
+                                         value = sp$catchability, 
+                                         min = 0, max = 2, step = 0.01),
                              sliderInput("l50", "L50",
                                          value = sp$l50, 
                                          min = 1, 
@@ -1226,9 +1231,14 @@ tuneParams <- function(p, catchdist = NULL) {
                 getPredRate(p, p@initial_n, p@initial_n_pp, p@initial_B)[, fish_idx_full]
             fishing <- getFMort(p, effort = effort())[sp, fish_idx]
             total <- colSums(pred_rate) + p@mu_b[sp, fish_idx] + fishing
-            pred_rate <- pred_rate / rep(total, each = dim(pred_rate)[[1]])
-            background <- p@mu_b[sp, fish_idx] / total
-            fishing <- fishing / total
+            ylab <- "Death rate [1/year]"
+            background <- p@mu_b[sp, fish_idx]
+            if (input$death_prop == "Proportion") {
+                pred_rate <- pred_rate / rep(total, each = dim(pred_rate)[[1]])
+                background <- background / total
+                fishing <- fishing / total
+                ylab <- "Proportion of all death"
+            }
             # Make data.frame for plot
             plot_dat <- 
                 rbind(
@@ -1245,7 +1255,7 @@ tuneParams <- function(p, catchdist = NULL) {
             ggplot(plot_dat) +
                 geom_area(aes(x = w, y = value, fill = Cause)) +
                 scale_x_log10() +
-                labs(x = "Size [g]", y = "Proportion of all death") +
+                labs(x = "Size [g]", y = ylab) +
                 scale_fill_manual(values = p@linecolour)
         })
         
