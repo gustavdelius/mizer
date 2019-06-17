@@ -17,9 +17,10 @@ $$
 The values of $a_A$ and $b_A$ are given for different species in the papers,
 with $L$ measured in cm and $A$ measured in cm^2.
 ```{r}
-species <- c("Safia", "Pargo")
-aA <- c(0.0015, 0.06)
-bA <- c(2.2746, 1.9613)
+
+species <- c("Dourada", "Choupa", "baila", "toadfish", "Eel", "Pargo", "garfish", "Seabass", "Sole", "Mucharra", "Safia", "Silverside", "red mullet", "Sargo", "Salema", "wrasse", "Goby", "anchovy", "sardine", "grey mullet")
+aA <- c(0.0029, 0.0085, 0.0088, 0.0105, 0.008525, 0.006, 0.0003, 0.0088, 0.0129, 0.0015, 0.0029, 0.0176, 0.0002, 0.0029, 0.0005, 0.0003, 0.0052, 0.0176, 0.025, 0.0002)
+bA <- c(1.9904, 1.6265, 2.1731, 2.3147, 2.1555, 1.9613, 2.1254, 2.1731, 1.2634, 2.2748, 1.9904, 1.7722, 3.2704, 1.9904, 2.4146, 2.7726, 1.9706, 1.7722, 1.9902, 3.2704)
 ```
 
 We also have an allometric relationship between the predator length $L$ and the 
