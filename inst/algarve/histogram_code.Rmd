@@ -22,26 +22,26 @@ fish_sizes_sp <- read_csv("fish_sizes_sp.csv", skip = 1)
 Now we can make plots. This too needs to go into an R code block.
 ```{r}
 y <- c(0.8, 2500)
-hist(fish_sizes_sp$Dourada, breaks = bins, xlim = y)
-hist(fish_sizes_sp$Choupa, breaks = bins, xlim = y)
-hist(fish_sizes_sp$baila, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$toadfish, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$Eel, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$Pargo, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$garfish, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$Seabass, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$sole, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$Mucharra, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$Safia, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$silverside, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$`red mullet`, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$`Sargo`, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$`Salema`, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$`wrasse`, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$`goby`, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$`anchovy`, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$`sardine`, breaks = bins, xlim = y, freq = TRUE)
-hist(fish_sizes_sp$`grey mullet`, breaks = bins, xlim = y, freq = TRUE)
+hist(fish_sizes_sp$Dourada, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$Choupa, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$baila, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$toadfish, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$Eel, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$Pargo, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$garfish, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$Seabass, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$sole, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$Mucharra, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$Safia, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$silverside, breaks = bins, xlim =y, freq = FALSE)
+hist(fish_sizes_sp$`red mullet`, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$`Sargo`, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$`Salema`, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$`wrasse`, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$`goby`, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$`anchovy`, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$`sardine`, breaks = bins, xlim = y, freq = FALSE)
+hist(fish_sizes_sp$`grey mullet`, breaks = bins, xlim = y, freq = FALSE)
 ```
 ```{r}
 
@@ -73,7 +73,7 @@ ggplot(df[df$variable == "Choupa",], aes(value)) + geom_histogram(breaks = bins)
   coord_trans(x = "log10") 
 ```
 ```{r}
-plotSpectra(params, plankton = FALSE, total = TRUE, power = 0)
+mizer::plotSpectra(params, plankton = FALSE, total = TRUE, power = 0)
 ```
 Using base plot again.
 ```{r}
@@ -81,8 +81,54 @@ plot(params@w, params@initial_n["Choupa",], type="l", log="xy")
 ```
 Calculate the number density from the observational data. This means we need to count the number of individuals in each size bracket and then divide that vector by the vector params@dw which holds the widths of the size brackets. Then we can plot that vector on top of the above plot.
 ```{r}
+count_dourada <-c(hist(fish_sizes_sp$Dourada, breaks = bins, xlim = y, freq = FALSE))
+density_dourada <-(count_dourada$density)
+count_choupa <- hist(fish_sizes_sp$Choupa, breaks = bins, xlim = y, freq = FALSE)
+density_choupa <-c(count_choupa$density)
+count_baila <-(hist(fish_sizes_sp$baila, breaks = bins, xlim = y, freq = FALSE))
+density_baila <-c(count_choupa$density)
+count_toadfish <-(hist(fish_sizes_sp$toadfish, breaks = bins, xlim = y, freq = FALSE))
+density_toadfish <-(count_toadfish$density)
+count_eel <-(hist(fish_sizes_sp$Eel, breaks = bins, xlim = y, freq = FALSE))
+density_eel <-(count_eel$desity)
+count_pargo <-(hist(fish_sizes_sp$Pargo, breaks = bins, xlim = y, freq = FALSE))
+density_Pargo <-(count_pargo$density)
+count_garfish <- (hist(fish_sizes_sp$garfish, breaks = bins, xlim = y, freq = FALSE))
+density_garfish <-(count_garfish$density)
+count_seabass <-(hist(fish_sizes_sp$garfish, breaks = bins, xlim = y, freq = FALSE))
+density_seabass <-(count_seabass$density)
+count_sole <-(hist(fish_sizes_sp$sole, breaks = bins, xlim = y, freq = FALSE))
+density_sole <-(count_seabass$dencity)
+count_mucharra <-(hist(fish_sizes_sp$Mucharra, breaks = bins, xlim = y, freq = FALSE))
+density_mucharra <-(count_mucharra$density)
+count_safia <- (hist(fish_sizes_sp$Safia, breaks = bins, xlim = y, freq = FALSE))
+density_safia <-(count_safia$density)
+count_silverside <-(hist(fish_sizes_sp$silverside, breaks = bins, xlim = y, freq = FALSE))
+density_silverside <-(count_silverside$density)
+```
+count_red_mullet <-(hist(fish_sizes_sp$red_mullet, breaks = bins, xlim = y, freq = FALSE))
+density_red_mullet <-(count_red_mullet$density)
+(I isoloated this code as it is not working, and I cannot fix)
+```{r}
+count_sargo <-(hist(fish_sizes_sp$`Sargo`, breaks = bins, xlim = y, freq = FALSE))
+density_sargo <-(count_sargo$density)
+count_salema <-(hist(fish_sizes_sp$`Salema`, breaks = bins, xlim = y, freq = FALSE))
+density_salema <-(count_salema$density)
+count_wrasse <-(hist(fish_sizes_sp$`wrasse`, breaks = bins, xlim = y, freq = FALSE))
+density_wrasse <-(count_wrasse$density)
+count_goby <-( hist(fish_sizes_sp$`goby`, breaks = bins, xlim = y, freq = FALSE))
+density_goby <-(count_goby$density)
+count_anchovy <-(hist(fish_sizes_sp$`anchovy`, breaks = bins, xlim = y, freq = FALSE))
+density_anchovy <-(count_anchovy$density)
+count_sardine <-(hist(fish_sizes_sp$`sardine`, breaks = bins, xlim = y, freq = FALSE))
+density_sardine <-(count_sardine$density)
+count_greymullet <-(hist(fish_sizes_sp$`grey mullet`, breaks = bins, xlim = y, freq = FALSE))
+density_greymullet <-(count_greymullet$density)
+```
+```{r}
+plot(params@w, params@initial_n["Choupa",], type="l", log="xy", xlim = y)
+lines(density_choupa)
 
 ```
-
-
+`
 
