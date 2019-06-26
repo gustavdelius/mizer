@@ -6,7 +6,6 @@ plankton_logistic <- function(params, n, n_pp, B, rates, dt, ...) {
 }
 
 norm_box_pred_kernel <- function(ppmr, ppmr_min, ppmr_max) {
-    assert_that(ppmr_min < ppmr_max)
     phi <- rep(1, length(ppmr))
     phi[ppmr > ppmr_max] <- 0
     phi[ppmr < ppmr_min] <- 0
@@ -28,11 +27,11 @@ species_params <- data.frame(
     w_min = 0.0003,
     w_mat = 10,
     m = 0.2 + n,
-    w_inf = 10,
+    w_inf = 66.5,
     erepro = 0.5,
     alpha = 0.1,
     ks = 0,
-    gamma = 1920,
+    gamma = 1920 * 75000,
     ppmr_min = 100,
     ppmr_max = 30000,
     pred_kernel_type = "norm_box",
@@ -43,9 +42,10 @@ species_params <- data.frame(
 params <- set_multispecies_model(
     species_params,
     lambda = lambda,
-    kappa = 100 * 10^(-3*lambda),
+    kappa = 1 * 10^(-3*lambda),
     w_pp_cutoff = 0.1,
-    q = 0.8)
+    q = 0.8,
+    min_w_pp = 1e-10)
 r0 <- 1
 params@rr_pp[] <- r0 * params@w_full^(0.85 - 1)
 
@@ -58,9 +58,14 @@ mu_b <- mu_l / (1 + (params@w / w_l)^rho_l)
 mu_s <- 0.001
 w_s <- 9
 rho_s <- 5
-mu_b[params@w >= w_s] <- mu_s * (params@w / w_s)^rho_s
+mu_b[params@w >= w_s] <- (mu_s * (params@w / w_s)^rho_s)[params@w >= w_s]
+params@mu_b[] <- mu_b
 
-plotlySpectra(params)
+# no cannibalism
+params@interaction[] <- 0
+
+# initial anchovy abundance
+params@initial_n[] <- 0.001 * params@w^(-1.8)
 
 sim <- project(params)
 plotlySpectra(sim)
@@ -68,3 +73,6 @@ plotlyBiomass(sim)
 
 sim <- project(sim)
 plotlyBiomass(sim)
+plotlySpectra(sim)
+
+params@w[67]
