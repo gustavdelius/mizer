@@ -74,14 +74,25 @@ params@interaction[] <- 0
 # initial anchovy abundance
 params@initial_n[] <- 0.001 * params@w^(-1.8)
 
-sim <- project(params, t_max = 60, dt = 0.05)
+sim <- project(params, t_max = 150, dt = 0.05)
 plotlySpectra(sim)
 plotlyBiomass(sim)
 
-sim <- project(sim, dt = 0.01)
+sim <- project(sim, t_max = 200, dt = 0.01)
 plotlyBiomass(sim)
 plotlySpectra(sim, wlim = c(1e-10, NA), power = 1, ylim = c(1e-3, NA))
 
 sim2 <- project(sim, dt = 0.01)
 plotlyBiomass(sim2)
 plotlySpectra(sim2, wlim = c(1e-10, NA), power = 1, ylim = c(1e-3, NA))
+
+plotGrowthCurves(sim, species = "Anchovy")
+growth <- getEGrowth(params, sim@n[351, , ], sim@n_pp[351, ])
+plot(params@w, growth, type = "l", log = "xy")
+
+ws <- getGrowthCurves(sim, species = "Anchovy", max_age = 1000)
+years <- colnames(ws)
+years[1] <- 1
+plot(years, ws[1,], type = "l", log = "x", 
+     ylab = "weight [g]", xlab = "year")
+
