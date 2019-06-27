@@ -6,7 +6,7 @@ plankton_logistic <- function(params,
                               dt = 0.1, ...) {
     i <- 0.1 * params@w_full^(-params@lambda) * exp(-6.9*(lambda - 1))
     f <- params@rr_pp * n_pp * (1 - n_pp / params@cc_pp) + i - 
-        rates$plankton_mort 
+        rates$plankton_mort * n_pp 
     f[is.na(f)] <- 0
     return(n_pp + dt * f)
 }
@@ -46,7 +46,7 @@ species_params <- data.frame(
 
 
 params <- set_multispecies_model(
-    no_w = 143,
+    no_w = 200,
     species_params,
     lambda = lambda,
     kappa = 1 * exp(-6.9*(lambda - 1)),
@@ -74,12 +74,14 @@ params@interaction[] <- 0
 # initial anchovy abundance
 params@initial_n[] <- 0.001 * params@w^(-1.8)
 
-sim <- project(params, t_max = 2, dt = 0.01, t_save = 0.01)
+sim <- project(params, t_max = 60, dt = 0.05)
 plotlySpectra(sim)
 plotlyBiomass(sim)
 
-sim <- project(sim)
+sim <- project(sim, dt = 0.01)
 plotlyBiomass(sim)
-plotlySpectra(sim, wlim = c(1e-10, NA), power = 1, ylim = c(NA, NA))
+plotlySpectra(sim, wlim = c(1e-10, NA), power = 1, ylim = c(1e-3, NA))
 
-params@w[67]
+sim2 <- project(sim, dt = 0.01)
+plotlyBiomass(sim2)
+plotlySpectra(sim2, wlim = c(1e-10, NA), power = 1, ylim = c(1e-3, NA))
