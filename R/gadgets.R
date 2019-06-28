@@ -24,7 +24,6 @@ tuneParams <- function(p, catch = NULL) {
     if (!is.null(catch)) {
         assert_that(
                 is.data.frame(catch),
-                length(catch) == 4,
                 "catch" %in% names(catch),
                 "species" %in% names(catch),
                 all(c("length", "dl") %in% names(catch)) |
@@ -1046,7 +1045,7 @@ tuneParams <- function(p, catch = NULL) {
                     catch_w <- catch_w / sum(catch_w * dw)
                     # To get the density in l we need to divide by dl/dw
                     l <- (w / a)^(1/b)
-                    catch_w <- catch_l * b / l * w
+                    catch_l <- catch_w * b / l * w
                 }
                 df <- rbind(df, data.frame(w, l, catch_w, catch_l, 
                                            type = "Observed catch"))
