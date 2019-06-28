@@ -29,7 +29,8 @@
 #' See the mizer website and vignettes for full details of the principles behind
 #' mizer and how the package can be used to perform size-based modelling.
 #'
-#' @import plyr ggplot2 methods assertthat shiny
+#' @import ggplot2 methods assertthat shiny dplyr
+#' @importFrom plyr aaply adply
 #' @importFrom reshape2 melt
 #' @importFrom stats fft mvfft lm pnorm runif
 #' @importFrom deSolve ode

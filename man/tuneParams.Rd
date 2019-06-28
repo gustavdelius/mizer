@@ -2,7 +2,7 @@
 % Please edit documentation in R/gadgets.R
 \name{tuneParams}
 \alias{tuneParams}
-\title{Launch gadget for tuning parameters}
+\title{Launch shiny gadget for tuning parameters}
 \usage{
 tuneParams(p, catch = NULL)
 }
@@ -10,7 +10,7 @@ tuneParams(p, catch = NULL)
 \item{p}{MizerParams object to tune. If missing, the gadget tries to recover
 information from log files left over from aborted previous runs.}
 
-\item{catchdist}{Data frame holding binned observed catch data. The data can
+\item{catch}{Data frame holding binned observed catch data. The data can
 be binned either into length bins or weight bins. In the former the data
 frame should have columns \code{length} and \code{dl} holding the start of
 the size bins in cm and the width of the size bins in cm respectively. In
@@ -24,5 +24,6 @@ individuals of a particular species caught in a size bin).}
 The tuned MizerParams object
 }
 \description{
-Launch gadget for tuning parameters
+The shiny gadget has sliders for the model parameters and tabs with a
+variety of plots to visualise the steady-state
 }
