@@ -4,16 +4,21 @@
 \alias{tuneParams}
 \title{Launch gadget for tuning parameters}
 \usage{
-tuneParams(p, catchdist = NULL)
+tuneParams(p, catch = NULL)
 }
 \arguments{
 \item{p}{MizerParams object to tune. If missing, the gadget tries to recover
 information from log files left over from aborted previous runs.}
 
-\item{catchdist}{Data frame holding observed catch distribution with
-columns \code{length} (the start of each size bin in cm), \code{catch}
-(the number of individuals of a particular species caught in this size bin)
-and \code{species} (the name of the species).}
+\item{catchdist}{Data frame holding binned observed catch data. The data can
+be binned either into length bins or weight bins. In the former the data
+frame should have columns \code{length} and \code{dl} holding the start of
+the size bins in cm and the width of the size bins in cm respectively. In
+the latter case the data frame should have columns \code{weight} and
+\code{dw} holding the start of the size bins in frams and the width of the
+size bins in grams. The data frame also needs to have the columns
+\code{species} (the name of the species), \code{catch} (the number of
+individuals of a particular species caught in a size bin).}
 }
 \value{
 The tuned MizerParams object

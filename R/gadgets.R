@@ -2,14 +2,28 @@
 #' 
 #' @param p MizerParams object to tune. If missing, the gadget tries to recover
 #'   information from log files left over from aborted previous runs.
-#' @param catchdist Data frame holding observed catch distribution with
-#'   columns \code{length} (the start of each size bin in cm), \code{catch}
-#'   (the number of individuals of a particular species caught in this size bin)
-#'   and \code{species} (the name of the species).
+#' @param catchdist Data frame holding binned observed catch data. The data can
+#'   be binned either into length bins or weight bins. In the former the data
+#'   frame should have columns \code{length} and \code{dl} holding the start of
+#'   the size bins in cm and the width of the size bins in cm respectively. In
+#'   the latter case the data frame should have columns \code{weight} and
+#'   \code{dw} holding the start of the size bins in frams and the width of the
+#'   size bins in grams. The data frame also needs to have the columns
+#'   \code{species} (the name of the species), \code{catch} (the number of
+#'   individuals of a particular species caught in a size bin).
 #' 
 #' @return The tuned MizerParams object
 #' @export
-tuneParams <- function(p, catchdist = NULL) {
+tuneParams <- function(p, catch = NULL) {
+    # Check arguments
+    assert_that(is(p, "MizerParams"),
+                is.data.frame(catch),
+                length(catch) == 4,
+                "catch" %in% names(catch),
+                "species" %in% names(catch),
+                all(c("length", "dl") %in% names(catch)) |
+                    all(c("weight", "dw") %in% names(catch))
+                )
     
     # Define some globals to skip certain observers
     sp_old <- 1
@@ -970,11 +984,16 @@ tuneParams <- function(p, catchdist = NULL) {
             # of sizes for which a non-zero catch was observed. If no catch was
             # observed for the species, we use the range from w_mat/100 to w_inf.
             if (is_observed) {
-                l_min = min(catchdist$length[catchdist$species == input$sp])
-                w_min = a * l_min ^ b
+                if (is.null(catchdist$weight)) {
+                    l_min = min(catchdist$length[catchdist$species == input$sp])
+                    w_min = a * l_min ^ b
+                    l_max = max(catchdist$length[catchdist$species == input$sp])
+                    w_max = a * l_max ^ b
+                } else {
+                    w_min = min(catchdist$weight[catchdist$species == input$sp])
+                    w_max = max(catchdist$weight[catchdist$species == input$sp])
+                }
                 w_min_idx <- sum(p@w < w_min)
-                l_max = max(catchdist$length[catchdist$species == input$sp])
-                w_max = a * l_max ^ b
                 w_max_idx <- sum(p@w <= w_max)
             } else {
                 w_min_idx <- sum(p@w < (p@species_params$w_mat[sp] / 100))
@@ -1002,15 +1021,26 @@ tuneParams <- function(p, catchdist = NULL) {
             df <- rbind(df, data.frame(w, l, catch_w, catch_l, type = "Abundance"))
             
             if (is_observed) {
-                # The observed catch is binned in bins equally spaced in length.
-                # We need that binsize to normalise the density
-                l <- catchdist$length[catchdist$species == input$sp]
-                binsize <- min(diff(l))
-                catch_l <- catchdist$catch[catchdist$species == input$sp]
-                catch_l <- catch_l / sum(catch_l * binsize)
-                # To get the density in w we need to divide by dw/dl
-                w <- a * l ^ b
-                catch_w <- catch_l / b * l / w
+                sel <- (catchdist$species == input$sp)
+                if (is.null(catchdist$weight)) {
+                    l <- catchdist$length[sel]
+                    dl <- catchdist$dl[sel]
+                    catch_l <- catchdist$catch[sel]
+                    # normalise to a density in l
+                    catch_l <- catch_l / sum(catch_l * dl)
+                    # To get the density in w we need to divide by dw/dl
+                    w <- a * l ^ b
+                    catch_w <- catch_l / b * l / w
+                } else {
+                    w <- catchdist$weight[sel]
+                    dw <- catchdist$dw[sel]
+                    catch_w <- catchdist$catch[sel]
+                    # normalise to a density in w
+                    catch_w <- catch_w / sum(catch_w * dw)
+                    # To get the density in l we need to divide by dl/dw
+                    l <- (w / a)^(1/b)
+                    catch_w <- catch_l * b / l * w
+                }
                 df <- rbind(df, data.frame(w, l, catch_w, catch_l, 
                                            type = "Observed catch"))
             }
