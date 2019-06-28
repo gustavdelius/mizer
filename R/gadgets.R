@@ -20,7 +20,6 @@
 #' @export
 tuneParams <- function(p, catch = NULL) {
     # Check arguments
-    assert_that(is(p, "MizerParams"))
     if (!is.null(catch)) {
         assert_that(
                 is.data.frame(catch),
