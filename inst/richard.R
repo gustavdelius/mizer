@@ -86,8 +86,10 @@ sim2 <- project(sim, dt = 0.01)
 plotlyBiomass(sim2)
 plotlySpectra(sim2, wlim = c(1e-10, NA), power = 1, ylim = c(1e-3, NA))
 
+last <- dim(sim@n)[1]
+
 plotGrowthCurves(sim, species = "Anchovy")
-growth <- getEGrowth(params, sim@n[351, , ], sim@n_pp[351, ])
+growth <- getEGrowth(params, sim@n[last, , ], sim@n_pp[last, ])
 plot(params@w, growth, type = "l", log = "xy")
 
 ws <- getGrowthCurves(sim, species = "Anchovy", max_age = 1000)
@@ -96,3 +98,15 @@ years[1] <- 1
 plot(years, ws[1,], type = "l", log = "x", 
      ylab = "weight [g]", xlab = "year")
 
+pm <- getPlanktonMort(params, sim@n[last, , ], sim@n_pp[last, ])
+plankton_biomass <- sim@n_pp[last, ] * params@w_full^2
+plot(params@w_full, pm, type = "l", log = "xy",
+     ylim = c(1e-1,100), col = "blue",
+     main = "Cause of plankton collapse",
+     xlab = "Size [g]",
+     ylab = "Rate [1/year]")
+lines(params@w_full, params@rr_pp, lty = "longdash")
+lines(params@w_full, plankton_biomass / max(plankton_biomass) * 100,
+      lty = "dotted", col = "green", lwd = 2)
+
+plot(params@w_full, sim@n_pp[last, ] * params@w_full^2, type = "l", log = "xy")
