@@ -32,7 +32,7 @@
 #' @import ggplot2 methods assertthat shiny dplyr
 #' @importFrom plyr aaply adply
 #' @importFrom reshape2 melt
-#' @importFrom stats fft mvfft lm pnorm runif
+#' @importFrom stats fft mvfft lm pnorm runif complete.cases
 #' @importFrom deSolve ode
 #' @importFrom progress progress_bar
 #' @importFrom plotly ggplotly plotlyOutput renderPlotly
