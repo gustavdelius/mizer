@@ -6,7 +6,9 @@ params <- readRDS("inst/algarve/params_36.rds")
 fish_sizes_sp <- read_csv("inst/algarve/fish_sizes_sp.csv")
 
 # The species names are in the first row
-names(fish_sizes_sp) <- fish_sizes_sp[1, ]
+names(fish_sizes_sp) <- as.character(slice(fish_sizes_sp, 1))
+# Hack due to the fact that Dourada was misspelled in species data frame
+names(fish_sizes_sp)[1] <- "Dourada "
 
 catch <- fish_sizes_sp %>% 
     slice(-1) %>%  # Get rid of row containing species names
