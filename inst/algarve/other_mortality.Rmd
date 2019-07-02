@@ -1,0 +1,27 @@
+---
+title: "Other_Mortality"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+z0 = other mortality
+
+$$
+z0 = z0pre*winf^(z0exp)
+$$
+```{r}
+library(readr)
+parameters <-read.csv("~/Marine Biology MSC/Thesis Project/Data/MIZER code/mizer/inst/algarve/parameters.csv")
+winf <-c(parameters$w_inf)
+species <-C(parameters$Species)
+z0pre <-(0.6)
+z0exp <-((2/3)-1)
+z0 <- z0pre*winf^z0exp
+names(z0)<-species
+show(z0)
+
+```
