@@ -33,6 +33,9 @@ tuneParams <- function(p, catch = NULL) {
     # Define some globals to skip certain observers
     sp_old <- 1
     sp_old_predation <- 1
+    sp_old_fishing <- 1
+    sp_old_maturity <- 1
+    sp_old_prey <- 1
     sp_old_n0 <- 1
     
     prepare_params <- function(p) {
@@ -589,6 +592,59 @@ tuneParams <- function(p, catch = NULL) {
             }
         })
         
+        ## Adjust fishing ####
+        observe({
+            req(input$catchability, input$l50, input$ldiff)
+            p <- isolate(params())
+            sp <- isolate(input$sp)
+            
+            if (sp != sp_old_fishing) {
+                sp_old_fishing <<- sp
+            } else {
+                # Update slider min/max so that they are a fixed proportion of the 
+                # parameter value
+                updateSliderInput(session, "l50",
+                                  max = signif(input$l50 * 2, 2))
+                updateSliderInput(session, "ldiff",  
+                                  max = signif(input$l50 / 10, 2))
+                
+                p@species_params[sp, "catchability"]  <- input$catchability
+                p@species_params[sp, "l50"]   <- input$l50
+                p@species_params[sp, "l25"]   <- input$l50 - input$ldiff
+                
+                p <- setFishing(p)
+                update_species(sp, p)
+            }
+        })
+        
+        ## Adjust maturity ####
+        observe({
+            req(input$w_mat, input$wfrac, input$w_inf, input$m)
+            p <- isolate(params())
+            sp <- isolate(input$sp)
+            
+            if (sp != sp_old_maturity) {
+                sp_old_maturity <<- sp
+            } else {
+                # Update slider min/max so that they are a fixed proportion of the 
+                # parameter value
+                updateSliderInput(session, "w_mat",
+                                  min = signif(input$w_mat / 2, 2),
+                                  max = signif(input$w_mat * 1.5, 2))
+                updateSliderInput(session, "w_inf",
+                                  min = signif(input$w_inf / 2, 2),
+                                  max = signif(input$w_inf * 1.5, 2))
+                
+                p@species_params[sp, "w_mat25"]   <- input$w_mat * input$wfrac
+                p@species_params[sp, "w_mat"]   <- input$w_mat
+                p@species_params[sp, "w_inf"]   <- input$w_inf
+                p@species_params[sp, "m"]     <- input$m
+                
+                p <- setReproduction(p)
+                update_species(sp, p)
+            }
+        })
+        
         update_species <- function(sp, p) {
             # wrap the code in trycatch so that when there is a problem we can
             # simply stay with the old parameters
@@ -649,23 +705,17 @@ tuneParams <- function(p, catch = NULL) {
         
         ## Adjust species parameters ####
         observe({
-            req(input$interaction_p)
+            req(input$interaction_p,
+                input$alpha, input$ks, input$k)
             p <- isolate(params())
             sp <- isolate(input$sp)
             
             # Create updated species params data frame
             species_params <- p@species_params
             species_params[sp, "interaction_p"] <- input$interaction_p
-            species_params[sp, "catchability"]  <- input$catchability
-            species_params[sp, "l50"]   <- input$l50
-            species_params[sp, "l25"]   <- input$l50 - input$ldiff
             species_params[sp, "alpha"] <- input$alpha
             species_params[sp, "ks"]    <- input$ks
             species_params[sp, "k"]     <- input$k
-            species_params[sp, "w_mat25"]   <- input$w_mat * input$wfrac
-            species_params[sp, "w_mat"]   <- input$w_mat
-            species_params[sp, "w_inf"]   <- input$w_inf
-            species_params[sp, "m"]     <- input$m
             species_params[sp, "z0"]     <- input$z0
             if (length(p@resource_dynamics) > 0) {
                 for (res in names(p@resource_dynamics)) {
@@ -686,10 +736,6 @@ tuneParams <- function(p, catch = NULL) {
             } else {
                 # Update slider min/max so that they are a fixed proportion of the 
                 # parameter value
-                updateSliderInput(session, "l50",
-                                  max = signif(input$l50 * 2, 2))
-                updateSliderInput(session, "ldiff",  
-                                  max = signif(input$l50 / 10, 2))
                 updateSliderInput(session, "ks",
                                   min = signif(input$ks / 2, 2),
                                   max = signif((input$ks + 0.1) * 1.5, 2))
@@ -699,12 +745,6 @@ tuneParams <- function(p, catch = NULL) {
                 updateSliderInput(session, "z0",
                                   min = signif(input$z0 / 2, 2),
                                   max = signif((input$z0 + 0.1) * 1.5, 2))
-                updateSliderInput(session, "w_mat",
-                                  min = signif(input$w_mat / 2, 2),
-                                  max = signif(input$w_mat * 1.5, 2))
-                updateSliderInput(session, "w_inf",
-                                  min = signif(input$w_inf / 2, 2),
-                                  max = signif(input$w_inf * 1.5, 2))
                 
                 if (length(p@resource_dynamics) > 0) {
                     for (res in names(p@resource_dynamics)) {
