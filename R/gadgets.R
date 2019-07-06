@@ -148,6 +148,7 @@ tuneParams <- function(p, catch = NULL) {
                                      plotlyOutput("plot_erepro")),
                             tabPanel("Catch",
                                      uiOutput("catch_sel"),
+                                     textOutput("catch_total"),
                                      plotlyOutput("plotCatchDist"),
                                      radioButtons("catch_x", "Show size in:",
                                                   choices = c("Weight", "Length"), 
@@ -1107,14 +1108,14 @@ tuneParams <- function(p, catch = NULL) {
                     geom_line(aes(x = w, y = catch_w, color = type)) +
                     geom_text(aes(x = mat, y = max(catch_w * 0.9), label = "\nMaturity"), 
                               angle = 90) +
-                    labs(x = "Size [g]", y = "Normalised density")
+                    labs(x = "Size [g]", y = "Normalised number density [1/g]")
             } else {
                 mat <- (p@species_params$w_mat[sp] / a) ^ (1 / b)
                 pl <- ggplot(df) +
                     geom_line(aes(x = l, y = catch_l, color = type)) +
                     geom_text(aes(x = mat, y = max(catch_l * 0.9), label = "\nMaturity"), 
                               angle = 90) +
-                    labs(x = "Size [cm]", y = "Normalised density")
+                    labs(x = "Size [cm]", y = "Normalised number density [1/cm]")
             }
             pl +
                 geom_vline(xintercept = mat, linetype = "dotted")  +
@@ -1157,6 +1158,15 @@ tuneParams <- function(p, catch = NULL) {
             numericInput("catch_observed", 
                          paste0("Observed total catch for ", sp, " (megatonnes)"),
                          value = p@species_params[sp, "catch_observed"])
+        })
+        
+        # Output of model catch
+        output$catch_total <- renderText({
+            p <- params()
+            sp <- which.max(p@species_params$species == input$sp)
+            total <- sum(p@initial_n[sp, ] * p@w * p@dw *
+                             getFMort(p, effort = effort())[sp, ])
+            paste("Model catch:", total)
         })
         
         ## Plot rates ####  
