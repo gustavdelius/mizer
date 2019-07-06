@@ -147,12 +147,13 @@ tuneParams <- function(p, catch = NULL) {
                             tabPanel("Repro",
                                      plotlyOutput("plot_erepro")),
                             tabPanel("Catch",
-                                     plotlyOutput("plotTotalCatch"),
                                      uiOutput("catch_sel"),
                                      plotlyOutput("plotCatchDist"),
                                      radioButtons("catch_x", "Show size in:",
                                                   choices = c("Weight", "Length"), 
-                                                  selected = "Length", inline = TRUE)),
+                                                  selected = "Length", inline = TRUE),
+                                     plotlyOutput("plotTotalCatch")
+                                     ),
                             tabPanel("Rates",
                                      radioButtons("axis", "x-axis scale:",
                                                   choices = c("Logarithmic", "Normal"), 
@@ -1063,7 +1064,7 @@ tuneParams <- function(p, catch = NULL) {
             catch_w <- catch_w / sum(catch_w * p@dw[w_sel])
             # The catch density in l gets an extra factor of dw/dl
             catch_l <- catch_w * b * w / l
-            df <- rbind(df, data.frame(w, l, catch_w, catch_l, type = "Abundance"))
+            abundance <- data.frame(w, l, catch_w, catch_l, type = "Abundance")
             
             if (is_observed) {
                 sel <- (catch$species == input$sp)
@@ -1089,6 +1090,16 @@ tuneParams <- function(p, catch = NULL) {
                 df <- rbind(df, data.frame(w, l, catch_w, catch_l, 
                                            type = "Observed catch"))
             }
+            # From the abundance only keep values that are no larger than
+            # 1.1 of the maximum of the other shown densities.
+            if (input$catch_x == "Weight") {
+                abundance <- subset(abundance, catch_w < max(df$catch_w))
+            } else {
+                abundance <- subset(abundance, catch_l < max(df$catch_l))
+            }
+            # Add the abundance to the data frame last so that it shows up
+            # last also in legend
+            df <- rbind(df, abundance)
             
             if (input$catch_x == "Weight") {
                 mat  <- p@species_params$w_mat[sp]
@@ -1096,18 +1107,21 @@ tuneParams <- function(p, catch = NULL) {
                     geom_line(aes(x = w, y = catch_w, color = type)) +
                     geom_text(aes(x = mat, y = max(catch_w * 0.9), label = "\nMaturity"), 
                               angle = 90) +
-                    labs(x = "Size [g]", y = "Density")
+                    labs(x = "Size [g]", y = "Normalised density")
             } else {
                 mat <- (p@species_params$w_mat[sp] / a) ^ (1 / b)
                 pl <- ggplot(df) +
                     geom_line(aes(x = l, y = catch_l, color = type)) +
                     geom_text(aes(x = mat, y = max(catch_l * 0.9), label = "\nMaturity"), 
                               angle = 90) +
-                    labs(x = "Size [cm]", y = "Density")
+                    labs(x = "Size [cm]", y = "Normalised density")
             }
             pl +
                 geom_vline(xintercept = mat, linetype = "dotted")  +
-                theme_grey(base_size = base_size)
+                theme_grey(base_size = base_size) +
+                scale_colour_manual(values = c("Model catch" = "blue",
+                                               "Observed catch" = "red",
+                                               "Abundance" = "grey"))
         })
         
         # Total catch by species
@@ -1120,18 +1134,20 @@ tuneParams <- function(p, catch = NULL) {
             catch <- rowSums(biomass * getFMort(p, effort = effort()))
             df <- rbind(
                 data.frame(Species = p@species_params$species,
-                           Type = "Observed",
-                           Catch = p@species_params$catch_observed),
-                data.frame(Species = p@species_params$species,
                            Type = "Model",
-                           Catch = catch)
+                           Catch = catch),
+                data.frame(Species = p@species_params$species,
+                           Type = "Observed",
+                           Catch = p@species_params$catch_observed)
             )
             ggplot(df) +
                 geom_col(aes(x = Species, y = Catch, fill = Type),
                          position = "dodge") +
                 theme_grey(base_size = base_size) +
                 theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
-                labs(x = "", y = "Catch [megatonnes]")
+                labs(x = "", y = "Catch [megatonnes]") +
+                scale_fill_manual(values = c("Model" = "blue",
+                                               "Observed" = "red"))
         })
         
         # Input field for observed catch
