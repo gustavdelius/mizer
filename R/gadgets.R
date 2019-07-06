@@ -1030,7 +1030,7 @@ tuneParams <- function(p, catch = NULL) {
             # of sizes for which a non-zero catch was observed. If no catch was
             # observed for the species, we use the range from w_mat/100 to w_inf.
             if (is_observed) {
-                if (is.null(catch$weight)) {
+                if ("length" %in% names(catch)) {
                     l_min = min(catch$length[catch$species == input$sp])
                     w_min = a * l_min ^ b
                     l_max = max(catch$length[catch$species == input$sp])
@@ -1068,7 +1068,7 @@ tuneParams <- function(p, catch = NULL) {
             
             if (is_observed) {
                 sel <- (catch$species == input$sp)
-                if (is.null(catch$weight)) {
+                if ("length" %in% names(catch)) {
                     l <- catch$length[sel]
                     dl <- catch$dl[sel]
                     catch_l <- catch$catch[sel]
@@ -1091,7 +1091,7 @@ tuneParams <- function(p, catch = NULL) {
                                            type = "Observed catch"))
             }
             # From the abundance only keep values that are no larger than
-            # 1.1 of the maximum of the other shown densities.
+            # the maximum of the other shown densities.
             if (input$catch_x == "Weight") {
                 abundance <- subset(abundance, catch_w < max(df$catch_w))
             } else {
