@@ -322,8 +322,23 @@ tuneParams <- function(p, catch = NULL) {
                                          value = sp$l50 - sp$l25, 
                                          min = 0.1, 
                                          max = signif(sp$l50 / 10, 2),
-                                         step = 0.1),
-                             tags$h3(tags$a(id = "maturity"), "Maturity"),
+                                         step = 0.1)
+            ))
+            if (sp$sel_func == "double_sigmoid_length") {
+                l1 <- c(l1, list(
+                    sliderInput("l50_right", "L50 right",
+                                value = sp$l50_right, 
+                                min = 1, 
+                                max = signif(sp$l50_right * 2, 2),
+                                step = 0.1),
+                    sliderInput("ldiff_right", "L50-L25 right",
+                                value = sp$l25_right - sp$l50_right, 
+                                min = 0.1, 
+                                max = signif(sp$l50_right / 10, 2),
+                                step = 0.1)
+                ))
+            }
+            l1 <- c(l1, list(tags$h3(tags$a(id = "maturity"), "Maturity"),
                              sliderInput("w_mat", "w_mat", value = sp$w_mat,
                                          min = signif(sp$w_mat / 2, 2),
                                          max = signif(sp$w_mat * 1.5, 2)),
@@ -367,8 +382,7 @@ tuneParams <- function(p, catch = NULL) {
                                          min = 0,
                                          max = 1,
                                          step = 0.05)
-            )
-            )
+            ))
             for (i in p@species_params$species) {
                 inter_var <- paste0("inter_", i)
                 l1 <- c(l1, list(
@@ -644,6 +658,15 @@ tuneParams <- function(p, catch = NULL) {
                 p@species_params[sp, "catchability"]  <- input$catchability
                 p@species_params[sp, "l50"]   <- input$l50
                 p@species_params[sp, "l25"]   <- input$l50 - input$ldiff
+                
+                if (p@species_params[sp, "sel_func"] == "double_sigmoid_length") {
+                    p@species_params[sp, "l50_right"]   <- input$l50_right
+                    p@species_params[sp, "l25_right"]   <- input$l50_right + input$ldiff_right
+                    updateSliderInput(session, "l50_right",
+                                      max = signif(input$l50_right * 2, 2))
+                    updateSliderInput(session, "ldiff_right",  
+                                      max = signif(input$l50_right / 10, 2))
+                }
                 
                 p <- setFishing(p)
                 update_species(sp, p)
