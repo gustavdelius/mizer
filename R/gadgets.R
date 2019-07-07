@@ -147,6 +147,7 @@ tuneParams <- function(p, catch = NULL) {
                             tabPanel("Repro",
                                      plotlyOutput("plot_erepro")),
                             tabPanel("Catch",
+                                     actionButton("tune_catch", "Tune selectivity"),
                                      uiOutput("catch_sel"),
                                      textOutput("catch_total"),
                                      plotlyOutput("plotCatchDist"),
@@ -605,6 +606,9 @@ tuneParams <- function(p, catch = NULL) {
             } else {
                 # Update slider min/max so that they are a fixed proportion of the 
                 # parameter value
+                updateSliderInput(session, "catchability",
+                                  min = signif(input$catchability / 2, 2),
+                                  max = signif(input$catchability * 2, 2))
                 updateSliderInput(session, "l50",
                                   max = signif(input$l50 * 2, 2))
                 updateSliderInput(session, "ldiff",  
@@ -616,6 +620,51 @@ tuneParams <- function(p, catch = NULL) {
                 
                 p <- setFishing(p)
                 update_species(sp, p)
+            }
+        })
+        
+        # The Catch Tune button calculates the ratio of observed and
+        # model catch and then multiplies the catchability by that ratio. It
+        # then runs the system to steady state.
+        observeEvent(input$tune_catch, {
+            p <- isolate(params())
+            sp <- which.max(p@species_params$species == isolate(input$sp))
+            if ("catch_observed" %in% names(p@species_params) &&
+                !is.na(p@species_params$catch_observed[sp]) &&
+                p@species_params$catch_observed[sp] > 0) {
+                total <- sum(p@initial_n[sp, ] * p@w * p@dw *
+                                 getFMort(p, effort = effort())[sp, ])
+                p@species_params$catchability[sp] <- 
+                    p@species_params$catchability[sp] *
+                    p@species_params$catch_observed[sp] / total
+                updateSliderInput(session, "catchability",
+                                  value = p@species_params$catchability[sp],
+                                  min = signif(p@species_params$catchability[sp] / 2, 2),
+                                  max = signif(p@species_params$catchability[sp] * 2, 2))
+                p <- setFishing(p)
+                tryCatch({
+                    # Create a Progress object
+                    progress <- shiny::Progress$new(session)
+                    on.exit(progress$close())
+                    
+                    # Run to steady state
+                    p <- steady(p, effort = effort(), t_max = 100, tol = 1e-2,
+                                progress_bar = progress)
+                    
+                    # Update the reactive params object
+                    params(p)
+                    add_to_logs(p)
+                },
+                error = function(e) {
+                    showModal(modalDialog(
+                        title = "Invalid parameters",
+                        HTML(paste0("These parameter do not lead to an acceptable steady state.",
+                                    "Please choose other values.<br>",
+                                    "The error message was:<br>", e)),
+                        easyClose = TRUE
+                    ))}
+                )
+                params(p)
             }
         })
         
