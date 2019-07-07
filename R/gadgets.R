@@ -139,6 +139,7 @@ tuneParams <- function(p, catch = NULL) {
                                      plotlyOutput("plotTotalBiomass"),
                                      plotlyOutput("plotTotalAbundance"),
                                      uiOutput("biomass_sel"),
+                                     actionButton("tune_egg", "Tune egg density"),
                                      plotlyOutput("plotBiomassDist")),
                             tabPanel("Growth",
                                      plotlyOutput("plotGrowthCurve"),
@@ -147,7 +148,7 @@ tuneParams <- function(p, catch = NULL) {
                             tabPanel("Repro",
                                      plotlyOutput("plot_erepro")),
                             tabPanel("Catch",
-                                     actionButton("tune_catch", "Tune selectivity"),
+                                     actionButton("tune_catch", "Tune catchability"),
                                      uiOutput("catch_sel"),
                                      textOutput("catch_total"),
                                      plotlyOutput("plotCatchDist"),
@@ -309,7 +310,9 @@ tuneParams <- function(p, catch = NULL) {
                                          max = signif(eff * 1.5, 2)),
                              sliderInput("catchability", "Catchability",
                                          value = sp$catchability, 
-                                         min = 0, max = 2, step = 0.01),
+                                         min = signif(sp$catchability / 2, 2), 
+                                         max = signif(sp$catchability * 2, 2), 
+                                         step = 0.01),
                              sliderInput("l50", "L50",
                                          value = sp$l50, 
                                          min = 1, 
@@ -539,6 +542,30 @@ tuneParams <- function(p, catch = NULL) {
                 
                 # Update the reactive params object
                 params(p)
+            }
+        })
+        
+        
+        # The "Tune egg density" button calculates the ratio of observed and
+        # model biomass and then multiplies the egg density by that ratio. It
+        # then runs the system to steady state.
+        observeEvent(input$tune_egg, {
+            p <- isolate(params())
+            sp <- which.max(p@species_params$species == isolate(input$sp))
+            if ("biomass_observed" %in% names(p@species_params) &&
+                !is.na(p@species_params$biomass_observed[sp]) &&
+                p@species_params$biomass_observed[sp] > 0) {
+                total <- sum(p@initial_n[sp, ] * p@w * p@dw)
+                n0 <- isolate(input$n0) * 
+                    p@species_params$biomass_observed[sp] / total
+                # rescale abundance to new egg density
+                p@initial_n[sp, ] <- p@initial_n[sp, ] * n0 / 
+                    p@initial_n[sp, p@w_min_idx[sp]]
+                
+                updateSliderInput(session, "n0",
+                                  value = n0,
+                                  min = signif(n0 / 10, 3),
+                                  max = signif(n0 * 10, 3))
             }
         })
         
@@ -1181,11 +1208,11 @@ tuneParams <- function(p, catch = NULL) {
                 p@species_params$catch_observed <- 0
             }
             biomass <- sweep(p@initial_n, 2, p@w * p@dw, "*")
-            catch <- rowSums(biomass * getFMort(p, effort = effort()))
+            total <- rowSums(biomass * getFMort(p, effort = effort()))
             df <- rbind(
                 data.frame(Species = p@species_params$species,
                            Type = "Model",
-                           Catch = catch),
+                           Catch = total),
                 data.frame(Species = p@species_params$species,
                            Type = "Observed",
                            Catch = p@species_params$catch_observed)
