@@ -42,6 +42,7 @@ tuneParams <- function(p, catch = NULL) {
         p <- set_species_param_default(p, "a", 0.006)
         p <- set_species_param_default(p, "b", 3)
         p <- set_species_param_default(p, "t0", 0)
+        p <- set_species_param_default(p, "sel_func", "sigmoid_length")
         rdi <- getRDI(p)
         rdd <- getRDD(p)
         p@species_params$erepro <- p@species_params$erepro * rdd / rdi
