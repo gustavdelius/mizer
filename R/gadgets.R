@@ -20,7 +20,6 @@
 #' @export
 tuneParams <- function(p, catch = NULL) {
     # Check arguments
-    assert_that(is(p, "MizerParams"))
     if (!is.null(catch)) {
         assert_that(
                 is.data.frame(catch),
@@ -34,6 +33,9 @@ tuneParams <- function(p, catch = NULL) {
     # Define some globals to skip certain observers
     sp_old <- 1
     sp_old_predation <- 1
+    sp_old_fishing <- 1
+    sp_old_maturity <- 1
+    sp_old_prey <- 1
     sp_old_n0 <- 1
     
     prepare_params <- function(p) {
@@ -137,6 +139,7 @@ tuneParams <- function(p, catch = NULL) {
                                      plotlyOutput("plotTotalBiomass"),
                                      plotlyOutput("plotTotalAbundance"),
                                      uiOutput("biomass_sel"),
+                                     actionButton("tune_egg", "Tune egg density"),
                                      plotlyOutput("plotBiomassDist")),
                             tabPanel("Growth",
                                      plotlyOutput("plotGrowthCurve"),
@@ -145,12 +148,15 @@ tuneParams <- function(p, catch = NULL) {
                             tabPanel("Repro",
                                      plotlyOutput("plot_erepro")),
                             tabPanel("Catch",
-                                     plotlyOutput("plotTotalCatch"),
+                                     actionButton("tune_catch", "Tune catchability"),
                                      uiOutput("catch_sel"),
+                                     textOutput("catch_total"),
                                      plotlyOutput("plotCatchDist"),
                                      radioButtons("catch_x", "Show size in:",
                                                   choices = c("Weight", "Length"), 
-                                                  selected = "Length", inline = TRUE)),
+                                                  selected = "Length", inline = TRUE),
+                                     plotlyOutput("plotTotalCatch")
+                                     ),
                             tabPanel("Rates",
                                      radioButtons("axis", "x-axis scale:",
                                                   choices = c("Logarithmic", "Normal"), 
@@ -304,7 +310,9 @@ tuneParams <- function(p, catch = NULL) {
                                          max = signif(eff * 1.5, 2)),
                              sliderInput("catchability", "Catchability",
                                          value = sp$catchability, 
-                                         min = 0, max = 2, step = 0.01),
+                                         min = signif(sp$catchability / 2, 2), 
+                                         max = signif(sp$catchability * 2, 2), 
+                                         step = 0.01),
                              sliderInput("l50", "L50",
                                          value = sp$l50, 
                                          min = 1, 
@@ -314,8 +322,23 @@ tuneParams <- function(p, catch = NULL) {
                                          value = sp$l50 - sp$l25, 
                                          min = 0.1, 
                                          max = signif(sp$l50 / 10, 2),
-                                         step = 0.1),
-                             tags$h3(tags$a(id = "maturity"), "Maturity"),
+                                         step = 0.1)
+            ))
+            if (sp$sel_func == "double_sigmoid_length") {
+                l1 <- c(l1, list(
+                    sliderInput("l50_right", "L50 right",
+                                value = sp$l50_right, 
+                                min = 1, 
+                                max = signif(sp$l50_right * 2, 2),
+                                step = 0.1),
+                    sliderInput("ldiff_right", "L50-L25 right",
+                                value = sp$l25_right - sp$l50_right, 
+                                min = 0.1, 
+                                max = signif(sp$l50_right / 10, 2),
+                                step = 0.1)
+                ))
+            }
+            l1 <- c(l1, list(tags$h3(tags$a(id = "maturity"), "Maturity"),
                              sliderInput("w_mat", "w_mat", value = sp$w_mat,
                                          min = signif(sp$w_mat / 2, 2),
                                          max = signif(sp$w_mat * 1.5, 2)),
@@ -359,8 +382,7 @@ tuneParams <- function(p, catch = NULL) {
                                          min = 0,
                                          max = 1,
                                          step = 0.05)
-            )
-            )
+            ))
             for (i in p@species_params$species) {
                 inter_var <- paste0("inter_", i)
                 l1 <- c(l1, list(
@@ -537,6 +559,30 @@ tuneParams <- function(p, catch = NULL) {
             }
         })
         
+        
+        # The "Tune egg density" button calculates the ratio of observed and
+        # model biomass and then multiplies the egg density by that ratio. It
+        # then runs the system to steady state.
+        observeEvent(input$tune_egg, {
+            p <- isolate(params())
+            sp <- which.max(p@species_params$species == isolate(input$sp))
+            if ("biomass_observed" %in% names(p@species_params) &&
+                !is.na(p@species_params$biomass_observed[sp]) &&
+                p@species_params$biomass_observed[sp] > 0) {
+                total <- sum(p@initial_n[sp, ] * p@w * p@dw)
+                n0 <- isolate(input$n0) * 
+                    p@species_params$biomass_observed[sp] / total
+                # rescale abundance to new egg density
+                p@initial_n[sp, ] <- p@initial_n[sp, ] * n0 / 
+                    p@initial_n[sp, p@w_min_idx[sp]]
+                
+                updateSliderInput(session, "n0",
+                                  value = n0,
+                                  min = signif(n0 / 10, 3),
+                                  max = signif(n0 * 10, 3))
+            }
+        })
+        
         ## Adjust plankton ####
         observe({
             req(input$kappa,
@@ -586,6 +632,116 @@ tuneParams <- function(p, catch = NULL) {
                 p <- setPredKernel(p)
                 p <- setSearchVolume(p)
                 p <- setIntakeMax(p)
+                update_species(sp, p)
+            }
+        })
+        
+        ## Adjust fishing ####
+        observe({
+            req(input$catchability, input$l50, input$ldiff)
+            p <- isolate(params())
+            sp <- isolate(input$sp)
+            
+            if (sp != sp_old_fishing) {
+                sp_old_fishing <<- sp
+            } else {
+                # Update slider min/max so that they are a fixed proportion of the 
+                # parameter value
+                updateSliderInput(session, "catchability",
+                                  min = signif(input$catchability / 2, 2),
+                                  max = signif(input$catchability * 2, 2))
+                updateSliderInput(session, "l50",
+                                  max = signif(input$l50 * 2, 2))
+                updateSliderInput(session, "ldiff",  
+                                  max = signif(input$l50 / 10, 2))
+                
+                p@species_params[sp, "catchability"]  <- input$catchability
+                p@species_params[sp, "l50"]   <- input$l50
+                p@species_params[sp, "l25"]   <- input$l50 - input$ldiff
+                
+                if (p@species_params[sp, "sel_func"] == "double_sigmoid_length") {
+                    p@species_params[sp, "l50_right"]   <- input$l50_right
+                    p@species_params[sp, "l25_right"]   <- input$l50_right + input$ldiff_right
+                    updateSliderInput(session, "l50_right",
+                                      max = signif(input$l50_right * 2, 2))
+                    updateSliderInput(session, "ldiff_right",  
+                                      max = signif(input$l50_right / 10, 2))
+                }
+                
+                p <- setFishing(p)
+                update_species(sp, p)
+            }
+        })
+        
+        # The Catch Tune button calculates the ratio of observed and
+        # model catch and then multiplies the catchability by that ratio. It
+        # then runs the system to steady state.
+        observeEvent(input$tune_catch, {
+            p <- isolate(params())
+            sp <- which.max(p@species_params$species == isolate(input$sp))
+            if ("catch_observed" %in% names(p@species_params) &&
+                !is.na(p@species_params$catch_observed[sp]) &&
+                p@species_params$catch_observed[sp] > 0) {
+                total <- sum(p@initial_n[sp, ] * p@w * p@dw *
+                                 getFMort(p, effort = effort())[sp, ])
+                p@species_params$catchability[sp] <- 
+                    p@species_params$catchability[sp] *
+                    p@species_params$catch_observed[sp] / total
+                updateSliderInput(session, "catchability",
+                                  value = p@species_params$catchability[sp],
+                                  min = signif(p@species_params$catchability[sp] / 2, 2),
+                                  max = signif(p@species_params$catchability[sp] * 2, 2))
+                p <- setFishing(p)
+                tryCatch({
+                    # Create a Progress object
+                    progress <- shiny::Progress$new(session)
+                    on.exit(progress$close())
+                    
+                    # Run to steady state
+                    p <- steady(p, effort = effort(), t_max = 100, tol = 1e-2,
+                                progress_bar = progress)
+                    
+                    # Update the reactive params object
+                    params(p)
+                    add_to_logs(p)
+                },
+                error = function(e) {
+                    showModal(modalDialog(
+                        title = "Invalid parameters",
+                        HTML(paste0("These parameter do not lead to an acceptable steady state.",
+                                    "Please choose other values.<br>",
+                                    "The error message was:<br>", e)),
+                        easyClose = TRUE
+                    ))}
+                )
+                params(p)
+            }
+        })
+        
+        ## Adjust maturity ####
+        observe({
+            req(input$w_mat, input$wfrac, input$w_inf, input$m)
+            p <- isolate(params())
+            sp <- isolate(input$sp)
+            
+            if (sp != sp_old_maturity) {
+                sp_old_maturity <<- sp
+            } else {
+                # Update slider min/max so that they are a fixed proportion of the 
+                # parameter value
+                updateSliderInput(session, "w_mat",
+                                  min = signif(input$w_mat / 2, 2),
+                                  max = signif(input$w_mat * 1.5, 2))
+                updateSliderInput(session, "w_inf",
+                                  min = signif(input$w_inf / 2, 2),
+                                  max = signif(input$w_inf * 1.5, 2))
+                
+                p@species_params[sp, "w_mat25"]   <- input$w_mat * input$wfrac
+                p@species_params[sp, "w_mat"]   <- input$w_mat
+                p@species_params[sp, "w_inf"]   <- input$w_inf
+                p@species_params[sp, "m"]     <- input$m
+                
+                p <- setReproduction(p)
                 update_species(sp, p)
             }
         })
@@ -650,23 +806,17 @@ tuneParams <- function(p, catch = NULL) {
         
         ## Adjust species parameters ####
         observe({
-            req(input$interaction_p)
+            req(input$interaction_p,
+                input$alpha, input$ks, input$k)
             p <- isolate(params())
             sp <- isolate(input$sp)
             
             # Create updated species params data frame
             species_params <- p@species_params
             species_params[sp, "interaction_p"] <- input$interaction_p
-            species_params[sp, "catchability"]  <- input$catchability
-            species_params[sp, "l50"]   <- input$l50
-            species_params[sp, "l25"]   <- input$l50 - input$ldiff
             species_params[sp, "alpha"] <- input$alpha
             species_params[sp, "ks"]    <- input$ks
             species_params[sp, "k"]     <- input$k
-            species_params[sp, "w_mat25"]   <- input$w_mat * input$wfrac
-            species_params[sp, "w_mat"]   <- input$w_mat
-            species_params[sp, "w_inf"]   <- input$w_inf
-            species_params[sp, "m"]     <- input$m
             species_params[sp, "z0"]     <- input$z0
             if (length(p@resource_dynamics) > 0) {
                 for (res in names(p@resource_dynamics)) {
@@ -687,10 +837,6 @@ tuneParams <- function(p, catch = NULL) {
             } else {
                 # Update slider min/max so that they are a fixed proportion of the 
                 # parameter value
-                updateSliderInput(session, "l50",
-                                  max = signif(input$l50 * 2, 2))
-                updateSliderInput(session, "ldiff",  
-                                  max = signif(input$l50 / 10, 2))
                 updateSliderInput(session, "ks",
                                   min = signif(input$ks / 2, 2),
                                   max = signif((input$ks + 0.1) * 1.5, 2))
@@ -700,12 +846,6 @@ tuneParams <- function(p, catch = NULL) {
                 updateSliderInput(session, "z0",
                                   min = signif(input$z0 / 2, 2),
                                   max = signif((input$z0 + 0.1) * 1.5, 2))
-                updateSliderInput(session, "w_mat",
-                                  min = signif(input$w_mat / 2, 2),
-                                  max = signif(input$w_mat * 1.5, 2))
-                updateSliderInput(session, "w_inf",
-                                  min = signif(input$w_inf / 2, 2),
-                                  max = signif(input$w_inf * 1.5, 2))
                 
                 if (length(p@resource_dynamics) > 0) {
                     for (res in names(p@resource_dynamics)) {
@@ -990,7 +1130,7 @@ tuneParams <- function(p, catch = NULL) {
             # of sizes for which a non-zero catch was observed. If no catch was
             # observed for the species, we use the range from w_mat/100 to w_inf.
             if (is_observed) {
-                if (is.null(catch$weight)) {
+                if ("length" %in% names(catch)) {
                     l_min = min(catch$length[catch$species == input$sp])
                     w_min = a * l_min ^ b
                     l_max = max(catch$length[catch$species == input$sp])
@@ -1024,11 +1164,11 @@ tuneParams <- function(p, catch = NULL) {
             catch_w <- catch_w / sum(catch_w * p@dw[w_sel])
             # The catch density in l gets an extra factor of dw/dl
             catch_l <- catch_w * b * w / l
-            df <- rbind(df, data.frame(w, l, catch_w, catch_l, type = "Abundance"))
+            abundance <- data.frame(w, l, catch_w, catch_l, type = "Abundance")
             
             if (is_observed) {
                 sel <- (catch$species == input$sp)
-                if (is.null(catch$weight)) {
+                if ("length" %in% names(catch)) {
                     l <- catch$length[sel]
                     dl <- catch$dl[sel]
                     catch_l <- catch$catch[sel]
@@ -1050,6 +1190,16 @@ tuneParams <- function(p, catch = NULL) {
                 df <- rbind(df, data.frame(w, l, catch_w, catch_l, 
                                            type = "Observed catch"))
             }
+            # From the abundance only keep values that are no larger than
+            # the maximum of the other shown densities.
+            if (input$catch_x == "Weight") {
+                abundance <- subset(abundance, catch_w < max(df$catch_w))
+            } else {
+                abundance <- subset(abundance, catch_l < max(df$catch_l))
+            }
+            # Add the abundance to the data frame last so that it shows up
+            # last also in legend
+            df <- rbind(df, abundance)
             
             if (input$catch_x == "Weight") {
                 mat  <- p@species_params$w_mat[sp]
@@ -1057,18 +1207,21 @@ tuneParams <- function(p, catch = NULL) {
                     geom_line(aes(x = w, y = catch_w, color = type)) +
                     geom_text(aes(x = mat, y = max(catch_w * 0.9), label = "\nMaturity"), 
                               angle = 90) +
-                    labs(x = "Size [g]", y = "Density")
+                    labs(x = "Size [g]", y = "Normalised number density [1/g]")
             } else {
                 mat <- (p@species_params$w_mat[sp] / a) ^ (1 / b)
                 pl <- ggplot(df) +
                     geom_line(aes(x = l, y = catch_l, color = type)) +
                     geom_text(aes(x = mat, y = max(catch_l * 0.9), label = "\nMaturity"), 
                               angle = 90) +
-                    labs(x = "Size [cm]", y = "Density")
+                    labs(x = "Size [cm]", y = "Normalised number density [1/cm]")
             }
             pl +
                 geom_vline(xintercept = mat, linetype = "dotted")  +
-                theme_grey(base_size = base_size)
+                theme_grey(base_size = base_size) +
+                scale_colour_manual(values = c("Model catch" = "blue",
+                                               "Observed catch" = "red",
+                                               "Abundance" = "grey"))
         })
         
         # Total catch by species
@@ -1078,21 +1231,23 @@ tuneParams <- function(p, catch = NULL) {
                 p@species_params$catch_observed <- 0
             }
             biomass <- sweep(p@initial_n, 2, p@w * p@dw, "*")
-            catch <- rowSums(biomass * getFMort(p, effort = effort()))
+            total <- rowSums(biomass * getFMort(p, effort = effort()))
             df <- rbind(
                 data.frame(Species = p@species_params$species,
-                           Type = "Observed",
-                           Catch = p@species_params$catch_observed),
-                data.frame(Species = p@species_params$species,
                            Type = "Model",
-                           Catch = catch)
+                           Catch = total),
+                data.frame(Species = p@species_params$species,
+                           Type = "Observed",
+                           Catch = p@species_params$catch_observed)
             )
             ggplot(df) +
                 geom_col(aes(x = Species, y = Catch, fill = Type),
                          position = "dodge") +
                 theme_grey(base_size = base_size) +
                 theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
-                labs(x = "", y = "Catch [megatonnes]")
+                labs(x = "", y = "Catch [megatonnes]") +
+                scale_fill_manual(values = c("Model" = "blue",
+                                               "Observed" = "red"))
         })
         
         # Input field for observed catch
@@ -1102,6 +1257,15 @@ tuneParams <- function(p, catch = NULL) {
             numericInput("catch_observed", 
                          paste0("Observed total catch for ", sp, " (megatonnes)"),
                          value = p@species_params[sp, "catch_observed"])
+        })
+        
+        # Output of model catch
+        output$catch_total <- renderText({
+            p <- params()
+            sp <- which.max(p@species_params$species == input$sp)
+            total <- sum(p@initial_n[sp, ] * p@w * p@dw *
+                             getFMort(p, effort = effort())[sp, ])
+            paste("Model catch:", total)
         })
         
         ## Plot rates ####  

@@ -1,6 +1,6 @@
 # This is the configuration for the mizer website using the pkgdown package.
 
-url: https://sizespectrum.github.io/mizer/
+url: https://sizespectrum.org/mizer/
 
 authors:
   Julia Blanchard:
@@ -77,6 +77,7 @@ reference:
   - addSpecies
   - removeSpecies
   - retuneAbundance
+  - upgradeParams
   - markBackground
 - title: Running simulations
   contents:
@@ -125,6 +126,7 @@ reference:
   - box_pred_kernel
   - knife_edge
   - sigmoid_length
+  - double_sigmoid_length
   - plankton_semichemostat
   - carrion_dynamics
   - detritus_dynamics

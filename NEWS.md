@@ -13,13 +13,18 @@
   asymptotic size of any species in the model otherwise. The unnecessary factor
   of 1.1 has now been removed. If your code relies on the old default, you now
   need to set `w_max` explicitly.
+* Removed the `print_it` argument from plot functions.
+* plotFeedingLevel() now only plots the values within the size range of each
+  species. If for some reason you want the old plots that show a feeding level
+  also for sizes that the fish can never have, you need to supply an argument
+  `all.sizes = TRUE`.
 
 ## Modelling unstructured resources
 Besides the size-structured planktonic resource, mizer can now also model any
 number of unstructured resource components. Such unstructured components are
-appropriate whenever the predation on these componente is not size based.
+appropriate whenever the predation on these components is not size based.
 Possible applications include the modelling of detritus as a resource for
-detritovores, carrion as a resource for scavengers, or macroflora on which fish
+detritivores, carrion as a resource for scavengers, or macroflora on which fish
 can graze. (#46)
 
 * Each unstructured resource component can have its own dynamics, with its own
@@ -130,12 +135,12 @@ and is also used when setting up a new model with `set_multispecies_model()`.
   
 ## Documentation
 
-* Mizer now has a documentation website at <https://sizespectrum.github.io/mizer>
-  for the latest released version and at <https://sizespectrum.github.io/mizer/dev>
+* Mizer now has a documentation website at <https://sizespectrum.org/mizer/>
+  for the latest released version and at <https://sizespectrum.org/mizer/dev>
   for the development version. (#48)
 * The help pages of mizer functions has been extended massively, see for
   example the help for `set_multispecies_model()`.
-* The vingnette chapters are shown as pages on the website.
+* The vignette chapters are shown as pages on the website.
 * The html help pages for plotting functions now show example plots.
 * Clarified that mizer uses grams and years as size and time units and is 
   agnostic about whether abundances are per area, per volume or per study area.
@@ -199,7 +204,7 @@ and is also used when setting up a new model with `set_multispecies_model()`.
     predator/prey ratio.
   + Added slot `plankton_dynamics` to allow user to specify alternative
     plankton dynamics.
-  + Addes slots `resource_dynamics` and `resource_params`.
+  + Added slots `resource_dynamics` and `resource_params`.
   + Added slot `initial_B` for the initial biomasses of the resources.
 * Changes to MizerSim class:
   + Added slot `B` to hold resource biomasses over time
@@ -249,7 +254,7 @@ and is also used when setting up a new model with `set_multispecies_model()`.
   removing the bottlenecks in `getPhiPrey()` and `getPredRate()`.
 * Using C++ for the inner loop in the project method for extra speed.
 * Minor corrections to vignette and documentation to bring them into alignment
-  and to document the new home on github and new maintainers.
+  and to document the new home on GitHub and new maintainers.
 
 
 # mizer 0.3
@@ -269,4 +274,4 @@ and is also used when setting up a new model with `set_multispecies_model()`.
 # mizer 0.1
 
 * Beta release - just about works but still some gremlins to sort out.
-  There are a number of features I'd like to add in the coming relases.
+  There are a number of features I'd like to add in the coming releases.

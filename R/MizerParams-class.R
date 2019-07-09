@@ -877,7 +877,7 @@ MizerParams <- set_multispecies_model
 #' sections below discuss all the model functions that you can change this way.
 #' 
 #' This function will use the species parameters in the `params` object to reset
-#' the values of all the model functions that you do not specify explictly when
+#' the values of all the model functions that you do not specify explicitly when
 #' calling this function. If you have changed any of the model functions in the
 #' `params` object previously and now want to make changes to a different slot,
 #' you will want to call the appropriate change function individually. So in the
@@ -1006,7 +1006,7 @@ setParams <- function(params,
 }
 
 
-#' Set species interation matrix
+#' Set species interaction matrix
 #' 
 #' @section Setting interactions:
 #' 
@@ -1116,7 +1116,7 @@ setInteraction <- function(params,
 #' An alternative pred_kernel type is "box", implemented by the functions
 #' \code{\link{box_pred_kernel}}. These functions require certain species
 #' parameters in the species_params data frame. For the lognormal kernel these
-#' are \code{beta} and \code{sigma}, for the box kernely they are
+#' are \code{beta} and \code{sigma}, for the box kernel they are
 #' \code{ppmr_min} and \code{ppmr_max}. They are explained in the help pages
 #' for the kernel functions. No defaults are set for these parameters. If they
 #' are missing from the species_params data frame then mizer will issue an
@@ -1593,7 +1593,7 @@ setBMort <- function(params, mu_b = NULL, z0pre = 0.6, z0exp = params@n - 1) {
 #' the density-independent rate of egg production through a stock-recruitment
 #' function. The result is returned by \code{\link{getRDD}}. The
 #' stock-recruitment function is specified by the \code{srr} argument. The default
-#' is the BevertonHolt function \code{\link{srrBevertonHolt}}, which requires
+#' is the Beverton-Holt function \code{\link{srrBevertonHolt}}, which requires
 #' an \code{r_max} column in the species_params data frame giving the maximum
 #' egg production rate. If this column does not exist, it is initialised to 
 #' \code{Inf}, leading to no density-dependence.
@@ -1611,7 +1611,7 @@ setBMort <- function(params, mu_b = NULL, z0pre = 0.6, z0exp = params@n - 1) {
 #' @return The MizerParams object.
 #' @export
 #' @family functions for setting parameters
-setReproduction <- function(params, maturity = NULL, repro_prop = NULL,
+    setReproduction <- function(params, maturity = NULL, repro_prop = NULL,
                             srr = params@srr) {
     assert_that(is(params, "MizerParams"),
                 is.function(srr))
@@ -1786,8 +1786,8 @@ setPlankton <- function(params,
 #' @section Setting resource dynamics:
 #' Besides the size-structured planktonic resource, mizer can also model any number
 #' of unstructured resource components. Such unstructured components are
-#' appropriate whenever the predation on these componente is not size based.
-#' Examples include detritus as a resource for detritovores, carrion as a
+#' appropriate whenever the predation on these components is not size based.
+#' Examples include detritus as a resource for detritivores, carrion as a
 #' resource for scavengers, or macroflora on which fish can graze. 
 #' 
 #' During a simulation using [project()], the biomasses of the resources are
@@ -1818,7 +1818,7 @@ setPlankton <- function(params,
 #' When writing your own resource dynamics functions, you can choose any names
 #' for your other model parameters, but you must make sure not to use the same
 #' name in the function for another resource component. One way to ensure this
-#' is to prefix all parameter namse with your resource name.
+#' is to prefix all parameter names with your resource name.
 #' 
 #' The dynamics for a resource should always have a loss term accounting for
 #' the consumption of the resource. This should always have the form used in the
@@ -2144,6 +2144,7 @@ setInitial <- function(params,
     return(params)
 }
 
+
 #' Update the initial abundances
 #' 
 #' Recalculates the steady-state abundances in a fixed background
@@ -2199,6 +2200,85 @@ updateInitial <- function(params, effort) {
     return(params)
 }
 
+#' Upgrade MizerParams object from earlier mizer versions
+#' 
+#' Uses set_multispecies_model to create a new MizerParams object using the
+#' parameters extracted from the old MizerParams object.
+#' 
+#' If you only have a serialised version of the old object, for example
+#' created via `saveRDS()`, and you get an error when trying to read it in
+#' with `readRDS()` then unfortunately you will need to install the old version
+#' of mizer first to read the params object into your workspace, then switch
+#' to the current version and then call `upgradeParams()`. You can then save
+#' the new version again with `saveRDS()`.
+#' 
+#' @param params An old MizerParams object to be upgraded
+#' 
+#' @return The upgraded MizerParams object
+#' @export
+upgradeParams <- function(params) {
+    if (.hasSlot(params, "pred_kernel") && 
+        length(dim(params@pred_kernel)) == 3) {
+        pred_kernel <- params@pred_kernel
+    } else pred_kernel <- NULL
+    
+    if (.hasSlot(params, "maturity")) {
+        maturity <- params@maturity
+        repro_prop <- params@psi / params@maturity
+        repro_prop[params@maturity == 0] <- 0
+    } else {
+        maturity <- NULL
+        repro_prop <- NULL
+    }
+    
+    if (.hasSlot(params, "rho")) {
+        rho <- params@rho
+    } else rho <- NULL
+    
+    if (.hasSlot(params, "resource_dynamics")) {
+        resource_dynamics <- params@resource_dynamics
+        resource_params <- params@resource_params
+    } else {
+        resource_dynamics <- NULL
+        resource_params <- NULL
+    }
+    # Does not yet deal with rr_pp and cc_pp slots because they will be 
+    # changed anyway when multiple size-structured resources are introduced.
+    pnew <- set_multispecies_model(
+        params@species_params,
+        interaction = params@interaction,
+        no_w = length(params@w),
+        min_w = params@w[1],
+        max_w = params@w[length(params@w)],
+        min_w_pp = params@w_full[1] + 1e-16, # To make
+        # sure that we don't add an extra bracket.
+        n = params@n,
+        p = params@p,
+        q = params@q,
+        kappa = params@kappa,
+        lambda = params@lambda,
+        f0 = params@f0,
+        pred_kernel = pred_kernel,
+        search_vol = params@search_vol,
+        intake_max = params@intake_max,
+        metab = params@metab,
+        mu_b = params@mu_b,
+        maturity = maturity,
+        repro_prop = repro_prop,
+        resource_dynamics = resource_dynamics,
+        resource_params = resource_params,
+        rho = rho,
+        srr = params@srr)
+    pnew@linecolour <- params@linecolour
+    pnew@linetype <- params@linetype
+    pnew@initial_n <- params@initial_n
+    pnew@initial_n_pp <- params@initial_n_pp
+    if (.hasSlot(params, "resource_dynamics")) {
+        pnew@initial_B <- params@initial_B
+    }
+    return(pnew)
+}
+
 #' Beverton Holt stock-recruitment function
 #' 
 #' @param rdi x
@@ -2218,7 +2298,7 @@ srrBevertonHolt <- function(rdi, species_params) {
 #' did not already exist.
 #' @param object Either a MizerParams object or a species parameter data frame
 #' @param parname A string with the name of the species parameter to set
-#' @param default A single defaul value or a vector with one default value for
+#' @param default A single default value or a vector with one default value for
 #'   each species
 #' @param message A string with a message to be issued when the parameter did
 #'   not already exist
