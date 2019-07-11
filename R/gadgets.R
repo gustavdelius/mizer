@@ -311,8 +311,8 @@ tuneParams <- function(p, catch = NULL) {
                                          max = signif(eff * 1.5, 2)),
                              sliderInput("catchability", "Catchability",
                                          value = sp$catchability, 
-                                         min = signif(sp$catchability / 2, 2), 
-                                         max = signif(sp$catchability * 2, 2), 
+                                         min = signif(max(0, sp$catchability / 2 - 1), 2), 
+                                         max = signif(max(sp$catchability * 2, 2), 2), 
                                          step = 0.01),
                              sliderInput("l50", "L50",
                                          value = sp$l50, 
@@ -649,8 +649,8 @@ tuneParams <- function(p, catch = NULL) {
                 # Update slider min/max so that they are a fixed proportion of the 
                 # parameter value
                 updateSliderInput(session, "catchability",
-                                  min = signif(input$catchability / 2, 2),
-                                  max = signif(input$catchability * 2, 2))
+                                  min = signif(max(input$catchability / 2 - 1, 0), 2),
+                                  max = signif(max(input$catchability * 2, 2), 2))
                 updateSliderInput(session, "l50",
                                   max = signif(input$l50 * 2, 2))
                 updateSliderInput(session, "ldiff",  
@@ -690,8 +690,8 @@ tuneParams <- function(p, catch = NULL) {
                     p@species_params$catch_observed[sp] / total
                 updateSliderInput(session, "catchability",
                                   value = p@species_params$catchability[sp],
-                                  min = signif(p@species_params$catchability[sp] / 2, 2),
-                                  max = signif(p@species_params$catchability[sp] * 2, 2))
+                                  min = signif(max(0, p@species_params$catchability[sp] / 2 - 1), 2),
+                                  max = signif(max(p@species_params$catchability[sp] * 2, 2), 2))
                 p <- setFishing(p)
                 tryCatch({
                     # Create a Progress object
