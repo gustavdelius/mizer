@@ -1,0 +1,150 @@
+---
+title: "Prey sizes of Anchovy and Sardine"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+Mariella has data of stomach content for anchovy and sardine.
+Let's load it
+
+```{r message=FALSE, warning=FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+ppmr <- read_csv("Data_PPMR.csv")
+ppmr
+```
+
+The `wprey` variable is the typical weight of an individual of
+a particular prey species and `Nprey` is the average number of individuals
+of that species in a stomach and `wpredator` is the weight of the predator.
+
+We see that the capitalisation of the species names is wrong. Let's fix:
+```{r}
+ppmr <- ppmr %>% 
+  mutate(Species = str_to_title(Species))
+```
+
+The table reports the same predator size for all anchovy and 
+the same predator size for all sardine because all predators of 
+each species had very similar sizes.
+```{r}
+ppmr %>% group_by(Species) %>% 
+  summarise(distinct_wpredator = n_distinct(wpredator))
+```
+
+The predator size in grams is
+```{r}
+species_info <- ppmr %>% 
+  group_by(Species) %>% 
+  summarise(wpredator = first(wpredator))
+species_info
+```
+
+We want to compare the stomach data to the prediction from the mizer model.
+To make a connection we 
+assume that the abundance of a prey size in a predator's stomach
+is proportional to the rate at which the predator feeds on prey of 
+that size. This is a dubious assumption because it neglects that
+prey of different sizes might stay identifiable in the stomach for
+different lengths of time.
+
+For a predator of size $w'$ the rate at which it predates on
+prey of size $w$ is proportional to
+$$N(w)\phi(w'/ w)$$
+where $N(w)$ is the abundance of prey of size $w$ and 
+$\phi(w',w)$ is the feeding kernel
+```{r}
+params <- readRDS("params0707.rds")
+# Add index of size bracket of predator
+species_info <- species_info %>% 
+  mutate(idx = map_int(wpredator, function(w) sum(params@w < w)))
+species_info
+```
+
+The probability density function
+for the log of the prey mass is then obtained by observing that
+$$ f_W(w) = f_{\log(W)}(\log w)\frac{d(\log w)}{dw}$$
+and thus 
+$$f_{\log(W)}(\log w) = w f_W(w).$$
+
+Now we want to see how well this fits the data. So we make a histogram of
+the data and overlay the density function. For this we need to bin the data.
+We have to do that by hand because we need to take into account the numbers
+of individuals of the different species occuring in each bin. We do not know
+of a nice way to do this in R, so we use some ugly looping code.
+```{r}
+no_bins <- 30
+bins <- seq(from = min(log(ppmr$wprey)) - 2, to = max(log(ppmr$wprey)) + 2,
+            length.out = no_bins)
+bin_width <- bins[2] - bins[1]
+long_bins <- c(bins, bins[length(bins)] + bin_width)
+
+count_anchovy <- bins
+biomass_anchovy <- bins
+count_sardine <- bins
+biomass_sardine <- bins
+for (t in (1:length(bins))) {
+    in_bin <- long_bins[t] <= log(ppmr$wprey) & 
+              log(ppmr$wprey) < long_bins[t + 1]
+    count_anchovy[t] <- sum(ppmr$Nprey[in_bin & ppmr$Species == "anchovy"])
+    biomass_anchovy[t] <- sum(ppmr$Nprey[in_bin & ppmr$Species == "anchovy"] *
+                                  exp(bins[t]))
+    count_sardine[t] <- sum(ppmr$Nprey[in_bin & ppmr$Species == "sardine"])
+    biomass_sardine[t] <- sum(ppmr$Nprey[in_bin & ppmr$Species == "sardine"] *
+                                  exp(bins[t]))
+}
+
+binned_anchovy <- 
+    tibble(Species = "anchovy",
+           Weight = log10(exp(bins)),
+           Abundance = count_anchovy / sum(count_anchovy),
+           f_logw = dnorm(bins, 
+                          mean = moments$mean[moments$Species == "anchovy"],
+                          sd = moments$sigma[moments$Species == "anchovy"]),
+           Biomass = biomass_anchovy / sum(biomass_anchovy)) %>%
+    mutate(b_logw = f_logw * exp(bins) / sum(f_logw * exp(bins)))
+
+binned_sardine <- 
+    tibble(Species = "sardine",
+           Weight = log10(exp(bins)),
+           Abundance = count_sardine / sum(count_sardine),
+           f_logw = dnorm(bins, 
+                          mean = moments$mean[moments$Species == "sardine"],
+                          sd = moments$sigma[moments$Species == "sardine"]),
+           Biomass = biomass_sardine / sum(biomass_sardine)) %>%
+    mutate(b_logw = f_logw * exp(bins) / sum(f_logw * exp(bins)))
+
+binned <- rbind(binned_anchovy, binned_sardine) %>%
+    group_by(Species)
+                
+```
+
+We can now plot the histogram for the observed abundances in the stomach 
+together with the fitted model distribution.
+```{r}
+
+ggplot(binned) +
+    geom_col(aes(Weight, Abundance)) +
+    geom_line(aes(Weight, f_logw), color = "blue") +
+    facet_grid(Species ~ .)
+```
+The fit looks reasonably good for the anchovy and not so good for the sardine
+due to the long tail in the sardine observations.
+
+However the picture changes very much when we plot the distribution of the
+biomass in the stomach. Because the larger individuals contribute so much
+more to the biomass, even low abundances at large size produce dominant
+contributions to the biomass. This is a big problem for the anchovy
+distribution with its narrower model distribution that fails to account 
+for the possibility of small numbers of very large prey individuals.
+```{r}
+ggplot(binned) +
+    geom_col(aes(Weight, Biomass)) +
+    geom_line(aes(Weight, b_logw), color = "blue") +
+    facet_grid(Species ~ .)
+```
+The broader sardine distribution has less of a problem with accounting for 
+biomass at larger size but clearly gives a much broader distribution than
+observed.
