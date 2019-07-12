@@ -143,8 +143,12 @@ tuneParams <- function(p, catch = NULL) {
                                      actionButton("tune_egg", "Tune egg density"),
                                      plotlyOutput("plotBiomassDist")),
                             tabPanel("Growth",
+                                     radioButtons("all_growth", "Show:",
+                                                  choices = c("All", "Selected species"), 
+                                                  selected = "All", inline = TRUE),
                                      plotlyOutput("plotGrowthCurve"),
                                      uiOutput("k_vb_sel"),
+                                     plotlyOutput("plot_feeding_level"),
                                      plotlyOutput("plot_psi")),
                             tabPanel("Repro",
                                      plotlyOutput("plot_erepro")),
@@ -164,8 +168,6 @@ tuneParams <- function(p, catch = NULL) {
                                                   selected = "Logarithmic", inline = TRUE),
                                      plotlyOutput("plotGrowth"),
                                      plotlyOutput("plotDeath")),
-                            tabPanel("f",
-                                     plotlyOutput("plot_feeding_level")),
                             tabPanel("Prey",
                                      uiOutput("pred_size_slider"),
                                      plotlyOutput("plot_prey")),
@@ -176,7 +178,9 @@ tuneParams <- function(p, catch = NULL) {
                                                   choices = c("Proportion", "Rate"), 
                                                   selected = "Proportion", 
                                                   inline = TRUE),
-                                     plotlyOutput("plot_pred"))
+                                     plotlyOutput("plot_pred")),
+                            tabPanel("All",
+                                     plotlyOutput("plot_all_growth"))
                 )
             )  # end mainpanel
         )  # end sidebarlayout
@@ -931,25 +935,56 @@ tuneParams <- function(p, catch = NULL) {
         ## Growth curves ####
         output$k_vb_sel <- renderUI({
             req(input$sp)
-            k_vb <- params()@species_params[input$sp, "k_vb"]
-            t0 <- params()@species_params[input$sp, "t0"]
-            a <- params()@species_params[input$sp, "a"]
-            b <- params()@species_params[input$sp, "b"]
-            list(
-                div(style = "display:inline-block",
-                    numericInput("k_vb", "Von Bertalanffy k", value = k_vb, width = "9em")),
-                div(style = "display:inline-block",
-                    numericInput("t0", "t_0", value = t0, width = "6em")),
-                p("Parameters for length-weight relationship l = a w^b"),
-                div(style = "display:inline-block",
-                    numericInput("a", "a", value = a, width = "8em")),
-                div(style = "display:inline-block",
-                    numericInput("b", "b", value = b, width = "8em"))
-            )
+            if (!input$all_growth == "All") {
+                k_vb <- params()@species_params[input$sp, "k_vb"]
+                t0 <- params()@species_params[input$sp, "t0"]
+                a <- params()@species_params[input$sp, "a"]
+                b <- params()@species_params[input$sp, "b"]
+                list(
+                    div(style = "display:inline-block",
+                        numericInput("k_vb", "Von Bertalanffy k", value = k_vb, width = "9em")),
+                    div(style = "display:inline-block",
+                        numericInput("t0", "t_0", value = t0, width = "6em")),
+                    p("Parameters for length-weight relationship l = a w^b"),
+                    div(style = "display:inline-block",
+                        numericInput("a", "a", value = a, width = "8em")),
+                    div(style = "display:inline-block",
+                        numericInput("b", "b", value = b, width = "8em"))
+                )
+            }
         })
         output$plotGrowthCurve <- renderPlotly({
-            plotGrowthCurves(params(), species = input$sp) +
-                theme_grey(base_size = base_size)
+            p <- params()
+            if (input$all_growth == "All") {
+                gc <- getGrowthCurves(p) %>% 
+                    as.tbl_cube(met_name = "Size") %>% 
+                    as_tibble() %>%
+                    add_column(Legend = "Model")
+                
+                vb <- gc %>% 
+                    mutate(Legend = "von Bertalanffy") %>% 
+                    mutate(a = p@species_params[Species, "a"],
+                           b = p@species_params[Species, "b"],
+                           k_vb = p@species_params[Species, "k_vb"],
+                           t0 = p@species_params[Species, "t0"],
+                           L_inf = (p@species_params[Species, "w_inf"] / a)^(1 / b),
+                           Size = a * (L_inf * (1 - exp(-k_vb * (Age - t0))))^b) %>% 
+                    select(names(gc))
+                
+                ggplot(bind_rows(gc, vb)) +
+                    geom_line(aes(x = Age, y = Size, colour = Legend)) +
+                    scale_x_continuous(name = "Age [years]") +
+                    scale_y_continuous(name = "Size [g]") +
+                    geom_hline(aes(yintercept = w_mat), 
+                               data = tibble(Species = p@species_params$species,
+                                             w_mat = p@species_params$w_mat), 
+                               linetype = "dashed",
+                               colour = "grey") +
+                    facet_wrap(~Species, scales = "free_y")
+            } else {
+                plotGrowthCurves(p, species = input$sp) +
+                    theme_grey(base_size = base_size)
+            }
         })
         
         ## Spectra ####
@@ -978,8 +1013,13 @@ tuneParams <- function(p, catch = NULL) {
         
         ## Plot feeding level ####
         output$plot_feeding_level <- renderPlotly({
-            plotFeedingLevel(params(), highlight = input$sp) + 
-                theme_grey(base_size = base_size)
+            if (input$all_growth == "All") {
+                plotFeedingLevel(params(), highlight = input$sp) + 
+                    theme_grey(base_size = base_size)
+            } else {
+                plotFeedingLevel(params(), species = input$sp) + 
+                    theme_grey(base_size = base_size)
+            }
         })
         
         ## Biomass plot ####
@@ -1462,21 +1502,23 @@ tuneParams <- function(p, catch = NULL) {
         
         ## Plot psi ####
         output$plot_psi <- renderPlotly({
-            p <- params()
-            sp <- which.max(p@species_params$species == input$sp)
-            w_min <- p@species_params$w_inf[sp] / 50
-            sel <- p@w >= w_min & p@w <= p@species_params$w_inf[sp]
-            df <- data.frame(Size = p@w[sel], psi = p@psi[sp, sel])
-            ggplot(df, aes(x = Size, y = psi)) + 
-                geom_line(color = "blue") +
-                geom_vline(xintercept = p@species_params[sp, "w_mat"], 
-                           linetype = "dotted") +
-                theme_grey(base_size = base_size) +
-                labs(x = "Size [g]", y = "Proportion of energy for reproduction")  +
-                geom_text(aes(x = p@species_params[sp, "w_mat"], 
-                              y = max(psi * 0.8),
-                              label = "\nMaturity"), 
-                          angle = 90)
+            if (!input$all_growth == "All") {
+                p <- params()
+                sp <- which.max(p@species_params$species == input$sp)
+                w_min <- p@species_params$w_inf[sp] / 50
+                sel <- p@w >= w_min & p@w <= p@species_params$w_inf[sp]
+                df <- data.frame(Size = p@w[sel], psi = p@psi[sp, sel])
+                ggplot(df, aes(x = Size, y = psi)) + 
+                    geom_line(color = "blue") +
+                    geom_vline(xintercept = p@species_params[sp, "w_mat"], 
+                               linetype = "dotted") +
+                    theme_grey(base_size = base_size) +
+                    labs(x = "Size [g]", y = "Proportion of energy for reproduction")  +
+                    geom_text(aes(x = p@species_params[sp, "w_mat"], 
+                                  y = max(psi * 0.8),
+                                  label = "\nMaturity"), 
+                              angle = 90)
+            }
         })
         
     } #the server
