@@ -959,7 +959,7 @@ tuneParams <- function(p, catch = NULL) {
                 gc <- getGrowthCurves(p) %>% 
                     as.tbl_cube(met_name = "Size") %>% 
                     as_tibble() %>%
-                    add_column(Legend = "Model")
+                    mutate(Legend = "Model")
                 
                 vb <- gc %>% 
                     mutate(Legend = "von Bertalanffy") %>% 
