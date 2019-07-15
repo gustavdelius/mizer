@@ -527,6 +527,8 @@ tuneParams <- function(p, catch = NULL) {
             p <- isolate(params())
             p@species_params[isolate(input$sp), "biomass_observed"] <- 
                 req(input$biomass_observed)
+            p@species_params[isolate(input$sp), "abundance_observed"] <- 
+                req(input$abundance_observed)
             p@species_params[isolate(input$sp), "cutoff_size"] <- 
                 req(input$cutoff_size)
             params(p)
