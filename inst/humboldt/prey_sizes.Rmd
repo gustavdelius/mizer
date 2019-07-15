@@ -9,8 +9,7 @@ Mariella has data of stomach content for anchovy and sardine.
 Let's load it
 
 ```{r message=FALSE, warning=FALSE}
-library(readr)
-library(dplyr)
+library(tidyverse)
 library(ggplot2)
 ppmr <- read_csv("Data_PPMR.csv")
 ppmr
@@ -50,11 +49,17 @@ that size. This is a dubious assumption because it neglects that
 prey of different sizes might stay identifiable in the stomach for
 different lengths of time.
 
-For a predator of size $w'$ the rate at which it predates on
-prey of size $w$ is proportional to
-$$N(w)\phi(w'/ w)$$
+For a predator of size $w$ the rate at which it predates on
+prey of size $w'$ is proportional to
+$$f_W(w)\propto \phi(w/ w')N(w')$$
 where $N(w)$ is the abundance of prey of size $w$ and 
-$\phi(w',w)$ is the feeding kernel
+$\phi(w,w')$ is the feeding kernel.
+
+The probability density function
+for the log of the prey mass is then obtained by observing that
+$$ f_W(w) = f_{\log(W)}(\log w)\frac{d(\log w)}{dw}$$
+and thus 
+$$f_{\log(W)}(\log w) = w f_W(w).$$
 ```{r}
 params <- readRDS("params0707.rds")
 # Add index of size bracket of predator
@@ -62,17 +67,55 @@ species_info <- species_info %>%
   mutate(idx = map_int(wpredator, function(w) sum(params@w < w)))
 species_info
 ```
+```{r}
+pk <- getPredKernel(params)
+pk_anchovy <- pk["Anchovy", species_info$idx[1], ]
+plot(params@w_full, pk_anchovy, type="l", log="x")
+```
 
-The probability density function
-for the log of the prey mass is then obtained by observing that
-$$ f_W(w) = f_{\log(W)}(\log w)\frac{d(\log w)}{dw}$$
-and thus 
-$$f_{\log(W)}(\log w) = w f_W(w).$$
+
+```{r}
+prey <- params@initial_n_pp
+w_min_idx <- length(params@w_full) - length(params@w) + 1
+prey[w_min_idx:length(prey)] <- prey[w_min_idx:length(prey)] +
+  params@interaction["Anchovy", ] %*% params@initial_n
+f_anchovy <- pk_anchovy * prey * params@w_full
+plot(params@w_full, f_anchovy, type="l", log="xy")
+```
+```{r}
+pk_sardine <- pk["Sardine", species_info$idx[2], ]
+plot(params@w_full, pk_sardine, type="l", log="x")
+```
+
+
+```{r}
+prey <- params@initial_n_pp
+w_min_idx <- length(params@w_full) - length(params@w) + 1
+prey[w_min_idx:length(prey)] <- prey[w_min_idx:length(prey)] +
+  params@interaction["Sardine", ] %*% params@initial_n
+f_sardine <- pk_sardine * prey * params@w_full
+plot(params@w_full, f_sardine, type="l", log="xy")
+```
+
 
 Now we want to see how well this fits the data. So we make a histogram of
 the data and overlay the density function. For this we need to bin the data.
 We have to do that by hand because we need to take into account the numbers
-of individuals of the different species occuring in each bin. We do not know
+of individuals of the different species occuring in each bin. 
+```{r warning=FALSE}
+breaks <- params@w_full[seq(1, length(params@w_full), by = 20)]
+ppmr %>% 
+    mutate(cut = cut(wprey, breaks = breaks, right = FALSE)) %>% 
+    group_by(Species, cut) %>% 
+    summarise(numbers = sum(Nprey)) %>% 
+    separate(cut, into = c(NA, "w", "right", NA), 
+             sep = "[\\[,\\)]", convert = TRUE, remove = FALSE) %>% 
+    mutate(dw = right - w,
+           density = numbers / dw) %>% 
+    select(Species, w, dw, density)
+```
+
+We do not know
 of a nice way to do this in R, so we use some ugly looping code.
 ```{r}
 no_bins <- 30
