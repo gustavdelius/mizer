@@ -1,8 +1,10 @@
 ---
 title: "Prey sizes of Anchovy and Sardine"
 output:
-  pdf_document: default
+  html_document:
+    df_print: paged
   html_notebook: default
+  pdf_document: default
 ---
 
 Mariella has data of stomach content for anchovy and sardine.
@@ -27,8 +29,50 @@ ppmr <- ppmr %>%
          logpredprey = log(wpredator / wprey))
 ppmr
 ```
+Let's bin the data
+```{r}
+params <- readRDS("params0707.rds")
+dx <- log(params@w[2]/params@w[1])
+binsize <- 15 * dx
+breaks <- seq(0, length(params@w_full), by = binsize / dx) * dx
+binned_ppmr <- ppmr %>% 
+    # bin data
+    mutate(cut = cut(logpredprey, breaks = breaks, right = FALSE,
+                     labels = FALSE)) %>% 
+    group_by(Species, cut) %>% 
+    summarise(Numbers = sum(Nprey), 
+              Biomass = sum(Nprey * wprey)) %>% 
+    # normalise
+    mutate(Numbers = Numbers / sum(Numbers) / binsize,
+           Biomass = Biomass / sum(Biomass) / binsize)  %>%
+    # column for predator/prey size ratio
+    mutate(r = map_dbl(cut, function(idx) exp(breaks[idx]))) %>%
+    gather(key = "Type", value = "Density", Numbers, Biomass)
+```
+and plot it:
+```{r}
+binned_ppmr %>% 
+  ggplot(aes(r, Density)) +
+    geom_col() +
+    facet_grid(Species ~ Type, scales = "free_y") +
+    scale_x_log10(name = "Predator/Prey mass ratio") 
+```
 
-We want to compare the stomach data to the prediction from the mizer model. To
+Note how the biomass of prey is concentrated at very different predator/prey mass ratio
+than the number of prey.
+
+Many observations are too small to show in the above graph. We therefore show
+the same graphs with a logarithmic y-axis
+```{r}
+binned_ppmr %>% 
+  ggplot(aes(r, Density)) +
+    geom_col() +
+    facet_grid(Species ~ Type, scales = "free_y") +
+    scale_x_log10(name = "Predator/Prey mass ratio") +
+    scale_y_log10()
+```
+
+We want to use this data to estimate the feeding kernel. To
 make a connection we assume that the abundance of a prey size in a predator's
 stomach is proportional to the product of the rate at which the predator feeds
 on prey of that size with the length of time it takes to digest a prey of that
@@ -59,119 +103,58 @@ given $w'$ as
 $$\phi(w/w') =\phi(e^{-l})\propto \frac{f_l(l|w')}{w^{1+\alpha}N(w)}
 \propto\frac{f_l(l|w')}{e^{-l(1+\alpha)}N(w' e^{-l})}.$$
 
-We can estimate the feeding kernel from the stomach data by picking a size $w'$ and making a histogram
-of the observed predator/prey mass ratios for all predators of that size, rescaled by 
-the denominator in the above equation. Mizer makes the assumption that the
-feeding kernel depends only on the predator/prey mass ratio and not separately also 
-on the predator size, so it does not matter which predator size $w'$ we pick. To
-get a better estimate we can simply combine the data from all predator sizes into
-a single histogram (corresponding to taking the average of all the individual bar hights).
-We will want to compare the resulting histogram to the usual choice in mizer of
-$$\phi(w/w') =\phi(e^{-l}) \propto \exp\left(-\frac{(l-\log\beta)^2}{2\sigma^2}\right)$$
+We can estimate the feeding kernel from the stomach data by picking a size $w'$
+and making a histogram of the observed predator/prey mass ratios for all
+predators of that size, rescaled by the denominator in the above equation. Mizer
+makes the assumption that the feeding kernel depends only on the predator/prey
+mass ratio and not separately also on the predator size, so it does not matter
+which predator size $w'$ we pick. To get a better estimate we can simply combine
+the data from all predator sizes into a single histogram (corresponding to
+taking the average of all the individual bar heights).
 
-
-We calculate the bar heights ourselves, even though I am sure ggplot2 could
-do it for us.
+For the prey abundance $N(w)$ we can either use the steady state abundance
+in a calibrated mizer model, or we can use the approximate power-law
+abundance $N(w) \propto w^{-\lambda}$. We calculate the kernel with either 
+choice and then observe that they lead to similar results.
 ```{r warning=FALSE}
-params <- readRDS("params0707.rds")
 idx_sp <- seq_along(params@w) + length(params@w_full) - length(params@w)
 prey <- outer(params@species_params$interaction_p, params@initial_n_pp)
 prey[, idx_sp] <- prey[, idx_sp] + params@interaction %*% params@initial_n
 rownames(prey) <- params@species_params$species
-dx <- log(params@w[2]/params@w[1])
-breaks <- (0:length(params@w_full)) * dx
-test <- ppmr %>% 
+vals <- ppmr %>% 
     # Add index of size bracket of prey
     mutate(idx = map_int(wprey, function(w) sum(params@w_full < w))) %>% 
     filter(idx > 0) %>% 
-    mutate(n = pmap_dbl(list(Nprey, Species, idx, wprey),
+    mutate(k = pmap_dbl(list(Nprey, Species, idx, wprey),
                         function(Nprey, Species, idx, wprey) {
                           Nprey / prey[Species, idx] / wprey^(1 + alpha)
-                        })) %>% 
+                        }),
+           kp = Nprey / wprey^(1 + alpha - params@lambda))
+
+kernel <- vals %>% 
+    # bin data
     mutate(cut = cut(logpredprey, breaks = breaks, right = FALSE,
                      labels = FALSE)) %>% 
     group_by(Species, cut) %>% 
-    summarise(numbers = sum(Nprey)) %>% 
-    separate(cut, into = c(NA, "w", "right", NA), 
-             sep = "[\\[,\\)]", convert = TRUE, remove = FALSE) %>% 
-    mutate(dw = right - w,
-           density = numbers / dw) %>% 
-    select(Species, w, dw, density)
+    summarise(Model = sum(k), 
+              Theory = sum(kp)) %>% 
+    # normalise
+    mutate(Model = Model / sum(Model) / binsize,
+           Theory = Theory / sum(Theory) / binsize)  %>%
+    # column for predator/prey size ratio
+    mutate(r = map_dbl(cut, function(idx) exp(breaks[idx]))) %>% 
+    gather(key = "Type", value = "Density", Model, Theory)
 ```
 
-We do not know
-of a nice way to do this in R, so we use some ugly looping code.
+
 ```{r}
-no_bins <- 30
-bins <- seq(from = min(log(ppmr$wprey)) - 2, to = max(log(ppmr$wprey)) + 2,
-            length.out = no_bins)
-bin_width <- bins[2] - bins[1]
-long_bins <- c(bins, bins[length(bins)] + bin_width)
-
-count_anchovy <- bins
-biomass_anchovy <- bins
-count_sardine <- bins
-biomass_sardine <- bins
-for (t in (1:length(bins))) {
-    in_bin <- long_bins[t] <= log(ppmr$wprey) & 
-              log(ppmr$wprey) < long_bins[t + 1]
-    count_anchovy[t] <- sum(ppmr$Nprey[in_bin & ppmr$Species == "anchovy"])
-    biomass_anchovy[t] <- sum(ppmr$Nprey[in_bin & ppmr$Species == "anchovy"] *
-                                  exp(bins[t]))
-    count_sardine[t] <- sum(ppmr$Nprey[in_bin & ppmr$Species == "sardine"])
-    biomass_sardine[t] <- sum(ppmr$Nprey[in_bin & ppmr$Species == "sardine"] *
-                                  exp(bins[t]))
-}
-
-binned_anchovy <- 
-    tibble(Species = "anchovy",
-           Weight = log10(exp(bins)),
-           Abundance = count_anchovy / sum(count_anchovy),
-           f_logw = dnorm(bins, 
-                          mean = moments$mean[moments$Species == "anchovy"],
-                          sd = moments$sigma[moments$Species == "anchovy"]),
-           Biomass = biomass_anchovy / sum(biomass_anchovy)) %>%
-    mutate(b_logw = f_logw * exp(bins) / sum(f_logw * exp(bins)))
-
-binned_sardine <- 
-    tibble(Species = "sardine",
-           Weight = log10(exp(bins)),
-           Abundance = count_sardine / sum(count_sardine),
-           f_logw = dnorm(bins, 
-                          mean = moments$mean[moments$Species == "sardine"],
-                          sd = moments$sigma[moments$Species == "sardine"]),
-           Biomass = biomass_sardine / sum(biomass_sardine)) %>%
-    mutate(b_logw = f_logw * exp(bins) / sum(f_logw * exp(bins)))
-
-binned <- rbind(binned_anchovy, binned_sardine) %>%
-    group_by(Species)
-                
+kernel %>% 
+    ggplot(aes(r, Density)) +
+    geom_col() +
+    facet_grid(Species ~ Type, scales = "free_y") +
+    scale_x_log10(name = "Predator/Prey mass ratio")
 ```
 
-We can now plot the histogram for the observed abundances in the stomach 
-together with the fitted model distribution.
-```{r}
+It is very difficult to see what to make of this.
 
-ggplot(binned) +
-    geom_col(aes(Weight, Abundance)) +
-    geom_line(aes(Weight, f_logw), color = "blue") +
-    facet_grid(Species ~ .)
-```
-The fit looks reasonably good for the anchovy and not so good for the sardine
-due to the long tail in the sardine observations.
 
-However the picture changes very much when we plot the distribution of the
-biomass in the stomach. Because the larger individuals contribute so much
-more to the biomass, even low abundances at large size produce dominant
-contributions to the biomass. This is a big problem for the anchovy
-distribution with its narrower model distribution that fails to account 
-for the possibility of small numbers of very large prey individuals.
-```{r}
-ggplot(binned) +
-    geom_col(aes(Weight, Biomass)) +
-    geom_line(aes(Weight, b_logw), color = "blue") +
-    facet_grid(Species ~ .)
-```
-The broader sardine distribution has less of a problem with accounting for 
-biomass at larger size but clearly gives a much broader distribution than
-observed.
