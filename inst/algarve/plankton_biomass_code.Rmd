@@ -1,0 +1,26 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+params_90_calibrated <- readRDS("~/Marine Biology MSC/Thesis Project/Data/MIZER code/mizer/inst/algarve/params_90_calibrated.rds")
+```
+```{r}
+npp <- params_90_calibrated@initial_n_pp
+W_full <- params_90_calibrated@w_full
+DW_full <- params_90_calibrated@dw_full
+```
+```{r}
+biomass <- npp*W_full
+show(biomass)
+```
+```{r}
+sum_biomass <-(sum(biomass))
+(sum_biomass*0.27)/6000
+
+```
