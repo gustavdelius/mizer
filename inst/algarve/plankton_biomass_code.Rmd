@@ -16,11 +16,15 @@ W_full <- params_90_calibrated@w_full
 DW_full <- params_90_calibrated@dw_full
 ```
 ```{r}
-biomass <- npp*W_full
+biomass <- npp*W_full*DW_full
 show(biomass)
 ```
 ```{r}
 sum_biomass <-(sum(biomass))
-(sum_biomass*0.27)/6000
-
+current_biomass <-(sum_biomass*0.27)/6000
+target_biomass <- 0.286
+```
+```{r}
+kappa_estimate <- target_biomass/current_biomass
+show(kappa_estimate)
 ```
