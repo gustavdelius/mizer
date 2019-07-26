@@ -15,10 +15,20 @@
 #'   size bins in grams. The data frame also needs to have the columns
 #'   \code{species} (the name of the species), \code{catch} (the number of
 #'   individuals of a particular species caught in a size bin).
+#' @param stomach Data frame holding observations of prey items in predator
+#'   stomachs. The required columns are 
+#'   \itemize{
+#'   \item \code{species} holding the name of the predator species,
+#'   \item \code{wpredator} with the weight in grams of the predator,
+#'   \item \code{wprey} with the weight of the prey item.
+#'   }
+#'   In case prey items of the same weight have been aggregated in the data
+#'   frame then there should be a column \code{Nprey} saying how many prey 
+#'   items have been aggregated in each row.
 #' 
 #' @return The tuned MizerParams object
 #' @export
-tuneParams <- function(p, catch = NULL) {
+tuneParams <- function(p, catch = NULL, stomach = NULL) {
     # Check arguments
     if (!is.null(catch)) {
         assert_that(
@@ -29,9 +39,25 @@ tuneParams <- function(p, catch = NULL) {
                     all(c("weight", "dw") %in% names(catch))
                 )
     }
+    if (!is.null(stomach)) {
+        assert_that(
+            is.data.frame(stomach),
+            "wprey" %in% names(stomach),
+            "wpredator" %in% names(stomach),
+            "species" %in% names(stomach)
+        )
+        if (!("Nprey" %in% names(stomach))) stomach$Nprey <- 1
+        stomach <- stomach %>% 
+            mutate(logpredprey = log(wpredator / wprey),
+                   weight = Nprey / sum(Nprey),
+                   weight_biomass = Nprey * wprey / sum(Nprey * wprey),
+                   weight_kernel = Nprey / wprey^(1 + alpha - lambda),
+                   weight_kernel = weight_kernel / sum(weight_kernel))
+    }
     
     # Define some globals to skip certain observers
     sp_old <- 1
+    sp_old_kernel <- 1
     sp_old_predation <- 1
     sp_old_fishing <- 1
     sp_old_maturity <- 1
@@ -168,9 +194,9 @@ tuneParams <- function(p, catch = NULL) {
                                                   selected = "Logarithmic", inline = TRUE),
                                      plotlyOutput("plotGrowth"),
                                      plotlyOutput("plotDeath")),
-                            tabPanel("Prey",
-                                     uiOutput("pred_size_slider"),
-                                     plotlyOutput("plot_prey")),
+                            # tabPanel("Prey",
+                            #          uiOutput("pred_size_slider"),
+                            #          plotlyOutput("plot_prey")),
                             tabPanel("Diet",
                                      plotlyOutput("plot_diet")),
                             tabPanel("Death",
@@ -178,9 +204,10 @@ tuneParams <- function(p, catch = NULL) {
                                                   choices = c("Proportion", "Rate"), 
                                                   selected = "Proportion", 
                                                   inline = TRUE),
-                                     plotlyOutput("plot_pred")),
-                            tabPanel("All",
-                                     plotlyOutput("plot_all_growth"))
+                                     plotlyOutput("plot_pred"))#,
+                            # tabPanel("Stomach",
+                            #          plotOutput("plot_stomach"),
+                            #          plotOutput("plot_kernel"))
                 )
             )  # end mainpanel
         )  # end sidebarlayout
@@ -606,9 +633,36 @@ tuneParams <- function(p, catch = NULL) {
             params(p)
         })
         
+        ## Adjust predation kernel ####
+        observe({
+            req(input$beta, input$sigma)
+            p <- isolate(params())
+            sp <- isolate(input$sp)
+            
+            if (sp != sp_old_kernel) {
+                # We came here after changing the species selector. This automatically
+                # rewrote all sliders, so no need to update them. Also we do not want
+                # update the params object.
+                sp_old_kernel <<- sp
+            } else {
+                # Update slider min/max so that they are a fixed proportion of the 
+                # parameter value
+                updateSliderInput(session, "beta",
+                                  min = signif(input$beta / 2, 2),
+                                  max = signif(input$beta * 1.5, 2))
+                updateSliderInput(session, "sigma",
+                                  min = signif(input$sigma / 2, 2),
+                                  max = signif(input$sigma * 1.5, 2))
+                p@species_params[sp, "beta"]  <- input$beta
+                p@species_params[sp, "sigma"] <- input$sigma
+                p <- setPredKernel(p)
+                update_species(sp, p)
+            }
+        })
+        
         ## Adjust predation ####
         observe({
-            req(input$beta, input$sigma, input$gamma, input$h)
+            req(input$gamma, input$h)
             p <- isolate(params())
             sp <- isolate(input$sp)
             
@@ -620,23 +674,14 @@ tuneParams <- function(p, catch = NULL) {
             } else {
                 # Update slider min/max so that they are a fixed proportion of the 
                 # parameter value
-                updateSliderInput(session, "beta",
-                                  min = signif(input$beta / 2, 2),
-                                  max = signif(input$beta * 1.5, 2))
-                updateSliderInput(session, "sigma",
-                                  min = signif(input$sigma / 2, 2),
-                                  max = signif(input$sigma * 1.5, 2))
                 updateSliderInput(session, "gamma",
                                   min = signif(input$gamma / 2, 3),
                                   max = signif(input$gamma * 1.5, 3))
                 updateSliderInput(session, "h",
                                   min = signif(input$h / 2, 2),
                                   max = signif(input$h * 1.5, 2))
-                p@species_params[sp, "beta"]  <- input$beta
-                p@species_params[sp, "sigma"] <- input$sigma
                 p@species_params[sp, "gamma"] <- input$gamma
                 p@species_params[sp, "h"]     <- input$h
-                p <- setPredKernel(p)
                 p <- setSearchVolume(p)
                 p <- setIntakeMax(p)
                 update_species(sp, p)
@@ -1521,6 +1566,36 @@ tuneParams <- function(p, catch = NULL) {
                                   label = "\nMaturity"), 
                               angle = 90)
             }
+        })
+        
+        ## Plot stomach content ####
+        output$plot_stomach <- renderPlot({
+            req(input$sp)
+            p <- params()
+            sp <- which.max(p@species_params$species == input$sp)
+            
+            df <- tibble(
+                x = x,
+                Kernel = double_sigmoid(
+                    x, 
+                    p_l = input$p_l, 
+                    s_l = input$s_l, 
+                    p_r = input$p_r, 
+                    s_r = input$s_r, 
+                    ex = input$ex)) %>% 
+                mutate(Numbers = Kernel / exp((1 + alpha - lambda) * x),
+                       Biomass = Numbers / exp(x),
+                       Kernel = Kernel / sum(Kernel) / dx,
+                       Numbers = Numbers / sum(Numbers) / dx,
+                       Biomass = Biomass / sum(Biomass) / dx) %>% 
+                gather(key = Type, value = "Density",
+                       Numbers, Biomass)
+            
+            pl + geom_line(data = df,
+                           aes(x, Density, colour = Type),
+                           size = 3) 
+            st <- stomach %>% 
+                filter(species == input$sp)
         })
         
     } #the server
