@@ -7,8 +7,10 @@ output:
   pdf_document: default
 ---
 
-Mariella has data of stomach content for anchovy and sardine.
-Let's load it
+Mariella has data of stomach content for anchovy and sardine. Here we look at
+estimating the predation kernel from this data.
+
+## The data
 
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -29,6 +31,8 @@ ppmr <- ppmr %>%
          logpredprey = log(wpredator / wprey))
 ppmr
 ```
+
+## Binned data
 Let's bin the data
 ```{r}
 params <- readRDS("params0707.rds")
@@ -72,6 +76,7 @@ binned_ppmr %>%
     scale_y_log10()
 ```
 
+## Kernel from data
 We want to use this data to estimate the feeding kernel. To
 make a connection we assume that the abundance of a prey size in a predator's
 stomach is proportional to the product of the rate at which the predator feeds
@@ -155,6 +160,63 @@ kernel %>%
     scale_x_log10(name = "Predator/Prey mass ratio")
 ```
 
-It is very difficult to see what to make of this.
+It is very difficult to see what to make of this. With a log axis it looks
+like this:
+```{r}
+kernel %>% 
+    ggplot(aes(r, Density)) +
+    geom_col() +
+    facet_grid(Species ~ Type, scales = "free_y") +
+    scale_x_log10(name = "Predator/Prey mass ratio") +
+    scale_y_log10()
+```
+
+## Density estimates
+It turns out that instead of working with histograms of the binned data, we can 
+also look at the data via density estimates. Here is the smoothed density estimate for
+the abundance density and the biomass density in the stomach:
+```{r}
+ppmr <- ppmr %>% 
+    group_by(Species) %>% 
+    mutate(weight = Nprey / sum(Nprey),
+           weight_biomass = Nprey * wprey / sum(Nprey * wprey))
+ggplot(ppmr) +
+    geom_density(aes(logpredprey, weight = weight)) +
+    facet_wrap(~Species, scales = "free_y") +
+    xlab("Log of predator/prey mass ratio") 
+```
+```{r}
+ggplot(ppmr) +
+    geom_density(aes(logpredprey, weight = weight_biomass)) +
+    facet_wrap(~Species, scales = "free_y") +
+    xlab("Log of predator/prey mass ratio") +
+    ylab("Biomass density")
+```
+And here is the predation kernel estimated from the data using the power law prey abundance:
+```{r}
+ppmr <- ppmr %>% 
+    mutate(weight_kernel = Nprey / wprey^(1 + alpha - params@lambda),
+           weight_kernel = weight_kernel / sum(weight_kernel))
+
+ggplot(ppmr) +
+    geom_density(aes(logpredprey, weight = weight_kernel)) +
+    facet_wrap(~Species, scales = "free_y") +
+    xlab("Log of predator/prey mass ratio") +
+    ylab("Predation kernel") +
+    expand_limits(x = 0)
+```
+```{r}
+sigmoid <- function(x, p, s) {
+  1/(1 + exp((p - x) / s))
+}
+double_sigmoid <- function(x, p_l, s_l, p_r, s_r, ex) {
+  sigmoid(x, p_l, s_l) *
+    exp(-ex * x) *
+    sigmoid(-x, -p_r, s_r)
+}
+ggplot(data.frame(x = c(0, 25)), aes(x)) +
+  stat_function(fun = double_sigmoid, 
+                args = list(p_l = 5, s_l = 0.5, p_r = 15, s_r = 1, ex = 0.1))
+```
 
 
