@@ -194,9 +194,9 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                                                   selected = "Logarithmic", inline = TRUE),
                                      plotlyOutput("plotGrowth"),
                                      plotlyOutput("plotDeath")),
-                            # tabPanel("Prey",
-                            #          uiOutput("pred_size_slider"),
-                            #          plotlyOutput("plot_prey")),
+                            tabPanel("Prey",
+                                     uiOutput("pred_size_slider"),
+                                     plotlyOutput("plot_prey")),
                             tabPanel("Diet",
                                      plotlyOutput("plot_diet")),
                             tabPanel("Death",
@@ -1466,36 +1466,36 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         output$plot_prey <- renderPlotly({
             p <- params()
             sp <- which.max(p@species_params$species == input$sp)
-            phi <- function(x, xp) {
-                phi <- exp(-(x - xp + log(p@species_params$beta[sp])) ^ 2 /
-                               (2 * p@species_params$sigma[sp] ^ 2))
-                phi[x >= xp | x < (xp - log(p@species_params$beta[sp]) -
-                                       3 * p@species_params$sigma[sp])] <- 0
-                return(phi)
-            }
             x <- log(p@w_full)
             dx <- x[2] - x[1]
             xp <- req(input$pred_size)
             wp <- exp(xp)
             wp_idx <- sum(p@w <= wp)
             # Calculate total community abundance
+            # Todo: take interaction matrix into account
             fish_idx <- (length(p@w_full) - length(p@w) + 1):length(p@w_full)
             total_n <- p@initial_n_pp
-            total_n[fish_idx] <- total_n[fish_idx] + colSums(p@initial_n)
+            total_n[fish_idx] <- total_n[fish_idx] + 
+                p@interaction[sp, ] %*% p@initial_n
             totalx <- total_n * p@w_full
-            totalx <- totalx / sum(totalx * dx)
-            phix <- phi(x, xp)
-            phix <- phix / sum(phix * dx)
+            #totalx <- totalx / sum(totalx * dx)
+            phix <- getPredKernel(p)[sp, wp_idx, ]
             pr <- totalx * phix
             br <- pr * p@w_full
+            # convert to proportions
+            phix <- phix / sum(phix * dx)
             pr <- pr / sum(pr * dx)
             br <- br / sum(br * dx)
-            df <- tibble::tibble(x, Kernel = phix, Biomass = br, Abundance = pr) %>%
-                tidyr::gather(type, y, Kernel, Biomass, Abundance)
+            df <- tibble::tibble(w = p@w_full, 
+                                 Kernel = phix, 
+                                 Biomass = br, 
+                                 Numbers = pr) %>%
+                tidyr::gather(type, y, Kernel, Biomass, Numbers)
             ggplot(df) +
-                geom_line(aes(x, y, color = type)) +
-                labs(x = "log(w)", y = "Density") +
-                geom_point(aes(x = xp, y = 0), size = 4, colour = "blue")
+                geom_line(aes(w, y, color = type)) +
+                labs(x = "Weight [g]", y = "Density") +
+                geom_point(aes(x = wp, y = 0), size = 4, colour = "blue") +
+                scale_x_log10()
         })
         
         ## Plot diet ####
