@@ -81,18 +81,18 @@ box_pred_kernel <- function(ppmr, ppmr_min, ppmr_max) {
 #' @param ppmr A vector of predator/prey size ratios at which to evaluate the
 #'   predation kernel.
 #' @param kernel_exp x
-#' @param kernel_r_l x
+#' @param kernel_l_l x
 #' @param kernel_u_l x
-#' @param kernel_r_r x
+#' @param kernel_l_r x
 #' @param kernel_u_r x
 #' 
 #' @return A vector giving the value of the predation kernel at each of the
 #'   predator/prey mass ratios in the \code{ppmr} argument.
 #' @export
 power_law_pred_kernel <- function(ppmr, kernel_exp,
-                                  kernel_r_l, kernel_u_l,
-                                  kernel_r_r, kernel_u_r) {
+                                  kernel_l_l, kernel_u_l,
+                                  kernel_l_r, kernel_u_r) {
     ppmr^kernel_exp /
-        (1 + (kernel_r_l / ppmr)^kernel_u_l) /
-        (1 + (ppmr / kernel_r_r)^kernel_u_r) 
+        (1 + (10^kernel_l_l / ppmr)^kernel_u_l) /
+        (1 + (ppmr / 10^kernel_l_r)^kernel_u_r) 
 }
