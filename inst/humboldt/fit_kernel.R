@@ -1,44 +1,40 @@
 library(tidyverse)
 library(ggplot2)
 library(shiny)
-library(miniUI)
+library(assertthat)
 
-params <- readRDS("inst/humboldt/params0707.rds")
-alpha <- 1/3
+kernel_fn <- power_law_pred_kernel
 
-ppmr <- read_csv("inst/humboldt/Data_PPMR.csv") %>% 
-    mutate(Species = str_to_title(Species),
-           logpredprey = log(wpredator / wprey)) %>% 
-    group_by(Species) %>% 
-    mutate(weight = Nprey / sum(Nprey),
-           weight_biomass = Nprey * wprey / sum(Nprey * wprey),
-           weight_kernel = Nprey / wprey^(1 + alpha - params@lambda),
-           weight_kernel = weight_kernel / sum(weight_kernel))
-
-sigmoid <- function(x, p, s) {
-    1/(1 + exp((p - x) / s))
-}
-
-double_sigmoid <- function(x, p_l, s_l, p_r, s_r, ex) {
-    sigmoid(x, p_l, s_l) *
-        exp(-ex * x) *
-        sigmoid(-x, -p_r, s_r)
-}
-
-dx <- log(params@w[2]/params@w[1])
-adjust <- 1/8
-
-fitKernel <- function(ppmr, species) {
-    ppmr <- ppmr %>% 
-        filter(Species == species)
+fitKernel <- function(stomach, species_params = data.frame(), 
+                      dx, alpha = 1/3, lambda = 2) {
     
-    p_l <- min(ppmr$logpredprey)
-    p_r <- max(ppmr$logpredprey)
-    s_l <- 0.5
-    s_r <- 0.5
-    ex <- 0.1
+    assert_that(is.data.frame(stomach),
+                all(c("wprey", "wpredator") %in% names(stomach)),
+                is.data.frame(species_params))
     
-    x <- seq(0, max(ppmr$logpredprey) * 1.1, by = dx)
+    if (!("Nprey" %in% names(stomach))) stomach$Nprey <- 1
+    
+    stomach <- stomach %>% 
+        mutate(logpredprey = log10(wpredator / wprey),
+               weight = Nprey / sum(Nprey),
+               weight_biomass = Nprey * wprey / sum(Nprey * wprey),
+               weight_kernel = Nprey / wprey^(1 + alpha - lambda),
+               weight_kernel = weight_kernel / sum(weight_kernel))
+    
+    vars <- names(species_params)
+    species_params <-
+        set_species_param_default(species_params, "kernel_l_l", min(stomach$logpredprey))
+    species_params <-
+        set_species_param_default(species_params, "kernel_l_r", max(stomach$logpredprey))
+    species_params <-
+        set_species_param_default(species_params, "kernel_u_l", 2)
+    species_params <-
+        set_species_param_default(species_params, "kernel_u_r", 2)
+    species_params <-
+        set_species_param_default(species_params, "kernel_exp", -0.5)
+    
+    x <- seq(0, max(stomach$logpredprey) * 1.1, by = dx)
+    r <- 10^x
     
     ui <- fluidPage(sidebarLayout(
         
@@ -46,35 +42,40 @@ fitKernel <- function(ppmr, species) {
         sidebarPanel(
             actionButton("done", "Done",
                          onclick = "setTimeout(function(){window.close();},500);"),
-            sliderInput("p_l", "p_l",
-                        value = p_l,
-                        min = p_l - 1,
-                        max = p_l + 5),
-            sliderInput("s_l", "s_l",
-                        value = s_l,
-                        min = 0.01,
-                        max = 2),
-            sliderInput("p_r", "p_r",
-                        value = p_r,
-                        min = p_r - 5,
-                        max = p_r + 1),
-            sliderInput("s_r", "s_r",
-                        value = s_r,
-                        min = 0.01,
-                        max = 2),
-            sliderInput("ex", "ex",
-                        value = ex,
-                        min = 0,
-                        max = 1)
+            sliderInput("l_l", "l_l",
+                        value = species_params$kernel_l_l,
+                        min = round(species_params$kernel_l_l) - 2,
+                        max = round(species_params$kernel_l_l) + 2,
+                        step = 0.1),
+            sliderInput("u_l", "u_l",
+                        value = species_params$kernel_u_l,
+                        min = 1,
+                        max = 10,
+                        step = 0.1),
+            sliderInput("l_r", "l_r",
+                        value = species_params$kernel_l_r,
+                        min = round(species_params$kernel_l_r) - 2,
+                        max = round(species_params$kernel_l_r) + 2,
+                        step = 0.1),
+            sliderInput("u_r", "u_r",
+                        value = species_params$kernel_u_r,
+                        min = 1,
+                        max = 5,
+                        step = 0.1),
+            sliderInput("ex", "exp",
+                        value = species_params$kernel_exp,
+                        min = -1,
+                        max = 0)
         ),
         
         mainPanel(
             plotOutput("plot"),
             sliderInput("adjust", "Adjust bandwidth",
-                        value = 1,
+                        value = 0.5,
                         min = 0,
-                        max = 2,
-                        step = 0.1)
+                        max = 1,
+                        step = 0.1),
+            plotOutput("plot_kernel")
         )
     ))
     
@@ -82,7 +83,7 @@ fitKernel <- function(ppmr, species) {
         
         # Render the plot
         output$plot <- renderPlot({
-            pl <- ggplot(ppmr) +
+            pl <- ggplot(stomach) +
                 geom_density(aes(logpredprey, weight = weight,
                                  colour = "Numbers"),
                              adjust = input$adjust) +
@@ -92,7 +93,7 @@ fitKernel <- function(ppmr, species) {
                 # geom_density(aes(logpredprey, weight = weight_kernel,
                 #                  colour = "Kernel"),
                 #              adjust = adjust) +
-                xlab("Log of predator/prey mass ratio") +
+                xlab("Log_10 of predator/prey mass ratio") +
                 ylab("Density") +
                 scale_colour_manual(values = c(Numbers = "Blue",
                                                Biomass = "Green",
@@ -100,15 +101,15 @@ fitKernel <- function(ppmr, species) {
                 expand_limits(x = 0)
             df <- tibble(
                 x = x,
-                Kernel = double_sigmoid(
-                    x, 
-                    p_l = input$p_l, 
-                    s_l = input$s_l, 
-                    p_r = input$p_r, 
-                    s_r = input$s_r, 
-                    ex = input$ex)) %>% 
-                mutate(Numbers = Kernel / exp((1 + alpha - params@lambda) * x),
-                       Biomass = Numbers / exp(x),
+                Kernel = power_law_pred_kernel(
+                    r, 
+                    kernel_exp = input$ex,
+                    kernel_l_l = input$l_l,
+                    kernel_u_l = input$u_l,
+                    kernel_l_r = input$l_r,
+                    kernel_u_r = input$u_r)) %>% 
+                mutate(Numbers = Kernel / 10^((1 + alpha - lambda) * x),
+                       Biomass = Numbers / 10^(x),
                        Kernel = Kernel / sum(Kernel) / dx,
                        Numbers = Numbers / sum(Numbers) / dx,
                        Biomass = Biomass / sum(Biomass) / dx) %>% 
@@ -118,6 +119,21 @@ fitKernel <- function(ppmr, species) {
             pl + geom_line(data = df,
                            aes(x, Density, colour = Type),
                            size = 3) 
+        })
+        output$plot_kernel <- renderPlot({
+            df <- tibble(
+                x = x,
+                Kernel = power_law_pred_kernel(
+                    r, 
+                    kernel_exp = input$ex,
+                    kernel_l_l = input$l_l,
+                    kernel_u_l = input$u_l,
+                    kernel_l_r = input$l_r,
+                    kernel_u_r = input$u_r)) %>% 
+                mutate(Kernel = Kernel / sum(Kernel) / dx)
+            
+            ggplot(df) + geom_line(aes(x, Kernel)) +
+                xlab("Log_10 of predator/prey mass ratio") 
         })
         
         # Handle the Done button being pressed.
