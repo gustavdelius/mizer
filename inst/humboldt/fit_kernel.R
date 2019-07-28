@@ -50,7 +50,7 @@ fitKernel <- function(stomach, species_params = data.frame(),
             sliderInput("u_l", "u_l",
                         value = species_params$kernel_u_l,
                         min = 1,
-                        max = 10,
+                        max = 5,
                         step = 0.1),
             sliderInput("l_r", "l_r",
                         value = species_params$kernel_l_r,
@@ -149,11 +149,11 @@ fitKernel <- function(stomach, species_params = data.frame(),
         # Handle the Done button being pressed.
         observeEvent(input$done, {
             stopApp(list(
-                p_l = input$p_l, 
-                s_l = input$s_l, 
-                p_r = input$p_r, 
-                s_r = input$s_r, 
-                ex = input$ex))
+                kernel_l_l = input$l_l, 
+                kernel_u_l = input$u_l, 
+                kernel_l_r = input$l_r,
+                kernel_u_r = input$u_r, 
+                kernel_exp = input$ex))
         })
     }
     
