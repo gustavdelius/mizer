@@ -65,6 +65,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
     sp_old_n0 <- 1
     
     prepare_params <- function(p) {
+        rownames(params@species_params) <- params@species_params$species
         p <- set_species_param_default(p, "a", 0.006)
         p <- set_species_param_default(p, "b", 3)
         p <- set_species_param_default(p, "t0", 0)
@@ -204,7 +205,14 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                                                   choices = c("Proportion", "Rate"), 
                                                   selected = "Proportion", 
                                                   inline = TRUE),
-                                     plotlyOutput("plot_pred"))#,
+                                     plotlyOutput("plot_pred")),
+                            tabPanel("Plankton",
+                                     plotOutput("plot_plankton", width = "84%"),
+                                     plotlyOutput("plot_plankton_pred"),
+                                     radioButtons("plankton_death_prop", "Show",
+                                                  choices = c("Proportion", "Rate"), 
+                                                  selected = "Proportion", 
+                                                  inline = TRUE))
                             # tabPanel("Stomach",
                             #          plotOutput("plot_stomach"),
                             #          plotOutput("plot_kernel"))
@@ -629,7 +637,6 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                              lambda = input$lambda,
                              r_pp = 10^input$log_r_pp,
                              w_pp_cutoff = input$w_pp_cutoff)
-            p@initial_n_pp <- p@cc_pp
             params(p)
         })
         
@@ -1566,6 +1573,48 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                                   label = "\nMaturity"), 
                               angle = 90)
             }
+        })
+        
+        ## Plot plankton ####
+        output$plot_plankton <- renderPlot({
+            p <- params()
+            select <- (p@cc_pp > 0)
+            plot_dat <- data.frame(
+                x = p@w_full[select],
+                y = p@initial_n_pp[select] / p@cc_pp[select]
+            )
+            ggplot(plot_dat) +
+                geom_line(aes(x, y)) +
+                scale_x_log10("Plankton size [g]") +
+                ylab("Proportion of carrying capacity") +
+                theme_grey(base_size = 16)
+        })
+        
+        ## Plot plankton predators ####
+        output$plot_plankton_pred <- renderPlotly({
+            p <- params()
+            species <- factor(p@species_params$species,
+                              levels = p@species_params$species)
+            select <- (p@cc_pp > 0)
+            pred_rate <- p@species_params$interaction_p * 
+                getPredRate(p)[, select]
+            total <- colSums(pred_rate)
+            ylab <- "Death rate [1/year]"
+            if (input$plankton_death_prop == "Proportion") {
+                pred_rate <- pred_rate / rep(total, each = dim(pred_rate)[[1]])
+                ylab = "Proportion of predation"
+            }
+            # Make data.frame for plot
+            plot_dat <- data.frame(
+                value = c(pred_rate),
+                Predator = species,
+                w = rep(p@w_full[select], each = dim(pred_rate)[[1]]))
+            ggplot(plot_dat) +
+                geom_area(aes(x = w, y = value, fill = Predator)) +
+                scale_x_log10("Plankton size [g]") +
+                ylab(ylab) +
+                scale_fill_manual(values = p@linecolour) +
+                theme_grey(base_size = base_size)
         })
         
         ## Plot stomach content ####
