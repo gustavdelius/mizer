@@ -65,14 +65,19 @@ fitKernel <- function(stomach, species_params = data.frame(),
             sliderInput("ex", "exp",
                         value = species_params$kernel_exp,
                         min = -1,
-                        max = 0)
+                        max = 0),
+            hr(),
+            sliderInput("s", "scaling",
+                        value = 1,
+                        min = 0,
+                        max = 1)
         ),
         
         mainPanel(
             plotOutput("plot"),
             sliderInput("adjust", "Adjust bandwidth",
                         value = 0.5,
-                        min = 0,
+                        min = 0.1,
                         max = 1,
                         step = 0.1),
             plotOutput("plot_kernel")
@@ -83,21 +88,25 @@ fitKernel <- function(stomach, species_params = data.frame(),
         
         # Render the plot
         output$plot <- renderPlot({
+            
+            stomach <- stomach %>% 
+                mutate(weight_scaled = Nprey * wprey^input$s,
+                       weight_scaled = weight_scaled / sum(weight_scaled))
             pl <- ggplot(stomach) +
+                geom_density(aes(logpredprey, weight = weight_scaled,
+                                 colour = "Scaled"),
+                             adjust = input$adjust) +
                 geom_density(aes(logpredprey, weight = weight,
                                  colour = "Numbers"),
                              adjust = input$adjust) +
                 geom_density(aes(logpredprey, weight = weight_biomass,
                                  colour = "Biomass"),
                              adjust = input$adjust) +
-                # geom_density(aes(logpredprey, weight = weight_kernel,
-                #                  colour = "Kernel"),
-                #              adjust = adjust) +
                 xlab("Log_10 of predator/prey mass ratio") +
                 ylab("Density") +
                 scale_colour_manual(values = c(Numbers = "Blue",
                                                Biomass = "Green",
-                                               Kernel = "Black")) +
+                                               Scaled = "Black")) +
                 expand_limits(x = 0)
             df <- tibble(
                 x = x,
@@ -109,12 +118,13 @@ fitKernel <- function(stomach, species_params = data.frame(),
                     kernel_l_r = input$l_r,
                     kernel_u_r = input$u_r)) %>% 
                 mutate(Numbers = Kernel / 10^((1 + alpha - lambda) * x),
+                       Scaled = Numbers / 10^(x * input$s),
                        Biomass = Numbers / 10^(x),
-                       Kernel = Kernel / sum(Kernel) / dx,
+                       Scaled = Scaled / sum(Scaled) / dx,
                        Numbers = Numbers / sum(Numbers) / dx,
                        Biomass = Biomass / sum(Biomass) / dx) %>% 
                 gather(key = Type, value = "Density",
-                       Numbers, Biomass)
+                       Numbers, Scaled, Biomass)
             
             pl + geom_line(data = df,
                            aes(x, Density, colour = Type),
