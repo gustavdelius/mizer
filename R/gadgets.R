@@ -65,7 +65,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
     sp_old_n0 <- 1
     
     prepare_params <- function(p) {
-        rownames(params@species_params) <- params@species_params$species
+        rownames(p@species_params) <- p@species_params$species
         p <- set_species_param_default(p, "a", 0.006)
         p <- set_species_param_default(p, "b", 3)
         p <- set_species_param_default(p, "t0", 0)
