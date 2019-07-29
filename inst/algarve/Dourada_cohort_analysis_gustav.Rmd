@@ -1,0 +1,85 @@
+---
+title: "Dourada cohort analysis"
+author: "Gustav"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggridges)
+```
+
+```{r message=FALSE}
+Dourada_cohort_analysis <- read_csv("inst/algarve/Dourada_cohort_analysis_2.csv")
+Dourada_cohort_analysis
+```
+We need to fix that some entries use a two-digit date. Then we sort by date
+and keep only dates on which at least 10 fish were caught.
+```{r}
+df <- Dourada_cohort_analysis %>% 
+  mutate(Date = str_replace(Date, "/97", "/1997"),
+         Date = as.Date(Date, "%d/%m/%Y")) %>% 
+  arrange(Date) %>% 
+  group_by(Date) %>% 
+  filter(n() > 10)
+df
+```
+Here are the dates of the observations:
+```{r}
+unique(df$Date)
+```
+Note that surprisingly there were two observations at the start of May,
+separated by only 6 days.
+
+We plot the densities. Note that the height of the density curves do not reflect
+the number of observations, but instead the density at each date is normalised
+so that the area underneath each curve is 1. Therefore we also plot a dot for
+each observation to get an idea of the number of observations.
+```{r message=FALSE}
+ggplot(df) +
+  geom_density_ridges(aes(x = weight, y = Date, group = Date),
+                      jittered_points = TRUE, alpha = 0.5) +
+  scale_x_log10()
+```
+
+This plot raises several questions:
+
+1. What happened to the individuals from December 1996 that are no longer there
+the following February.
+
+2. Where did the smaller individuals in August come from, given that they were
+not there earlier in the year?
+
+3. Why were there so many more fish caught on the 8th of May then on other
+dates?
+
+Here is a zoomed in picture, on a linear axis. 
+```{r message=FALSE, warning=FALSE}
+ggplot(df) +
+  geom_density_ridges(aes(x = weight, y = Date, group = Date),
+                      jittered_points = TRUE, alpha = 0.5) +
+  xlim(c(0, 130))
+```
+
+The peak of the cohort is moving to the right at an accelerating rate, meaning
+that the growth rate is increasing with time. This agrees qualitatively with the
+growth curve in the model. One thing that would be worth doing is seeing if it
+agrees quantitatively.
+
+Clearly, the number of fish observed on the different dates is too variable to
+allow us to deduce the death rates from these observations.
+
+Here is a plot where the area under the curves is proportional to the total
+number of fish caught on each date.
+```{r message=FALSE}
+ggplot(df) +
+  geom_density_ridges(aes(x = weight, y = Date, group = Date,
+                          height = ..count..),
+                      stat = "density", alpha = 0.7,
+                      adjust = 3) +
+  scale_x_log10()
+```
+
+This picture is much less clear due to the fact that so many more fish were
+caught in May then on the other dates.
