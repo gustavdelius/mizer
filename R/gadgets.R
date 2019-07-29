@@ -15,10 +15,20 @@
 #'   size bins in grams. The data frame also needs to have the columns
 #'   \code{species} (the name of the species), \code{catch} (the number of
 #'   individuals of a particular species caught in a size bin).
+#' @param stomach Data frame holding observations of prey items in predator
+#'   stomachs. The required columns are 
+#'   \itemize{
+#'   \item \code{species} holding the name of the predator species,
+#'   \item \code{wpredator} with the weight in grams of the predator,
+#'   \item \code{wprey} with the weight of the prey item.
+#'   }
+#'   In case prey items of the same weight have been aggregated in the data
+#'   frame then there should be a column \code{Nprey} saying how many prey 
+#'   items have been aggregated in each row.
 #' 
 #' @return The tuned MizerParams object
 #' @export
-tuneParams <- function(p, catch = NULL) {
+tuneParams <- function(p, catch = NULL, stomach = NULL) {
     # Check arguments
     if (!is.null(catch)) {
         assert_that(
@@ -29,9 +39,25 @@ tuneParams <- function(p, catch = NULL) {
                     all(c("weight", "dw") %in% names(catch))
                 )
     }
+    if (!is.null(stomach)) {
+        assert_that(
+            is.data.frame(stomach),
+            "wprey" %in% names(stomach),
+            "wpredator" %in% names(stomach),
+            "species" %in% names(stomach)
+        )
+        if (!("Nprey" %in% names(stomach))) stomach$Nprey <- 1
+        stomach <- stomach %>% 
+            mutate(logpredprey = log(wpredator / wprey),
+                   weight = Nprey / sum(Nprey),
+                   weight_biomass = Nprey * wprey / sum(Nprey * wprey),
+                   weight_kernel = Nprey / wprey^(1 + alpha - lambda),
+                   weight_kernel = weight_kernel / sum(weight_kernel))
+    }
     
     # Define some globals to skip certain observers
     sp_old <- 1
+    sp_old_kernel <- 1
     sp_old_predation <- 1
     sp_old_fishing <- 1
     sp_old_maturity <- 1
@@ -39,6 +65,7 @@ tuneParams <- function(p, catch = NULL) {
     sp_old_n0 <- 1
     
     prepare_params <- function(p) {
+        rownames(p@species_params) <- p@species_params$species
         p <- set_species_param_default(p, "a", 0.006)
         p <- set_species_param_default(p, "b", 3)
         p <- set_species_param_default(p, "t0", 0)
@@ -179,8 +206,16 @@ tuneParams <- function(p, catch = NULL) {
                                                   selected = "Proportion", 
                                                   inline = TRUE),
                                      plotlyOutput("plot_pred")),
-                            tabPanel("All",
-                                     plotlyOutput("plot_all_growth"))
+                            tabPanel("Plankton",
+                                     plotOutput("plot_plankton", width = "84%"),
+                                     plotlyOutput("plot_plankton_pred"),
+                                     radioButtons("plankton_death_prop", "Show",
+                                                  choices = c("Proportion", "Rate"), 
+                                                  selected = "Proportion", 
+                                                  inline = TRUE))
+                            # tabPanel("Stomach",
+                            #          plotOutput("plot_stomach"),
+                            #          plotOutput("plot_kernel"))
                 )
             )  # end mainpanel
         )  # end sidebarlayout
@@ -602,13 +637,39 @@ tuneParams <- function(p, catch = NULL) {
                              lambda = input$lambda,
                              r_pp = 10^input$log_r_pp,
                              w_pp_cutoff = input$w_pp_cutoff)
-            p@initial_n_pp <- p@cc_pp
             params(p)
+        })
+        
+        ## Adjust predation kernel ####
+        observe({
+            req(input$beta, input$sigma)
+            p <- isolate(params())
+            sp <- isolate(input$sp)
+            
+            if (sp != sp_old_kernel) {
+                # We came here after changing the species selector. This automatically
+                # rewrote all sliders, so no need to update them. Also we do not want
+                # update the params object.
+                sp_old_kernel <<- sp
+            } else {
+                # Update slider min/max so that they are a fixed proportion of the 
+                # parameter value
+                updateSliderInput(session, "beta",
+                                  min = signif(input$beta / 2, 2),
+                                  max = signif(input$beta * 1.5, 2))
+                updateSliderInput(session, "sigma",
+                                  min = signif(input$sigma / 2, 2),
+                                  max = signif(input$sigma * 1.5, 2))
+                p@species_params[sp, "beta"]  <- input$beta
+                p@species_params[sp, "sigma"] <- input$sigma
+                p <- setPredKernel(p)
+                update_species(sp, p)
+            }
         })
         
         ## Adjust predation ####
         observe({
-            req(input$beta, input$sigma, input$gamma, input$h)
+            req(input$gamma, input$h)
             p <- isolate(params())
             sp <- isolate(input$sp)
             
@@ -620,23 +681,14 @@ tuneParams <- function(p, catch = NULL) {
             } else {
                 # Update slider min/max so that they are a fixed proportion of the 
                 # parameter value
-                updateSliderInput(session, "beta",
-                                  min = signif(input$beta / 2, 2),
-                                  max = signif(input$beta * 1.5, 2))
-                updateSliderInput(session, "sigma",
-                                  min = signif(input$sigma / 2, 2),
-                                  max = signif(input$sigma * 1.5, 2))
                 updateSliderInput(session, "gamma",
                                   min = signif(input$gamma / 2, 3),
                                   max = signif(input$gamma * 1.5, 3))
                 updateSliderInput(session, "h",
                                   min = signif(input$h / 2, 2),
                                   max = signif(input$h * 1.5, 2))
-                p@species_params[sp, "beta"]  <- input$beta
-                p@species_params[sp, "sigma"] <- input$sigma
                 p@species_params[sp, "gamma"] <- input$gamma
                 p@species_params[sp, "h"]     <- input$h
-                p <- setPredKernel(p)
                 p <- setSearchVolume(p)
                 p <- setIntakeMax(p)
                 update_species(sp, p)
@@ -1421,36 +1473,36 @@ tuneParams <- function(p, catch = NULL) {
         output$plot_prey <- renderPlotly({
             p <- params()
             sp <- which.max(p@species_params$species == input$sp)
-            phi <- function(x, xp) {
-                phi <- exp(-(x - xp + log(p@species_params$beta[sp])) ^ 2 /
-                               (2 * p@species_params$sigma[sp] ^ 2))
-                phi[x >= xp | x < (xp - log(p@species_params$beta[sp]) -
-                                       3 * p@species_params$sigma[sp])] <- 0
-                return(phi)
-            }
             x <- log(p@w_full)
             dx <- x[2] - x[1]
             xp <- req(input$pred_size)
             wp <- exp(xp)
             wp_idx <- sum(p@w <= wp)
             # Calculate total community abundance
+            # Todo: take interaction matrix into account
             fish_idx <- (length(p@w_full) - length(p@w) + 1):length(p@w_full)
             total_n <- p@initial_n_pp
-            total_n[fish_idx] <- total_n[fish_idx] + colSums(p@initial_n)
+            total_n[fish_idx] <- total_n[fish_idx] + 
+                p@interaction[sp, ] %*% p@initial_n
             totalx <- total_n * p@w_full
-            totalx <- totalx / sum(totalx * dx)
-            phix <- phi(x, xp)
-            phix <- phix / sum(phix * dx)
+            #totalx <- totalx / sum(totalx * dx)
+            phix <- getPredKernel(p)[sp, wp_idx, ]
             pr <- totalx * phix
             br <- pr * p@w_full
+            # convert to proportions
+            phix <- phix / sum(phix * dx)
             pr <- pr / sum(pr * dx)
             br <- br / sum(br * dx)
-            df <- tibble::tibble(x, Kernel = phix, Biomass = br, Abundance = pr) %>%
-                tidyr::gather(type, y, Kernel, Biomass, Abundance)
+            df <- tibble::tibble(w = p@w_full, 
+                                 Kernel = phix, 
+                                 Biomass = br, 
+                                 Numbers = pr) %>%
+                tidyr::gather(type, y, Kernel, Biomass, Numbers)
             ggplot(df) +
-                geom_line(aes(x, y, color = type)) +
-                labs(x = "log(w)", y = "Density") +
-                geom_point(aes(x = xp, y = 0), size = 4, colour = "blue")
+                geom_line(aes(w, y, color = type)) +
+                labs(x = "Weight [g]", y = "Density") +
+                geom_point(aes(x = wp, y = 0), size = 4, colour = "blue") +
+                scale_x_log10()
         })
         
         ## Plot diet ####
@@ -1521,6 +1573,78 @@ tuneParams <- function(p, catch = NULL) {
                                   label = "\nMaturity"), 
                               angle = 90)
             }
+        })
+        
+        ## Plot plankton ####
+        output$plot_plankton <- renderPlot({
+            p <- params()
+            select <- (p@cc_pp > 0)
+            plot_dat <- data.frame(
+                x = p@w_full[select],
+                y = p@initial_n_pp[select] / p@cc_pp[select]
+            )
+            ggplot(plot_dat) +
+                geom_line(aes(x, y)) +
+                scale_x_log10("Plankton size [g]") +
+                ylab("Proportion of carrying capacity") +
+                theme_grey(base_size = 16)
+        })
+        
+        ## Plot plankton predators ####
+        output$plot_plankton_pred <- renderPlotly({
+            p <- params()
+            species <- factor(p@species_params$species,
+                              levels = p@species_params$species)
+            select <- (p@cc_pp > 0)
+            pred_rate <- p@species_params$interaction_p * 
+                getPredRate(p)[, select]
+            total <- colSums(pred_rate)
+            ylab <- "Death rate [1/year]"
+            if (input$plankton_death_prop == "Proportion") {
+                pred_rate <- pred_rate / rep(total, each = dim(pred_rate)[[1]])
+                ylab = "Proportion of predation"
+            }
+            # Make data.frame for plot
+            plot_dat <- data.frame(
+                value = c(pred_rate),
+                Predator = species,
+                w = rep(p@w_full[select], each = dim(pred_rate)[[1]]))
+            ggplot(plot_dat) +
+                geom_area(aes(x = w, y = value, fill = Predator)) +
+                scale_x_log10("Plankton size [g]") +
+                ylab(ylab) +
+                scale_fill_manual(values = p@linecolour) +
+                theme_grey(base_size = base_size)
+        })
+        
+        ## Plot stomach content ####
+        output$plot_stomach <- renderPlot({
+            req(input$sp)
+            p <- params()
+            sp <- which.max(p@species_params$species == input$sp)
+            
+            df <- tibble(
+                x = x,
+                Kernel = double_sigmoid(
+                    x, 
+                    p_l = input$p_l, 
+                    s_l = input$s_l, 
+                    p_r = input$p_r, 
+                    s_r = input$s_r, 
+                    ex = input$ex)) %>% 
+                mutate(Numbers = Kernel / exp((1 + alpha - lambda) * x),
+                       Biomass = Numbers / exp(x),
+                       Kernel = Kernel / sum(Kernel) / dx,
+                       Numbers = Numbers / sum(Numbers) / dx,
+                       Biomass = Biomass / sum(Biomass) / dx) %>% 
+                gather(key = Type, value = "Density",
+                       Numbers, Biomass)
+            
+            pl + geom_line(data = df,
+                           aes(x, Density, colour = Type),
+                           size = 3) 
+            st <- stomach %>% 
+                filter(species == input$sp)
         })
         
     } #the server

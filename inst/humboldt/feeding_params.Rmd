@@ -1,25 +1,29 @@
 ---
 title: "Estimating feeding kernel parameters from stomach data"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 We want to use stomach data to estimate the feeding preference
-function for a size-spectrum model. To make a connection we 
+function for a size-spectrum model. To make a connection we will initially
 assume that the abundance of a prey size in a predator's stomach
 is proportional to the rate at which the predator feeds on prey of 
 that size. This is a dubious assumption because it neglects that
 prey of different sizes might stay identifiable in the stomach for
-different lengths of time.
+different lengths of time. We will modify this later.
 
 For a predator of size $w'$ the rate at which it predates on
 prey of size $w$ is proportional to the product of the abundance
 $N(w)$ of prey of size $w$ and the preference function $\phi(w/w')$.
 The proportionality constant (the so-called search volume) depends 
-only on the known predator weight and is independent the prey weight
+only on the known predator weight and is independent of the prey weight
 and therefore does not concern us here.
 
 We assume that the prey abundance is given by a power law 
 $$N(w)\propto w^{-\lambda}.$$
+## Gaussian kernel
+
 For the preference function we use the Gaussian
 $$\phi(w/w') = \exp\left(-\frac{(\log(w'/w)-\log(\beta))^2}
   {2\sigma^2}\right).$$
@@ -32,7 +36,7 @@ $$ f_w(w|w') \propto w^{-\lambda}
 \exp\left(-\frac{(\log(w'/w)-\log(\beta))^2}
   {2\sigma^2}\right).$$
 Mariella likes to work in terms of the predator/prey mass ratio $r=w'/w$.
-The probability density for this ration can be obtained by observing that
+The probability density for this ratio can be obtained by observing that
 $$ f_r(r|w') = f_w(w|w')\left|\frac{dw}{dr}\right|=\frac{w'}{r^2} f_w(w|w')$$
 and thus
 $$ f(r|w') \propto r^{\lambda-2}
@@ -55,7 +59,7 @@ $$ f_{l}(l|w') =
 
 Thus the logarithm of the predator/prey mass ratio is normally distributed with
 mean $\log(\beta)+\sigma^2(\lambda-1)$ and variance $\sigma^2$.
-
+The distribution is independent of the predator size $w'$.
 
 By estimating the mean $\mu$ and standard deviation $s$ of the observed
 logarithms of predator/prey mass ratios we
@@ -93,8 +97,13 @@ Clearly that makes no sense. We have to give up either the assumption of
 a Gaussian feeding kernel or the assumption that feeding rate is proportional
 to stomach content.
 
+## Allometric digestion
+
 One proposal would be to assume that the time for which a prey item stays
-identifiable in the stomach scales allometrically with prey size. One could
+identifiable in the stomach scales allometrically with prey size. 
+
+### Exponent 1/3
+One could
 for example argue that the rate at which digestion takes place on an
 individual scales as its surface area, i.e., as $w^{2/3}$. Then the time
 until a certain percentage of the individual has been digested scales as
@@ -117,7 +126,10 @@ This gives
 ```{r}
 select(params_data, c("species", "beta_mizer", "sigma_mizer", "beta", "sigma"))
 ```
-This improves things a bit but not enough. If we are willing to increase the exponent for the time till
+This improves things a bit but not enough. 
+
+### Exponent 2/3
+If we are willing to increase the exponent for the time till
 digestion to $2/3$ we get:
 ```{r}
 params_data$beta_mizer <- params_data$beta * 
@@ -125,29 +137,44 @@ params_data$beta_mizer <- params_data$beta *
 select(params_data, c("species", "beta_mizer", "sigma_mizer", "beta", "sigma"))
 ```
 
+## Swordfish
 Next we analyse the stomach data for swordfish.
 ```{r}
-ppmr <- read.csv("Swordfish_dataPPMR.csv")
-```
-
-
-```{r}
-mu <- mean(log(ppmr$Predator.mass / ppmr$Prey.mass))
-s <- sd(log(ppmr$Predator.mass / ppmr$Prey.mass))
+ppmr <- read.csv("Swordfish_dataPPMR.csv") %>% 
+  mutate(l = log(Predator.mass / Prey.mass))
+mu <- mean(ppmr$l)
+s <- sd(ppmr$l)
 library(ggplot2)
 ```
+First let's check that the assumption that the predator/prey mass ratio is 
+independent of the predator mass is not unreasonable.
+```{r}
+ppmr %>% ggplot(aes(Predator.mass, Predator.mass / Prey.mass)) +
+  geom_jitter(width = 4) +
+  scale_x_log10() +
+  scale_y_log10()
+```
+Then plot the distribution of the log of the predator/prey mass ratio together
+with a fitted normal distribution.
 ```{r}
 ggplot(ppmr) +
-    geom_density(aes(log(Predator.mass / Prey.mass))) +
+    geom_density(aes(l)) +
     stat_function(fun = dnorm, args = list(mean = mu, sd = s), color = "blue")
 ```
+The Gaussian fits reasonably well, even if a double logistic function would work
+even better. The lack of fit will become more evident when we look at the
+biomass distribution.
+
 ```{r}
 ggplot(ppmr) +
-    geom_density(aes(log(Predator.mass / Prey.mass))) +
-    stat_function(fun = dnorm, args = list(mean = mu, sd = s), color = "blue")
+    geom_density(aes(l, weight = Prey.mass / sum(Prey.mass))) +
+    stat_function(fun = dnorm, 
+                  args = list(mean = mu - s^2, sd = s), 
+                  color = "blue") +
+    scale_x_continuous(limits = c(0, NA))
 ```
 
-
+## Anchovy and sardine
 Next we analyse the stomach data for anchovy and sardine directly.
 ```{r message=FALSE}
 ppmr <- read_csv("Data_PPMR.csv") %>%
