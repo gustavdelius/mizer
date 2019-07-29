@@ -1,0 +1,51 @@
+---
+title: "Dourada_cohort_analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(readr)
+Dourada_cohort_analysis <- read_csv("~/Marine Biology MSC/Thesis Project/Data/MIZER code/mizer/inst/algarve/Dourada_cohort_analysis_2.csv")
+```
+
+```{r}
+show(Dourada_cohort_analysis)
+```
+```{r} 
+params <- readRDS("~/Marine Biology MSC/Thesis Project/Data/MIZER code/mizer/inst/algarve/params_104.rds")
+bins <- params@w
+```
+
+```{r}
+library(ggplot2)
+library(plotly)
+```
+
+
+```{r}
+library(reshape2)
+
+df <- melt(Dourada_cohort_analysis, na.rm = TRUE)
+```
+The only  part of this code that i cant make work is the fill, so the different dates have different colours, how do i fix this?
+
+```{r}
+ggplot(df[df$variable == "weight",], aes(value)) + geom_histogram(fill = Dourada_cohort_analysis$Date, breaks = bins) +
+  coord_trans(x = "log10") 
+```
+
+
+```{r}
+ggplot(Dourada_cohort_analysis) +
+  geom_histogram(aes(x=Dourada_cohort_analysis$`weight`, fill = Dourada_cohort_analysis$`Date`, breaks = bins))
+   + position = "dodge"
+  coord_trans(x = "log10")
+    
+```
+
+
+
+
