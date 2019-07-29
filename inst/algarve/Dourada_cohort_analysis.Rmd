@@ -8,14 +8,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r}
 library(readr)
-Dourada_cohort_analysis <- read_csv("~/Marine Biology MSC/Thesis Project/Data/MIZER code/mizer/inst/algarve/Dourada_cohort_analysis_2.csv")
+Dourada_cohort_analysis <- read_csv("inst/algarve/Dourada_cohort_analysis_2.csv")
+Dourada_cohort_analysis
 ```
 
-```{r}
-show(Dourada_cohort_analysis)
-```
 ```{r} 
-params <- readRDS("~/Marine Biology MSC/Thesis Project/Data/MIZER code/mizer/inst/algarve/params_104.rds")
+params <- readRDS("inst/algarve/params_103.rds")
 bins <- params@w
 ```
 
@@ -33,7 +31,8 @@ df <- melt(Dourada_cohort_analysis, na.rm = TRUE)
 The only  part of this code that i cant make work is the fill, so the different dates have different colours, how do i fix this?
 
 ```{r}
-ggplot(df[df$variable == "weight",], aes(value)) + geom_histogram(fill = Dourada_cohort_analysis$Date, breaks = bins) +
+ggplot(df[df$variable == "weight",], aes(value)) + 
+  geom_histogram(aes(fill = Date), breaks = bins) +
   coord_trans(x = "log10") 
 ```
 
