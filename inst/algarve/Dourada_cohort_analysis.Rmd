@@ -13,7 +13,7 @@ Dourada_cohort_analysis
 ```
 
 ```{r} 
-params <- readRDS("inst/algarve/params_103.rds")
+params <- readRDS("inst/algarve/params_104.rds")
 bins <- params@w
 ```
 
