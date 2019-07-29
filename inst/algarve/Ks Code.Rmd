@@ -1,0 +1,80 @@
+
+
+Code for estimating Ks
+
+
+
+From Clark et al (1999)
+$$
+1nRb = 15.7 - 5.02 . T^-1
+$$
+seeing as the lagoon has a mean temp of 19 degrees (292 kelvin) (I used Rb instead of 1nRb as for some reason r did not like the 1, but Rb=1nRb)
+
+```{r}
+Rb <-c(17.7 - 5.02 * (292*10^3)^-1)
+```
+
+now you gave me the equation for metabolic rate. 
+
+$$
+Metabolic rate = Ks*W(g)^0.7
+$$
+Clark defines Rb as metabolic rate, therefore:
+$$
+1nRb = Ks*w(g)^0.7
+$$
+Rearranged gives:
+
+$$
+(W^0.7)/1nRb = Ks 
+$$
+Therefore: (assuming  weight of 1g)
+```{r}
+(1*0.7)/Rb
+```
+assuming a weight of 50g (same as Klark et al 1999)
+```{r}
+(50*0.7)/Rb
+```
+Now I think that using the same ks value for all species is not a sencible idea, therefore I though it was best to attempt to scale this with h (max food intake rate) similar to the default:
+
+$$
+Ks = h*0.2
+$$
+We concluded that this default formula was not suitable, to me 0.2 seems much to large, 20% of h seems excessive, as can be seen by the overly high values of Ks this meathod gives. So lets say 10%.
+
+$$
+ks = ((W^0.7)/1nRb)*(h*0.1)
+
+$$
+
+Lets try dourada as an example (h=48)
+```{r}
+((50^0.7)/Rb)*(48*0.1)
+```
+I think this looks like a reasnoble value, please correct me if you think my method is inaccuarate.
+
+But for now lets apply to all.
+
+```{r}
+species <- c("Dourada", "Choupa", "baila", "toadfish", "Eel", "Pargo", "garfish", "Seabass", "Sole", "Mucharra", "Safia", "Silverside", "red mullet", "Sargo", "Salema", "wrasse", "Goby", "anchovy", "sardine", "grey mullet", "worms", "snails", "bivalve", "e.g shrimp/crab")
+
+params <- readRDS("~/Marine Biology MSC/Thesis Project/Data/MIZER code/mizer/inst/algarve/params_104.rds")
+
+h <- params@species_params$h[params@species_params$species]
+```
+```{r}
+show(h)
+```
+
+Im pretty sure im specifying the wrong parameter (not h), do you know how to correct this? but i think the rest works. 
+
+
+```{r}
+Ks <- ((50^0.7)/Rb)*(h*0.1)
+```
+```{r}
+names(Ks) <- species
+Ks
+```
+
