@@ -173,7 +173,9 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                                      radioButtons("all_growth", "Show:",
                                                   choices = c("All", "Selected species"), 
                                                   selected = "All", inline = TRUE),
-                                     plotlyOutput("plotGrowthCurve"),
+                                     plotOutput("plotGrowthCurve",
+                                                click = "growth_click"),
+                                     textOutput("info"),
                                      uiOutput("k_vb_sel"),
                                      plotlyOutput("plot_feeding_level"),
                                      plotlyOutput("plot_psi")),
@@ -957,6 +959,15 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
             if (log_idx == length(logs)) shinyjs::disable("redo")
         })
         
+        observeEvent(input$growth_click, {
+            if (input$growth_click$panelvar1 != input$sp) {
+                updateSelectInput(session, "sp",
+                                  selected = input$growth_click$panelvar1)
+                updateRadioButtons(session, "all_growth",
+                                   selected = "Selected species")
+            }
+        })
+        
         ## Find new steady state ####
         # triggered by "Steady" button on "species" tab
         observeEvent(input$sp_steady, {
@@ -1007,7 +1018,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                 )
             }
         })
-        output$plotGrowthCurve <- renderPlotly({
+        output$plotGrowthCurve <- renderPlot({
             p <- params()
             if (input$all_growth == "All") {
                 gc <- getGrowthCurves(p) %>% 
