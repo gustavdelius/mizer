@@ -1,7 +1,6 @@
 ---
 title: "Estimating feeding kernels from stomach data"
 author: "Gustav Delius"
-date: "7/30/2019"
 output: pdf_document
 ---
 
@@ -10,6 +9,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
 ```
+
+## Introduction
 We want to use available observations of the size distribution of prey items in
 predator stomachs to estimate the feeding kernels to use in size-spectrum
 models. In addition to the results, this document contains all the code to
@@ -22,6 +23,8 @@ Later we will want to extend that to the [DAPSTOM
 dataset](https://www.cefas.co.uk/media/41463/dapstom-phase-4-report-2014-dlm.pdf)
 and a [dataset of diets of North Atlantic
 fishes](http://www.fishecology.org/diets/diets.htm)
+
+## The distribution function
 
 ## Mariella's dataset
 
@@ -93,14 +96,14 @@ We use size bins that are equally-spaced on a logarithmic axis between the small
 largest predator/prey size ratio. For later use we create a vector `breaks` with the bin
 boundaries:
 ```{r}
-no_bins <- 30
+no_bins <- 30  # Number of bins
 binsize <- (max(ppmr$logpredprey) - min(ppmr$logpredprey)) / (no_bins - 1)
 breaks <- seq(min(ppmr$logpredprey) - binsize/2,
               by = binsize, length.out = no_bins + 1)
 ```
 We now add up both the numbers and the biomass in each bin and then normalise so
 that the area under each histogram is 1. We also add
-a column `r` with the predator/prey mass ratio at the centre of the each bin.
+a column `l` with the log of predator/prey mass ratio at the centre of the each bin.
 ```{r}
 binned_ppmr <- ppmr %>% 
     # bin data
@@ -113,7 +116,7 @@ binned_ppmr <- ppmr %>%
     mutate(Numbers = Numbers / sum(Numbers) / binsize,
            Biomass = Biomass / sum(Biomass) / binsize)  %>%
     # column for predator/prey size ratio
-    mutate(r = map_dbl(cut, function(idx) 10^(breaks[idx] + binsize/2)))
+    mutate(l = map_dbl(cut, function(idx) breaks[idx] + binsize/2))
 binned_ppmr
 ```
 We convert this into the long table format preferred by ggplot2.
@@ -124,10 +127,10 @@ gather(key = "Type", value = "Density", Numbers, Biomass)
 We can now easily plot the histograms.
 ```{r}
 binned_ppmr %>% 
-  ggplot(aes(r, Density)) +
+  ggplot(aes(l, Density)) +
     geom_col() +
     facet_grid(Species ~ Type, scales = "free_y") +
-    scale_x_log10(name = "Predator/Prey mass ratio") 
+    xlab("Log10 of Predator/Prey mass ratio") 
 ```
 
 Note how the biomass of prey is concentrated at very different predator/prey mass ratio
@@ -136,14 +139,61 @@ mostly in the left tail of the number distribution and vice versa the informatio
 the number distribution is mostly contained in the right tail of the biomass 
 distribution. 
 
+### Density estimates
+
+### Gaussian does not fit
+Let us start by observing that it would be very inappropriate to use a Gaussian
+curve to describe these size distributions. We illustrate this in the case of
+the Anchovy, where the number distribution looks at least somewhat similar to a
+normal distribution. 
+
+We plot the normal distribution with the same mean and
+standard deviation as the data on top of the histogram for the number
+distribution.
+
+```{r}
+weighted.sd <- function(x, w) {
+  sqrt(sum(w * (x - weighted.mean(x, w))^2))
+}
+fit <- ppmr %>% 
+  filter(Species == "Anchovy") %>% 
+  summarise(sum = sum(Nprey),
+            mean = weighted.mean(logpredprey, Nprey/sum),
+            sd = weighted.sd(logpredprey, Nprey/sum))
+binned_ppmr %>% 
+  filter(Type == "Numbers", Species == "Anchovy") %>% 
+  ggplot(aes(l, Density)) +
+    geom_col() +
+    xlab("Log10 of Predator/Prey mass ratio") +
+    stat_function(fun = dnorm, 
+                  args = list(mean = fit$mean, 
+                              sd = fit$sd), 
+                  color = "blue")
+```
+If the size distribution was correctly described by the normal distribution,
+i.e., if
+$$
+N_s(l) = 
+$$
+
+### Power-law fits better
 Many observations are too small to show in the above graph. We therefore show
 the same graphs with a logarithmic y-axis
 ```{r}
 binned_ppmr %>% 
-  ggplot(aes(r, Density)) +
+  ggplot(aes(l, Density)) +
     geom_col() +
     facet_grid(Species ~ Type, scales = "free_y") +
-    scale_x_log10(name = "Predator/Prey mass ratio") +
+    xlab("Log10 of Predator/Prey mass ratio") +
     scale_y_log10()
 ```
 
+## Barnes dataset
+
+## Feeding kernel
+
+### Digestion
+
+### Predation rate
+
+## Summary
