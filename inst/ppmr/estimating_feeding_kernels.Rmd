@@ -1,0 +1,149 @@
+---
+title: "Estimating feeding kernels from stomach data"
+author: "Gustav Delius"
+date: "7/30/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+```
+We want to use available observations of the size distribution of prey items in
+predator stomachs to estimate the feeding kernels to use in size-spectrum
+models. In addition to the results, this document contains all the code to
+reproduce our analysis.
+
+We will initially use data for sardine and anchovy provided by Mariella and the
+[Barnes
+dataset](http://www.esajournals.org/doi/abs/10.1890/07-1551.1?journalCode=ecol).
+Later we will want to extend that to the [DAPSTOM
+dataset](https://www.cefas.co.uk/media/41463/dapstom-phase-4-report-2014-dlm.pdf)
+and a [dataset of diets of North Atlantic
+fishes](http://www.fishecology.org/diets/diets.htm)
+
+## Mariella's dataset
+
+Mariella has data of stomach content for anchovy and sardine. Mariella can
+provide more details of the origin of this data.
+```{r message=FALSE, warning=FALSE}
+ppmr <- read_csv("inst/humboldt/Data_PPMR.csv")
+ppmr
+```
+
+The `wprey` variable is the typical weight of an individual of
+a particular prey species and `Nprey` is the average number of individuals
+of that species in a stomach and `wpredator` is the weight of the predator.
+The table reports the same predator size for all anchovy and 
+the same predator size for all sardine because all predators of 
+each species had very similar sizes.
+
+We capitalise the species names and add a column for the log of the
+predator/prey mass ratio. We have decided to work with the log to base 10.
+```{r}
+ppmr <- ppmr %>% 
+    mutate(Species = str_to_title(Species),
+         logpredprey = log10(wpredator / wprey))
+ppmr
+```
+
+Let's look at the smallest and largest prey items as well as the 
+log of the smallest and largest predator/prey mass ratios in
+the data
+```{r}
+ppmr %>% 
+    group_by(Species) %>% 
+    summarise(min_wprey = min(wprey),
+              max_wprey = max(wprey),
+              min_logpredprey = min(logpredprey),
+              max_logpredprey = max(logpredprey))
+```
+We can not say for sure that anchovy and sardine do not eat larger prey than contained
+in the dataset, because large prey are rare and even the observed large prey only hav
+a very small count:
+```{r}
+ppmr %>% 
+    group_by(Species) %>% 
+    filter(wprey == max(wprey))
+```
+Remember that `Nprey` is the average number of prey individuals of that size in a stomach.
+So the largest prey item observed in an anchovy stomach only showed up in one of 10.000
+stomachs. One would need a very large sample of stomachs to have a good chance to observe
+any larger prey. So to get a better value for the largest possible prey one should look
+at the morphology of the predator species.
+
+Similarly, we can not be certain of the true size of the smallest possible prey items
+because it may just have been to difficult to identify cells of the smallest plankton
+prey, especially as they will be digested very quickly. Again it may make sense to 
+complement this study by a look at the morphology of the gill rakers, although one has
+to acknowledge that gill rakers can, when they become clogged, filter out smaller 
+individuals than would be indicated by the spacing of the rakers.
+
+We will have more discussion of the relation between the stomach data and the actual
+diet of the predator later. For now we concentrate on investigating the stomach data.
+
+There are two ways to visualise the size-distribution of the prey items: we can bin the data
+and plot histograms, or we can plot density kernel estimates. We'll start with a look at
+binned data.
+
+### Binned data
+
+We use size bins that are equally-spaced on a logarithmic axis between the smallest and
+largest predator/prey size ratio. For later use we create a vector `breaks` with the bin
+boundaries:
+```{r}
+no_bins <- 30
+binsize <- (max(ppmr$logpredprey) - min(ppmr$logpredprey)) / (no_bins - 1)
+breaks <- seq(min(ppmr$logpredprey) - binsize/2,
+              by = binsize, length.out = no_bins + 1)
+```
+We now add up both the numbers and the biomass in each bin and then normalise so
+that the area under each histogram is 1. We also add
+a column `r` with the predator/prey mass ratio at the centre of the each bin.
+```{r}
+binned_ppmr <- ppmr %>% 
+    # bin data
+    mutate(cut = cut(logpredprey, breaks = breaks, right = FALSE,
+                     labels = FALSE)) %>% 
+    group_by(Species, cut) %>% 
+    summarise(Numbers = sum(Nprey), 
+              Biomass = sum(Nprey * wprey)) %>% 
+    # normalise
+    mutate(Numbers = Numbers / sum(Numbers) / binsize,
+           Biomass = Biomass / sum(Biomass) / binsize)  %>%
+    # column for predator/prey size ratio
+    mutate(r = map_dbl(cut, function(idx) 10^(breaks[idx] + binsize/2)))
+binned_ppmr
+```
+We convert this into the long table format preferred by ggplot2.
+```{r}
+binned_ppmr <- binned_ppmr %>%
+gather(key = "Type", value = "Density", Numbers, Biomass)
+```
+We can now easily plot the histograms.
+```{r}
+binned_ppmr %>% 
+  ggplot(aes(r, Density)) +
+    geom_col() +
+    facet_grid(Species ~ Type, scales = "free_y") +
+    scale_x_log10(name = "Predator/Prey mass ratio") 
+```
+
+Note how the biomass of prey is concentrated at very different predator/prey mass ratio
+than the number of prey. The information about the biomass distribution is contained
+mostly in the left tail of the number distribution and vice versa the information about
+the number distribution is mostly contained in the right tail of the biomass 
+distribution. 
+
+Many observations are too small to show in the above graph. We therefore show
+the same graphs with a logarithmic y-axis
+```{r}
+binned_ppmr %>% 
+  ggplot(aes(r, Density)) +
+    geom_col() +
+    facet_grid(Species ~ Type, scales = "free_y") +
+    scale_x_log10(name = "Predator/Prey mass ratio") +
+    scale_y_log10()
+```
+
