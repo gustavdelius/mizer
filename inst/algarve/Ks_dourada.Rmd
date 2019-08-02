@@ -1,0 +1,45 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+$$
+Rb(M)=aM^0.8
+$$
+M=78.3
+$$
+Rb(78.3)=a*(78.3^0.8)
+$$
+$$
+a*78.3^0.8=203(mg/kg/h)
+$$
+
+```{r}
+a = 203/(78.3^0.8)
+(a)
+```
+i wanted to use a(g/g/h-1) for this, but r would not accept, so aA=a(g/g/h-1)
+```{r}
+aA <- a/1000/1000
+aA  
+```
+
+```{r}
+drywt <- aA*2
+drywt
+```
+
+```{r}
+wetwt <- drywt/0.27
+wetwt
+```
+there are 8760 hours per year
+```{r}
+wetwtyr <- wetwt*8760
+wetwtyr
+```
+```{r}
+Ks <- wetwtyr/(1^0.7)
+Ks
+```
+```
