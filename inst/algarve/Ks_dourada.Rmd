@@ -3,43 +3,65 @@ title: "Untitled"
 output: html_document
 ---
 
+We assume that the basic metabolic rate $R_b$ scales allometrically 
 $$
-Rb(M)=aM^0.8
+R_b(M)=a\ M^{b}.
 $$
-M=78.3
-$$
-Rb(78.3)=a*(78.3^0.8)
-$$
-$$
-a*78.3^0.8=203(mg/kg/h)
-$$
-
+We follow the paper by Clarke et.al. who measure $R_b$ in mmol oxygen per hour.
+They give the exponent as
 ```{r}
-a = 203/(78.3^0.8)
-(a)
-```
-i wanted to use a(g/g/h-1) for this, but r would not accept, so aA=a(g/g/h-1)
-```{r}
-aA <- a/1000/1000
-aA  
+b <- 0.8
 ```
 
+Fishbase gives the metabolic rate for a Dourada of $M=78.3 g$ as 203mg/kg/h. To 
+convert that to mmol oxygen per fish per hour we have to divide by the weight of
+one mmol oxygen in mg (16) and multiply by the weight of the fish in kg
+(M/1000)
 ```{r}
-drywt <- aA*2
+M <- 78.3
+R_b <- 203 / 16 * (M / 1000)
+R_b
+```
+Solving the metabolic scaling equation for $a$ gives
+$$
+a = R_b(M) / M^{b}
+$$
+```{r}
+a <- R_b / M^b
+a
+```
+This is the metabolic rate of a 1g Dourada, measured in mmol oxygen per hour.
+We compare this to the average value for $a$ given by Clarke et.al
+```{r}
+exp(-5.43)
+```
+They differ by almost one order of magnitude!
+
+We convert the mmol of oxygen into the weight of carbon needed to convert all
+the oxygen into CO_2. Because one mmol of oxygen combines with one mmol of carbon
+and one mmol of carbon weighs 12mg, the weight of carbon in g is
+```{r}
+carbonwt <- a * 12 / 1000
+carbonwt
+```
+Let us assume that half of the dryweight is due to carbon:
+```{r}
+drywt <- carbonwt * 2
 drywt
 ```
-
+We convert from dry weight to wet weight using the conversion factor used by 
+Erzini et.al.
 ```{r}
 wetwt <- drywt/0.27
 wetwt
 ```
-there are 8760 hours per year
+Next we convert to a rate per year rather than per hour. There are 8760 hours per year
 ```{r}
-wetwtyr <- wetwt*8760
+wetwtyr <- wetwt * 8760
 wetwtyr
 ```
+
 ```{r}
 Ks <- wetwtyr/(1^0.7)
 Ks
-```
 ```
