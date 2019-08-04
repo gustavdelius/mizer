@@ -1,0 +1,48 @@
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggridges)
+```
+
+```{r message=FALSE}
+Red_mullet_cohort_analysis <- read_csv("inst/algarve/cohort_analysis/Red_mullet_cohort_analysis.csv")
+Red_mullet_cohort_analysis
+```
+We need to fix that some entries use a two-digit date. Then we sort by date
+and keep only dates on which at least 10 fish were caught.
+
+```{r}
+df <- Red_mullet_cohort_analysis %>% 
+  mutate(Date = str_replace(Date, "/97", "/1997"),
+         Date = as.Date(Date, "%d/%m/%Y")) %>% 
+  arrange(Date) %>% 
+  group_by(Date) %>% 
+  filter(n() > 10)
+df
+```
+```{r}
+unique(df$Date)
+```
+```{r message=FALSE}
+ggplot(df) +
+  geom_density_ridges(aes(x = weight , y = Date, group = Date),
+                      jittered_points = TRUE, alpha = 0.5) +
+  scale_x_log10()
+```
+
+```{r message=FALSE, warning=FALSE}
+ggplot(df) +
+  geom_density_ridges(aes(x = weight, y = Date, group = Date),
+                      jittered_points = TRUE, alpha = 0.5) +
+  xlim(c(0, 130))
+```
+```{r message=FALSE}
+ggplot(df) +
+  geom_density_ridges(aes(x = weight, y = Date, group = Date,
+                          height = ..count..),
+                      stat = "density", alpha = 0.7,
+                      adjust = 3) +
+  scale_x_log10()
+```
