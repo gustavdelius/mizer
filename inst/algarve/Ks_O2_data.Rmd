@@ -1,0 +1,144 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+---
+title: "Untitled"
+output: html_document
+---
+
+We assume that the basic metabolic rate $R_b$ scales allometrically 
+$$
+R_b(M)=a\ M^{b}.
+$$
+We follow the paper by Clarke et.al. who measure $R_b$ in mmol oxygen per hour.
+They give the exponent as
+```{r}
+b <- 0.8
+```
+
+Fishbase gives the metabolic rate for a Dourada of $M=78.3 g$ as 203mg/kg/h. To 
+convert that to mmol oxygen per fish per hour we have to divide by the weight of
+one mmol oxygen in mg (16) and multiply by the weight of the fish in kg
+(M/1000)
+```{r}
+M_eel <- 99.80283
+M_seabass <-192.875
+M_sargo <- 22.875
+M_wrasse <- 68
+M_mullet <- 47
+```
+```{r}
+o2_eel <- 112.437
+o2_seabass <- 471.35
+o2_sargo <- 396.6
+o2_wrasse <-249.3
+o2_mullet <-198.2
+```
+```{r}
+R_b_eel <- o2_eel / 32 * (M_eel / 1000)
+R_b_seabass <- o2_seabass / 32 * (M_seabass / 1000)
+R_b_sargo <- o2_sargo / 32 * (M_sargo / 1000)
+R_b_wrasse <- o2_wrasse / 32 * (M_wrasse / 1000)
+R_b_mullet <- o2_mullet / 32 * (M_mullet / 1000)
+```
+```{r}
+R_b_eel
+R_b_seabass
+R_b_sargo
+R_b_wrasse
+R_b_mullet
+```
+Solving the metabolic scaling equation for $a$ gives
+$$
+a = R_b(M) / M^{b}
+$$
+```{r}
+a_eel <- R_b_eel / M_eel^b
+a_seabass <- R_b_seabass / M_seabass^b
+a_sargo <- R_b_sargo / M_sargo^b
+a_wrasse <- R_b_wrasse / M_wrasse^b
+a_mullet<- R_b_mullet / M_mullet^b
+
+
+a_eel
+a_seabass
+a_sargo
+a_wrasse
+a_mullet
+```
+This is the metabolic rate of a 1g Dourada, measured in mmol oxygen per hour.
+We compare this to the average value for $a$ given by Clarke et.al
+```{r}
+exp(-5.43)
+```
+They differ by almost one order of magnitude!
+
+We convert the mmol of oxygen into the weight of carbon needed to convert all
+the oxygen into CO_2. Because one mmol of oxygen combines with one mmol of carbon
+and one mmol of carbon weighs 12mg, the weight of carbon in g is
+```{r}
+carbonwt_eel <- a_eel * 12 / 1000
+carbonwt_seabass <- a_seabass * 12 / 1000
+carbonwt_sargo <- a_sargo * 12 / 1000
+carbonwt_wrasse <- a_wrasse * 12 / 1000
+carbonwt_mullet <- a_mullet * 12 / 1000
+carbonwt_eel
+carbonwt_seabass
+carbonwt_sargo
+carbonwt_wrasse
+carbonwt_mullet
+```
+Let us assume that half of the dryweight is due to carbon:
+```{r}
+drywt_eel <- carbonwt_eel * 2
+drywt_seabass <- carbonwt_seabass * 2
+drywt_sargo <- carbonwt_sargo * 2
+drywt_wrasse <- carbonwt_wrasse * 2
+drywt_mullet <- carbonwt_mullet * 2
+drywt_eel
+drywt_seabass
+drywt_sargo
+drywt_wrasse
+drywt_mullet
+```
+We convert from dry weight to wet weight using the conversion factor used by 
+Erzini et.al.
+```{r}
+wetwt_eel <- drywt_eel/0.27
+wetwt_seabass <- drywt_seabass/0.27
+wetwt_sargo <- drywt_sargo/0.27
+wetwt_wrasse <- drywt_wrasse/0.27
+wetwt_mullet <- drywt_mullet/0.27
+wetwt_eel
+wetwt_seabass
+wetwt_sargo
+wetwt_wrasse
+wetwt_mullet
+```
+Next we convert to a rate per year rather than per hour. There are 8760 hours per year
+```{r}
+wetwt_eel_yr <- wetwt_eel*8760
+wetwt_seabass_yr <- wetwt_seabass*8760
+wetwt_sargo_yr <- wetwt_sargo*8760
+wetwt_wrasse_yr <- wetwt_wrasse*8760
+wetwt_mullet_yr <- wetwt_mullet*8760
+wetwt_eel_yr
+wetwt_seabass_yr
+wetwt_sargo_yr
+wetwt_wrasse_yr
+wetwt_mullet_yr
+```
+```{r}
+Ks_eel <- wetwt_eel_yr/(1^0.7)
+Ks_seabass <- wetwt_seabass_yr/(1^0.7)
+Ks_sargo <- wetwt_sargo_yr/(1^0.7)
+Ks_wrasse <- wetwt_wrasse_yr/(1^0.7)
+Ks_mullet <- wetwt_mullet_yr/(1^0.7)
+Ks_eel
+Ks_seabass
+Ks_sargo
+Ks_wrasse
+Ks_mullet
+```
