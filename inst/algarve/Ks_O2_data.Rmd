@@ -142,3 +142,48 @@ Ks_sargo
 Ks_wrasse
 Ks_mullet
 ```
+
+```{r}
+Ks_dourada <- 11.81544
+```
+```{r}
+species <-c("dourada","eel","seabass","sargo","wrasse","mullet")
+Ks <-c(11.81544, 6.869726, 32.85491, 18.04789, 14.10671, 10.41657)
+H <-c(48,12.8,73,42,24,30)
+df <- data.frame(species,Ks,H)
+df
+```
+```{r}
+scatter.smooth(x=Ks, y=H, labels=row.names(species))
+```
+
+
+```{r}
+cor(Ks, H)
+```
+```{r}
+linearMod <- lm(H ~ Ks, data=df)  
+print(linearMod)
+```
+```{r}
+summary(linearMod)
+```
+Pr(>|t|) < 0.05    P-value < 0.05 
+regression statistically significant 
+
+```{r}
+predict.sp <-c("choupa","baila","toadfish","pargo","garfish","sole", "mucharra", "Safia", "silverside", "redmullet", "salema", "goby", "anchovy", "sardie", "worms", "snails", "bivalve","crustacea")
+Predict.H <-c(41,28,30,34,26,35,27,27,11,36,42,29,18,18.8,8.7,9,14,4.75)
+predict.df <-data.frame(predict.sp,Predict.H)
+predict.df
+```
+```{r}
+predict.lm()
+```
+
+
+
+```{r}
+predict.Ks <- predict(linearMod, H=Predict.H, labels=predict.sp)
+predict.Ks
+```
