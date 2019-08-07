@@ -13,8 +13,7 @@ library(ggplot2)
 ## Introduction
 We want to use available observations of the size distribution of prey items in
 predator stomachs to estimate the feeding kernels to use in size-spectrum
-models. In addition to the results, this document contains all the code to
-reproduce our analysis.
+models. 
 
 We will initially use data for sardine and anchovy provided by Mariella and the
 [Barnes
@@ -24,7 +23,109 @@ dataset](https://www.cefas.co.uk/media/41463/dapstom-phase-4-report-2014-dlm.pdf
 and a [dataset of diets of North Atlantic
 fishes](http://www.fishecology.org/diets/diets.htm)
 
-## The distribution function
+In addition to the results, this document contains all the code to
+reproduce our analysis.
+
+## Density functions
+In order to avoid confusion, I will discuss in detail the different ways in
+which we could describe the size distribution of the stomach items in terms of
+different density functions. You can skip this section because the concepts of
+number density and biomass density are probably intuitively clear. You can come
+back to here if at some point later you get confused.
+
+### Probability densities
+First of all we can describe the distribution in terms of the probability
+distribution of various variables. We can use either the prey size, or the
+predator/prey mass ratio, or the log of the predator/prey mass ratio.
+
+Let us denote by $f_w(w|w')$ the probability density that a random prey item in
+a stomach of a predator of size $w'$ has size $w$. The sizes of the actual
+observed prey items are seen as samples from this probability distribution.
+
+Rather than working with the prey size $w$, we can also work with the
+predator/prey mass ratio $r = w' / w$. The distribution of this is then
+$$
+f_r(r|w') = \left|\frac{dw}{dr}\right| f_w(r|w') = \frac{w^2}{w'} f_w(w|w').
+$$
+It is actually a good idea to work with the logarithm of the predator/prey mass
+ratio $l = log(r) = \log(w'/w)$. Its distribution is
+$$
+f_l(l|w') = \left|\frac{dw}{dl}\right| f_w(w|w') = w f_w(w|w').
+$$
+We will be making the fundamental assumption that the distribution of the
+predator/prey mass ratio is independent of the predator size: 
+$f_r(r|w') = f_r(r)$ (and hence also $f_l(l|w') = f_l(l)$). Of course we
+should look at the data to see if this assumption is reasonable.
+
+### Number densities
+We can estimate these probability densities from the data by binning the data in
+equally sized bins of the relevant variable and plotting histograms of the
+number of prey items in each bin. To get the correct normalisation of the
+densities the height of the bars should be equal to the number of prey items
+divided by the width of the bin divided by the total number of prey items. That
+way the area under the histogram will be equal to 1.
+
+Let us introduce the number density $N_w(w|w')$ so that the number of prey items
+with sizes between $w$ and $w+dw$ observed in stomachs of predators of size $w'$
+is $N_w(w|w')dw$. Then in the limit of infinite sample size
+$$
+f_w(w|w') = \frac{N_w(w|w')}{\int N_w(\tilde{w}|w')d\tilde{w}}.
+$$
+The total number of individuals in stomachs of predators of size $w'$ depends
+of course on how many stomachs were sampled and is not of interest to us, so
+we do not loose any information by going to the normalised density $f_w(w|w')$.
+
+Similarly we can introduce the number density $N_l(l|w')$ so that 
+$N_l(l|w')dl$ is the number of prey items with log predator/prey size ratio
+between $l$ and $l+dl$. Then
+$$
+f_l(w) = f_l(l|w') = \frac{N_l(l|w')}{\int N_l(\tilde{l}|w')d\tilde{l}}.
+$$
+If we have data from predators of different sizes we can combine them because
+we assume that the distribution is independent of the predator size:
+$$
+f_l(w) = \frac{N_l(l)}{\int N_l(\tilde{l})d\tilde{l}}.
+$$
+This is the advantage of working in a distribution in predator/prey mass
+ratio (or its log) instead of the prey size.
+
+### Biomass densities
+Instead of looking at the histogram where the height of the bars is proportional
+to the number of individuals in a bin, we can also look at the histogram where
+the height is proportional to the total biomass in the bin. So instead of
+counting the number of individuals in each bin, we sum up their biomasses.
+
+Or, working with the associated densities, we can look at the biomass density
+$B_w(w|w')$ so that $B_w(w|w')dw$ is the total biomass of prey items with sizes
+between $w$ and $w+dw$. Then
+$$
+B_w(w|w') = w\ N_w(w|w').
+$$
+Using bins of log predator/prey size ratio instead, we have the biomass
+density $B_l(w|w')$ so that the total biomass in the bin from $l$ to $l+dl$
+is $B_l(l|w')dl$:
+$$
+\begin{split}
+B_l(l|w') &= \left|\frac{dw}{dl}\right|B_w(w|w') = w\,B_w(w|w') = w^2\,N_w(w|w')\\
+&= w\,N_l(l|w') = w' e^{-l} N_l(l) .
+\end{split}
+$$
+The binned biomass is obviously not independent of the predator size $w'$, but
+again, because the overall observed biomass is dependent on sampling effort and
+does not hold information for us, we are only interested in the normalised
+biomass density. Here the $w'$ dependence cancels out:
+$$
+b_l(l|w') = \frac{B_l(l|w')}{\int B_l(l|w')dl} 
+= \frac{e^{-l} N_l(l)}{\int e^{-\tilde{l}} N_l(\tilde{l})d\tilde{l}} = b_l(l).
+$$
+So again we can combine the observations from all predator sizes to get the best
+estimate of the biomass distribution as a function of $l$.
+
+Because $N_l(l)$ is proportional to the probability density $f_l(l)$ we also
+have
+$$
+b_l(l) \propto e^{-l} f_l(l).
+$$
 
 ## Mariella's dataset
 
@@ -35,12 +136,11 @@ ppmr <- read_csv("inst/humboldt/Data_PPMR.csv")
 ppmr
 ```
 
-The `wprey` variable is the typical weight of an individual of
-a particular prey species and `Nprey` is the average number of individuals
-of that species in a stomach and `wpredator` is the weight of the predator.
-The table reports the same predator size for all anchovy and 
-the same predator size for all sardine because all predators of 
-each species had very similar sizes.
+The `wprey` variable is the typical weight of an individual of a particular prey
+species and `Nprey` is the average number of individuals of that species in a
+stomach and `wpredator` is the weight of the predator. The table reports the
+same predator size for all anchovy and the same predator size for all sardine
+because all predators of each species had very similar sizes.
 
 We capitalise the species names and add a column for the log of the
 predator/prey mass ratio. We have decided to work with the log to base 10.
@@ -51,9 +151,8 @@ ppmr <- ppmr %>%
 ppmr
 ```
 
-Let's look at the smallest and largest prey items as well as the 
-log of the smallest and largest predator/prey mass ratios in
-the data
+Let's look at the smallest and largest prey items as well as the log of the
+smallest and largest predator/prey mass ratios in the data:
 ```{r}
 ppmr %>% 
     group_by(Species) %>% 
@@ -62,39 +161,41 @@ ppmr %>%
               min_logpredprey = min(logpredprey),
               max_logpredprey = max(logpredprey))
 ```
-We can not say for sure that anchovy and sardine do not eat larger prey than contained
-in the dataset, because large prey are rare and even the observed large prey only hav
-a very small count:
+We can not say for sure that anchovy and sardine do not eat larger prey than
+contained in the dataset, because large prey are rare and even the observed
+large prey only hav a very small count:
 ```{r}
 ppmr %>% 
     group_by(Species) %>% 
     filter(wprey == max(wprey))
 ```
-Remember that `Nprey` is the average number of prey individuals of that size in a stomach.
-So the largest prey item observed in an anchovy stomach only showed up in one of 10.000
-stomachs. One would need a very large sample of stomachs to have a good chance to observe
-any larger prey. So to get a better value for the largest possible prey one should look
-at the morphology of the predator species.
+Remember that `Nprey` is the average number of prey individuals of that size in
+a stomach. So the largest prey item observed in an anchovy stomach only showed
+up in one of 10.000 stomachs. One would need a very large sample of stomachs to
+have a good chance to observe any larger prey. So to get a better value for the
+largest possible prey one should look at the morphology of the predator species.
 
-Similarly, we can not be certain of the true size of the smallest possible prey items
-because it may just have been to difficult to identify cells of the smallest plankton
-prey, especially as they will be digested very quickly. Again it may make sense to 
-complement this study by a look at the morphology of the gill rakers, although one has
-to acknowledge that gill rakers can, when they become clogged, filter out smaller 
-individuals than would be indicated by the spacing of the rakers.
+Similarly, we can not be certain of the true size of the smallest possible prey
+items because it may just have been to difficult to identify cells of the
+smallest plankton prey, especially as they will be digested very quickly. Again
+it may make sense to complement this study by a look at the morphology of the
+gill rakers, although one has to acknowledge that gill rakers can, when they
+become clogged, filter out smaller individuals than would be indicated by the
+spacing of the rakers.
 
-We will have more discussion of the relation between the stomach data and the actual
-diet of the predator later. For now we concentrate on investigating the stomach data.
+We will have more discussion of the relation between the stomach data and the
+actual diet of the predator later. For now we concentrate on investigating the
+stomach data.
 
-There are two ways to visualise the size-distribution of the prey items: we can bin the data
-and plot histograms, or we can plot density kernel estimates. We'll start with a look at
-binned data.
+There are two ways to visualise the size-distribution of the prey items: we can
+bin the data and plot histograms, or we can plot density kernel estimates. We'll
+start with a look at binned data.
 
 ### Binned data
 
-We use size bins that are equally-spaced on a logarithmic axis between the smallest and
-largest predator/prey size ratio. For later use we create a vector `breaks` with the bin
-boundaries:
+We use size bins that are equally-spaced on a logarithmic axis between the
+smallest and largest predator/prey size ratio. For later use we create a vector
+`breaks` with the bin boundaries:
 ```{r}
 no_bins <- 30  # Number of bins
 binsize <- (max(ppmr$logpredprey) - min(ppmr$logpredprey)) / (no_bins - 1)
@@ -102,8 +203,8 @@ breaks <- seq(min(ppmr$logpredprey) - binsize/2,
               by = binsize, length.out = no_bins + 1)
 ```
 We now add up both the numbers and the biomass in each bin and then normalise so
-that the area under each histogram is 1. We also add
-a column `l` with the log of predator/prey mass ratio at the centre of the each bin.
+that the area under each histogram is 1. We also add a column `l` with the log
+of predator/prey mass ratio at the centre of the each bin.
 ```{r}
 binned_ppmr <- ppmr %>% 
     # bin data
@@ -132,14 +233,27 @@ binned_ppmr %>%
     facet_grid(Species ~ Type, scales = "free_y") +
     xlab("Log10 of Predator/Prey mass ratio") 
 ```
+Expressed in terms of the notation from the section on density functions, these
+histograms are estimates of the normalised number distribution $f_l(l)$ and the
+normalised biomass distribution $b_l(l)$.
 
-Note how the biomass of prey is concentrated at very different predator/prey mass ratio
-than the number of prey. The information about the biomass distribution is contained
-mostly in the left tail of the number distribution and vice versa the information about
-the number distribution is mostly contained in the right tail of the biomass 
-distribution. 
+Note how the biomass of prey is concentrated at very different predator/prey
+mass ratio than the number of prey. The information about the biomass
+distribution is contained mostly in the left tail of the number distribution and
+vice versa the information about the number distribution is mostly contained in
+the right tail of the biomass distribution.
 
 ### Density estimates
+An alternative way to estimate densities from data is provided by the kernel
+density estimation method. Here rather than aggregating observations in bins,
+each observation contributes its own little Gaussian centred at that data value.
+The estimated density function is obtained by summing all these little 
+Gaussians together. That produces a smoother estimate than the histogram method.
+The width of the individual Gaussians plays the same role as the bins size.
+There are some heuristics that allow R to choose a sensible width that provides
+a good summary of the data.
+
+
 
 ### Gaussian does not fit
 Let us start by observing that it would be very inappropriate to use a Gaussian
