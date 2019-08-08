@@ -44,14 +44,17 @@ observed prey items are seen as samples from this probability distribution.
 
 Rather than working with the prey size $w$, we can also work with the
 predator/prey mass ratio $r = w' / w$. The distribution of this is then
+
 $$
 f_r(r|w') = \left|\frac{dw}{dr}\right| f_w(r|w') = \frac{w^2}{w'} f_w(w|w').
 $$
+
 It is actually a good idea to work with the logarithm of the predator/prey mass
 ratio $l = log(r) = \log(w'/w)$. Its distribution is
 $$
 f_l(l|w') = \left|\frac{dw}{dl}\right| f_w(w|w') = w f_w(w|w').
 $$
+
 We will be making the fundamental assumption that the distribution of the
 predator/prey mass ratio is independent of the predator size: 
 $f_r(r|w') = f_r(r)$ (and hence also $f_l(l|w') = f_l(l)$). Of course we
@@ -232,7 +235,7 @@ binned_ppmr %>%
     geom_col(position = "dodge") +
     facet_grid(rows = vars(Species), scales = "free_y") +
     xlab("Log of Predator/Prey mass ratio") +
-    expand_limits(x = c(0, 13))
+    expand_limits(x = c(0, 30))
 ```
 Expressed in terms of the notation from the section on density functions, these
 histograms are estimates of the normalised number distribution $f_l(l)$ and the
@@ -274,7 +277,7 @@ ggplot(ppmr) +
 
 ### Gaussian does not fit
 Let us start by observing that it would be very inappropriate to use a Gaussian
-curve to describe these size distributions. We illustrate this in the case of
+curve to describe these distributions. We illustrate this in the case of
 the Anchovy, where the number distribution looks at least somewhat similar to a
 normal distribution.
 
@@ -339,7 +342,7 @@ ppmr %>%
                   args = list(mean = fit$mean - fit$sd^2, 
                               sd = fit$sd), 
                   colour = "red") +
-    expand_limits(x = c(0, 13))
+    expand_limits(x = c(0, 30))
 ```
 This does not fit the actual biomass distribution at all! 
 
@@ -372,7 +375,7 @@ ppmr %>%
                   args = list(mean = fit$mean - fit$sd^2, 
                               sd = fit$sd), 
                   colour = "red") +
-    expand_limits(x = c(0, 13))
+    expand_limits(x = c(0, 30))
 ```
 
 
@@ -521,7 +524,7 @@ The simplest way to implement smoother cutoffs at the end of the distributions
 is to multiply by two sigmoidal functions: a rising one centred near `lmin`
 and a falling one near `lmax`. So we choose
 $$
-f_l(l) = \frac{\exp(\alpha\ l)}
+f_l(l) \propto \frac{\exp(\alpha\ l)}
 {\left(1+e^{u_l(l_l - l)}\right)
 \left(1+e^{u_r(l_r-l)}\right)}.
 $$
@@ -534,7 +537,7 @@ $u_r$ determines the steepness of that switch-off.
 The probability density $f_r(r)$ of the predator/prey mass ratio $r=e^l$ is
 then a power-law distribution with exponent $\alpha - 1$ and sigmoidal cut-offs:
 $$
-f_r(r) = e^{-l}f_l(l)
+f_r(r) \propto e^{-l}f_l(l)
 = \frac{r^{\alpha - 1}}
 {\left(1+\left(\frac{e^{l_l}}{r}\right)^{u_l}\right)
 \left(1+\left(\frac{r}{e^{l_r}}\right)^{u_r}\right)}.
@@ -547,12 +550,104 @@ appropriate, given that during observation, small individuals will be easier to
 miss than large ones and thus there would be more uncertainty in the
 observations at large predator/prey mass ratio. So instead, we will simply do a
 visual fit.
+```{r}
+source("inst/humboldt/fit_kernel.R")
+stomach <- filter(ppmr, Species == "Sardine")
+pl <- fitKernel(stomach)
+```
 
 
 
 ## Feeding kernel
+Now we will discuss how the stomach content is related to the feeding kernel.
+
+We describe the size distribution of prey in stomachs of predators of size $w'$
+by the density function $N_w(w|w')$. This will be the result of a balance
+between the rate at which prey items are ingested and the rate at which they are
+digested. 
+
+### Ingestion
+The rate of ingestion $I(w|w')$ is proportional to the product of the feeding
+kernel $\phi(w'/w)$ and the prey number density $N_c(w)$:
+$$
+I(w|w') \propto \phi(w'/w)\ N_c(w)
+$$
+The proportionality constant only depends on the predator size $w'$ and as we
+will see, we will not need it in our analysis. The prey number density $N_c(w)$
+is defined as usual such that $N_c(w)dw$ is the total number of potential prey
+items with sizes between $w$ and $w+dw$.
+
+In a multi-species model in which the predator has different interaction
+strengths with different prey species, given by an interaction matrix
+$\theta_{ij}$, the prey number density for a predator of species $i$ would be
+obtained from the number densities $N_j(w)$ of individual prey species as
+$$
+N_c(w) = \sum_j \theta_{ij}N_j(w).
+$$
+Of course, we do not know the prey density that the predators experienced that
+were sampled in the stomach observation. So the best we can do is to assume that
+it was reasonably close to the Sheldon spectrum:
+$$
+N_c(w)\propto w^{-\lambda}
+$$
+with $\lambda \approx 2$.
 
 ### Digestion
+
+As prey items are digested, they loose biomass. Thus the observed size of a prey
+item will not be the original size at which it was ingested. Let us denote by
+$D(w)$ the rate at which a prey item of size $w$ looses weight due to digestion.
+
+Of course we do not know in detail the rate at which prey items are digested.
+However it is reasonable to make the approximation that the rate scales with
+body size as $w^{2/3}$ because digestion acts on the surface of the prey item
+and this surface scales approximately as $w^{2/3}$. Thus we will assume that
+$D(w|w')\propto w^{2/3}$, with the proportionality constant depending only on
+the predator. 
+<!-- Because, as mentioned before, predator-dependent constants will be irrelevant in -->
+<!-- our discussion, we will also drop the $|w'$ in our equations from now on. -->
+
+It may also be the case that prey items become unidentifiable once a certain
+fixed proportion of their body mass is digested away. So rather than being
+recorded as a prey of smaller size, they would not be recorded at all. The time
+until this proportion of a prey item is digested away is proportional to the
+body mass divided by the rate at which mass is digested: 
+$T\propto w/D(w|w') \propto w^{1/3}$. Thus the rate at which individuals become
+unidentifiable is $U(w|w')\propto w^{-1/3}$.
+
+The density of observed prey items at a particular size will increase when such
+a prey item is ingested or if a larger prey item is digested down to this size,
+and the density will decrease when a prey item is digested down to a smaller
+size or becomes unidentifiable. This leads to the partial differential equation
+$$
+\frac{N_w(w|w')}{dt} = I(w|w') +\partial_w\left(D(w|w')N_w(w|w')\right)
+- U(w|w')N_w(w|w').
+$$
+We assume that on average the stomach observations reflect the steady state
+with $dN/dt=0$. We now substitute our expressions for the various rates into
+the resulting balance equation:
+$$
+0 = i(w') \phi(w'/w)\ w^{-\lambda} 
++ \frac{\partial}{\partial_w}\left(d(w')w^{2/3}N_w(w|w')\right)
+- u(w')w^{-1/3}N_w(w|w')
+$$
+
+
+#### Items become unidentifiable
+In the first model, we assume that digestion results in a finite time during
+which the prey item stays identifiable. After that time, the prey item will
+be considered as lost to the stomach analysis process. It will be too decayed
+to be counted. Let us assume that this time is proportional to $w^\alpha$ for
+some exponent $\alpha$. 
+
+
+the rate at which mass is digested is proportional
+to $w^{2/3}. Let us assume that a prey item becomes unidentifiable when
+a fixed percentage of its body mass is digested. The time until that has 
+happened is proportional to the body mass divided by the rate at which mass
+is digested: $T\propto w/w^{2/3} = w^{1/3}$. The rate at which prey items of
+size $w$
+
 
 ### Predation rate
 
