@@ -143,11 +143,11 @@ same predator size for all anchovy and the same predator size for all sardine
 because all predators of each species had very similar sizes.
 
 We capitalise the species names and add a column for the log of the
-predator/prey mass ratio. We have decided to work with the log to base 10.
+predator/prey mass ratio.
 ```{r}
 ppmr <- ppmr %>% 
     mutate(Species = str_to_title(Species),
-         logpredprey = log10(wpredator / wprey))
+         logpredprey = log(wpredator / wprey))
 ppmr
 ```
 
@@ -228,10 +228,11 @@ gather(key = "Type", value = "Density", Numbers, Biomass)
 We can now easily plot the histograms.
 ```{r}
 binned_ppmr %>% 
-  ggplot(aes(l, Density)) +
-    geom_col() +
-    facet_grid(Species ~ Type, scales = "free_y") +
-    xlab("Log10 of Predator/Prey mass ratio") 
+  ggplot(aes(l, Density, fill = Type)) +
+    geom_col(position = "dodge") +
+    facet_grid(rows = vars(Species), scales = "free_y") +
+    xlab("Log of Predator/Prey mass ratio") +
+    expand_limits(x = c(0, 13))
 ```
 Expressed in terms of the notation from the section on density functions, these
 histograms are estimates of the normalised number distribution $f_l(l)$ and the
@@ -252,62 +253,311 @@ Gaussians together. That produces a smoother estimate than the histogram method.
 The width of the individual Gaussians plays the same role as the bins size.
 There are some heuristics that allow R to choose a sensible width that provides
 a good summary of the data.
-
+```{r}
+adjust <- 1/2  # decrease bandwidth for kernel estimate
+ppmr <- ppmr %>% 
+    group_by(Species) %>% 
+    mutate(weight_numbers = Nprey / sum(Nprey),
+           weight_biomass = Nprey * wprey / sum(Nprey * wprey))
+ggplot(ppmr) +
+    geom_density(aes(logpredprey, weight = weight_numbers,
+                     fill = "Numbers"),
+                 adjust = adjust) +
+    geom_density(aes(logpredprey, weight = weight_biomass,
+                     fill = "Biomass"),
+                 adjust = adjust) +
+    facet_grid(rows = vars(Species), scales = "free_y") +
+    xlab("Log of predator/prey mass ratio") +
+    expand_limits(x = c(0, 29))
+```
 
 
 ### Gaussian does not fit
 Let us start by observing that it would be very inappropriate to use a Gaussian
 curve to describe these size distributions. We illustrate this in the case of
 the Anchovy, where the number distribution looks at least somewhat similar to a
-normal distribution. 
+normal distribution.
 
-We plot the normal distribution with the same mean and
-standard deviation as the data on top of the histogram for the number
-distribution.
-
+We plot the normal distribution with the same mean and standard deviation as the
+data on top of the histogram for the number distribution.
 ```{r}
+chosen_species = "Anchovy"
 weighted.sd <- function(x, w) {
   sqrt(sum(w * (x - weighted.mean(x, w))^2))
 }
 fit <- ppmr %>% 
-  filter(Species == "Anchovy") %>% 
-  summarise(sum = sum(Nprey),
-            mean = weighted.mean(logpredprey, Nprey/sum),
-            sd = weighted.sd(logpredprey, Nprey/sum))
-binned_ppmr %>% 
-  filter(Type == "Numbers", Species == "Anchovy") %>% 
-  ggplot(aes(l, Density)) +
-    geom_col() +
-    xlab("Log10 of Predator/Prey mass ratio") +
+  filter(Species == chosen_species) %>% 
+  summarise(mean = weighted.mean(logpredprey, weight_numbers),
+            sd = weighted.sd(logpredprey, weight_numbers))
+ppmr %>% 
+  filter(Species == chosen_species) %>% 
+  ggplot() +
+    geom_density(aes(logpredprey, weight = weight_numbers),
+                 fill = "#00BFC4", adjust = adjust) +
+    xlab("Log of Predator/Prey mass ratio") +
     stat_function(fun = dnorm, 
                   args = list(mean = fit$mean, 
                               sd = fit$sd), 
-                  color = "blue")
+                  colour = "blue") +
+    expand_limits(x = c(6, 30))
 ```
-If the size distribution was correctly described by the normal distribution,
+This may not look so bad. However,
+if the size distribution was correctly described by the normal distribution,
 i.e., if
 $$
-N_s(l) = 
+f_l(l) \propto \exp\left(-\frac{(l-\log(\beta))^2}
+  {2\sigma^2}\right),
 $$
+then the biomass density would be given by
+$$
+\begin{split}
+b_l(l) &= e^{-l}f_l(l)
+\propto \exp\left(-\frac{(l-\log(\beta))^2}
+  {2\sigma^2} - l\right)\\
+&\propto \exp\left(-\frac{(l-(\log(\beta)-\sigma^2)^2}
+  {2\sigma^2}\right)
+\end{split}
+$$
+Thus the biomass would also be normally distributed with the mean
+shifted by $\sigma^2$. Putting this into the same picture gives
+```{r}
+ppmr %>% 
+  filter(Species == chosen_species) %>% 
+  ggplot() +
+    geom_density(aes(logpredprey, weight = weight_numbers,
+                     fill = "Numbers"),
+                 adjust = adjust) +
+    geom_density(aes(logpredprey, weight = weight_biomass,
+                     fill = "Biomass"),
+                 adjust = adjust) +
+    xlab("Log of Predator/Prey mass ratio") +
+    stat_function(fun = dnorm, 
+                  args = list(mean = fit$mean, 
+                              sd = fit$sd), 
+                  colour = "blue") +
+    stat_function(fun = dnorm, 
+                  args = list(mean = fit$mean - fit$sd^2, 
+                              sd = fit$sd), 
+                  colour = "red") +
+    expand_limits(x = c(0, 13))
+```
+This does not fit the actual biomass distribution at all! 
 
-### Power-law fits better
-Many observations are too small to show in the above graph. We therefore show
-the same graphs with a logarithmic y-axis
+For the Sardine the normal distribution fits neither the number density
+nor the biomass density.
+```{r}
+chosen_species = "Sardine"
+weighted.sd <- function(x, w) {
+  sqrt(sum(w * (x - weighted.mean(x, w))^2))
+}
+fit <- ppmr %>% 
+  filter(Species == chosen_species) %>% 
+  summarise(mean = weighted.mean(logpredprey, weight_numbers),
+            sd = weighted.sd(logpredprey, weight_numbers))
+ppmr %>% 
+  filter(Species == chosen_species) %>% 
+  ggplot() +
+    geom_density(aes(logpredprey, weight = weight_numbers,
+                     fill = "Numbers"),
+                 adjust = adjust) +
+    geom_density(aes(logpredprey, weight = weight_biomass,
+                     fill = "Biomass"),
+                 adjust = adjust) +
+    xlab("Log of Predator/Prey mass ratio") +
+    stat_function(fun = dnorm, 
+                  args = list(mean = fit$mean, 
+                              sd = fit$sd), 
+                  colour = "blue") +
+    stat_function(fun = dnorm, 
+                  args = list(mean = fit$mean - fit$sd^2, 
+                              sd = fit$sd), 
+                  colour = "red") +
+    expand_limits(x = c(0, 13))
+```
+
+
+### Exponential fits better
+We have learned above that the small number of large individuals in the
+stomach provide the dominant contribution to the biomass consumed by
+the predator and hence are important. To make them more visible, we show
+the histograms again but now with a logarithmic y-axis
 ```{r}
 binned_ppmr %>% 
   ggplot(aes(l, Density)) +
     geom_col() +
     facet_grid(Species ~ Type, scales = "free_y") +
-    xlab("Log10 of Predator/Prey mass ratio") +
-    scale_y_log10()
+    xlab("Log of Predator/Prey mass ratio") +
+    scale_y_continuous(trans = "log")
 ```
+This motivates us to try to fit a truncated exponential distribution to the
+data (which would be a truncated power-law distribution when working with the
+predator/prey mass ratio instead of its logarithm).
 
-## Barnes dataset
+```{r}
+binned_ppmr %>% 
+  ggplot(aes(l, Density)) +
+    geom_col() +
+    geom_smooth(method = "lm", se = FALSE) +
+    facet_grid(Species ~ Type, scales = "free_y") +
+    xlab("Log of Predator/Prey mass ratio") +
+    scale_y_continuous(trans = "log")
+```
+Of course again we have the problem that the biomass density is not independent
+of the number density, so fitting separate distributions to the two is not
+appropriate. If we assume that the number distribution follows the exponential
+distribution, i.e.,
+$$
+f_l(l)\propto \exp(\alpha\ l)
+$$
+for some parameter $\alpha$ then the biomass distribution follows an
+exponential distribution with parameter $\alpha - 1$:
+$$
+b_l(l) = e^{-l}f_l(l)
+\propto \exp((\alpha - 1)l).
+$$
+Amazingly, the parameters of the independently fitted distributions do almost
+perfectly have this relationship:
+```{r}
+binned_ppmr %>% 
+  group_by(Species, Type) %>% 
+  group_modify(~ broom::tidy(lm(log10(Density) ~ l, data = .x))) %>% 
+  filter(term == "l")
+```
+The parameter of the biomass distribution is almost exactly 1 less than the parameter of the numbers distribution.
+
+### Maximum likelihood
+Fitting the exponential distribution by fitting a linear model to the logged
+histogram is not really appropriate. A better method might be to fit directly to
+the data using the maximum likelihood principle.
+
+If we assume that we know the upper and lower cutoff of the distribution and
+only need to estimate the exponent, then that is very easy.
+The density of the truncated exponential distribution is
+$$
+f_l(l) = \begin{cases}
+\frac{1}{Z}\exp(\alpha\ l) &\text{ if }l\in[l_{min}, l_{max}]\\
+0 &\text{ otherwise,}
+\end{cases}
+$$
+where
+$$
+Z = \int_{l_{min}}^{l_{max}}\exp(\alpha\ l)dl=
+\frac{1}{\alpha}\left(\exp(\alpha\ l_{max})-\exp(\alpha\ l_{min})\right).
+$$
+Thus the log likelihood function is
+$$
+\begin{split}
+l(\alpha) &= \sum_i\left(\alpha\ l_i 
+- \log\left(\frac{1}{\alpha}\left(\exp(\alpha\ l_{max})-\exp(\alpha\ l_{min})\right)\right)\right)\\
+&=\alpha \sum_il_i + n\log(\alpha) 
+- n\log\left(\exp(\alpha\ l_{max})-\exp(\alpha\ l_{min})\right)
+\end{split}
+$$
+In order to avoid having to minimize this numerically, we now make the 
+approximation that $\alpha$ is large enough so that $\exp(\alpha\ l_{min})$ is 
+negligibly small compared to $\exp(\alpha\ l_{max})$. Then
+$$
+l(\alpha)\approx\alpha \sum_il_i + n\log(\alpha) 
+- n\ \alpha\ l_{max}
+$$
+To find the value of $\alpha$ that maximizes this likelihood we set
+$$
+0=\frac{dl(\alpha)}{d\alpha} \approx \sum_il_i+\frac{n}{\alpha}-n\ l_{max}
+$$
+and solve for $\alpha$. This gives
+$$
+\alpha \approx \frac{1}{l_{max}-\bar{l}}
+$$
+where $\bar{l}$ is the average over all $l_i$.
+
+```{r}
+summary <- ppmr %>% 
+  group_by(Species) %>% 
+  summarise(lbar = weighted.mean(logpredprey, weight_numbers),
+            lmax = max(logpredprey),
+            lmin = min(logpredprey),
+            alpha = 1/(lmax - lbar))
+summary
+```
+Note how sensitive these estimates are to the value of `lmax`. To see why these are not good estimates, let us have a look what the fit looks like.
+```{r}
+dnumbers <- function(l, alpha, lmax) {
+  d <- as.numeric(l <= lmax)
+  d[d > 0] <- dexp(lmax - l[d > 0], alpha)
+  return(d)
+}
+dbiomass <- function(l, alpha, lmin) {
+  d <- as.numeric(l >= lmin)
+  d[d > 0] <- dexp(l[d > 0] - lmin, 1 - alpha)
+  return(d)
+}
+selected_species <- "Sardine"
+ppmr %>% 
+  filter(Species == selected_species) %>% 
+  ggplot() +
+    geom_density(aes(logpredprey, weight = weight_numbers,
+                     fill = "Numbers"),
+                 adjust = adjust) +
+    geom_density(aes(logpredprey, weight = weight_biomass,
+                     fill = "Biomass"),
+                 adjust = adjust) +
+    stat_function(fun = dnumbers, 
+                  args = list(alpha = summary$alpha[summary$Species == selected_species], 
+                              lmax = summary$lmax[summary$Species == selected_species]), 
+                  colour = "blue") +
+    stat_function(fun = dbiomass, 
+                  args = list(alpha = summary$alpha[summary$Species == selected_species], 
+                              lmin = summary$lmin[summary$Species == selected_species]), 
+                  colour = "red") +
+    xlab("Log of Predator/Prey mass ratio")  +
+    expand_limits(x = c(0, 30))
+```
+Clearly the density should not rise exponentiall all the way to the largest
+observed value `lmax` but there should be a smoother cutoff. There should also
+be a smoother cutoff at `lmin`.
+
+### Sigmoidal cutoffs
+The simplest way to implement smoother cutoffs at the end of the distributions
+is to multiply by two sigmoidal functions: a rising one centred near `lmin`
+and a falling one near `lmax`. So we choose
+$$
+f_l(l) = \frac{\exp(\alpha\ l)}
+{\left(1+e^{u_l(l_l - l)}\right)
+\left(1+e^{u_r(l_r-l)}\right)}.
+$$
+We have introduced 4 new parameters into the distribution: $l_l$ is the log of
+the predator/prey mass ratio around which the sigmoidal switch-on happens and
+$u_l$ determines the steepness of that switch-on. Similarly $l_r$ is the log of
+the predator/prey mass ratio around which the sigmoidal switch-off happens and
+$u_r$ determines the steepness of that switch-off.
+
+The probability density $f_r(r)$ of the predator/prey mass ratio $r=e^l$ is
+then a power-law distribution with exponent $\alpha - 1$ and sigmoidal cut-offs:
+$$
+f_r(r) = e^{-l}f_l(l)
+= \frac{r^{\alpha - 1}}
+{\left(1+\left(\frac{e^{l_l}}{r}\right)^{u_l}\right)
+\left(1+\left(\frac{r}{e^{l_r}}\right)^{u_r}\right)}.
+$$
+
+It would require numerical methods to do a maximum likelihood estimation of
+these parameters from the data, and it is not even clear that such a maximum
+likelihood estimation, that weighs each observation equally, would be
+appropriate, given that during observation, small individuals will be easier to
+miss than large ones and thus there would be more uncertainty in the
+observations at large predator/prey mass ratio. So instead, we will simply do a
+visual fit.
+
+
 
 ## Feeding kernel
 
 ### Digestion
 
 ### Predation rate
+
+
+
+## Barnes dataset
 
 ## Summary
