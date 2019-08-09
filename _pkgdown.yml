@@ -26,14 +26,14 @@ navbar:
     right: [github]
   components:
     articles:
-      text: Articles
+      text: Guide
       href: articles/index.html
     publications:
       text: Publications
       href: articles/publications.html
 
 articles:
-- title: User Guides
+- title: For the user
   contents:
   - mizer
   - installation
@@ -44,7 +44,7 @@ articles:
   - running_a_simulation
   - exploring_the_simulation_results
   - a_multispecies_model_of_the_north_sea
-- title: Developer Guides
+- title: For the developer
   contents:
   - developer_vignette
   - editing_website
