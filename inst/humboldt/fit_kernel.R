@@ -2,15 +2,15 @@ library(tidyverse)
 library(ggplot2)
 library(shiny)
 library(assertthat)
+library(mizer)
 
 kernel_fn <- power_law_pred_kernel
 
-fitKernel <- function(stomach, species_params = data.frame(), 
-                      dx, alpha = 1/3, lambda = 2) {
+fitKernel <- function(stomach, species_params, 
+                      alpha = 1/3, lambda = 2) {
     
     assert_that(is.data.frame(stomach),
-                all(c("wprey", "wpredator") %in% names(stomach)),
-                is.data.frame(species_params))
+                all(c("wprey", "wpredator") %in% names(stomach)))
     
     if (!("Nprey" %in% names(stomach))) stomach$Nprey <- 1
     
@@ -21,19 +21,18 @@ fitKernel <- function(stomach, species_params = data.frame(),
                weight_kernel = Nprey / wprey^(1 + alpha - lambda),
                weight_kernel = weight_kernel / sum(weight_kernel))
     
-    vars <- names(species_params)
-    species_params <-
-        set_species_param_default(species_params, "kernel_l_l", min(stomach$logpredprey))
-    species_params <-
-        set_species_param_default(species_params, "kernel_l_r", max(stomach$logpredprey))
-    species_params <-
-        set_species_param_default(species_params, "kernel_u_l", 2)
-    species_params <-
-        set_species_param_default(species_params, "kernel_u_r", 2)
-    species_params <-
-        set_species_param_default(species_params, "kernel_exp", -0.5)
+    if (missing(species_params)) {
+        species_params <- data.frame(
+            kernel_l_l = min(stomach$logpredprey),
+            kernel_l_r = max(stomach$logpredprey),
+            kernel_u_l = 2,
+            kernel_u_r = 2,
+            kernel_exp = -0.5
+        )
+    }
     
-    x <- seq(0, max(stomach$logpredprey) * 1.1, by = dx)
+    x <- seq(0, max(stomach$logpredprey) * 1.1, length.out = 200)
+    dx <- x[2] - x[1]
     r <- exp(x)
     
     ui <- fluidPage(sidebarLayout(
