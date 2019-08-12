@@ -5,6 +5,7 @@ date: 2019-08-01
 output:
   html_document:
     toc: true
+    toc_depth: 4
     toc_float: true
     code_folding: hide
   pdf_document: default
@@ -14,6 +15,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggplot2)
+library(bbmle)
 library(mizer)
 ```
 
@@ -35,7 +37,7 @@ In order to avoid confusion, I will discuss in detail the different ways in
 which we could describe the size distribution of the stomach items in terms of
 different density functions. 
 
-### Prey item densities
+### Prey item distribution
 We can describe the size distribution of prey in stomachs of predators of size
 $w'$ by the density function $N_w(w|w')$. This is a density in $w$, so that the
 number of prey items with a size between $w$ and $w+dw$ is $N_w(w|w')dw$.
@@ -47,9 +49,10 @@ density:
 $$
 f_w(w|w') = \frac{N_w(w|w')}{z(w')},
 $$
-where the normalisation factor $z(w')$ is the total number of prey items
+where the normalisation factor $z(w')$ is the total number of prey items,
 $$z(w') = \int N_w(\tilde{w}|w')d\tilde{w}.$$
-The sizes of the actual observed prey items are seen as samples from this probability distribution.
+The sizes of the actual observed prey items in the data set are seen as samples
+from this probability distribution.
 
 Rather than working with the prey size $w$, we can also work with the
 predator/prey mass ratio $r = w' / w$. The probability distribution of this is 
@@ -58,7 +61,7 @@ f_r(r|w') = \left|\frac{dw}{dr}\right| f_w(r|w') = \frac{w^2}{w'} f_w(w|w').
 $$
 
 It is actually a good idea to work with the logarithm of the predator/prey mass
-ratio $l = log(r) = \log(w'/w)$. Its distribution is
+ratio $l = \log(r) = \log(w'/w)$. Its distribution is
 $$
 f_l(l|w') = \left|\frac{dw}{dl}\right| f_w(w|w') = w f_w(w|w').
 $$
@@ -67,12 +70,13 @@ predator/prey mass ratio is independent of the predator size:
 $f_r(r|w') = f_r(r)$ (and hence also $f_l(l|w') = f_l(l)$). Of course we
 should look at the data to see if this assumption is reasonable.
 
-### Biomass densities
-Instead of the number density $N_w(w|w')$, we can look at the biomass density
-$B_w(w|w')$ so that $B_w(w|w')dw$ is the total biomass of prey items with sizes
-between $w$ and $w+dw$. This makes some sense because as far as the predator is
-concerned, it is the amount of biomass that counts, not the number of 
-individuals that are needed to make up that biomass. The number density and the
+### Biomass distribution
+We would also be interested in how the prey biomass is distributed over the prey
+sizes, because as far as the predator is concerned, it is the amount of biomass
+that counts, not the number of individuals that are needed to make up that
+biomass. So instead of the number density $N_w(w|w')$, we would look at the
+biomass density $B_w(w|w')$, defined so that $B_w(w|w')dw$ is the total biomass
+of prey items with sizes between $w$ and $w+dw$. The number density and the
 biomass density are simply related:
 $$
 B_w(w|w') = w\ N_w(w|w').
@@ -82,18 +86,19 @@ $$
 b_w(w|w') = \frac{B_w(w|w')}{\int B_w(\tilde{w}|w')d\tilde{w}}.
 $$
 This gives the probability that a randomly chosen unit of biomass in the stomach
-of a predator of size $w'$ comes from a prey item of size $w$.
-The relation to the earlier density is
+of a predator of size $w'$ comes from a prey item of size $w$. The relation to
+the earlier density is
 $$
 b_w(w|w') \propto w\ f_w(w|w').
 $$
 
-To see how this biomass density is related to the observations consider that
-instead of recording one observation for each prey individual, we could in
-principle make one observation for each unit of biomass in the stomach. This
-would correspond to splitting each single observation for a prey time of size
-$w$ into $w$ separate observations. This new larger set of observations could
-then be seen as a sample from the biomass density $b_w(w|w')$.
+To see how this biomass density is related to the observations of stomach
+contents, consider that instead of recording one observation for each prey
+individual, we could in principle record one observation for each unit of
+biomass in the stomach. This would correspond to splitting each single
+observation for a prey item of size $w$ into $w$ separate observations. This new
+larger set of observations could then be seen as a sample from the distribution
+described by the biomass density $b_w(w|w')$.
 
 Again we can transform the probability density to different variables. In
 particular the density as a function of $l = \log(w'/w)$ is
@@ -108,8 +113,8 @@ So again $b_l(l|w')$ is independent of $w'$.
 Mariella has data of stomach content for anchovy and sardine. Mariella can
 provide more details of the origin of this data.
 ```{r message=FALSE, warning=FALSE}
-ppmr <- read_csv("inst/humboldt/Data_PPMR.csv")
-ppmr
+stomach <- read_csv("inst/humboldt/Data_PPMR.csv")
+stomach
 ```
 
 The `wprey` variable is the typical weight of an individual of a particular prey
@@ -119,18 +124,18 @@ same predator size for all anchovy and the same predator size for all sardine
 because all predators of each species had very similar sizes.
 
 We capitalise the species names and add a column for the log of the
-predator/prey mass ratio $l = w'/w$.
+predator/prey mass ratio $l = \log(w'/w)$.
 ```{r}
-ppmr <- ppmr %>% 
+stomach <- stomach %>% 
     mutate(Species = str_to_title(Species),
          l = log(wpredator / wprey))
-ppmr
+stomach
 ```
 
 Let's look at the smallest and largest prey items as well as the log of the
 smallest and largest predator/prey mass ratios in the data:
 ```{r}
-ppmr %>% 
+stomach %>% 
     group_by(Species) %>% 
     summarise(wprey_min = min(wprey),
               wprey_max = max(wprey),
@@ -141,7 +146,7 @@ We can not say for sure that anchovy and sardine do not eat larger prey than
 contained in the dataset, because large prey are rare and even the observed
 large prey only hav a very small count:
 ```{r}
-ppmr %>% 
+stomach %>% 
     group_by(Species) %>% 
     filter(wprey == max(wprey))
 ```
@@ -160,35 +165,34 @@ become clogged, filter out smaller individuals than would be indicated by the
 spacing of the rakers.
 
 We will have more discussion of the relation between the stomach data and the
-actual diet of the predator later. For now we concentrate on investigating the
-stomach data.
+actual diet of the predator, taking digestion into account, later. For now we
+concentrate on describing the stomach data.
 
 There are two ways to visualise the size-distribution of the prey items: we can
 bin the data and plot histograms, or we can plot density kernel estimates. We'll
 start with a look at binned data.
 
-### Binned data
-We can estimate these probability densities from the data by binning the data in
+### Histograms
+We can estimate the probability densities from the data by binning the data in
 equally sized bins of the relevant variable and plotting histograms of the
-number of prey items in each bin. To get the correct normalisation of the
-densities the height of the bars should be equal to the number of prey items
-divided by the width of the bin divided by the total number of prey items. That
-way the area under the histogram will be equal to 1.
+number of prey items in each bin. 
 
 We use size bins that are equally-spaced on a logarithmic axis between the
 smallest and largest predator/prey size ratio. For later use we create a vector
 `breaks` with the bin boundaries:
 ```{r}
 no_bins <- 30  # Number of bins
-binsize <- (max(ppmr$l) - min(ppmr$l)) / (no_bins - 1)
-breaks <- seq(min(ppmr$l) - binsize/2,
+binsize <- (max(stomach$l) - min(stomach$l)) / (no_bins - 1)
+breaks <- seq(min(stomach$l) - binsize/2,
               by = binsize, length.out = no_bins + 1)
 ```
-We now add up both the numbers and the biomass in each bin and then normalise so
-that the area under each histogram is 1. We also add a column `l` with the log
-of predator/prey mass ratio at the centre of the each bin.
+To get the correct normalisation of the densities, the height of the bars should
+be equal to the number of prey items divided by the width of the bin divided by
+the total number of prey items. That way the area under the histogram will be
+equal to 1. We also add a column `l` with the log of predator/prey mass ratio at
+the centre of the each bin.
 ```{r}
-binned_ppmr <- ppmr %>% 
+binned_stomach <- stomach %>% 
     # bin data
     mutate(cut = cut(l, breaks = breaks, right = FALSE,
                      labels = FALSE)) %>% 
@@ -200,33 +204,31 @@ binned_ppmr <- ppmr %>%
            Biomass = Biomass / sum(Biomass) / binsize)  %>%
     # column for predator/prey size ratio
     mutate(l = map_dbl(cut, function(idx) breaks[idx] + binsize/2))
-binned_ppmr
+binned_stomach
 ```
 We convert this into the long table format preferred by ggplot2.
 ```{r}
-binned_ppmr <- binned_ppmr %>%
+binned_stomach <- binned_stomach %>%
 gather(key = "Type", value = "Density", Numbers, Biomass)
 ```
-We can now easily plot the histograms.
+We can now easily plot the histograms that represent estimates of the normalised
+number density $f_l(l)$ and the normalised biomass density $b_l(l)$.
 ```{r}
-binned_ppmr %>% 
+binned_stomach %>% 
   ggplot(aes(l, Density, fill = Type)) +
     geom_col(position = "dodge") +
     facet_grid(rows = vars(Species), scales = "free_y") +
     xlab("Log of Predator/Prey mass ratio") +
     expand_limits(x = c(0, 30))
 ```
-Expressed in terms of the notation from the section on density functions, these
-histograms are estimates of the normalised number density $f_l(l)$ and the
-normalised biomass density $b_l(l)$.
 
 Note how the biomass of prey is concentrated at very different predator/prey
-mass ratio than the number of prey. The information about the biomass
-distribution is contained mostly in the left tail of the number distribution and
-vice versa the information about the number distribution is mostly contained in
-the right tail of the biomass distribution.
+mass ratios than the number of prey. The information about the biomass
+distribution is contained mostly in the left tail of the number density and,
+vice versa, the information about the number distribution is mostly contained in
+the right tail of the biomass density.
 
-### Density estimates
+### Kernel density estimation
 An alternative way to estimate densities from data is provided by the kernel
 density estimation method. Here, rather than aggregating observations in bins,
 each observation contributes its own little Gaussian centred at that data value.
@@ -234,14 +236,15 @@ The estimated density function is obtained by summing all these little
 Gaussians together. That produces a smoother estimate than the histogram method.
 The width of the individual Gaussians plays the same role as the bins size.
 There are some heuristics that allow R to choose a sensible width that provides
-a good summary of the data.
+a good summary of the data. We decrease that bandwidth by a factor of 1/2 to get
+a slightly more detailed view:
 ```{r}
 adjust <- 1/2  # decrease bandwidth for kernel estimate
-ppmr <- ppmr %>% 
+stomach <- stomach %>% 
     group_by(Species) %>% 
     mutate(weight_numbers = Nprey / sum(Nprey),
            weight_biomass = Nprey * wprey / sum(Nprey * wprey))
-ggplot(ppmr) +
+ggplot(stomach) +
     geom_density(aes(l, weight = weight_numbers,
                      fill = "Numbers"),
                  adjust = adjust) +
@@ -253,25 +256,27 @@ ggplot(ppmr) +
     expand_limits(x = c(0, 29))
 ```
 
+This idea of spreading out each observation into a little Gaussian is
+particularly appropriate for this dataset, where the size of the observed prey
+item is only estimated from the species identity of the prey item and where also
+the predator size is not know exactly. Both of these lead to uncertainty in the
+predator/prey size ratio.
 
 ### Gaussian does not fit
 Let us start by observing that it would be very inappropriate to use a Gaussian
-curve to describe these distributions. We illustrate this in the case of
-the Anchovy, where the number distribution looks at least somewhat similar to a
-normal distribution.
-
-We plot the normal distribution with the same mean and standard deviation as the
-data on top of the histogram for the number distribution.
+curve to describe these densities. We illustrate this in the case of the
+Anchovy. We plot the normal distribution with the same mean and standard
+deviation as the data on top of the histogram for the number distribution.
 ```{r}
 chosen_species = "Anchovy"
 weighted.sd <- function(x, w) {
   sqrt(sum(w * (x - weighted.mean(x, w))^2))
 }
-fit <- ppmr %>% 
+fit <- stomach %>% 
   filter(Species == chosen_species) %>% 
   summarise(mean = weighted.mean(l, weight_numbers),
             sd = weighted.sd(l, weight_numbers))
-ppmr %>% 
+stomach %>% 
   filter(Species == chosen_species) %>% 
   ggplot() +
     geom_density(aes(l, weight = weight_numbers),
@@ -303,7 +308,7 @@ $$
 Thus the biomass would also be normally distributed with the mean
 shifted by $\sigma^2$. Putting this into the same picture gives
 ```{r}
-ppmr %>% 
+stomach %>% 
   filter(Species == chosen_species) %>% 
   ggplot() +
     geom_density(aes(l, weight = weight_numbers,
@@ -332,11 +337,11 @@ chosen_species = "Sardine"
 weighted.sd <- function(x, w) {
   sqrt(sum(w * (x - weighted.mean(x, w))^2))
 }
-fit <- ppmr %>% 
+fit <- stomach %>% 
   filter(Species == chosen_species) %>% 
   summarise(mean = weighted.mean(l, weight_numbers),
             sd = weighted.sd(l, weight_numbers))
-ppmr %>% 
+stomach %>% 
   filter(Species == chosen_species) %>% 
   ggplot() +
     geom_density(aes(l, weight = weight_numbers,
@@ -364,7 +369,7 @@ stomach provide the dominant contribution to the biomass consumed by
 the predator and hence are important. To make them more visible, we show
 the histograms again but now with a logarithmic y-axis
 ```{r}
-binned_ppmr %>% 
+binned_stomach %>% 
   ggplot(aes(l, Density)) +
     geom_col() +
     facet_grid(Species ~ Type, scales = "free_y") +
@@ -376,7 +381,7 @@ data (which would be a truncated power-law distribution when working with the
 predator/prey mass ratio instead of its logarithm).
 
 ```{r}
-binned_ppmr %>% 
+binned_stomach %>% 
   ggplot(aes(l, Density)) +
     geom_col() +
     geom_smooth(method = "lm", se = FALSE) +
@@ -400,16 +405,16 @@ $$
 Amazingly, the parameters of the independently fitted distributions do almost
 perfectly have this relationship:
 ```{r}
-binned_ppmr %>% 
+binned_stomach %>% 
   group_by(Species, Type) %>% 
   group_modify(~ broom::tidy(lm(log(Density) ~ l, data = .x))) %>% 
   filter(term == "l")
 ```
 The parameter of the biomass distribution is almost exactly 1 less than the parameter of the numbers distribution.
 
-### Maximum likelihood
+### Maximum likelihood fit
 Fitting the exponential distribution by fitting a linear model to the logged
-histogram is not really appropriate. A better method might be to fit directly to
+histogram is not really appropriate. A better method would be to fit directly to
 the data using the maximum likelihood principle.
 
 #### Number distribution
@@ -425,13 +430,15 @@ $$
 Z = \int_{l_{min}}^{l_{max}}\exp(\alpha\ l)dl=
 \frac{1}{\alpha}\left(\exp(\alpha\ l_{max})-\exp(\alpha\ l_{min})\right).
 $$
-Due to the way the parameters $l_min$ and $l_max$ enter in the normalisation of
-the probability density, the maximum likelihood will be attained at the 
-largest possible value for $l_min$ and the smallest possible value for $l_max$,
-i.e., they are determined by the smallest and largest value appearing in the
-dataset. It remins only to estimate the rate parameter $\alpha$.
 
-The log likelihood function is
+Due to the way the parameters $l_{min}$ and $l_{max}$ enter in the normalisation
+of the probability density, the maximum likelihood will be attained at the
+largest possible value for $l_{min}$ and the smallest possible value for
+$l_{max}$, i.e., they are determined by the smallest and largest value appearing
+in the dataset.
+
+It remains only to estimate the rate parameter $\alpha$. The log likelihood
+function is
 $$
 \begin{split}
 l(\alpha) &= \sum_i\left(\alpha\ l_i 
@@ -459,7 +466,7 @@ $$
 where $\bar{l}$ is the average over all $l_i$.
 
 ```{r}
-est <- ppmr %>% 
+est <- stomach %>% 
   group_by(Species) %>% 
   summarise(lbar = weighted.mean(l, weight_numbers),
             lmax = max(l),
@@ -480,15 +487,10 @@ dbiomass <- function(l, alpha, lmin) {
   return(d)
 }
 selected_species <- "Sardine"
-ppmr %>% 
+binned_stomach %>% 
   filter(Species == selected_species) %>% 
   ggplot() +
-    geom_density(aes(l, weight = weight_numbers,
-                     fill = "Numbers"),
-                 adjust = adjust) +
-    geom_density(aes(l, weight = weight_biomass,
-                     fill = "Biomass"),
-                 adjust = adjust) +
+    geom_col(aes(l, Density, fill = Type)) +
     stat_function(fun = dnumbers, 
                   args = list(alpha = est$alpha[est$Species == selected_species], 
                               lmax = est$lmax[est$Species == selected_species]), 
@@ -531,7 +533,7 @@ $$
 
 
 ```{r}
-est2 <- ppmr %>% 
+est2 <- stomach %>% 
   group_by(Species) %>% 
   summarise(lbar = weighted.mean(l, weight_numbers),
             lmax = max(l),
@@ -558,7 +560,7 @@ $$
 l_{min} = \bar{l}_w + \frac{1}{\alpha - 1}
 $$
 ```{r}
-est3 <- ppmr %>% 
+est3 <- stomach %>% 
   group_by(Species) %>% 
   summarise(lbar = weighted.mean(l, weight_numbers),
             lmax = max(l),
@@ -606,10 +608,17 @@ We have introduced 4 new parameters into the distribution: $l_l$ is the log of
 the predator/prey mass ratio around which the sigmoidal switch-on happens and
 $u_l$ determines the steepness of that switch-on. Similarly $l_r$ is the log of
 the predator/prey mass ratio around which the sigmoidal switch-off happens and
-$u_r$ determines the steepness of that switch-off.
+$u_r$ determines the steepness of that switch-off. Here is the plot of an 
+example with switch-on around $l = 5$ and switch-off around $l = 25$.
 ```{r}
-l <- seq(0, 30, length.out = 200)
-plot(l, dtexp(l, 0.1, 5, 1, 25, 1), type = "l")
+df <- data.frame(
+  l = seq(0, 30, length.out = 200),
+  d = dtexp(l, 0.1, 5, 1, 25, 1)
+)
+ggplot(df) +
+  geom_line(aes(l, d)) +
+  geom_vline(xintercept = 5, colour = "grey") +
+  geom_vline(xintercept = 25, colour = "grey")
 ```
 
 The probability density $f_r(r)$ of the predator/prey mass ratio $r=e^l$ is
@@ -621,22 +630,11 @@ f_r(r) \propto e^{-l}f_l(l)
 \left(1+\left(\frac{r}{e^{l_r}}\right)^{u_r}\right)}.
 $$
 
-It would require numerical methods to do a maximum likelihood estimation of
-these parameters from the data, and it is not even clear that such a maximum
-likelihood estimation, that weighs each observation equally, would be
-appropriate, given that during observation, small individuals will be easier to
-miss than large ones and thus there would be more uncertainty in the
-observations at large predator/prey mass ratio. So instead, we will simply do a
-visual fit.
-```{r eval = FALSE}
-source("inst/humboldt/fit_kernel.R")
-stomach <- filter(ppmr, Species == "Sardine")
-pl <- fitKernel(stomach)
-```
+We estimate the 5 parameters by maximum likelihood estimation, which in this
+case can only be done numerically.
 ```{r message=FALSE}
-library(bbmle)
 selected_species <- "Sardine"
-df <- ppmr %>% 
+df <- stomach %>% 
   filter(Species == selected_species) %>% 
   select(Species, l, weight_numbers)
 loglik <- function(alpha, ll, ul, lr, ur) {
@@ -652,12 +650,29 @@ ml_est <- mle2(loglik, start = list(
 )
 ml_est@coef
 ```
-
+```{r message=FALSE, warning=FALSE}
+mle_texp <- function(df) {
+  loglik <- function(alpha, ll, ul, lr, ur) {
+    L <- dtexp(df$l, alpha, ll, ul, lr, ur)
+    - sum(log(L) * df$weight_numbers)
+  }
+  mle2(loglik, start = list(
+    alpha = 0.5,
+    ll = min(df$l),
+    lr = max(df$l),
+    ul = 5,
+    ur = 5))
+}
+stomach %>% 
+  group_modify(~ broom::tidy(mle_texp(.x))) %>% 
+  select(Species, term, estimate) %>% 
+  spread(term, estimate)
+```
 
 ```{r}
 bio_coef <- ml_est@coef
 bio_coef["alpha"] <- bio_coef["alpha"] - 1
-ppmr %>% 
+stomach %>% 
   filter(Species == selected_species) %>% 
   ggplot() +
     geom_density(aes(l, weight = weight_numbers,
@@ -677,7 +692,7 @@ ppmr %>%
 ```
 
 ```{r}
-df <- ppmr %>% 
+df <- stomach %>% 
   filter(Species == selected_species) %>% 
   select(Species, l, weight_numbers, weight_biomass)
 loglik <- function(alpha, ll, ul, lr, ur) {
@@ -701,7 +716,7 @@ ml_est_bio@coef
 ```{r}
 bio_coef <- ml_est_bio@coef
 bio_coef["alpha"] <- bio_coef["alpha"] - 1
-ppmr %>% 
+stomach %>% 
   filter(Species == selected_species) %>% 
   ggplot() +
     geom_density(aes(l, weight = weight_numbers,
@@ -821,50 +836,52 @@ $\mu + (\alpha + 4/3 - \lambda)\sigma^2$.
 
 Reading in the data
 ```{r message=FALSE}
-ppmr_full <-
+stomach_full <-
     read_tsv("inst/ppmr/Predator_and_prey_body_sizes_in_marine_food.csv",
              na = c("", "n/a"),
              guess_max = 10000)
-ppmr_full
+stomach_full
 ```
 We select only the relevant columns and remove predator species with fewer than 1000 observations.
 ```{r}
-ppmr <- ppmr_full %>% 
+stomach <- stomach_full %>% 
     select(Species = `Predator common name`,
-           w_pred = `SI predator mass`,
-           w_prey = `SI prey mass`,
+           wpredator = `SI predator mass`,
+           wprey = `SI prey mass`,
            lifestage = `Predator lifestage`,
            feeding = `Type of feeding interaction`) %>% 
     mutate(lifestage = recode(lifestage, "Adult" = "adult")) %>% 
-    mutate(l = log(w_pred / w_prey)) %>% 
+    mutate(l = log(wpredator / wprey)) %>% 
     group_by(Species) %>% 
     filter(n() > 1000)
-ppmr
+stomach
 ```
 This leaves
 ```{r}
-unique(ppmr$Species)
+unique(stomach$Species)
 ```
-We take a look at the scatterplots to see that the assumption that the log predator/prey
+We take a look at the hexplots to see that the assumption that the log predator/prey
 mass ratio is independent of the predator size is not unreasonable.
 ```{r}
-ppmr %>% ggplot(aes(w_pred, w_pred / w_prey)) +
-    geom_jitter(aes(colour = lifestage)) +
-    scale_x_log10() +
-    scale_y_log10() +
+stomach %>% ggplot(aes(log(wpredator), l)) +
+    geom_hex(bins = 15) +
+    scale_fill_viridis_c(trans = "log", breaks = c(2, 10, 50, 250, 1250)) +
+    stat_smooth(method = 'loess') +
     facet_wrap(~Species, scales = "free_x")
 ```
 
+I think it is fair to say that these plots do not exhibit any systematic trend.
+
 ```{r}
-grid <- with(ppmr, seq(0, max(l), length = 100))
-normaldens <- plyr::ddply(ppmr, "Species", function(df) {
+grid <- seq(0, max(stomach$l), length = 100)
+normaldens <- plyr::ddply(stomach, "Species", function(df) {
   data.frame( 
     l = grid,
     density = dnorm(grid, mean(df$l), sd(df$l))
   )
 })
 
-ggplot(ppmr) +
+ggplot(stomach) +
     geom_density(aes(l)) +
     facet_wrap(~Species, scales = "free_y", ncol = 4) +
     xlab("Log of predator/prey mass ratio")  +
@@ -873,10 +890,10 @@ ggplot(ppmr) +
 ```
 
 ```{r}
-ppmr <- ppmr %>%
-    mutate(weight = w_prey / sum(w_prey))
+stomach <- stomach %>%
+    mutate(weight = wprey / sum(wprey))
 
-normaldens <- plyr::ddply(ppmr, "Species", function(df) {
+normaldens <- plyr::ddply(stomach, "Species", function(df) {
   data.frame( 
     l = grid,
     density = dnorm(grid, weighted.mean(df$l, df$weight), 
@@ -885,14 +902,14 @@ normaldens <- plyr::ddply(ppmr, "Species", function(df) {
   )
 })
 
-shifted_normaldens <- plyr::ddply(ppmr, "Species", function(df) {
+shifted_normaldens <- plyr::ddply(stomach, "Species", function(df) {
   data.frame( 
     l = grid,
     density = dnorm(grid, mean(df$l) - sd(df$l)^2, sd(df$l))
   )
 })
 
-ggplot(ppmr) +
+ggplot(stomach) +
     geom_density(aes(l, weight = weight)) +
     facet_wrap(~Species, scales = "free_y", ncol = 4) +
     xlab("Log of predator/prey mass ratio") +
@@ -907,11 +924,11 @@ ggplot(ppmr) +
 ```{r}
 alpha <- 1/3
 lambda <- 2
-ppmr <- ppmr %>%
-    mutate(weight = w_prey^(lambda - 1 - alpha),
+stomach <- stomach %>%
+    mutate(weight = wprey^(lambda - 1 - alpha),
            weight = weight / sum(weight))
 
-normaldens <- plyr::ddply(ppmr, "Species", function(df) {
+normaldens <- plyr::ddply(stomach, "Species", function(df) {
   data.frame( 
     l = grid,
     density = dnorm(grid, weighted.mean(df$l, df$weight), 
@@ -920,7 +937,7 @@ normaldens <- plyr::ddply(ppmr, "Species", function(df) {
   )
 })
 
-ggplot(ppmr) +
+ggplot(stomach) +
     geom_density(aes(l, weight = weight)) +
     facet_wrap(~Species, scales = "free_y", ncol = 4) +
     xlab("Log of predator/prey mass ratio") +
@@ -931,8 +948,8 @@ ggplot(ppmr) +
 ```
 
 ```{r}
-ppmr %>% 
-    filter(w_prey > w_pred)
+stomach %>% 
+    filter(wprey > wpredator)
 ```
 
 
