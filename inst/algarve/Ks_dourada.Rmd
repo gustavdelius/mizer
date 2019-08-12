@@ -15,7 +15,7 @@ b <- 0.8
 
 Fishbase gives the metabolic rate for a Dourada of $M=78.3 g$ as 203mg/kg/h. To 
 convert that to mmol oxygen per fish per hour we have to divide by the weight of
-one mmol oxygen in mg (16) and multiply by the weight of the fish in kg
+one mmol oxygen in mg (32) and multiply by the weight of the fish in kg
 (M/1000)
 ```{r}
 M <- 78.3

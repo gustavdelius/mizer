@@ -93,6 +93,6 @@ power_law_pred_kernel <- function(ppmr, kernel_exp,
                                   kernel_l_l, kernel_u_l,
                                   kernel_l_r, kernel_u_r) {
     ppmr^kernel_exp /
-        (1 + (10^kernel_l_l / ppmr)^kernel_u_l) /
-        (1 + (ppmr / 10^kernel_l_r)^kernel_u_r) 
+        (1 + (exp(kernel_l_l) / ppmr)^kernel_u_l) /
+        (1 + (ppmr / exp(kernel_l_r))^kernel_u_r) 
 }

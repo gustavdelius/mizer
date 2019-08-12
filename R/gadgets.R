@@ -32,12 +32,12 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
     # Check arguments
     if (!is.null(catch)) {
         assert_that(
-                is.data.frame(catch),
-                "catch" %in% names(catch),
-                "species" %in% names(catch),
-                all(c("length", "dl") %in% names(catch)) |
-                    all(c("weight", "dw") %in% names(catch))
-                )
+            is.data.frame(catch),
+            "catch" %in% names(catch),
+            "species" %in% names(catch),
+            all(c("length", "dl") %in% names(catch)) |
+                all(c("weight", "dw") %in% names(catch))
+        )
     }
     if (!is.null(stomach)) {
         assert_that(
@@ -92,7 +92,10 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         logs <<- append(logs[min(1, log_idx):log_idx], file)
         log_idx <<- log_idx + 1
         shinyjs::disable("redo")
-        if (log_idx > 1) shinyjs::enable("undo")
+        if (log_idx > 1) {
+            shinyjs::enable("undo")
+            shinyjs::enable("undo_all")
+        }
     }
     
     if (missing(p)) {
@@ -121,9 +124,10 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
             ## Sidebar ####
             sidebarPanel(
                 actionButton("sp_steady", "Steady"),
-                actionButton("undo", "Undo"),
-                actionButton("redo", "Redo"),
-                actionButton("done", "Done",
+                actionButton("undo", "", icon = icon("undo")),
+                actionButton("redo", "", icon = icon("redo")),
+                actionButton("undo_all", "", icon = icon("fast-backward")),
+                actionButton("done", "Done", icon = icon("check"),
                              onclick = "setTimeout(function(){window.close();},500);"),
                 tags$br(),
                 uiOutput("sp_sel"),
@@ -190,7 +194,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                                                   choices = c("Weight", "Length"), 
                                                   selected = "Length", inline = TRUE),
                                      plotlyOutput("plotTotalCatch")
-                                     ),
+                            ),
                             tabPanel("Rates",
                                      radioButtons("axis", "x-axis scale:",
                                                   choices = c("Logarithmic", "Normal"), 
@@ -232,7 +236,10 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         params(p)
         add_to_logs(p)
         if (log_idx == length(logs)) shinyjs::disable("redo")
-        if (log_idx <= 1) shinyjs::disable("undo")
+        if (log_idx <= 1) {
+            shinyjs::disable("undo")
+            shinyjs::disable("undo_all")
+        }
         output$filename <- renderText("")
         
         # Define a reactive value for triggering an update of species sliders
@@ -932,16 +939,17 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         ## Undo ####
         observeEvent(input$undo, {
             if (log_idx <= 1) return()
-            file <- logs[log_idx]
-            p_new <- readRDS(file)
+            p_new <- readRDS(logs[log_idx])
             p_old <- params()
             # if the params have not changed, go to the previous one
             if (all(p_old@species_params == p_new@species_params, na.rm = TRUE)) {
                 log_idx <<- log_idx - 1
                 shinyjs::enable("redo")
-                file <- logs[log_idx]
-                p_new <- readRDS(file)
-                if (log_idx == 1) shinyjs::disable("undo")
+                p_new <- readRDS(logs[log_idx])
+                if (log_idx == 1) {
+                    shinyjs::disable("undo")
+                    shinyjs::disable("undo_all")
+                }
             }
             params(p_new)
             # Trigger an update of sliders
@@ -951,12 +959,22 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         observeEvent(input$redo, {
             if (log_idx >= length(logs)) return()
             log_idx <<- log_idx + 1
-            file <- logs[log_idx]
-            params(readRDS(file))
+            params(readRDS(logs[log_idx]))
             # Trigger an update of sliders
             trigger_update(runif(1))
             shinyjs::enable("undo")
+            shinyjs::enable("undo_all")
             if (log_idx == length(logs)) shinyjs::disable("redo")
+        })
+        ## Cancel ####
+        observeEvent(input$undo_all, {
+            if (log_idx > 1) shinyjs::enable("redo")
+            shinyjs::disable("undo")
+            shinyjs::disable("undo_all")
+            log_idx <- 1
+            params(readRDS(logs[log_idx]))
+            # Trigger an update of sliders
+            trigger_update(runif(1))
         })
         
         observeEvent(input$growth_click, {
@@ -1353,7 +1371,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                 theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
                 labs(x = "", y = "Catch [megatonnes]") +
                 scale_fill_manual(values = c("Model" = "blue",
-                                               "Observed" = "red"))
+                                             "Observed" = "red"))
         })
         
         # Input field for observed catch
