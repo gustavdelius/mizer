@@ -19,7 +19,7 @@ one mmol oxygen in mg (16) and multiply by the weight of the fish in kg
 (M/1000)
 ```{r}
 M <- 78.3
-R_b <- 203 / 16 * (M / 1000)
+R_b <- 203 / 32 * (M / 1000)
 R_b
 ```
 Solving the metabolic scaling equation for $a$ gives
@@ -65,3 +65,5 @@ wetwtyr
 Ks <- wetwtyr/(1^0.7)
 Ks
 ```
+
+
