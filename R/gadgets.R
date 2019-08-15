@@ -334,6 +334,9 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                             min = signif(sp$sigma / 2, 2),
                             max = signif(sp$sigma * 1.5, 2),
                             step = 0.05),
+                numericInput("q", "Exponent of search volume",
+                             value = p@q,
+                             min = 0.6, max = 0.8, step = 0.005),
                 numericInput("n", "Exponent of feeding rate",
                              value = p@n,
                              min = 0.6, max = 0.8, step = 0.005)
@@ -678,7 +681,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         
         ## Adjust predation ####
         observe({
-            req(input$gamma, input$h)
+            req(input$gamma, input$h, input$q)
             p <- isolate(params())
             sp <- isolate(input$sp)
             
@@ -698,6 +701,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                                   max = signif(input$h * 1.5, 2))
                 p@species_params[sp, "gamma"] <- input$gamma
                 p@species_params[sp, "h"]     <- input$h
+                p@q <- input$q
                 p <- setSearchVolume(p)
                 p <- setIntakeMax(p)
                 update_species(sp, p)
