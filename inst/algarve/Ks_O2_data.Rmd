@@ -142,6 +142,34 @@ Ks_sargo
 Ks_wrasse
 Ks_mullet
 ```
+```{r}
+
+Ks_eel_Wmat <- wetwt_eel_yr/(220^0.7)
+Ks_seabass_Wmat <- wetwt_seabass_yr/(716^0.7)
+Ks_sargo_Wmat <- wetwt_sargo_yr/(334^0.7)
+Ks_wrasse_Wmat <- wetwt_wrasse_yr/(37^0.7)
+Ks_mullet_Wmat <- wetwt_mullet_yr/(586^0.7)
+Ks_eel_Wmat
+Ks_seabass_Wmat
+Ks_sargo_Wmat
+Ks_wrasse_Wmat
+Ks_mullet_Wmat
+```
+```{r}
+Ks_eel_Winf <- wetwt_eel_yr/(1643^0.7)
+Ks_seabass_Winf <- wetwt_seabass_yr/(4623^0.7)
+Ks_sargo_Winf <- wetwt_sargo_yr/(1950^0.7)
+Ks_wrasse_Winf <- wetwt_wrasse_yr/(1330^0.7)
+Ks_mullet_Winf <- wetwt_mullet_yr/(3368^0.7)
+Ks_eel_Winf
+Ks_seabass_Winf
+Ks_sargo_Winf
+Ks_wrasse_Winf
+Ks_mullet_Winf
+
+```
+
+
 
 ```{r}
 Ks_dourada <- 11.81544
@@ -162,7 +190,7 @@ scatter.smooth(x=Ks, y=H, labels=row.names(species))
 cor(Ks, H)
 ```
 ```{r}
-linearMod <- lm(H ~ Ks, data=df)  
+linearMod <- lm(Ks ~ H, data=df)  
 print(linearMod)
 ```
 ```{r}
@@ -180,10 +208,19 @@ predict.df
 ```{r}
 predict.lm()
 ```
-
-
-
 ```{r}
-predict.Ks <- predict(linearMod, H=Predict.H, labels=predict.sp)
+predict.Ks <- predict(linearMod, labels=predict.sp)
 predict.Ks
+```
+```{r}
+species <-c("dourada","eel","seabass","sargo","wrasse","mullet")
+Ks <-c(11.81544, 6.869726, 32.85491, 18.04789, 14.10671, 10.41657)
+K_0 <-c(-0.55,-1.4,-0.63,-1,-0.6,-0.65)
+df <- data.frame(species,Ks,K_0)
+```
+```{r}
+scatter.smooth(x=Ks, y=K_0, labels=row.names(species))
+```
+```{r}
+cor(Ks, K_vb)
 ```
