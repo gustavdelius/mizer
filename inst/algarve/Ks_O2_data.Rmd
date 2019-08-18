@@ -142,25 +142,28 @@ Ks_sargo
 Ks_wrasse
 Ks_mullet
 ```
-```{r}
 
-Ks_eel_Wmat <- wetwt_eel_yr/(220^0.7)
-Ks_seabass_Wmat <- wetwt_seabass_yr/(716^0.7)
-Ks_sargo_Wmat <- wetwt_sargo_yr/(334^0.7)
-Ks_wrasse_Wmat <- wetwt_wrasse_yr/(37^0.7)
-Ks_mullet_Wmat <- wetwt_mullet_yr/(586^0.7)
+Calculation of Ks at weight of first maturity:
+```{r}
+Ks_eel_Wmat <- Ks_eel*(220^0.8)
+Ks_seabass_Wmat <- Ks_seabass*(716^0.8)
+Ks_sargo_Wmat <- Ks_sargo*(334^0.8)
+Ks_wrasse_Wmat <- Ks_wrasse*(37^0.8)
+Ks_mullet_Wmat <- Ks_mullet*(586^0.8)
 Ks_eel_Wmat
 Ks_seabass_Wmat
 Ks_sargo_Wmat
 Ks_wrasse_Wmat
 Ks_mullet_Wmat
 ```
+
+Calculation of Ks at asymptotic mass:
 ```{r}
-Ks_eel_Winf <- wetwt_eel_yr/(1643^0.7)
-Ks_seabass_Winf <- wetwt_seabass_yr/(4623^0.7)
-Ks_sargo_Winf <- wetwt_sargo_yr/(1950^0.7)
-Ks_wrasse_Winf <- wetwt_wrasse_yr/(1330^0.7)
-Ks_mullet_Winf <- wetwt_mullet_yr/(3368^0.7)
+Ks_eel_Winf <- Ks_eel*(1643^0.8)
+Ks_seabass_Winf <- Ks_seabass*(4623^0.8)
+Ks_sargo_Winf <- Ks_sargo*(1950^0.8)
+Ks_wrasse_Winf <- Ks_wrasse*(1330^0.8)
+Ks_mullet_Winf <- Ks_mullet*(3368^0.8)
 Ks_eel_Winf
 Ks_seabass_Winf
 Ks_sargo_Winf
@@ -169,6 +172,7 @@ Ks_mullet_Winf
 
 ```
 
+Values for Ks_Wmat and Ks_Winf seem excessivly high
 
 
 ```{r}
