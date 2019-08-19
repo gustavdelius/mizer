@@ -146,14 +146,19 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                 "->",
                 tags$a("Prey", href = "#interactions"),
                 "->",
+                tags$a("General", href = "#general"),
+                "->",
                 tags$a("Plankton", href = "#plankton"),
                 "->",
                 tags$a("File", href = "#file"),
                 tags$br(),
-                uiOutput("sp_params"),
+                tags$div(id = "params",
+                    uiOutput("sp_params"),
+                    uiOutput("general_params")
+                    ),
                 tags$head(tags$style(
                     type = 'text/css',
-                    '#sp_params { max-height: 60vh; overflow-y: auto; }'
+                    '#params { max-height: 60vh; overflow-y: auto; }'
                 )),
                 width = 3
             ),  # endsidebarpanel
@@ -333,13 +338,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                             value = sp$sigma,
                             min = signif(sp$sigma / 2, 2),
                             max = signif(sp$sigma * 1.5, 2),
-                            step = 0.05),
-                numericInput("q", "Exponent of search volume",
-                             value = p@q,
-                             min = 0.6, max = 0.8, step = 0.005),
-                numericInput("n", "Exponent of feeding rate",
-                             value = p@n,
-                             min = 0.6, max = 0.8, step = 0.005)
+                            step = 0.05)
             )
             
             if (length(p@resource_dynamics) > 0) {
@@ -356,10 +355,6 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
             }
             
             l1 <- c(l1, list(tags$h3(tags$a(id = "fishing"), "Fishing"),
-                             sliderInput("effort", "Effort",
-                                         value = eff, 
-                                         min = signif(eff / 2, 2),
-                                         max = signif(eff * 1.5, 2)),
                              sliderInput("catchability", "Catchability",
                                          value = sp$catchability, 
                                          min = signif(max(0, sp$catchability / 2 - 1), 2), 
@@ -411,9 +406,6 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                                          min = signif(sp$ks / 2, 2),
                                          max = signif((sp$ks + 0.1) * 1.5, 2),
                                          step = 0.05),
-                             numericInput("p", "Exponent of metabolism",
-                                          value = p@p,
-                                          min = 0.6, max = 0.8, step = 0.005),
                              sliderInput("k", "Coefficient of activity k",
                                          value = sp$k,
                                          min = signif(sp$k / 2, 2),
@@ -445,8 +437,29 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                                 step = 0.05)
                 ))
             }
+            l1
+        })
+        
+        output$general_params <- renderUI({
             
-            l1 <- c(l1, list(
+            p <- isolate(params())
+            eff <- isolate(effort())
+            
+            l1 <- list(
+                tags$h3(tags$a(id = "general"), "General"),
+                sliderInput("effort", "Effort",
+                            value = eff, 
+                            min = signif(eff / 2, 2),
+                            max = signif(eff * 1.5, 2)),
+                numericInput("p", "Exponent of metabolism",
+                             value = p@p,
+                             min = 0.6, max = 0.8, step = 0.005),
+                numericInput("q", "Exponent of search volume",
+                             value = p@q,
+                             min = 0.6, max = 0.8, step = 0.005),
+                numericInput("n", "Exponent of feeding rate",
+                             value = p@n,
+                             min = 0.6, max = 0.8, step = 0.005),
                 tags$h3(tags$a(id = "plankton"), "Plankton"),
                 numericInput("lambda", "Sheldon exponent lambda",
                              value = p@lambda, min = 1.9, max = 2.2, step = 0.005),
@@ -463,7 +476,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                 fileInput("upload", "Upload new params", 
                           accept = ".rds"),
                 downloadButton("params", "Download params")
-            ))
+            )
             l1
         })
         
