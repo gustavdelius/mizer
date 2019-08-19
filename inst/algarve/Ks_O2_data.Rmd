@@ -23,6 +23,7 @@ convert that to mmol oxygen per fish per hour we have to divide by the weight of
 one mmol oxygen in mg (16) and multiply by the weight of the fish in kg
 (M/1000)
 ```{r}
+M_dourada <- 78.3
 M_eel <- 99.80283
 M_seabass <-192.875
 M_sargo <- 22.875
@@ -30,6 +31,7 @@ M_wrasse <- 68
 M_mullet <- 47
 ```
 ```{r}
+o2_dourada <-203
 o2_eel <- 112.437
 o2_seabass <- 471.35
 o2_sargo <- 396.6
@@ -37,6 +39,7 @@ o2_wrasse <-249.3
 o2_mullet <-198.2
 ```
 ```{r}
+R_b_dourada <- o2_dourada / 32 * (M_dourada / 1000)
 R_b_eel <- o2_eel / 32 * (M_eel / 1000)
 R_b_seabass <- o2_seabass / 32 * (M_seabass / 1000)
 R_b_sargo <- o2_sargo / 32 * (M_sargo / 1000)
@@ -44,6 +47,7 @@ R_b_wrasse <- o2_wrasse / 32 * (M_wrasse / 1000)
 R_b_mullet <- o2_mullet / 32 * (M_mullet / 1000)
 ```
 ```{r}
+R_b_dourada
 R_b_eel
 R_b_seabass
 R_b_sargo
@@ -55,13 +59,14 @@ $$
 a = R_b(M) / M^{b}
 $$
 ```{r}
+a_dourada <- R_b_dourada / M_dourada^b
 a_eel <- R_b_eel / M_eel^b
 a_seabass <- R_b_seabass / M_seabass^b
 a_sargo <- R_b_sargo / M_sargo^b
 a_wrasse <- R_b_wrasse / M_wrasse^b
 a_mullet<- R_b_mullet / M_mullet^b
 
-
+a_dourada
 a_eel
 a_seabass
 a_sargo
@@ -79,11 +84,13 @@ We convert the mmol of oxygen into the weight of carbon needed to convert all
 the oxygen into CO_2. Because one mmol of oxygen combines with one mmol of carbon
 and one mmol of carbon weighs 12mg, the weight of carbon in g is
 ```{r}
+carbonwt_dourada <- a_eel * 12 / 1000
 carbonwt_eel <- a_eel * 12 / 1000
 carbonwt_seabass <- a_seabass * 12 / 1000
 carbonwt_sargo <- a_sargo * 12 / 1000
 carbonwt_wrasse <- a_wrasse * 12 / 1000
 carbonwt_mullet <- a_mullet * 12 / 1000
+carbonwt_dourada
 carbonwt_eel
 carbonwt_seabass
 carbonwt_sargo
@@ -92,11 +99,13 @@ carbonwt_mullet
 ```
 Let us assume that half of the dryweight is due to carbon:
 ```{r}
+drywt_dourada <- carbonwt_dourada*2
 drywt_eel <- carbonwt_eel * 2
 drywt_seabass <- carbonwt_seabass * 2
 drywt_sargo <- carbonwt_sargo * 2
 drywt_wrasse <- carbonwt_wrasse * 2
 drywt_mullet <- carbonwt_mullet * 2
+drywt_dourada 
 drywt_eel
 drywt_seabass
 drywt_sargo
@@ -106,6 +115,7 @@ drywt_mullet
 We convert from dry weight to wet weight using the conversion factor used by 
 Erzini et.al.
 ```{r}
+wetwt_dourada <- drywt_dourada/0.27
 wetwt_eel <- drywt_eel/0.27
 wetwt_seabass <- drywt_seabass/0.27
 wetwt_sargo <- drywt_sargo/0.27
@@ -119,11 +129,13 @@ wetwt_mullet
 ```
 Next we convert to a rate per year rather than per hour. There are 8760 hours per year
 ```{r}
+wetwt_dourada_yr <-wetwt_dourada*8760
 wetwt_eel_yr <- wetwt_eel*8760
 wetwt_seabass_yr <- wetwt_seabass*8760
 wetwt_sargo_yr <- wetwt_sargo*8760
 wetwt_wrasse_yr <- wetwt_wrasse*8760
 wetwt_mullet_yr <- wetwt_mullet*8760
+wetwt_dourada_yr
 wetwt_eel_yr
 wetwt_seabass_yr
 wetwt_sargo_yr
@@ -131,11 +143,13 @@ wetwt_wrasse_yr
 wetwt_mullet_yr
 ```
 ```{r}
+Ks_dourada <- wetwt_dourada_yr/(1^0.7)
 Ks_eel <- wetwt_eel_yr/(1^0.7)
 Ks_seabass <- wetwt_seabass_yr/(1^0.7)
 Ks_sargo <- wetwt_sargo_yr/(1^0.7)
 Ks_wrasse <- wetwt_wrasse_yr/(1^0.7)
 Ks_mullet <- wetwt_mullet_yr/(1^0.7)
+Ks_dourada
 Ks_eel
 Ks_seabass
 Ks_sargo
@@ -145,11 +159,19 @@ Ks_mullet
 
 Calculation of Ks at weight of first maturity:
 ```{r}
-Ks_eel_Wmat <- Ks_eel*(220^0.8)
-Ks_seabass_Wmat <- Ks_seabass*(716^0.8)
-Ks_sargo_Wmat <- Ks_sargo*(334^0.8)
-Ks_wrasse_Wmat <- Ks_wrasse*(37^0.8)
-Ks_mullet_Wmat <- Ks_mullet*(586^0.8)
+dourada_Wmat <- Ks_dourada*(297^0.8)
+eel_Wmat <- Ks_eel*(220^0.8)
+seabass_Wmat <- Ks_seabass*(716^0.8)
+sargo_Wmat <- Ks_sargo*(334^0.8)
+wrasse_Wmat <- Ks_wrasse*(676^0.8)
+mullet_Wmat <- Ks_mullet*(586^0.8)
+Ks_dourada_Wmat <- dourada_Wmat/297
+Ks_eel_Wmat <- eel_Wmat/220
+Ks_seabass_Wmat <- seabass_Wmat/716
+Ks_sargo_Wmat <- sargo_Wmat/334
+Ks_wrasse_Wmat <- wrasse_Wmat/676
+Ks_mullet_Wmat <- mullet_Wmat/586
+Ks_dourada_Wmat
 Ks_eel_Wmat
 Ks_seabass_Wmat
 Ks_sargo_Wmat
@@ -159,17 +181,21 @@ Ks_mullet_Wmat
 
 Calculation of Ks at asymptotic mass:
 ```{r}
-Ks_eel_Winf <- Ks_eel*(1643^0.8)
-Ks_seabass_Winf <- Ks_seabass*(4623^0.8)
-Ks_sargo_Winf <- Ks_sargo*(1950^0.8)
-Ks_wrasse_Winf <- Ks_wrasse*(1330^0.8)
-Ks_mullet_Winf <- Ks_mullet*(3368^0.8)
+eel_Winf <- Ks_eel*(1643^0.8)
+seabass_Winf <- Ks_seabass*(4623^0.8)
+sargo_Winf <- Ks_sargo*(1950^0.8)
+wrasse_Winf <- Ks_wrasse*(178^0.8)
+mullet_Winf <- Ks_mullet*(3368^0.8)
+Ks_eel_Winf <- eel_Winf/1643
+Ks_seabass_Winf <- seabass_Winf/4623
+Ks_sargo_Winf <- sargo_Winf/1950
+Ks_wrasse_Winf <- wrasse_Winf/178
+Ks_mullet_Winf <- mullet_Winf/3368
 Ks_eel_Winf
 Ks_seabass_Winf
 Ks_sargo_Winf
 Ks_wrasse_Winf
 Ks_mullet_Winf
-
 ```
 
 Values for Ks_Wmat and Ks_Winf seem excessivly high
@@ -180,7 +206,7 @@ Ks_dourada <- 11.81544
 ```
 ```{r}
 species <-c("dourada","eel","seabass","sargo","wrasse","mullet")
-Ks <-c(11.81544, 6.869726, 32.85491, 18.04789, 14.10671, 10.41657)
+Ks <-c(11.81544, 2.335903, 32.85491, 18.04789, 14.10671, 10.41657)
 H <-c(48,12.8,73,42,24,30)
 df <- data.frame(species,Ks,H)
 df
@@ -216,15 +242,30 @@ predict.lm()
 predict.Ks <- predict(linearMod, labels=predict.sp)
 predict.Ks
 ```
+
+linear regression between Ks(wmat) and H.
+
 ```{r}
 species <-c("dourada","eel","seabass","sargo","wrasse","mullet")
-Ks <-c(11.81544, 6.869726, 32.85491, 18.04789, 14.10671, 10.41657)
-K_0 <-c(-0.55,-1.4,-0.63,-1,-0.6,-0.65)
-df <- data.frame(species,Ks,K_0)
+Ks <-c(2.199825, 2.335903, 8.823029, 5.645173, 3.832096 , 2.911691)
+H <-c(38,12.8,60,29,20,24)
+df <- data.frame(species,Ks,H)
+```
+
+
+```{r}
+scatter.smooth(x=Ks, y=H, labels=row.names(species))
 ```
 ```{r}
-scatter.smooth(x=Ks, y=K_0, labels=row.names(species))
+cor(Ks, H)
+```
+
+```{r}
+linearMod <- lm(Ks ~ H, data=df)  
+print(linearMod)
 ```
 ```{r}
-cor(Ks, K_vb)
+summary(linearMod)
 ```
+Pr(>|t|) < 0.05    P-value < 0.05 
+regression statistically significant 
