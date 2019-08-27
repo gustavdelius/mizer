@@ -1056,7 +1056,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         output$plotGrowthCurve <- renderPlot({
             p <- params()
             if (input$all_growth == "All") {
-                gc <- getGrowthCurves(p) %>% 
+                gc <- getGrowthCurves(p)[!is.na(p@A), ] %>% 
                     as.tbl_cube(met_name = "Size") %>% 
                     as_tibble() %>%
                     mutate(Legend = "Model")
@@ -1076,8 +1076,8 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                     scale_x_continuous(name = "Age [years]") +
                     scale_y_continuous(name = "Size [g]") +
                     geom_hline(aes(yintercept = w_mat), 
-                               data = tibble(Species = p@species_params$species,
-                                             w_mat = p@species_params$w_mat), 
+                               data = tibble(Species = p@species_params$species[!is.na(p@A)],
+                                             w_mat = p@species_params$w_mat[!is.na(p@A)]), 
                                linetype = "dashed",
                                colour = "grey") +
                     facet_wrap(~Species, scales = "free_y")
