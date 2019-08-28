@@ -471,7 +471,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                 tags$h3(tags$a(id = "general"), "General"),
                 sliderInput("effort", "Effort",
                             value = eff, 
-                            min = signif(eff / 2, 2),
+                            min = 0,
                             max = signif(eff * 1.5, 2)),
                 numericInput("p", "Exponent of metabolism",
                              value = p@p,
@@ -590,7 +590,6 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
             req(input$effort)
             effort(input$effort)
             updateSliderInput(session, "effort",
-                              min = signif(effort() / 2, 2),
                               max = signif(effort() * 1.5, 2))
         })
         
