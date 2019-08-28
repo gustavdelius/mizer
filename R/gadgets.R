@@ -359,7 +359,17 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                                          value = sp$catchability, 
                                          min = signif(max(0, sp$catchability / 2 - 1), 2), 
                                          max = signif(max(sp$catchability * 2, 2), 2), 
-                                         step = 0.01),
+                                         step = 0.01)))
+            
+            if (sp$sel_func == "knife_edge") {
+                l1 <- c(l1, list(
+                             sliderInput("knife_edge_size", "knife_edge_size",
+                                         value = sp$knife_edge_size, 
+                                         min = 1, 
+                                         max = signif(sp$knife_edge_size * 2, 2),
+                                         step = 0.1)))
+            } else if (sp$sel_func == "sigmoid_length") {
+                l1 <- c(l1, list(
                              sliderInput("l50", "L50",
                                          value = sp$l50, 
                                          min = 1, 
@@ -369,10 +379,19 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                                          value = sp$l50 - sp$l25, 
                                          min = 0.1, 
                                          max = signif(sp$l50 / 10, 2),
-                                         step = 0.1)
-            ))
-            if (sp$sel_func == "double_sigmoid_length") {
+                                         step = 0.1)))
+            } else if (sp$sel_func == "double_sigmoid_length") {
                 l1 <- c(l1, list(
+                    sliderInput("l50", "L50",
+                                value = sp$l50, 
+                                min = 1, 
+                                max = signif(sp$l50 * 2, 2),
+                                step = 0.1),
+                    sliderInput("ldiff", "L50-L25",
+                                value = sp$l50 - sp$l25, 
+                                min = 0.1, 
+                                max = signif(sp$l50 / 10, 2),
+                                step = 0.1),
                     sliderInput("l50_right", "L50 right",
                                 value = sp$l50_right, 
                                 min = 1, 
@@ -723,7 +742,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         
         ## Adjust fishing ####
         observe({
-            req(input$catchability, input$l50, input$ldiff)
+            req(input$catchability)
             p <- isolate(params())
             sp <- isolate(input$sp)
             
@@ -735,15 +754,22 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                 updateSliderInput(session, "catchability",
                                   min = signif(max(input$catchability / 2 - 1, 0), 2),
                                   max = signif(max(input$catchability * 2, 2), 2))
-                updateSliderInput(session, "l50",
-                                  max = signif(input$l50 * 2, 2))
-                updateSliderInput(session, "ldiff",  
-                                  max = signif(input$l50 / 10, 2))
-                
                 p@species_params[sp, "catchability"]  <- input$catchability
-                p@species_params[sp, "l50"]   <- input$l50
-                p@species_params[sp, "l25"]   <- input$l50 - input$ldiff
                 
+                if (p@species_params[sp, "sel_func"] == "knife_edge") {
+                    updateSliderInput(session, "knife_edge_size",
+                                      max = signif(input$knife_edge_size * 2, 2))
+                    p@species_params[sp, "knife_edge_size"]   <- input$knife_edge_size
+                }
+                if (p@species_params[sp, "sel_func"] == "sigmoid_length" ||
+                    p@species_params[sp, "sel_func"] == "double_sigmoid_length") {
+                    updateSliderInput(session, "l50",
+                                      max = signif(input$l50 * 2, 2))
+                    updateSliderInput(session, "ldiff",  
+                                      max = signif(input$l50 / 10, 2))
+                    p@species_params[sp, "l50"]   <- input$l50
+                    p@species_params[sp, "l25"]   <- input$l50 - input$ldiff
+                }
                 if (p@species_params[sp, "sel_func"] == "double_sigmoid_length") {
                     p@species_params[sp, "l50_right"]   <- input$l50_right
                     p@species_params[sp, "l25_right"]   <- input$l50_right + input$ldiff_right
