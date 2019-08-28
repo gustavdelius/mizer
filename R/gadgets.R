@@ -29,7 +29,7 @@
 #' @return The tuned MizerParams object
 #' @export
 tuneParams <- function(p, catch = NULL, stomach = NULL) {
-    # Check arguments
+    # Check arguments ----
     if (!is.null(catch)) {
         assert_that(
             is.data.frame(catch),
@@ -55,7 +55,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                    weight_kernel = weight_kernel / sum(weight_kernel))
     }
     
-    # Define some globals to skip certain observers
+    # Define some globals to skip certain observers ----
     sp_old <- 1
     sp_old_kernel <- 1
     sp_old_predation <- 1
@@ -99,7 +99,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
     }
     
     if (missing(p)) {
-        # Try to recover old log files
+        # Try to recover old log files ----
         logs <- sort(list.files(path = tempdir(), 
                                 pattern = "mizer_params_...._.._.._at_.._.._..\\.rds",
                                 full.names = TRUE))
@@ -233,12 +233,15 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
     )
     
     server <- function(input, output, session) {
+        no_sp <- length(p@species_params$species)
         # Size of plot labels
         base_size <- 12
+        # selector for foreground species
+        foreground <- !is.na(p@A)
+        foreground_indices <- (1:no_sp)[foreground]
         
         ## Store params object as a reactive value ####
-        params <- reactiveVal()
-        params(p)
+        params <- reactiveVal(p)
         add_to_logs(p)
         if (log_idx == length(logs)) shinyjs::disable("redo")
         if (log_idx <= 1) {
@@ -259,7 +262,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                 p <- readRDS(inFile$datapath)
                 validObject(p)
                 # Update species selector
-                species <- as.character(p@species_params$species[!is.na(p@A)])
+                species <- as.character(p@species_params$species[foreground])
                 updateSelectInput(session, "sp",
                                   choices = species,
                                   selected = species[1])
@@ -296,7 +299,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         ## UI for side bar ####
         output$sp_sel <- renderUI({
             p <- isolate(params())
-            species <- as.character(p@species_params$species[!is.na(p@A)])
+            species <- as.character(p@species_params$species[foreground])
             selectInput("sp", "Species:", species) 
         })
         output$sp_params <- renderUI({
@@ -591,7 +594,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                               max = signif(effort() * 1.5, 2))
         })
         
-        ## Adjust k_vb ####
+        ## Adjust von Bertalanffy ####
         observe({
             p <- isolate(params())
             p@species_params[isolate(input$sp), "k_vb"] <- req(input$k_vb)
@@ -1082,7 +1085,7 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         output$plotGrowthCurve <- renderPlot({
             p <- params()
             if (input$all_growth == "All") {
-                gc <- getGrowthCurves(p)[!is.na(p@A), ] %>% 
+                gc <- getGrowthCurves(p)[foreground, ] %>% 
                     as.tbl_cube(met_name = "Size") %>% 
                     as_tibble() %>%
                     mutate(Legend = "Model")
@@ -1102,8 +1105,8 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
                     scale_x_continuous(name = "Age [years]") +
                     scale_y_continuous(name = "Size [g]") +
                     geom_hline(aes(yintercept = w_mat), 
-                               data = tibble(Species = p@species_params$species[!is.na(p@A)],
-                                             w_mat = p@species_params$w_mat[!is.na(p@A)]), 
+                               data = tibble(Species = p@species_params$species[foreground],
+                                             w_mat = p@species_params$w_mat[foreground]), 
                                linetype = "dashed",
                                colour = "grey") +
                     facet_wrap(~Species, scales = "free_y")
@@ -1127,9 +1130,9 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         ## erepro plot ####
         output$plot_erepro <- renderPlotly({
             p <- params()
-            df <- data.frame(Species = factor(p@species_params$species,
+            df <- data.frame(Species = factor(p@species_params$species[foreground],
                                               levels = p@species_params$species),
-                             erepro = p@species_params$erepro)
+                             erepro = p@species_params$erepro[foreground])
             ggplot(df, aes(x = Species, y = erepro)) + 
                 geom_col() + geom_hline(yintercept = 1, color = "red") +
                 scale_y_log10() +
@@ -1211,7 +1214,6 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         })
         output$plotTotalBiomass <- renderPlotly({
             p <- params()
-            no_sp <- length(p@species_params$species)
             cutoff <- p@species_params$cutoff_size
             # When no cutoff known, set it to maturity weight / 20
             if (is.null(cutoff)) cutoff <- p@species_params$w_mat / 20
@@ -1219,18 +1221,19 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
             observed <- p@species_params$biomass_observed
             if (is.null(observed)) observed <- 0
             
-            biomass_model <- 1:no_sp  # create vector of right length
-            for (sp in 1:no_sp) {
+            biomass_model <- foreground_indices  # create vector of right length
+            for (i in seq_along(foreground_indices)) {
+                sp <- foreground_indices[i]
                 cum_biomass <- cumsum(p@initial_n[sp, ] * p@w * p@dw)
                 cutoff_idx <- which.max(p@w >= cutoff[sp])
-                biomass_model[sp] <- max(cum_biomass) - cum_biomass[cutoff_idx]
+                biomass_model[i] <- max(cum_biomass) - cum_biomass[cutoff_idx]
             }
-            species <- factor(p@species_params$species,
-                              levels = p@species_params$species)
+            species <- factor(p@species_params$species[foreground],
+                              levels = p@species_params$species[foreground])
             df <- rbind(
                 data.frame(Species = species,
                            Type = "Observed",
-                           Biomass = observed),
+                           Biomass = observed[foreground]),
                 data.frame(Species = species,
                            Type = "Model",
                            Biomass = biomass_model)
@@ -1245,7 +1248,6 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
         })
         output$plotTotalAbundance <- renderPlotly({
             p <- params()
-            no_sp <- length(p@species_params$species)
             cutoff <- p@species_params$cutoff_size
             # When no cutoff known, set it to maturity weight / 20
             if (is.null(cutoff)) cutoff <- p@species_params$w_mat / 20
@@ -1253,18 +1255,19 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
             observed <- p@species_params$abundance_observed
             if (is.null(observed)) observed <- 0
             
-            abundance_model <- 1:no_sp  # create vector of right length
-            for (sp in 1:no_sp) {
+            abundance_model <- foreground_indices  # create vector of right length
+            for (i in seq_along(foreground_indices)) {
+                sp <- foreground_indices[i]
                 cum_abundance <- cumsum(p@initial_n[sp, ] * p@dw)
                 cutoff_idx <- which.max(p@w >= cutoff[sp])
-                abundance_model[sp] <- max(cum_abundance) - cum_abundance[cutoff_idx]
+                abundance_model[i] <- max(cum_abundance) - cum_abundance[cutoff_idx]
             }
-            species <- factor(p@species_params$species,
-                              levels = p@species_params$species)
+            species <- factor(p@species_params$species[foreground],
+                              levels = p@species_params$species[foreground])
             df <- rbind(
                 data.frame(Species = species,
                            Type = "Observed",
-                           Abundance = observed),
+                           Abundance = observed[foreground]),
                 data.frame(Species = species,
                            Type = "Model",
                            Abundance = abundance_model)
@@ -1400,12 +1403,12 @@ tuneParams <- function(p, catch = NULL, stomach = NULL) {
             biomass <- sweep(p@initial_n, 2, p@w * p@dw, "*")
             total <- rowSums(biomass * getFMort(p, effort = effort()))
             df <- rbind(
-                data.frame(Species = p@species_params$species,
+                data.frame(Species = p@species_params$species[foreground],
                            Type = "Model",
-                           Catch = total),
-                data.frame(Species = p@species_params$species,
+                           Catch = total[foreground]),
+                data.frame(Species = p@species_params$species[foreground],
                            Type = "Observed",
-                           Catch = p@species_params$catch_observed)
+                           Catch = p@species_params$catch_observed[foreground])
             )
             ggplot(df) +
                 geom_col(aes(x = Species, y = Catch, fill = Type),
