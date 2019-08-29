@@ -76,9 +76,14 @@ reference:
   - steady
   - addSpecies
   - removeSpecies
-  - retuneAbundance
+  - pruneSpecies
+  - renameSpecies
+  - rescaleAbundance
+  - retuneReproductionEfficiency
+  - setRmax
   - upgradeParams
   - markBackground
+  - retuneBackground
 - title: Running simulations
   contents:
   - project
@@ -124,6 +129,7 @@ reference:
   contents:
   - lognormal_pred_kernel
   - box_pred_kernel
+  - power_law_pred_kernel
   - knife_edge
   - sigmoid_length
   - double_sigmoid_length
@@ -154,6 +160,7 @@ reference:
   - summary,MizerSim-method
 - title: Data sets
   contents:
+  - NS_params
   - NS_species_params
   - NS_species_params_gears
   - inter
