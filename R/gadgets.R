@@ -229,7 +229,8 @@ tuneParams <- function(p, catch = NULL) { #, stomach = NULL) {
                                                   selected = "Proportion", 
                                                   inline = TRUE)),
                             tabPanel("Steady",
-                                     plotlyOutput("plot_steady"))
+                                     plotlyOutput("plot_steady"),
+                                     numericInput("dt", "Time step in years", value = 0.1))
                             # tabPanel("Stomach",
                             #          plotOutput("plot_stomach"),
                             #          plotOutput("plot_kernel"))
@@ -260,12 +261,14 @@ tuneParams <- function(p, catch = NULL) { #, stomach = NULL) {
                 # Run to steady state
                 if (return_sim) {
                     sim <- steady(p, t_max = 100, tol = 1e-2,
+                                  dt = input$dt,
                                   return_sim = TRUE,
                                   progress_bar = progress)
                     sim_steady(sim)
                     p <- sim@params
                 } else {
                     p <- steady(p, t_max = 100, tol = 1e-2,
+                                dt = input$dt,
                                 progress_bar = progress)
                 }
                 
@@ -859,6 +862,7 @@ tuneParams <- function(p, catch = NULL) { #, stomach = NULL) {
                     
                     # Run to steady state
                     p <- steady(p, t_max = 100, tol = 1e-2,
+                                dt = input$dt,
                                 progress_bar = progress)
                     
                     # Update the reactive params object
