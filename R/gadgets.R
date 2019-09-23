@@ -149,8 +149,8 @@ tuneParams <- function(p, catch = NULL) { #, stomach = NULL) {
                 "->",
                 tags$a("General", href = "#general"),
                 "->",
-                tags$a("Plankton", href = "#plankton"),
-                "->",
+                # tags$a("Plankton", href = "#plankton"),
+                # "->",
                 tags$a("File", href = "#file"),
                 tags$br(),
                 tags$div(id = "params",
@@ -221,13 +221,13 @@ tuneParams <- function(p, catch = NULL) { #, stomach = NULL) {
                                                   selected = "Proportion", 
                                                   inline = TRUE),
                                      plotlyOutput("plot_pred")),
-                            tabPanel("Plankton",
-                                     plotOutput("plot_plankton", width = "84%"),
-                                     plotlyOutput("plot_plankton_pred"),
-                                     radioButtons("plankton_death_prop", "Show",
-                                                  choices = c("Proportion", "Rate"), 
-                                                  selected = "Proportion", 
-                                                  inline = TRUE)),
+                            # tabPanel("Plankton",
+                            #          plotOutput("plot_plankton", width = "84%"),
+                            #          plotlyOutput("plot_plankton_pred"),
+                            #          radioButtons("plankton_death_prop", "Show",
+                            #                       choices = c("Proportion", "Rate"), 
+                            #                       selected = "Proportion", 
+                            #                       inline = TRUE)),
                             tabPanel("Steady",
                                      plotlyOutput("plot_steady"),
                                      numericInput("dt", "Time step in years", value = 0.1))
@@ -532,17 +532,17 @@ tuneParams <- function(p, catch = NULL) { #, stomach = NULL) {
                 numericInput("n", "Exponent of feeding rate",
                              value = p@n,
                              min = 0.6, max = 0.8, step = 0.005),
-                tags$h3(tags$a(id = "plankton"), "Plankton"),
-                numericInput("lambda", "Sheldon exponent lambda",
-                             value = p@lambda, min = 1.9, max = 2.2, step = 0.005),
-                numericInput("kappa", "Plankton coefficient kappa",
-                             value = p@kappa),
-                sliderInput("log_r_pp", "log10 Plankton replenishment rate",
-                            value = log_r_pp, min = -1, max = 4, step = 0.05),
-                numericInput("w_pp_cutoff", "Largest plankton",
-                             value = p@w_full[which.min(p@cc_pp > 0)],
-                             min = 1e-10,
-                             max = 1e3),
+                # tags$h3(tags$a(id = "plankton"), "Plankton"),
+                # numericInput("lambda", "Sheldon exponent lambda",
+                #              value = p@lambda, min = 1.9, max = 2.2, step = 0.005),
+                # numericInput("kappa", "Plankton coefficient kappa",
+                #              value = p@kappa),
+                # sliderInput("log_r_pp", "log10 Plankton replenishment rate",
+                #             value = log_r_pp, min = -1, max = 4, step = 0.05),
+                # numericInput("w_pp_cutoff", "Largest plankton",
+                #              value = p@w_full[which.min(p@cc_pp > 0)],
+                #              min = 1e-10,
+                #              max = 1e3),
                 tags$h3(tags$a(id = "file"), "File management"),
                 textOutput("filename"),
                 fileInput("upload", "Upload new params", 
@@ -719,20 +719,20 @@ tuneParams <- function(p, catch = NULL) { #, stomach = NULL) {
             }
         })
         
-        ## Adjust plankton ####
-        observe({
-            req(input$kappa,
-                input$lambda,
-                input$log_r_pp,
-                input$w_pp_cutoff)
-            p <- isolate(params())
-            p <- setPlankton(p, 
-                             kappa = input$kappa, 
-                             lambda = input$lambda,
-                             r_pp = 10^input$log_r_pp,
-                             w_pp_cutoff = input$w_pp_cutoff)
-            params(p)
-        })
+        # ## Adjust plankton ####
+        # observe({
+        #     req(input$kappa,
+        #         input$lambda,
+        #         input$log_r_pp,
+        #         input$w_pp_cutoff)
+        #     p <- isolate(params())
+        #     p <- setPlankton(p, 
+        #                      kappa = input$kappa, 
+        #                      lambda = input$lambda,
+        #                      r_pp = 10^input$log_r_pp,
+        #                      w_pp_cutoff = input$w_pp_cutoff)
+        #     params(p)
+        # })
         
         ## Adjust predation kernel ####
         observe({
