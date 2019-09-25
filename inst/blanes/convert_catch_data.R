@@ -17,6 +17,7 @@ catch <- gs_title("size-frequency") %>%
     mutate(length = start - 0.1,
            dl = end - length) %>% 
     left_join(params@species_params, by = "latin.name") %>% 
-    select(species, latin.name, length, dl, catch)
+    select(species, latin.name, length, dl, catch) %>% 
+    filter(!is.na(species))
 catch
 saveRDS(catch, "inst/blanes/catch.rds")
