@@ -754,11 +754,16 @@ This tells us that if the stomach distribution $f_l(l)$ is described by the
 truncated exponential distribution with rate $\alpha$, the feeding kernel as a
 function of $l$ is described by the truncated exponential distribution with rate
 $\alpha + 4/3 - \lambda$.
+```{r}
+est %>% 
+  mutate(exp = alpha + 4/3 - 2.05)
+```
+
 
 If the stomach distribution $f_l(l)$ is the normal distribution with mean $\mu$
 and variance $\sigma^2$ then the feeding kernel as a function of $l$ is also a
 Gaussian with the same variance and with mean 
-$\mu + (\alpha + 4/3 - \lambda)\sigma^2$.
+$\mu + (4/3 - \lambda)\sigma^2$.
 
 
 ## Barnes dataset
