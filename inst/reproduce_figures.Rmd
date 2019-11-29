@@ -108,11 +108,12 @@ setModel <- function(
     q = q,
     plankton_dynamics = plankton_logistic)
   
-  params@rr_pp[] <- r0 * params@w_full^(0.85 - 1)
+  rho <- 0.85
+  params@rr_pp[] <- r0 * params@w_full^(rho - 1)
   return(params)
 }
 
-i0 <- 10
+i0 <- 100
 params <- setModel(a0 = 100, r0 = 10, q = 0.85, gamma = 750)
 i <- i0 * params@w_full^(-params@lambda) * exp(-6.9*(params@lambda - 1))
 ```
