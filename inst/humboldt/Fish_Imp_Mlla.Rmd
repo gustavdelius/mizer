@@ -1,0 +1,248 @@
+---
+title: "Fishing Mortality in MIZER"
+author: "T. Mariella Canales A."
+date: "Enero 2020"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+**Introduction**
+\newline
+
+* In this section we will explore the effect of fishing
+in a marine communities from the perspective of Multispecies Size-Spectrum Model
+using the R-package MIZER.
+
+
+* The total fishing mortality ($\mu$) in a exploited fish community is obtained by 
+summing across all gears used in the defined community.
+$$\mu_{f,i}(w)=\sum_g F_{g,i}(w)$$
+
+* The fishing mortality $F_{g,i}(w)$ is defined the by the gear $g$ on species $i$ at size (body mass) $w$ calculated as:
+$$F_{g,i}(w)=S_{g,i}(w)Q_{g,i}E_{g}$$
+where, $S$ is the selectivity at the gear $g$ and species $i$ and body size $w$. The selectivity $S$ varied from 0 to 1. 
+$Q$ is the catchability for the species $i$ and gear $g$, and $E$ is the fishing effort of the gear $g$.
+
+* Catchability ($Q$) is used as an additional scalar to define the proportionality between the selectivity and fishing effort.
+Notice, that if we assume that $Q$=1, the $E$ become equal to fishing mortality $F$ if we know the $S$ function. 
+The $E$ can be specified relative to a ‘base effort’, e.g., the effort in a particular year. 
+
+* In MIZER, $E$ is set when the simulation is run and can vary through time, therefore we used the function project() of MIZER.
+$E$ effort also can change with time in the simulation.
+\newline
+
+**Setting Fishing Parameters**
+\newline
+
+* $The$ $selectiviy$ $function$ ($S$). The function should be set in the species parameters object (a data.frame of R) using
+the argument **sel_func**.
+
+* Each selectivity function (knife edge, sigmoid, etc.) has a range of arguments that are need for MIZER.
+Values for these arguments must be included as columns in the species parameters (a data.frame of R).
+
+* For example, the arguments **sel_fun** could be defined as **knife_edge** for the species in the model,
+but in the same data.frame is defined **knife_edge_size**. 
+Catchability ($Q$) should be also set up in parameters data.frame.
+
+\newpage
+
+
+**Getting started**
+\newline
+
+* To explore the effect of fishing we will use simulations. 
+To do so the function **project()** of MIZER will be used to run simulations,
+with differents hiphothesis about the fishing mortality level and gears (selectivity, $S$).
+
+* We will start with a set of parameters that described the steady-state condition
+of an exploited fish community, where all fish species coexists at equilibrium. 
+\newline
+
+
+**Step 1**
+\newline
+
+* First, we load the community and species parameters at equilibrium or steady-state.
+\newline
+
+
+```{r}
+# ---------------------------------------------
+# Clean workspace, load packages and parameters
+# ---------------------------------------------
+
+rm(list = ls())
+library(mizer)
+packageVersion("mizer")
+#library(tidyverse)
+#library(bbmle)
+
+# Here replace the path with your own working directory
+setwd("~/WORK_MLLA/2018_POSTDOC_PUC/Objetivo3_MIZER_NCME/01_NCME_MIZER/NCME_MIZER_V2/mizer/inst/humboldt/")
+
+# Here load your set of parameters
+humboldt_sscomm <- readRDS("~/WORK_MLLA/2018_POSTDOC_PUC/Objetivo3_MIZER_NCME/01_NCME_MIZER/NCME_MIZER_V2/mizer/inst/humboldt/params2607.rds")
+
+```
+
+
+**Step 2**
+\newline
+
+* We simulate the community and species at steady state.
+\newline
+
+```{r}
+# -------------------------------------------------------
+# Getting to know the data.frame parameter regarding fishing
+# -------------------------------------------------------
+
+humboldt_sscomm@species_params
+
+# -------------------------------------------------------
+# Initial Community/Species at steady-state (Equilibrium)
+# -------------------------------------------------------
+sim0<- project(humboldt_sscomm,  t_max =50,  t_save = 1)
+
+plot(sim0) # Community (Fish + Plankton) plots at equilibrium
+
+# ---- We extract information about species and the community information ---- -->
+
+Nf_ss0=sim0@n              # Density matrix by species, size and time
+Bf_ss0=getBiomass(sim0)    # Biomass matrix by species and time
+Np_ss0=sim0@n_pp           # Density whole community time and body mass
+M_ss0=getM2(sim0)          # Predation Mortality matrix by time, species and size
+N_sp0=getN(sim0)           # Density matrix by time and species
+BS_sp0=getSSB(sim0)        # Spawning Biomass matrix by time and species
+Y_sp0=getYield(sim0)       # Yield matrix by time and species
+
+# ---- Community Indicators ---- 
+
+CommSp0=getCommunitySlope(sim0)  # Matrix of slope, intercept and R2
+CommMMW0=getMeanMaxWeight(sim0)  # Matrix mean maximum weight of the community
+CommMeanW0=getMeanWeight(sim0)   # Mean weight of the community
+
+
+output_S0<-list(Nf_ss0,Bf_ss0,Np_ss0,M_ss0,N_sp0,BS_sp0,Y_sp0,CommSp0,CommMMW0,CommMeanW0) 
+
+# ---- Saving the outputs from simulations ---- 
+
+save(output_S0,file='SIM_report_S0.Rdata') 
+
+```
+\newpage
+
+**Step 3**
+\newline
+
+* Here we are going to set the fishing mortality as a function of
+the selectivity and fishing effort.
+We will assume a Q=1. 
+
+* We will be using a simple selectivity function of the type knife_edge
+\newline
+
+
+```{r}
+
+# -------------------------------------------------------
+# Setting the fishing mortality
+# -------------------------------------------------------
+
+# Display all parameters of the NCME
+humboldt_sscomm@species_params$sel_func
+humboldt_sscomm@species_params$knife_edge_size
+humboldt_sscomm@species_params$gear
+
+# We defined hour selectivity function if is necesary. 
+# We create a vector to make easy.
+sel_functions<-c("knife_edge","knife_edge","knife_edge","knife_edge",
+                 "knife_edge","knife_edge","knife_edge","knife_edge")
+humboldt_sscomm@species_params$sel_func<-sel_functions
+humboldt_sscomm@species_params$sel_func
+
+# The selectivy function knife_edge requires an argument,
+# knife_edge_size, here we assume that is equal to the size at maturity (w_mat)
+knife_weights<-humboldt_sscomm@species_params$w_mat   
+humboldt_sscomm@species_params$knife_edge_size<-knife_weights
+humboldt_sscomm@species_params$knife_edge_size
+
+knife_effort<-c('knife_gear','knife_gear_anchovy','knife_gear',
+                'knife_gear','knife_gear','knife_gear','knife_gear','knife_gear')
+humboldt_sscomm@species_params$gear<-knife_effort
+humboldt_sscomm@species_params$gear
+```
+
+
+
+**Step 4**
+\newline
+
+* Run the simulation again, this time with a different setting of the fishing mortality. 
+
+```{r} 
+# Effort <- c(knife_gear = 1, knife_gear_Anchovy = 1) 
+sim1 <- project(humboldt_sscomm, effort= 1, t_max =50,  dt = 0.1, t_save = 1)
+
+# ---- Species information ---- -->
+Nf_ss1=sim1@n
+Bf_ss1=getBiomass(sim1)
+Np_ss1=sim1@n_pp
+M_ss1=getM2(sim1)
+N_sp1=getN(sim1)
+BS_sp1=getSSB(sim1)
+Y_sp1=getYield(sim1)
+
+# ---- Community information ----
+CommSp1=getCommunitySlope(sim1)
+CommMMW1=getMeanMaxWeight(sim1)
+CommMeanW1=getMeanWeight(sim1)
+
+output_S1<-list(Nf_ss1,Bf_ss1,Np_ss1,M_ss1,N_sp1,BS_sp1,Y_sp1,CommSp1,CommMMW1,CommMeanW1)
+
+save(output_S1,file='SIM_report_S1.Rdata')
+
+```
+
+* Comparing the effects graphically
+
+```{r}
+rm(list=ls())
+
+load("SIM_report_S0.Rdata")
+load("SIM_report_S1.Rdata")
+
+# ---
+ sb_S0=as.data.frame(output_S0[[6]])
+ sb_S1=as.data.frame(output_S1[[6]])
+
+# ---
+years <- 0:50
+I1_S0 <-cbind(years,(sb_S0/sb_S0))
+I1_S1 <-cbind(years,(sb_S1/sb_S0))
+
+library(reshape2)
+sb0_df <- melt(I1_S0,id.vars=c("years"))
+sb1_df <- melt(I1_S1,id.vars=c("years"))
+
+sb_df <- rbind(cbind(sb0_df, scenario = "S0"),cbind(sb1_df, scenario = "S1"))
+colnames(sb_df)<-c("time","sp",'Spawning_Biomass','Scenarios')
+
+library(ggplot2)
+p <- ggplot(sb_df, aes(x=time, y =Spawning_Biomass)) +
+   geom_line(aes(color=Scenarios,linetype=Scenarios),size=1) +
+   scale_linetype_manual(values=c("solid",'solid','dotted','solid','dotted')) +
+   scale_color_manual(values=c("red",'black', 'black','green','green')) +
+   facet_wrap(~sp, scales = "free", nrow = 2) + theme_bw() +
+   theme(axis.title = element_text( size = 14, face = "bold"),
+         legend.position="top",
+         strip.text = element_text(size = 12),
+         axis.text=element_text(size=10),
+         legend.text=element_text(size=12),
+         axis.title.x = element_text(size=12,face='bold'),
+         axis.title.y = element_text(size=12,face='bold')) +
+   labs(x="Years", y=expression("Relative spawning biomass [gm"^-3~']'))
+ p
+
+```
