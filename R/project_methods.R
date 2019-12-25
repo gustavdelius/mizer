@@ -1127,3 +1127,31 @@ get_time_elements <- function(sim, time_range, slot_name = "n"){
     names(time_elements) <- dimnames(sim@effort)$time
     return(time_elements)
 }
+
+#' Select an equally-spaced subselection of size bins
+#'
+#' Helper function used in plots to reduce the number of points plotted along
+#' the size axis to improve performance.
+#' @param w Either the w or the w_full slot of a MizerParams object 
+#' @inheritParams plotSpectra
+#' @return A vector of indices
+#' @export
+#' @concept helper
+#' @keywords internal
+get_size_elements <- function(w, no_w = 50, wlim = c(NA, NA)) {
+    if (is.na(wlim[1])) {
+        w_min_idx <- 1
+    } else {
+        w_min_idx <- sum(w < wlim[1]) + 1
+    }
+    if (is.na(wlim[1])) {
+        w_max_idx <- length(w)
+    } else {
+        w_min_idx <- sum(w < wlim[2]) + 1
+    }
+    if (w_max_idx < w_min_idx) {
+        return(NULL)
+    }
+    step <- floor((w_max_idx - w_min_idx) / no_w) + 1
+    return(seq.int(w_min_idx, w_max_idx, by = step))
+}

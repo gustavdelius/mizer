@@ -625,6 +625,9 @@ plotlyYieldGear <- function(sim,
 #'   object.
 #' @param wlim A numeric vector of length two providing lower and upper limits
 #'   for the w axis. Use NA to refer to the existing minimum or maximum.
+#' @param no_w The approximate number of equally-spaced points to plot along the
+#'   logarithmic size axis. The actual number of points will be between
+#'   \code{no_w} and \code{2 * no_w}.
 #' @param ylim A numeric vector of length two providing lower and upper limits
 #'   for the y axis. Use NA to refer to the existing minimum or maximum. Any
 #'   values below 1e-20 are always cut off.
@@ -664,6 +667,7 @@ plotlyYieldGear <- function(sim,
 plotSpectra <- function(object, species = NULL,
                         time_range,
                         wlim = c(NA, NA), ylim = c(NA, NA),
+                        no_w = 50,
                         power = 1, biomass = TRUE,
                         total = FALSE, plankton = TRUE, 
                         background = TRUE,
@@ -677,17 +681,27 @@ plotSpectra <- function(object, species = NULL,
             time_range  <- max(as.numeric(dimnames(object@n)$time))
         }
         time_elements <- get_time_elements(object, time_range)
-        n <- apply(object@n[time_elements, , , drop = FALSE], c(2, 3), mean)
-        n_pp <- apply(object@n_pp[time_elements, , drop = FALSE], 2, mean)
-        ps <- plot_spectra(object@params, n = n, n_pp = n_pp,
-                           species = species, wlim = wlim, ylim = ylim,
+        size_elements <- get_size_elements(object@params@w, 
+                                           wlim = wlim, no_w = no_w)
+        size_elements_full <- get_size_elements(object@params@w_full, 
+                                                wlim = wlim, no_w = no_w)
+        n <- apply(object@n[time_elements, , size_elements, drop = FALSE], 
+                   c(2, 3), mean)
+        n_pp <- apply(object@n_pp[time_elements, size_elements_full, drop = FALSE], 
+                      2, mean)
+        ps <- plot_spectra(object@params, 
+                           object@params@w_full[size_elements],
+                           n = n, n_pp = n_pp,
+                           species = species, ylim = ylim,
                            power = power,
                            total = total, plankton = plankton,
                            background = background, highlight = highlight)
         return(ps)
     } else {
-        ps <- plot_spectra(object, n = object@initial_n,
-                           n_pp = object@initial_n_pp,
+        size_elements <- get_size_elements(object)
+        n <- object@initial_n[, size_elements, drop = FALSE]
+        n_pp <- object@initial_n_pp[size_elements, drop = FALSE]
+        ps <- plot_spectra(object, n = n, n_pp = n_pp,
                            species = species, wlim = wlim, ylim = ylim,
                            power = power,
                            total = total, plankton = plankton,
