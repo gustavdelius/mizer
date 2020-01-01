@@ -785,8 +785,8 @@ newMultispeciesParams <- function(
     max_w = NA,
     min_w_pp = NA,
     no_w_pp = NA,
-    n = 2 / 3,
-    p = 0.7,
+    n = 3/4,
+    p = n,
     q = 0.8,
     f0 = 0.6,
     # setPredKernel()
