@@ -1,0 +1,35 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r}
+params <- readRDS("~/Marine Biology MSC/Thesis Project/Data/MIZER code/mizer/inst/algarve/params_Wmat-Ks_nofishing_sdst_sci_names.rds")
+```
+
+
+```{r}
+egrowth <- mizer::getEGrowth(params, n = params@initial_n, n_pp = params@initial_n_pp, B = params@initial_B)
+```
+```{r}
+abundance <- params@initial_n*params@dw
+```
+```{r}
+
+production <- egrowth*abundance
+production
+```
+
+```{r}
+total_production <- rowSums(production)
+total_production
+```
+
+```{r}
+sim <- mizer::project(params, t_max = 1, effort = 0)
+biomass <- mizer::getBiomass(sim)
+
+production_biomass <- total_production/biomass
+production_biomass
+```
+
