@@ -1,0 +1,59 @@
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(mizer)
+```
+```{r}
+params <- readRDS("~/Marine Biology MSC/Thesis Project/Data/MIZER code/mizer/inst/algarve/params_Wmat-Ks_nofishing_sdst_sci_names.rds")
+```
+Consumption/Biomass is the consumption by a species or functional group relative to it's biomass.
+For the purpose of estimating this in a size-spectrum model, the consumption of an individual in each size class was calculated.
+
+```{r}
+consumption <- rowSums(mizer::getDiet(params, proportion = FALSE),  c(3,2,1), dims = 2) 
+            
+```
+consumption  
+
+
+This was then multiplied by the abundance to give the total consumption per species per size-class.
+```{r}
+abundance <-params@initial_n * rep(params@dw, each=24)
+```
+abundance
+```{r}
+total_consumption <- consumption*abundance
+```
+total_consumption
+
+
+This was then summed across all size-classes, then divided by the total biomass. 
+```{r}
+total_consumption_all_sizes <- rowSums(total_consumption)
+total_consumption_all_sizes
+```
+
+```{r}
+sim <- mizer::project(params, t_max = 1, effort = 0)
+sim_biomass <- mizer::getBiomass(sim)
+biomass <- sim_biomass[1,]
+biomass
+```
+
+Giving the consumption/Biomass ratio.
+
+```{r}
+consumption_over_biomass <- total_consumption_all_sizes/biomass
+consumption_over_biomass
+```
+
+
+
+
+
+
+
+

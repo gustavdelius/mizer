@@ -1,0 +1,139 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+params <- readRDS("~/Marine Biology MSC/Thesis Project/Data/MIZER code/mizer/inst/algarve/params_Wmat-Ks_nofishing_sdst_sci_names.rds")
+```
+
+```{r}
+pred_mort_Q <- rowSums(getPredMort(params)*params@initial_n * rep(params@dw, each=24))
+pred_mort_Q
+```
+```{r}
+
+pred_mort_B <- mizer::project(params, t_max = 1, effort = 0)
+sim_biomass <- mizer::getBiomass(sim)
+pred_mort_B  <- sim_biomass[1,]
+```
+
+```{r}
+predmort_total <- pred_mort_Q/pred_mort_B
+predmort_total
+```
+
+
+
+```{r}
+summed_predmort <- rowSums(predmort_total, na.rm = TRUE)
+summed_predmort
+```
+
+
+
+```{r}
+Q_Sparus_aurata <- sum(getPredMort(params)[ "Sparus aurata", ] * params@initial_n["Sparus aurata", ] * params@dw * params@w)
+B_Sparus_aurata <- sum(params@initial_n["Sparus aurata", ] * params@dw * params@w)
+predm_Sparus_aurata <- Q_Sparus_aurata/B_Sparus_aurata
+
+Q_Spondyliosoma_cantharus <- sum(getPredMort(params)[ "Spondyliosoma cantharus", ] * params@initial_n["Spondyliosoma cantharus", ] * params@dw * params@w)
+B_Spondyliosoma_cantharus <- sum(params@initial_n["Spondyliosoma cantharus", ] * params@dw * params@w)
+predm_Spondyliosoma_cantharus <- Q_Spondyliosoma_cantharus/B_Spondyliosoma_cantharus
+
+Q_Dicentrarchus_punctatus <- sum(getPredMort(params)[ "Dicentrarchus punctatus", ] * params@initial_n["Dicentrarchus punctatus", ] * params@dw * params@w)
+B_Dicentrarchus_punctatus <- sum(params@initial_n["Dicentrarchus punctatus", ] * params@dw * params@w)
+predm_Dicentrarchus_punctatus <- Q_Dicentrarchus_punctatus/B_Dicentrarchus_punctatus
+
+Q_Halobatrachus_didactylus <- sum(getPredMort(params)[ "Halobatrachus didactylus", ] * params@initial_n["Halobatrachus didactylus", ] * params@dw * params@w)
+B_Halobatrachus_didactylus <- sum(params@initial_n["Halobatrachus didactylus", ] * params@dw * params@w)
+predm_Halobatrachus_didactylus <- Q_Halobatrachus_didactylus/B_Halobatrachus_didactylus
+
+Q_Anguilla_anguilla <- sum(getPredMort(params)[ "Anguilla anguilla", ] * params@initial_n["Anguilla anguilla", ] * params@dw * params@w)
+B_Anguilla_anguilla <- sum(params@initial_n["Anguilla anguilla", ] * params@dw * params@w)
+predm_Anguilla_anguilla <- Q_Anguilla_anguilla/B_Anguilla_anguilla
+
+Q_Dentex_dentex <- sum(getPredMort(params)[ "Dentex dentex", ] * params@initial_n["Dentex dentex", ] * params@dw * params@w)
+B_Dentex_dentex <- sum(params@initial_n["Dentex dentex", ] * params@dw * params@w)
+predm_Dentex_dentex <- Q_Dentex_dentex/B_Dentex_dentex
+
+Q_Belone_belone<- sum(getPredMort(params)[ "Belone belone", ] * params@initial_n["Belone belone", ] * params@dw * params@w)
+B_Belone_belone <- sum(params@initial_n["Belone belone", ] * params@dw * params@w)
+predm_Belone_belone <- Q_Belone_belone/B_Belone_belone
+
+Q_Dicentrarchus_labrax <- sum(getPredMort(params)[ "Dicentrarchus labrax", ] * params@initial_n["Dicentrarchus labrax", ] * params@dw * params@w)
+B_Dicentrarchus_labrax <- sum(params@initial_n["Dicentrarchus labrax", ] * params@dw * params@w)
+predm_Dicentrarchus_labrax <- Q_Dicentrarchus_labrax/B_Dicentrarchus_labrax
+
+Q_Solea_senegalensis <- sum(getPredMort(params)[ "Solea senegalensis", ] * params@initial_n["Solea senegalensis", ] * params@dw * params@w)
+B_Solea_senegalensis <- sum(params@initial_n["Solea senegalensis", ] * params@dw * params@w)
+predm_Solea_senegalensis <- Q_Solea_senegalensis/B_Solea_senegalensis
+
+Q_Diplodus_annullaris <- sum(getPredMort(params)[ "Diplodus annullaris", ] * params@initial_n["Diplodus annullaris", ] * params@dw * params@w)
+B_Diplodus_annullaris <- sum(params@initial_n["Diplodus annullaris", ] * params@dw * params@w)
+predm_Diplodus_annullaris <- Q_Diplodus_annullaris/B_Diplodus_annullaris
+
+Q_Diplodus_vulgaris<- sum(getPredMort(params)[ "Diplodus vulgaris", ] * params@initial_n["Diplodus vulgaris", ] * params@dw * params@w)
+B_Diplodus_vulgaris <- sum(params@initial_n["Diplodus vulgaris", ] * params@dw * params@w)
+predm_Diplodus_vulgaris <- Q_Diplodus_vulgaris/B_Diplodus_vulgaris
+
+Q_Atherina_cf._boyeri <- sum(getPredMort(params)[ "Atherina cf. boyeri", ] * params@initial_n["Atherina cf. boyeri", ] * params@dw * params@w)
+B_Atherina_cf._boyeri <- sum(params@initial_n["Atherina cf. boyeri", ] * params@dw * params@w)
+predm_Atherina_cf._boyeri <- Q_Atherina_cf._boyeri/B_Atherina_cf._boyeri
+
+Q_Mullus_barbatus <- sum(getPredMort(params)[ "Mullus barbatus", ] * params@initial_n["Mullus barbatus", ] * params@dw * params@w)
+B_Mullus_barbatus <- sum(params@initial_n["Mullus barbatus", ] * params@dw * params@w)
+predm_Mullus_barbatus <- Q_Mullus_barbatus/B_Mullus_barbatus
+
+Q_Diplodus_sargus <- sum(getPredMort(params)[ "Diplodus sargus", ] * params@initial_n["Diplodus sargus", ] * params@dw * params@w)
+B_Diplodus_sargus <- sum(params@initial_n["Diplodus sargus", ] * params@dw * params@w)
+predm_Diplodus_sargus <- Q_Diplodus_sargus/B_Diplodus_sargus
+
+Q_Sarpa_salpa <- sum(getPredMort(params)[ "Sarpa salpa", ] * params@initial_n["Sarpa salpa", ] * params@dw * params@w)
+B_Sarpa_salpa <- sum(params@initial_n["Sarpa salpa", ] * params@dw * params@w)
+predm_Sarpa_salpa <- Q_Sarpa_salpa/B_Sarpa_salpa
+
+Q_labrus_sp <- sum(getPredMort(params)[ "labrus sp", ] * params@initial_n["labrus sp", ] * params@dw * params@w)
+B_labrus_sp <- sum(params@initial_n["labrus sp", ] * params@dw * params@w)
+predm_labrus_sp <- Q_labrus_sp/B_labrus_sp
+
+Q_Gobidae_sp <- sum(getPredMort(params)[ "Gobidae sp", ] * params@initial_n["Gobidae sp", ] * params@dw * params@w)
+B_Gobidae_sp <- sum(params@initial_n["Gobidae sp", ] * params@dw * params@w)
+predm_Gobidae_sp <- Q_Gobidae_sp/B_Gobidae_sp
+
+Q_Engraulis_encrasicholus <- sum(getPredMort(params)[ "Engraulis encrasicholus", ] * params@initial_n["Engraulis encrasicholus", ] * params@dw * params@w)
+B_Engraulis_encrasicholus <- sum(params@initial_n["Mullus barbatus", ] * params@dw * params@w)
+predm_Engraulis_encrasicholus <- Q_Engraulis_encrasicholus/B_Engraulis_encrasicholus
+
+Q_Sardina_pilchardus <- sum(getPredMort(params)[ "Sardina pilchardus", ] * params@initial_n["Sardina pilchardus", ] * params@dw * params@w)
+B_Sardina_pilchardus <- sum(params@initial_n["Sardina pilchardus", ] * params@dw * params@w)
+predm_Sardina_pilchardus <- Q_Sardina_pilchardus/B_Sardina_pilchardus
+
+Q_Chelon_labrosus <- sum(getPredMort(params)[ "Chelon labrosus", ] * params@initial_n["Chelon labrosus", ] * params@dw * params@w)
+B_Chelon_labrosus <- sum(params@initial_n["Chelon labrosus", ] * params@dw * params@w)
+predm_Chelon_labrosus <- Q_Chelon_labrosus/B_Chelon_labrosus
+
+Q_Annelidia <- sum(getPredMort(params)[ "Annelidia", ] * params@initial_n["Annelidia", ] * params@dw * params@w)
+B_Annelidia <- sum(params@initial_n["Annelidia", ] * params@dw * params@w)
+predm_Annelidia <- Q_Annelidia/B_Annelidia
+
+Q_Gastropoda <- sum(getPredMort(params)[ "Gastropoda", ] * params@initial_n["Gastropoda", ] * params@dw * params@w)
+B_Gastropoda <- sum(params@initial_n["Gastropoda", ] * params@dw * params@w)
+predm_Gastropoda <- Q_Gastropoda/B_Gastropoda
+
+Q_Bivalvia <- sum(getPredMort(params)[ "Bivalvia", ] * params@initial_n["Bivalvia", ] * params@dw * params@w)
+B_Bivalvia <- sum(params@initial_n["Bivalvia", ] * params@dw * params@w)
+predm_Bivalvia <- Q_Bivalvia/B_Bivalvia
+
+Q_Crustacea <- sum(getPredMort(params)[ "Crustacea", ] * params@initial_n["Crustacea", ] * params@dw * params@w)
+B_Crustacea <- sum(params@initial_n["Crustacea", ] * params@dw * params@w)
+predm_Crustacea <- Q_Crustacea/B_Crustacea
+```
+```{r}
+total_pred <- c(predm_Sparus_aurata, predm_Spondyliosoma_cantharus, predm_Dicentrarchus_punctatus, predm_Halobatrachus_didactylus, predm_Anguilla_anguilla, predm_Dentex_dentex, predm_Belone_belone, predm_Dicentrarchus_labrax, predm_Solea_senegalensis, predm_Diplodus_annullaris, predm_Diplodus_vulgaris, predm_Atherina_cf._boyeri, predm_Mullus_barbatus, predm_Diplodus_sargus, predm_Sarpa_salpa, predm_labrus_sp, predm_Gobidae_sp, predm_Engraulis_encrasicholus, predm_Sardina_pilchardus, predm_Chelon_labrosus,predm_Annelidia, predm_Gastropoda, predm_Bivalvia, predm_Crustacea)
+total_pred
+```

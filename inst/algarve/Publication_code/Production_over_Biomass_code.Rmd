@@ -7,29 +7,39 @@ output: html_document
 params <- readRDS("~/Marine Biology MSC/Thesis Project/Data/MIZER code/mizer/inst/algarve/params_Wmat-Ks_nofishing_sdst_sci_names.rds")
 ```
 
+In Ecopath Production/biomass referes to the elabouration of tissue whether it survives or not, over a given time period, in this case one year. 
 
+This code uses this concept to estimate this using the total growth (production of tissue), over the total biomass
+
+
+first calculate the growth per invdervidual of each species for each size-class
 ```{r}
 egrowth <- mizer::getEGrowth(params, n = params@initial_n, n_pp = params@initial_n_pp, B = params@initial_B)
 ```
-```{r}
-abundance <- params@initial_n*params@dw
-```
-```{r}
 
-production <- egrowth*abundance
-production
+Then calculate the abundance of each speices at each size-class.
+```{r}
+abundance <-params@initial_n * rep(params@dw, each=24)
 ```
+we can then calculate the total production by multiplying the previously calucated indicidual production (egrowth) by the abundance at each size-class.
+
+```{r}
+production <- egrowth*abundance
+```
+This is then summed to give the total production across all size-classes.
 
 ```{r}
 total_production <- rowSums(production)
-total_production
 ```
-
+Then divided by the total biomass to give the production/biomass ratio. These values are the same as those calcualted in the excel files.
 ```{r}
 sim <- mizer::project(params, t_max = 1, effort = 0)
-biomass <- mizer::getBiomass(sim)
-
+sim_biomass <- mizer::getBiomass(sim)
+biomass <- sim_biomass[1,]
+```
+```{r}
 production_biomass <- total_production/biomass
 production_biomass
 ```
+
 
