@@ -113,7 +113,7 @@ So again $b_l(l|w')$ is independent of $w'$.
 Mariella has data of stomach content for anchovy and sardine. Mariella can
 provide more details of the origin of this data.
 ```{r message=FALSE, warning=FALSE}
-stomach <- read_csv("inst/humboldt/Data_PPMR.csv")
+stomach <- read_csv("../humboldt/Data_PPMR.csv")
 stomach
 ```
 
@@ -771,7 +771,7 @@ $\mu + (4/3 - \lambda)\sigma^2$.
 Reading in the data
 ```{r message=FALSE}
 stomach_full <-
-    read_tsv("inst/ppmr/Predator_and_prey_body_sizes_in_marine_food.csv",
+    read_tsv("Predator_and_prey_body_sizes_in_marine_food.csv",
              na = c("", "n/a"),
              guess_max = 10000)
 stomach_full
